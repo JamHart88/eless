@@ -162,9 +162,7 @@ extern char *tgoto();
  *	   etc. are NOT disabled.
  * It doesn't matter whether an input \n is mapped to \r, or vice versa.
  */
-	public void
-raw_mode(on)
-	int on;
+public void raw_mode(int on)
 {
 	static int curr_on = 0;
 
@@ -467,9 +465,7 @@ raw_mode(on)
  */
 static int hardcopy;
 
-	static char *
-ltget_env(capname)
-	char *capname;
+static char * ltget_env(char *capname)
 {
 	char name[64];
 
@@ -493,9 +489,7 @@ ltget_env(capname)
 	return (lgetenv(name));
 }
 
-	static int
-ltgetflag(capname)
-	char *capname;
+static int ltgetflag(char *capname)
 {
 	char *s;
 
@@ -506,9 +500,7 @@ ltgetflag(capname)
 	return (tgetflag(capname));
 }
 
-	static int
-ltgetnum(capname)
-	char *capname;
+static int ltgetnum(char *capname)
 {
 	char *s;
 
@@ -519,10 +511,7 @@ ltgetnum(capname)
 	return (tgetnum(capname));
 }
 
-	static char *
-ltgetstr(capname, pp)
-	char *capname;
-	char **pp;
+static char * ltgetstr(char *capname, char **pp)
 {
 	char *s;
 
@@ -536,8 +525,7 @@ ltgetstr(capname, pp)
 /*
  * Get size of the output screen.
  */
-	public void
-scrsize(VOID_PARAM)
+public void scrsize(VOID_PARAM)
 {
 	char *s;
 	int sys_height;
@@ -579,18 +567,18 @@ scrsize(VOID_PARAM)
 
 	if (sys_height > 0)
 		sc_height = sys_height;
-	else if ((s = lgetenv("LINES")) != NULL)
+	else if ((s = lgetenv((char *) "LINES")) != NULL)
 		sc_height = atoi(s);
-	else if ((n = ltgetnum("li")) > 0)
+	else if ((n = ltgetnum((char *) "li")) > 0)
  		sc_height = n;
 	if (sc_height <= 0)
 		sc_height = DEF_SC_HEIGHT;
 
 	if (sys_width > 0)
 		sc_width = sys_width;
-	else if ((s = lgetenv("COLUMNS")) != NULL)
+	else if ((s = lgetenv((char *) "COLUMNS")) != NULL)
 		sc_width = atoi(s);
-	else if ((n = ltgetnum("co")) > 0)
+	else if ((n = ltgetnum((char *) "co")) > 0)
  		sc_width = n;
 	if (sc_width <= 0)
 		sc_width = DEF_SC_WIDTH;
@@ -601,8 +589,7 @@ scrsize(VOID_PARAM)
  * Return the characters actually input by a "special" key.
  */
 	public char *
-special_key_str(key)
-	int key;
+special_key_str(int key)
 {
 	static char tbuf[40];
 	char *s;
@@ -613,31 +600,31 @@ special_key_str(key)
 	{
 
 	case SK_RIGHT_ARROW:
-		s = ltgetstr("kr", &sp);
+		s = ltgetstr((char *) "kr", &sp);
 		break;
 	case SK_LEFT_ARROW:
-		s = ltgetstr("kl", &sp);
+		s = ltgetstr((char *) "kl", &sp);
 		break;
 	case SK_UP_ARROW:
-		s = ltgetstr("ku", &sp);
+		s = ltgetstr((char *) "ku", &sp);
 		break;
 	case SK_DOWN_ARROW:
-		s = ltgetstr("kd", &sp);
+		s = ltgetstr((char *) "kd", &sp);
 		break;
 	case SK_PAGE_UP:
-		s = ltgetstr("kP", &sp);
+		s = ltgetstr((char *) "kP", &sp);
 		break;
 	case SK_PAGE_DOWN:
-		s = ltgetstr("kN", &sp);
+		s = ltgetstr((char *) "kN", &sp);
 		break;
 	case SK_HOME:
-		s = ltgetstr("kh", &sp);
+		s = ltgetstr((char *) "kh", &sp);
 		break;
 	case SK_END:
-		s = ltgetstr("@7", &sp);
+		s = ltgetstr((char *) "@7", &sp);
 		break;
 	case SK_DELETE:
-		s = ltgetstr("kD", &sp);
+		s = ltgetstr((char *) "kD", &sp);
 		if (s == NULL)
 		{
 			tbuf[0] = '\177';
@@ -662,7 +649,7 @@ special_key_str(key)
 	public void
 get_term(VOID_PARAM)
 {
-	termcap_debug = !isnullenv(lgetenv("LESS_TERMCAP_DEBUG"));
+	termcap_debug = !isnullenv(lgetenv((char *) "LESS_TERMCAP_DEBUG"));
 
 {
 	char *sp;
@@ -678,13 +665,13 @@ get_term(VOID_PARAM)
 	/*
 	 * Find out what kind of terminal this is.
 	 */
-	if ((term = lgetenv("TERM")) == NULL)
-		term = DEFAULT_TERM;
+	if ((term = lgetenv((char *) "TERM")) == NULL)
+		term = (char *) DEFAULT_TERM;
 	hardcopy = 0;
 	/* {{ Should probably just pass NULL instead of termbuf. }} */
 	if (tgetent(termbuf, term) != TGETENT_OK)
 		hardcopy = 1;
-	if (ltgetflag("hc"))
+	if (ltgetflag((char *)"hc"))
 		hardcopy = 1;
 
 	/*
@@ -693,11 +680,11 @@ get_term(VOID_PARAM)
 	scrsize();
 	pos_init();
 
-	auto_wrap = ltgetflag("am");
-	ignaw = ltgetflag("xn");
-	above_mem = ltgetflag("da");
-	below_mem = ltgetflag("db");
-	clear_bg = ltgetflag("ut");
+	auto_wrap = ltgetflag((char *) "am");
+	ignaw = ltgetflag((char *) "xn");
+	above_mem = ltgetflag((char *) "da");
+	below_mem = ltgetflag((char *) "db");
+	clear_bg = ltgetflag((char *) "ut");
 
 	/*
 	 * Assumes termcap variable "sg" is the printing width of:
@@ -705,7 +692,7 @@ get_term(VOID_PARAM)
 	 * the underline sequence, the end underline sequence,
 	 * the boldface sequence, and the end boldface sequence.
 	 */
-	if ((so_s_width = ltgetnum("sg")) < 0)
+	if ((so_s_width = ltgetnum((char *) "sg")) < 0)
 		so_s_width = 0;
 	so_e_width = so_s_width;
 
@@ -731,56 +718,56 @@ get_term(VOID_PARAM)
 	sp = sbuf;
 
 #if HAVE_OSPEED
-	sc_pad = ltgetstr("pc", &sp);
+	sc_pad = ltgetstr((char *) "pc", &sp);
 	if (sc_pad != NULL)
 		PC = *sc_pad;
 #endif
 
-	sc_s_keypad = ltgetstr("ks", &sp);
+	sc_s_keypad = ltgetstr((char *) "ks", &sp);
 	if (sc_s_keypad == NULL)
-		sc_s_keypad = "";
-	sc_e_keypad = ltgetstr("ke", &sp);
+		sc_s_keypad = (char *) "";
+	sc_e_keypad = ltgetstr((char *) "ke", &sp);
 	if (sc_e_keypad == NULL)
-		sc_e_keypad = "";
-	kent = ltgetstr("@8", &sp);
+		sc_e_keypad = (char *) "";
+	kent = ltgetstr((char *) "@8", &sp);
 
-	sc_s_mousecap = ltgetstr("MOUSE_START", &sp);
+	sc_s_mousecap = ltgetstr((char *) "MOUSE_START", &sp);
 	if (sc_s_mousecap == NULL)
-		sc_s_mousecap = ESCS "[?1000h" ESCS "[?1006h";
-	sc_e_mousecap = ltgetstr("MOUSE_END", &sp);
+		sc_s_mousecap = (char *) ESCS "[?1000h" ESCS "[?1006h";
+	sc_e_mousecap = ltgetstr((char *) "MOUSE_END", &sp);
 	if (sc_e_mousecap == NULL)
-		sc_e_mousecap = ESCS "[?1006l" ESCS "[?1000l";
+		sc_e_mousecap = (char *) ESCS "[?1006l" ESCS "[?1000l";
 
-	sc_init = ltgetstr("ti", &sp);
+	sc_init = ltgetstr((char *) "ti", &sp);
 	if (sc_init == NULL)
-		sc_init = "";
+		sc_init = (char *) "";
 
-	sc_deinit= ltgetstr("te", &sp);
+	sc_deinit= ltgetstr((char *) "te", &sp);
 	if (sc_deinit == NULL)
-		sc_deinit = "";
+		sc_deinit = (char *) "";
 
-	sc_eol_clear = ltgetstr("ce", &sp);
+	sc_eol_clear = ltgetstr((char *) "ce", &sp);
 	if (sc_eol_clear == NULL || *sc_eol_clear == '\0')
 	{
 		missing_cap = 1;
-		sc_eol_clear = "";
+		sc_eol_clear = (char *) "";
 	}
 
-	sc_eos_clear = ltgetstr("cd", &sp);
+	sc_eos_clear = ltgetstr((char *) "cd", &sp);
 	if (below_mem && (sc_eos_clear == NULL || *sc_eos_clear == '\0'))
 	{
 		missing_cap = 1;
-		sc_eos_clear = "";
+		sc_eos_clear = (char *) "";
 	}
 
-	sc_clear = ltgetstr("cl", &sp);
+	sc_clear = ltgetstr((char *) "cl", &sp);
 	if (sc_clear == NULL || *sc_clear == '\0')
 	{
 		missing_cap = 1;
-		sc_clear = "\n\n";
+		sc_clear = (char *) "\n\n";
 	}
 
-	sc_move = ltgetstr("cm", &sp);
+	sc_move = ltgetstr((char *) "cm", &sp);
 	if (sc_move == NULL || *sc_move == '\0')
 	{
 		/*
@@ -788,84 +775,84 @@ get_term(VOID_PARAM)
 		 * always need sc_move.
 		 * We need it only if we don't have home or lower-left.
 		 */
-		sc_move = "";
+		sc_move = (char *) "";
 		can_goto_line = 0;
 	} else
 		can_goto_line = 1;
 
-	tmodes("so", "se", &sc_s_in, &sc_s_out, "", "", &sp);
-	tmodes("us", "ue", &sc_u_in, &sc_u_out, sc_s_in, sc_s_out, &sp);
-	tmodes("md", "me", &sc_b_in, &sc_b_out, sc_s_in, sc_s_out, &sp);
-	tmodes("mb", "me", &sc_bl_in, &sc_bl_out, sc_s_in, sc_s_out, &sp);
+	tmodes((char *) "so", (char *) "se", &sc_s_in, &sc_s_out, (char *) "", (char *) "", &sp);
+	tmodes((char *) "us", (char *) "ue", &sc_u_in, &sc_u_out, sc_s_in, sc_s_out, &sp);
+	tmodes((char *) "md", (char *) "me", &sc_b_in, &sc_b_out, sc_s_in, sc_s_out, &sp);
+	tmodes((char *) "mb", (char *) "me", &sc_bl_in, &sc_bl_out, sc_s_in, sc_s_out, &sp);
 
-	sc_visual_bell = ltgetstr("vb", &sp);
+	sc_visual_bell = ltgetstr((char *) "vb", &sp);
 	if (sc_visual_bell == NULL)
-		sc_visual_bell = "";
+		sc_visual_bell = (char *) "";
 
-	if (ltgetflag("bs"))
-		sc_backspace = "\b";
+	if (ltgetflag((char *) "bs"))
+		sc_backspace = (char *) "\b";
 	else
 	{
-		sc_backspace = ltgetstr("bc", &sp);
+		sc_backspace = ltgetstr((char *) "bc", &sp);
 		if (sc_backspace == NULL || *sc_backspace == '\0')
-			sc_backspace = "\b";
+			sc_backspace = (char *) "\b";
 	}
 
 	/*
 	 * Choose between using "ho" and "cm" ("home" and "cursor move")
 	 * to move the cursor to the upper left corner of the screen.
 	 */
-	t1 = ltgetstr("ho", &sp);
+	t1 = ltgetstr((char *) "ho", &sp);
 	if (t1 == NULL)
-		t1 = "";
+		t1 = (char *) "";
 	if (*sc_move == '\0')
-		t2 = "";
+		t2 = (char *) "";
 	else
 	{
 		strcpy(sp, tgoto(sc_move, 0, 0));
 		t2 = sp;
 		sp += strlen(sp) + 1;
 	}
-	sc_home = cheaper(t1, t2, "|\b^");
+	sc_home = cheaper(t1, t2, (char *) "|\b^");
 
 	/*
 	 * Choose between using "ll" and "cm"  ("lower left" and "cursor move")
 	 * to move the cursor to the lower left corner of the screen.
 	 */
-	t1 = ltgetstr("ll", &sp);
+	t1 = ltgetstr((char *) "ll", &sp);
 	if (t1 == NULL)
-		t1 = "";
+		t1 = (char *) "";
 	if (*sc_move == '\0')
-		t2 = "";
+		t2 = (char *) "";
 	else
 	{
 		strcpy(sp, tgoto(sc_move, 0, sc_height-1));
 		t2 = sp;
 		sp += strlen(sp) + 1;
 	}
-	sc_lower_left = cheaper(t1, t2, "\r");
+	sc_lower_left = cheaper(t1, t2, (char *) "\r");
 
 	/*
 	 * Get carriage return string.
 	 */
-	sc_return = ltgetstr("cr", &sp);
+	sc_return = ltgetstr((char *) "cr", &sp);
 	if (sc_return == NULL)
-		sc_return = "\r";
+		sc_return = (char *) "\r";
 
 	/*
 	 * Choose between using "al" or "sr" ("add line" or "scroll reverse")
 	 * to add a line at the top of the screen.
 	 */
-	t1 = ltgetstr("al", &sp);
+	t1 = ltgetstr((char *) "al", &sp);
 	if (t1 == NULL)
-		t1 = "";
-	t2 = ltgetstr("sr", &sp);
+		t1 = (char *) "";
+	t2 = ltgetstr((char *) "sr", &sp);
 	if (t2 == NULL)
-		t2 = "";
+		t2 = (char *) "";
 	if (above_mem)
 		sc_addline = t1;
 	else
-		sc_addline = cheaper(t1, t2, "");
+		sc_addline = cheaper(t1, t2, (char *) "");
 	if (*sc_addline == '\0')
 	{
 		/*
@@ -886,17 +873,13 @@ get_term(VOID_PARAM)
 static int costcount;
 
 /*ARGSUSED*/
-	static int
-inc_costcount(c)
-	int c;
+static int inc_costcount(int c)
 {
 	costcount++;
 	return (c);
 }
 
-	static int
-cost(t)
-	char *t;
+static int cost(char *t)
 {
 	costcount = 0;
 	tputs(t, sc_height, inc_costcount);
@@ -908,10 +891,7 @@ cost(t)
  * The best, if both exist, is the one with the lower 
  * cost (see cost() function).
  */
-	static char *
-cheaper(t1, t2, def)
-	char *t1, *t2;
-	char *def;
+static char * cheaper(char *t1, char *t2, char *def)
 {
 	if (*t1 == '\0' && *t2 == '\0')
 	{
@@ -927,15 +907,13 @@ cheaper(t1, t2, def)
 	return (t2);
 }
 
-	static void
-tmodes(incap, outcap, instr, outstr, def_instr, def_outstr, spp)
-	char *incap;
-	char *outcap;
-	char **instr;
-	char **outstr;
-	char *def_instr;
-	char *def_outstr;
-	char **spp;
+static void tmodes(char *incap,
+	char *outcap,
+	char **instr,
+	char **outstr,
+	char *def_instr,
+	char *def_outstr,
+	char **spp)
 {
 	*instr = ltgetstr(incap, spp);
 	if (*instr == NULL)
@@ -949,10 +927,10 @@ tmodes(incap, outcap, instr, outstr, def_instr, def_outstr, spp)
 	*outstr = ltgetstr(outcap, spp);
 	if (*outstr == NULL)
 		/* No specific out capability; use "me". */
-		*outstr = ltgetstr("me", spp);
+		*outstr = ltgetstr((char *) "me", spp);
 	if (*outstr == NULL)
 		/* Don't even have "me"; use a null string. */
-		*outstr = "";
+		*outstr = (char *) "";
 }
 
 
@@ -967,8 +945,7 @@ tmodes(incap, outcap, instr, outstr, def_instr, def_outstr, spp)
  * Configure the termimal so mouse clicks and wheel moves 
  * produce input to less.
  */
-	public void
-init_mouse(VOID_PARAM)
+public void init_mouse(VOID_PARAM)
 {
 	if (!mousecap)
 		return;
@@ -979,8 +956,7 @@ init_mouse(VOID_PARAM)
  * Configure the terminal so mouse clicks and wheel moves
  * are handled by the system (so text can be selected, etc).
  */
-	public void
-deinit_mouse(VOID_PARAM)
+public void deinit_mouse(VOID_PARAM)
 {
 	if (!mousecap)
 		return;
@@ -990,8 +966,7 @@ deinit_mouse(VOID_PARAM)
 /*
  * Initialize terminal
  */
-	public void
-init(VOID_PARAM)
+public void init(VOID_PARAM)
 {
 	if (!(quit_if_one_screen && one_screen))
 	{
@@ -1021,8 +996,7 @@ init(VOID_PARAM)
 /*
  * Deinitialize terminal
  */
-	public void
-deinit(VOID_PARAM)
+public void deinit(VOID_PARAM)
 {
 	if (!init_done)
 		return;
@@ -1040,8 +1014,7 @@ deinit(VOID_PARAM)
 /*
  * Home cursor (move to upper left corner of screen).
  */
-	public void
-home(VOID_PARAM)
+public void home(VOID_PARAM)
 {
 	tputs(sc_home, 1, putchr);
 }
@@ -1050,8 +1023,7 @@ home(VOID_PARAM)
  * Add a blank line (called with cursor at home).
  * Should scroll the display down.
  */
-	public void
-add_line(VOID_PARAM)
+public void add_line(VOID_PARAM)
 {
 	tputs(sc_addline, sc_height, putchr);
 }
@@ -1060,9 +1032,8 @@ add_line(VOID_PARAM)
 
 /*
  * Move cursor to lower left corner of screen.
- */
-	public void
-lower_left(VOID_PARAM)
+ */ 
+public void lower_left(VOID_PARAM)
 {
 	if (!init_done)
 		return;
@@ -1072,8 +1043,7 @@ lower_left(VOID_PARAM)
 /*
  * Move cursor to left position of current line.
  */
-	public void
-line_left(VOID_PARAM)
+public void line_left(VOID_PARAM)
 {
 	tputs(sc_return, 1, putchr);
 }
@@ -1082,28 +1052,25 @@ line_left(VOID_PARAM)
  * Check if the console size has changed and reset internals 
  * (in lieu of SIGWINCH for WIN32).
  */
-	public void
-check_winch(VOID_PARAM)
+public void check_winch(VOID_PARAM)
 {
 }
 
 /*
  * Goto a specific line on the screen.
  */
-	public void
-goto_line(sindex)
-	int sindex;
+public void goto_line(int sindex)
 {
 	tputs(tgoto(sc_move, 0, sindex), 1, putchr);
 }
 
 
 
+
 /*
  * Output the "visual bell", if there is one.
  */
-	public void
-vbell(VOID_PARAM)
+public void vbell(VOID_PARAM)
 {
 	if (*sc_visual_bell == '\0')
 		return;
@@ -1113,8 +1080,7 @@ vbell(VOID_PARAM)
 /*
  * Make a noise.
  */
-	static void
-beep(VOID_PARAM)
+static void beep(VOID_PARAM)
 {
 	putchr(CONTROL('G'));
 }
@@ -1122,8 +1088,7 @@ beep(VOID_PARAM)
 /*
  * Ring the terminal bell.
  */
-	public void
-bell(VOID_PARAM)
+public void bell(VOID_PARAM)
 {
 	if (quiet == VERY_QUIET)
 		vbell();
@@ -1134,8 +1099,7 @@ bell(VOID_PARAM)
 /*
  * Clear the screen.
  */
-	public void
-clear(VOID_PARAM)
+public void clear(VOID_PARAM)
 {
 	tputs(sc_clear, sc_height, putchr);
 }
@@ -1144,8 +1108,7 @@ clear(VOID_PARAM)
  * Clear from the cursor to the end of the cursor's line.
  * {{ This must not move the cursor. }}
  */
-	public void
-clear_eol(VOID_PARAM)
+public void clear_eol(VOID_PARAM)
 {
 	tputs(sc_eol_clear, 1, putchr);
 }
@@ -1154,8 +1117,7 @@ clear_eol(VOID_PARAM)
  * Clear the current line.
  * Clear the screen if there's off-screen memory below the display.
  */
-	static void
-clear_eol_bot(VOID_PARAM)
+static void clear_eol_bot(VOID_PARAM)
 {
 	if (below_mem)
 		tputs(sc_eos_clear, 1, putchr);
@@ -1167,8 +1129,7 @@ clear_eol_bot(VOID_PARAM)
  * Clear the bottom line of the display.
  * Leave the cursor at the beginning of the bottom line.
  */
-	public void
-clear_bot(VOID_PARAM)
+public void clear_bot(VOID_PARAM)
 {
 	/*
 	 * If we're in a non-normal attribute mode, temporarily exit
@@ -1192,9 +1153,7 @@ clear_bot(VOID_PARAM)
 	}
 }
 
-	public void
-at_enter(attr)
-	int attr;
+public void at_enter(int attr)
 {
 	attr = apply_at_specials(attr);
 
@@ -1210,8 +1169,7 @@ at_enter(attr)
 	attrmode = attr;
 }
 
-	public void
-at_exit(VOID_PARAM)
+public void at_exit(VOID_PARAM)
 {
 	/* Undo things in the reverse order we did them.  */
 	if (attrmode & AT_STANDOUT)
@@ -1225,9 +1183,7 @@ at_exit(VOID_PARAM)
 	attrmode = AT_NORMAL;
 }
 
-	public void
-at_switch(attr)
-	int attr;
+public void at_switch(int attr)
 {
 	int new_attrmode = apply_at_specials(attr);
 	int ignore_modes = AT_ANSI;
@@ -1239,10 +1195,7 @@ at_switch(attr)
 	}
 }
 
-	public int
-is_at_equiv(attr1, attr2)
-	int attr1;
-	int attr2;
+public int is_at_equiv(int attr1, int attr2)
 {
 	attr1 = apply_at_specials(attr1);
 	attr2 = apply_at_specials(attr2);
@@ -1250,9 +1203,7 @@ is_at_equiv(attr1, attr2)
 	return (attr1 == attr2);
 }
 
-	public int
-apply_at_specials(attr)
-	int attr;
+public int apply_at_specials(int attr)
 {
 	if (attr & AT_BINARY)
 		attr |= binattr;
@@ -1267,11 +1218,10 @@ apply_at_specials(attr)
 /*
  * Output a plain backspace, without erasing the previous char.
  */
-	public void
-putbs(VOID_PARAM)
+public void putbs(VOID_PARAM)
 {
 	if (termcap_debug)
-		putstr("<bs>");
+		putstr((char *) "<bs>");
 	else
 	{
 	tputs(sc_backspace, 1, putchr);

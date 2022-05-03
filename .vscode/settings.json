@@ -4,5 +4,6 @@
         "cmd.h": "c"
     },
     "cmake.configureOnOpen": false,
-    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+    "C_Cpp.errorSquiggles": "Disabled"
 }

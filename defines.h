@@ -1,6 +1,7 @@
 /* defines.h.  Generated from defines.h.in by configure.  */
 /* defines.h.in.  Generated from configure.ac by autoheader.  */
 
+#include <string_view>
 
 /* Unix definition file for less.  -*- C -*-
  *

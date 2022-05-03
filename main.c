@@ -45,10 +45,6 @@ extern char *	tagoption;
 extern int	jump_sline;
 #endif
 
-#ifdef WIN32
-static char consoleTitle[256];
-#endif
-
 public int	one_screen;
 extern int	less_is_more;
 extern int	missing_cap;
@@ -61,11 +57,10 @@ extern int	no_init;
 /*
  * Entry point.
  */
-int
-main(argc, argv)
-	int argc;
-	char *argv[];
+int main(int argc, char *argv[])
 {
+	//int argc;
+	//char *argv[];
 	IFILE ifile;
 	char *s;
 
@@ -96,7 +91,8 @@ main(argc, argv)
 
 	init_prompt();
 
-	s = lgetenv(less_is_more ? "MORE" : "LESS");
+
+	s = lgetenv(less_is_more ? (char *) "MORE" : (char *) "LESS");
 	if (s != NULL)
 		scan_option(save(s));
 
@@ -124,16 +120,16 @@ main(argc, argv)
 	expand_cmd_tables();
 
 #if EDITOR
-	editor = lgetenv("VISUAL");
+	editor = lgetenv((char *) "VISUAL");
 	if (editor == NULL || *editor == '\0')
 	{
-		editor = lgetenv("EDITOR");
+		editor = lgetenv((char *) "EDITOR");
 		if (isnullenv(editor))
-			editor = EDIT_PGM;
+			editor = (char *) EDIT_PGM;
 	}
-	editproto = lgetenv("LESSEDIT");
+	editproto = lgetenv((char *) "LESSEDIT");
 	if (isnullenv(editproto))
-		editproto = "%E ?lm+%lm. %g";
+		editproto = (char *) "%E ?lm+%lm. %g";
 #endif
 
 	/*
@@ -142,7 +138,7 @@ main(argc, argv)
 	 */
 	ifile = NULL_IFILE;
 	if (dohelp)
-		ifile = get_ifile(FAKE_HELPFILE, ifile);
+		ifile = get_ifile((char *) FAKE_HELPFILE, ifile);
 	while (argc-- > 0)
 	{
 		(void) get_ifile(*argv++, ifile);
@@ -168,7 +164,7 @@ main(argc, argv)
 	}
 
 	if (missing_cap && !know_dumb)
-		error("WARNING: terminal is not fully functional", NULL_PARG);
+		error((char *)"WARNING: terminal is not fully functional", NULL_PARG);
 	open_getchr();
 	raw_mode(1);
 	init_signals(1);
@@ -187,7 +183,7 @@ main(argc, argv)
 		 */
 		if (nifile() > 0)
 		{
-			error("No filenames allowed with -t option", NULL_PARG);
+			error((char *)"No filenames allowed with -t option", NULL_PARG);
 			quit(QUIT_ERROR);
 		}
 		findtag(tagoption);
@@ -231,9 +227,7 @@ main(argc, argv)
  * Copy a string to a "safe" place
  * (that is, to a buffer allocated by calloc).
  */
-	public char *
-save(s)
-	constant char *s;
+public char * save(constant char *s)
 {
 	char *p;
 
@@ -246,17 +240,14 @@ save(s)
  * Allocate memory.
  * Like calloc(), but never returns an error (NULL).
  */
-	public VOID_POINTER
-ecalloc(count, size)
-	int count;
-	unsigned int size;
+public VOID_POINTER ecalloc(int count, unsigned int size)
 {
 	VOID_POINTER p;
 
 	p = (VOID_POINTER) calloc(count, size);
 	if (p != NULL)
 		return (p);
-	error("Cannot allocate memory", NULL_PARG);
+	error( (char *) "Cannot allocate memory", NULL_PARG);
 	quit(QUIT_ERROR);
 	/*NOTREACHED*/
 	return (NULL);
@@ -265,9 +256,7 @@ ecalloc(count, size)
 /*
  * Skip leading spaces in a string.
  */
-	public char *
-skipsp(s)
-	char *s;
+public char * skipsp( char *s)
 {
 	while (*s == ' ' || *s == '\t')	
 		s++;
@@ -279,11 +268,9 @@ skipsp(s)
  * If uppercase is true, the first string must begin with an uppercase
  * character; the remainder of the first string may be either case.
  */
-	public int
-sprefix(ps, s, uppercase)
-	char *ps;
-	char *s;
-	int uppercase;
+public int sprefix(char *ps,
+				   char *s,
+				   int uppercase)
 {
 	int c;
 	int sc;
@@ -312,9 +299,7 @@ sprefix(ps, s, uppercase)
 /*
  * Exit the program.
  */
-	public void
-quit(status)
-	int status;
+public void quit( int status) 
 {
 	static int save_status;
 
