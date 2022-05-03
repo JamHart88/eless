@@ -13,13 +13,6 @@
  * Standard include file for "less".
  */
 
-/*
- * Defines for MSDOS_COMPILER.
- */
-#define	MSOFTC		1	/* Microsoft C */
-#define	BORLANDC	2	/* Borland C */
-#define	WIN32C		3	/* Windows (Borland C or Microsoft C) */
-#define	DJGPPC		4	/* DJGPP C */
 
 /*
  * Include the file of compile-time options.
@@ -90,25 +83,9 @@
 #include <string.h>
 #endif
 
-/* OS-specific includes */
-#ifdef _OSK
-#include <modes.h>
-#include <strings.h>
-#endif
 
 #ifdef __TANDEM
 #include <floss.h>
-#endif
-
-#if MSDOS_COMPILER==WIN32C || OS2
-#include <io.h>
-#endif
-
-#if MSDOS_COMPILER==DJGPPC
-#include <io.h>
-#include <sys/exceptn.h>
-#include <conio.h>
-#include <pc.h>
 #endif
 
 #if !HAVE_STDLIB_H
@@ -235,51 +212,27 @@ typedef off_t		LINENUM;
 /*
  * Flags for open()
  */
-#if MSDOS_COMPILER || OS2
-#define	OPEN_READ	(O_RDONLY|O_BINARY)
-#else
-#ifdef _OSK
-#define	OPEN_READ	(S_IREAD)
-#else
 #ifdef O_RDONLY
 #define	OPEN_READ	(O_RDONLY)
 #else
 #define	OPEN_READ	(0)
 #endif
-#endif
-#endif
 
 #if defined(O_WRONLY) && defined(O_APPEND)
 #define	OPEN_APPEND	(O_APPEND|O_WRONLY)
 #else
-#ifdef _OSK
-#define OPEN_APPEND	(S_IWRITE)
-#else
 #define	OPEN_APPEND	(1)
-#endif
 #endif
 
 /*
  * Set a file descriptor to binary mode.
  */
-#if MSDOS_COMPILER==MSOFTC
-#define	SET_BINARY(f)	_setmode(f, _O_BINARY);
-#else
-#if MSDOS_COMPILER || OS2
-#define	SET_BINARY(f)	setmode(f, O_BINARY)
-#else
 #define	SET_BINARY(f)
-#endif
-#endif
 
 /*
  * Does the shell treat "?" as a metacharacter?
  */
-#if MSDOS_COMPILER || OS2 || _OSK
-#define	SHELL_META_QUEST 0
-#else
 #define	SHELL_META_QUEST 1
-#endif
 
 #define	SPACES_IN_FILENAMES 1
 
@@ -466,11 +419,7 @@ struct wchar_range_table
 #define	CSI		((unsigned char)'\233')
 #define	CHAR_END_COMMAND 0x40000000
 
-#if _OSK_MWC32
-#define	LSIGNAL(sig,func)	os9_signal(sig,func)
-#else
 #define	LSIGNAL(sig,func)	signal(sig,func)
-#endif
 
 #if HAVE_SIGPROCMASK
 #if HAVE_SIGSET_T
@@ -544,6 +493,3 @@ void linenumtoa LESSPARAMS ((LINENUM, char*));
 void inttoa LESSPARAMS ((int, char*));
 int lstrtoi LESSPARAMS ((char*, char**));
 POSITION lstrtopos LESSPARAMS ((char*, char**));
-#if MSDOS_COMPILER==WIN32C
-int pclose LESSPARAMS ((FILE*));
-#endif

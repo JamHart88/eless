@@ -14,18 +14,11 @@
  */
 
 #include "less.h"
-#if HAVE_LOCALE
 #include <locale.h>
 #include <ctype.h>
 #include <langinfo.h>
-#endif
 
 #include "charset.h"
-
-#if MSDOS_COMPILER==WIN32C
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
 
 extern int bs_mode;
 
@@ -223,11 +216,7 @@ icharset(name, no_error)
 			ichardef(p->desc);
 			if (p->p_flag != NULL)
 			{
-#if MSDOS_COMPILER==WIN32C
-				*(p->p_flag) = 1 + (GetConsoleOutputCP() != CP_UTF8);
-#else
 				*(p->p_flag) = 1;
-#endif
 			}
 			return (1);
 		}
@@ -319,14 +308,6 @@ set_charset(VOID_PARAM)
 {
 	char *s;
 
-#if MSDOS_COMPILER==WIN32C
-	/*
-	 * If the Windows console is using UTF-8, we'll use it too.
-	 */
-	if (GetConsoleOutputCP() == CP_UTF8)
-		if (icharset("utf-8", 1))
-			return;
-#endif
 	/*
 	 * See if environment variable LESSCHARSET is defined.
 	 */
@@ -370,25 +351,15 @@ set_charset(VOID_PARAM)
 	}
 #endif
 
-#if HAVE_LOCALE
 	/*
 	 * Get character definitions from locale functions,
 	 * rather than from predefined charset entry.
 	 */
 	ilocale();
-#else
-#if MSDOS_COMPILER
-	/*
-	 * Default to "dos".
-	 */
-	(void) icharset("dos", 1);
-#else
 	/*
 	 * Default to "latin1".
 	 */
 	(void) icharset("latin1", 1);
-#endif
-#endif
 }
 
 /*
@@ -805,18 +776,6 @@ is_ubin_char(ch)
 {
 	int ubin = is_in_table(ch, &ubin_table) ||
 	           (bs_mode == BS_CONTROL && is_in_table(ch, &fmt_table));
-#if MSDOS_COMPILER==WIN32C
-	if (!ubin && utf_mode == 2 && ch < 0x10000)
-	{
-		/*
-		 * Consider it binary if it can't be converted.
-		 */
-		BOOL used_default = TRUE;
-		WideCharToMultiByte(GetConsoleOutputCP(), WC_NO_BEST_FIT_CHARS, (LPCWSTR) &ch, 1, NULL, 0, NULL, &used_default);
-		if (used_default)
-			ubin = 1;
-	}
-#endif
 	return ubin;
 }
 

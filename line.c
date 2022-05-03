@@ -17,11 +17,6 @@
 #include "charset.h"
 #include "position.h"
 
-#if MSDOS_COMPILER==WIN32C
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
-
 static char *linebuf = NULL;	/* Buffer which holds the current output line */
 static char *attr = NULL;	/* Extension of linebuf to hold attributes */
 public int size_linebuf = 0;	/* Size of line buffer (and attr buffer) */

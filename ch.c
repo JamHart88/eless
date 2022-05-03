@@ -266,9 +266,6 @@ ch_get()
 		return (EOI);
 	if (n < 0)
 	{
-#if MSDOS_COMPILER==WIN32C
-		if (errno != EPIPE)
-#endif
 		{
 			error("read error", NULL_PARG);
 			clear_eol();
@@ -306,13 +303,8 @@ ch_get()
 				parg.p_string = wait_message();
 				ierror("%s", &parg);
 			}
-#if !MSDOS_COMPILER
+
 	 		sleep(1);
-#else
-#if MSDOS_COMPILER==WIN32C
-			Sleep(1000);
-#endif
-#endif
 			slept = TRUE;
 
 #if HAVE_STAT_INO
@@ -816,17 +808,6 @@ ch_delbufs()
 seekable(f)
 	int f;
 {
-#if MSDOS_COMPILER
-	extern int fd0;
-	if (f == fd0 && !isatty(fd0))
-	{
-		/*
-		 * In MS-DOS, pipes are seekable.  Check for
-		 * standard input, and pretend it is not seekable.
-		 */
-		return (0);
-	}
-#endif
 	return (lseek(f, (off_t)1, SEEK_SET) != BAD_LSEEK);
 }
 

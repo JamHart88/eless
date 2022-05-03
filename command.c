@@ -55,9 +55,6 @@ extern int screen_trashed;	/* The screen has been overwritten */
 extern int shift_count;
 extern int oldbot;
 extern int forw_prompt;
-#if MSDOS_COMPILER==WIN32C
-extern int utf_mode;
-#endif
 
 #if SHELL_ESCAPE
 static char *shellcmd = NULL;	/* For holding last shell command for "!!" */
@@ -747,19 +744,6 @@ prompt(VOID_PARAM)
 	    next_ifile(curr_ifile) == NULL_IFILE)
 		quit(QUIT_OK);
 
-#if MSDOS_COMPILER==WIN32C
-	/* 
-	 * In Win32, display the file name in the window title.
-	 */
-	if (!(ch_getflags() & CH_HELPFILE))
-	{
-		WCHAR w[MAX_PATH+16];
-		p = pr_expand("Less?f - %f.", 0);
-		MultiByteToWideChar(CP_ACP, 0, p, -1, w, sizeof(w)/sizeof(*w));
-		SetConsoleTitleW(w);
-	}
-#endif
-
 	/*
 	 * Select the proper prompt and display it.
 	 */
@@ -784,14 +768,6 @@ prompt(VOID_PARAM)
 		putchr(':');
 	else
 	{
-#if MSDOS_COMPILER==WIN32C
-		WCHAR w[MAX_PATH*2];
-		char  a[MAX_PATH*2];
-		MultiByteToWideChar(CP_ACP, 0, p, -1, w, sizeof(w)/sizeof(*w));
-		WideCharToMultiByte(utf_mode ? CP_UTF8 : GetConsoleOutputCP(),
-		                    0, w, -1, a, sizeof(a), NULL, NULL);
-		p = a;
-#endif
 		at_enter(AT_STANDOUT);
 		putstr(p);
 		at_exit();

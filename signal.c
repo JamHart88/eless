@@ -38,31 +38,17 @@ extern long jump_sline_fraction;
 /*
  * Interrupt signal handler.
  */
-#if MSDOS_COMPILER!=WIN32C
 	/* ARGSUSED*/
 	static RETSIGTYPE
 u_interrupt(type)
 	int type;
 {
 	bell();
-#if OS2
-	LSIGNAL(SIGINT, SIG_ACK);
-#endif
 	LSIGNAL(SIGINT, u_interrupt);
 	sigs |= S_INTERRUPT;
-#if MSDOS_COMPILER==DJGPPC
-	/*
-	 * If a keyboard has been hit, it must be Ctrl-C
-	 * (as opposed to Ctrl-Break), so consume it.
-	 * (Otherwise, Less will beep when it sees Ctrl-C from keyboard.)
-	 */
-	if (kbhit())
-		getkey();
-#endif
 	if (reading)
 		intread(); /* May longjmp */
 }
-#endif
 
 #ifdef SIGTSTP
 /*
@@ -105,30 +91,6 @@ winch(type)
 }
 #endif
 
-#if MSDOS_COMPILER==WIN32C
-/*
- * Handle CTRL-C and CTRL-BREAK keys.
- */
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
-	static BOOL WINAPI 
-wbreak_handler(dwCtrlType)
-	DWORD dwCtrlType;
-{
-	switch (dwCtrlType)
-	{
-	case CTRL_C_EVENT:
-	case CTRL_BREAK_EVENT:
-		sigs |= S_INTERRUPT;
-		return (TRUE);
-	default:
-		break;
-	}
-	return (FALSE);
-}
-#endif
-
 	static RETSIGTYPE
 terminate(type)
 	int type;
@@ -148,11 +110,7 @@ init_signals(on)
 		/*
 		 * Set signal handlers.
 		 */
-#if MSDOS_COMPILER==WIN32C
-		SetConsoleCtrlHandler(wbreak_handler, TRUE);
-#else
 		(void) LSIGNAL(SIGINT, u_interrupt);
-#endif
 #ifdef SIGTSTP
 		(void) LSIGNAL(SIGTSTP, stop);
 #endif
@@ -173,11 +131,7 @@ init_signals(on)
 		/*
 		 * Restore signals to defaults.
 		 */
-#if MSDOS_COMPILER==WIN32C
-		SetConsoleCtrlHandler(wbreak_handler, FALSE);
-#else
 		(void) LSIGNAL(SIGINT, SIG_DFL);
-#endif
 #ifdef SIGTSTP
 		(void) LSIGNAL(SIGTSTP, SIG_DFL);
 #endif
