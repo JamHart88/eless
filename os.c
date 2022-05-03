@@ -23,9 +23,7 @@
 #include "less.h"
 #include <signal.h>
 #include <setjmp.h>
-#if HAVE_TIME_H
 #include <time.h>
-#endif
 #if HAVE_ERRNO_H
 #include <errno.h>
 #endif
@@ -147,7 +145,6 @@ intread(VOID_PARAM)
 /*
  * Return the current time.
  */
-#if HAVE_TIME
 	public time_type
 get_time(VOID_PARAM)
 {
@@ -156,31 +153,8 @@ get_time(VOID_PARAM)
 	time(&t);
 	return (t);
 }
-#endif
 
 
-#if !HAVE_STRERROR
-/*
- * Local version of strerror, if not available from the system.
- */
-	static char *
-strerror(err)
-	int err;
-{
-#if HAVE_SYS_ERRLIST
-	static char buf[16];
-	extern char *sys_errlist[];
-	extern int sys_nerr;
-  
-	if (err < sys_nerr)
-		return sys_errlist[err];
-	sprintf(buf, "Error %d", err);
-	return buf;
-#else
-	return ("cannot open");
-#endif
-}
-#endif
 
 /*
  * errno_message: Return an error message based on the value of "errno".
@@ -257,38 +231,5 @@ percent_pos(pos, percent, fraction)
 	return (POSITION) muldiv(pos, perden, (POSITION) NUM_FRAC_DENOM);
 }
 
-#if !HAVE_STRCHR
-/*
- * strchr is used by regexp.c.
- */
-	char *
-strchr(s, c)
-	char *s;
-	int c;
-{
-	for ( ;  *s != '\0';  s++)
-		if (*s == c)
-			return (s);
-	if (c == '\0')
-		return (s);
-	return (NULL);
-}
-#endif
 
-#if !HAVE_MEMCPY
-	VOID_POINTER
-memcpy(dst, src, len)
-	VOID_POINTER dst;
-	VOID_POINTER src;
-	int len;
-{
-	char *dstp = (char *) dst;
-	char *srcp = (char *) src;
-	int i;
-
-	for (i = 0;  i < len;  i++)
-		dstp[i] = srcp[i];
-	return (dst);
-}
-#endif
 

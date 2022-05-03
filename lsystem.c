@@ -33,10 +33,8 @@ lsystem(cmd, donemsg)
 	char *donemsg;
 {
 	int inp;
-#if HAVE_SHELL
 	char *shell;
 	char *p;
-#endif
 	IFILE save_ifile;
 
 	/*
@@ -70,7 +68,6 @@ lsystem(cmd, donemsg)
 	 */
 	init_signals(0);
 
-#if HAVE_DUP
 	/*
 	 * Force standard input to be the user's terminal
 	 * (the normal standard input), even if less's standard input 
@@ -80,7 +77,6 @@ lsystem(cmd, donemsg)
 	close(0);
 	if (open("/dev/tty", OPEN_READ) < 0)
 		dup(inp);
-#endif
 
 	/*
 	 * Pass the command to the system to be executed.
@@ -88,7 +84,6 @@ lsystem(cmd, donemsg)
 	 * <$SHELL -c "command"> instead of just <command>.
 	 * If the command is empty, just invoke a shell.
 	 */
-#if HAVE_SHELL
 	p = NULL;
 	if ((shell = lgetenv("SHELL")) != NULL && *shell != '\0')
 	{
@@ -115,18 +110,13 @@ lsystem(cmd, donemsg)
 	}
 	system(p);
 	free(p);
-#else
-	system(cmd);
-#endif
 
-#if HAVE_DUP
 	/*
 	 * Restore standard input, reset signals, raw mode, etc.
 	 */
 	close(0);
 	dup(inp);
 	close(inp);
-#endif
 
 	init_signals(1);
 	raw_mode(1);

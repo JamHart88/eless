@@ -215,14 +215,11 @@ longloopmessage(VOID_PARAM)
 }
 
 static int loopcount;
-#if HAVE_TIME
 static time_type startime;
-#endif
 
 	static void
 longish(VOID_PARAM)
 {
-#if HAVE_TIME
 	if (loopcount >= 0 && ++loopcount > 100)
 	{
 		loopcount = 0;
@@ -232,13 +229,6 @@ longish(VOID_PARAM)
 			loopcount = -1;
 		}
 	}
-#else
-	if (loopcount >= 0 && ++loopcount > LONGLOOP)
-	{
-		longloopmessage();
-		loopcount = -1;
-	}
-#endif
 }
 
 /*
@@ -305,9 +295,7 @@ find_linenum(pos)
 	 * The decision is based on which way involves 
 	 * traversing fewer bytes in the file.
 	 */
-#if HAVE_TIME
 	startime = get_time();
-#endif
 	if (p == &anchor || pos - p->prev->pos < p->pos - pos)
 	{
 		/*

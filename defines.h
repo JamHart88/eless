@@ -127,55 +127,16 @@
 #define TGETENT_OK  1
 
 /*
- * HAVE_ANSI_PROTOS	is 1 if your compiler supports ANSI function prototypes.
- */
-#define HAVE_ANSI_PROTOS 1
-
-/*
- * HAVE_SYS_TYPES_H is 1 if your system has <sys/types.h>.
- */
-#define HAVE_SYS_TYPES_H 1
-
-/*
  * Define if you have the <sgstat.h> header file.
  */
 /* #undef HAVE_SGSTAT_H */
 
-/*
- * HAVE_PERROR is 1 if your system has the perror() call.
- * (Actually, if it has sys_errlist, sys_nerr and errno.)
- */
-#define	HAVE_PERROR	1
-
-/*
- * HAVE_TIME is 1 if your system has the time() call.
- */
-#define	HAVE_TIME	1
-
-/*
- * HAVE_SHELL is 1 if your system supports a SHELL command interpreter.
- */
-#define	HAVE_SHELL	1
 
 /*
  * Default shell metacharacters and meta-escape character.
  */
 #define	DEF_METACHARS	"; *?\t\n'\"()<>[]|&^`#\\$%=~{},"
 #define	DEF_METAESCAPE	"\\"
-
-/* 
- * HAVE_DUP is 1 if your system has the dup() call.
- */
-#define	HAVE_DUP	1
-
-/* Define to 1 if you have the memcpy() function. */
-#define HAVE_MEMCPY 1
-
-/* Define to 1 if you have the strchr() function. */
-#define HAVE_STRCHR 1
-
-/* Define to 1 if you have the strstr() function. */
-#define HAVE_STRSTR 1
 
 /*
  * Sizes of various buffers.
@@ -336,12 +297,6 @@
 /* Define to 1 if you have the <termio.h> header file. */
 #define HAVE_TERMIO_H 1
 
-/* Define to 1 if you have the <time.h> header file. */
-#define HAVE_TIME_H 1
-
-/* Define HAVE_TIME_T if your system supports the "time_t" type. */
-#define HAVE_TIME_T 1
-
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
@@ -407,10 +362,6 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
 
-/* Enable large inode numbers on Mac OS X 10.5.  */
-#ifndef _DARWIN_USE_64_BIT_INODE
-# define _DARWIN_USE_64_BIT_INODE 1
-#endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 /* #undef _FILE_OFFSET_BITS */

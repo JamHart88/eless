@@ -336,7 +336,6 @@ set_charset(VOID_PARAM)
 #endif
 #endif
 
-#if HAVE_STRSTR
 	/*
 	 * Check whether LC_ALL, LC_CTYPE or LANG look like UTF-8 is used.
 	 */
@@ -349,7 +348,6 @@ set_charset(VOID_PARAM)
 			if (icharset("utf-8", 1))
 				return;
 	}
-#endif
 
 	/*
 	 * Get character definitions from locale functions,

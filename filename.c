@@ -500,7 +500,6 @@ shellcmd(cmd)
 {
 	FILE *fd;
 
-#if HAVE_SHELL
 	char *shell;
 
 	shell = lgetenv("SHELL");
@@ -527,7 +526,6 @@ shellcmd(cmd)
 			free(scmd);
 		}
 	} else
-#endif
 	{
 		fd = popen(cmd, "r");
 	}

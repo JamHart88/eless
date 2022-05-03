@@ -32,11 +32,7 @@
 /*
  * Language details.
  */
-#if HAVE_ANSI_PROTOS
 #define LESSPARAMS(a) a
-#else
-#define LESSPARAMS(a) ()
-#endif
 #if HAVE_VOID
 #define	VOID_POINTER	void *
 #define	VOID_PARAM	void
@@ -55,9 +51,7 @@
 
 /* Library function declarations */
 
-#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
 #if HAVE_STDIO_H
 #include <stdio.h>
 #endif
@@ -159,11 +153,6 @@ void free();
 #define	OPT_ON		1
 #define	OPT_ONPLUS	2
 
-#if !HAVE_MEMCPY
-#ifndef memcpy
-#define	memcpy(to,from,len)	bcopy((from),(to),(len))
-#endif
-#endif
 
 #if HAVE_SNPRINTF
 #define SNPRINTF1(str, size, fmt, v1)             snprintf((str), (size), (fmt), (v1))
@@ -466,11 +455,7 @@ struct wchar_range_table
 #define	CVT_CRLF	04	/* Remove CR after LF */
 #define	CVT_ANSI	010	/* Remove ANSI escape sequences */
 
-#if HAVE_TIME_T
 #define time_type	time_t
-#else
-#define	time_type	long
-#endif
 
 /* X11 mouse reporting definitions */
 #define X11MOUSE_BUTTON1    0 /* Left button press */
