@@ -247,34 +247,6 @@ homefile(filename)
 	pathname = dirfile(lgetenv("HOME"), filename);
 	if (pathname != NULL)
 		return (pathname);
-#if OS2
-	/*
-	 * Try $INIT/filename.
-	 */
-	pathname = dirfile(lgetenv("INIT"), filename);
-	if (pathname != NULL)
-		return (pathname);
-#endif
-#if MSDOS_COMPILER || OS2
-	/*
-	 * Look for the file anywhere on search path.
-	 */
-	pathname = (char *) calloc(_MAX_PATH, sizeof(char));
-#if MSDOS_COMPILER==DJGPPC
-	{
-		char *res = searchpath(filename);
-		if (res == 0)
-			*pathname = '\0';
-		else
-			strcpy(pathname, res);
-	}
-#else
-	_searchenv(filename, "PATH", pathname);
-#endif
-	if (*pathname != '\0')
-		return (pathname);
-	free(pathname);
-#endif
 	return (NULL);
 }
 
@@ -391,34 +363,11 @@ fcomplete(s)
 	/*
 	 * Complete the filename "s" by globbing "s*".
 	 */
-#if MSDOS_COMPILER && (MSDOS_COMPILER == MSOFTC || MSDOS_COMPILER == BORLANDC)
-	/*
-	 * But in DOS, we have to glob "s*.*".
-	 * But if the final component of the filename already has
-	 * a dot in it, just do "s*".  
-	 * (Thus, "FILE" is globbed as "FILE*.*", 
-	 *  but "FILE.A" is globbed as "FILE.A*").
-	 */
-	{
-		char *slash;
-		int len;
-		for (slash = s+strlen(s)-1;  slash > s;  slash--)
-			if (*slash == *PATHNAME_SEP || *slash == '/')
-				break;
-		len = (int) strlen(s) + 4;
-		fpat = (char *) ecalloc(len, sizeof(char));
-		if (strchr(slash, '.') == NULL)
-			SNPRINTF1(fpat, len, "%s*.*", s);
-		else
-			SNPRINTF1(fpat, len, "%s*", s);
-	}
-#else
 	{
 	int len = (int) strlen(s) + 2;
 	fpat = (char *) ecalloc(len, sizeof(char));
 	SNPRINTF1(fpat, len, "%s*", s);
 	}
-#endif
 	qs = lglob(fpat);
 	s = shell_unquote(qs);
 	if (strcmp(s,fpat) == 0)
@@ -981,17 +930,6 @@ is_dir(filename)
 	r = stat(filename, &statbuf);
 	isdir = (r >= 0 && S_ISDIR(statbuf.st_mode));
 }
-#else
-#ifdef _OSK
-{
-	int f;
-
-	f = open(filename, S_IREAD | S_IFDIR);
-	if (f >= 0)
-		close(f);
-	isdir = (f >= 0);
-}
-#endif
 #endif
 	return (isdir);
 }
@@ -1054,13 +992,6 @@ filesize(f)
 
 	if (fstat(f, &statbuf) >= 0)
 		return ((POSITION) statbuf.st_size);
-#else
-#ifdef _OSK
-	long size;
-
-	if ((size = (long) _gs_size(f)) >= 0)
-		return ((POSITION) size);
-#endif
 #endif
 	return (seek_filesize(f));
 }

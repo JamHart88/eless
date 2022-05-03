@@ -68,22 +68,6 @@ iread(fd, buf, len)
 	int n;
 
 start:
-#if MSDOS_COMPILER==WIN32C
-	if (ABORT_SIGS())
-		return (READ_INTR);
-#else
-#if MSDOS_COMPILER && MSDOS_COMPILER != DJGPPC
-	if (kbhit())
-	{
-		int c;
-		
-		c = getch();
-		if (c == '\003')
-			return (READ_INTR);
-		ungetch(c);
-	}
-#endif
-#endif
 	if (SET_JUMP(read_label))
 	{
 		/*
@@ -99,10 +83,6 @@ start:
 #else
 #if HAVE_SIGSETMASK
 		sigsetmask(0);
-#else
-#ifdef _OSK
-		sigmask(~0);
-#endif
 #endif
 #endif
 		return (READ_INTR);
@@ -110,23 +90,6 @@ start:
 
 	flush();
 	reading = 1;
-#if MSDOS_COMPILER==DJGPPC
-	if (isatty(fd))
-	{
-		/*
-		 * Don't try reading from a TTY until a character is
-		 * available, because that makes some background programs
-		 * believe DOS is busy in a way that prevents those
-		 * programs from working while "less" waits.
-		 */
-		fd_set readfds;
-
-		FD_ZERO(&readfds);
-		FD_SET(fd, &readfds);
-		if (select(fd+1, &readfds, 0, 0, 0) == -1)
-			return (-1);
-	}
-#endif
 	n = read(fd, buf, len);
 #if 1
 	/*
@@ -329,30 +292,3 @@ memcpy(dst, src, len)
 }
 #endif
 
-#ifdef _OSK_MWC32
-
-/*
- * This implements an ANSI-style intercept setup for Microware C 3.2
- */
-	public int 
-os9_signal(type, handler)
-	int type;
-	RETSIGTYPE (*handler)();
-{
-	intercept(handler);
-}
-
-#include <sgstat.h>
-
-	int 
-isatty(f)
-	int f;
-{
-	struct sgbuf sgbuf;
-
-	if (_gs_opt(f, &sgbuf) < 0)
-		return -1;
-	return (sgbuf.sg_class == 0);
-}
-	
-#endif

@@ -145,33 +145,8 @@ main(argc, argv)
 		ifile = get_ifile(FAKE_HELPFILE, ifile);
 	while (argc-- > 0)
 	{
-#if (MSDOS_COMPILER && MSDOS_COMPILER != DJGPPC)
-		/*
-		 * Because the "shell" doesn't expand filename patterns,
-		 * treat each argument as a filename pattern rather than
-		 * a single filename.  
-		 * Expand the pattern and iterate over the expanded list.
-		 */
-		struct textlist tlist;
-		char *filename;
-		char *gfilename;
-		char *qfilename;
-		
-		gfilename = lglob(*argv++);
-		init_textlist(&tlist, gfilename);
-		filename = NULL;
-		while ((filename = forw_textlist(&tlist, filename)) != NULL)
-		{
-			qfilename = shell_unquote(filename);
-			(void) get_ifile(qfilename, ifile);
-			free(qfilename);
-			ifile = prev_ifile(NULL_IFILE);
-		}
-		free(gfilename);
-#else
 		(void) get_ifile(*argv++, ifile);
 		ifile = prev_ifile(NULL_IFILE);
-#endif
 	}
 	/*
 	 * Set up terminal, etc.
@@ -359,18 +334,6 @@ quit(status)
 	deinit();
 	flush();
 	raw_mode(0);
-#if MSDOS_COMPILER && MSDOS_COMPILER != DJGPPC
-	/* 
-	 * If we don't close 2, we get some garbage from
-	 * 2's buffer when it flushes automatically.
-	 * I cannot track this one down  RB
-	 * The same bug shows up if we use ^C^C to abort.
-	 */
-	close(2);
-#endif
-#ifdef WIN32
-	SetConsoleTitle(consoleTitle);
-#endif
 	close_getchr();
 	exit(status);
 }

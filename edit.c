@@ -154,13 +154,6 @@ close_pipe(FILE *pipefd)
 {
 	if (pipefd == NULL)
 		return;
-#if OS2
-	/*
-	 * The pclose function of OS/2 emx sometimes fails.
-	 * Send SIGINT to the piped process before closing it.
-	 */
-	kill(pipefd->_pid, SIGINT);
-#endif
 	pclose(pipefd);
 }
 

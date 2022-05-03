@@ -1105,11 +1105,7 @@ init_compl(VOID_PARAM)
 		tk_text = fcomplete(word);
 	} else
 	{
-#if MSDOS_COMPILER
-		char *qword = NULL;
-#else
 		char *qword = shell_quote(word+1);
-#endif
 		if (qword == NULL)
 			tk_text = fcomplete(word+1);
 		else
@@ -1265,13 +1261,6 @@ cmd_char(c)
 			*cmd_mbc_buf = c;
 			if (IS_ASCII_OCTET(c))
 				cmd_mbc_buf_len = 1;
-#if MSDOS_COMPILER || OS2
-			else if (c == (unsigned char) '\340' && IS_ASCII_OCTET(peekcc()))
-			{
-				/* Assume a special key. */
-				cmd_mbc_buf_len = 1;
-			}
-#endif
 			else if (IS_UTF8_LEAD(c))
 			{
 				cmd_mbc_buf_len = utf_len(c);
@@ -1423,10 +1412,6 @@ histfile_name(VOID_PARAM)
 	home = lgetenv("HOME");
 	if (isnullenv(home))
 	{
-#if OS2
-		home = lgetenv("INIT");
-		if (isnullenv(home))
-#endif
 			return (NULL);
 	}
 	len = (int) (strlen(home) + strlen(LESSHISTFILE) + 2);
@@ -1721,13 +1706,6 @@ save_cmdhist(VOID_PARAM)
 		read_cmdhist(&copy_hist, &ctx, skip_search, skip_shell);
 		save_marks(fout, HISTFILE_MARK_SECTION);
 		fclose(fout);
-#if MSDOS_COMPILER==WIN32C
-		/*
-		 * Windows rename doesn't remove an existing file,
-		 * making it useless for atomic operations. Sigh.
-		 */
-		remove(histname);
-#endif
 		rename(tempname, histname);
 	}
 	free(tempname);

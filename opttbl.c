@@ -73,9 +73,6 @@ static struct optname b_optname      = { "buffers",              NULL };
 static struct optname B__optname     = { "auto-buffers",         NULL };
 static struct optname c_optname      = { "clear-screen",         NULL };
 static struct optname d_optname      = { "dumb",                 NULL };
-#if MSDOS_COMPILER
-static struct optname D__optname     = { "color",                NULL };
-#endif
 static struct optname e_optname      = { "quit-at-eof",          NULL };
 static struct optname f_optname      = { "force",                NULL };
 static struct optname F__optname     = { "quit-if-one-screen",   NULL };
@@ -185,16 +182,6 @@ static struct loption option[] =
 			NULL
 		}
 	},
-#if MSDOS_COMPILER
-	{ 'D', &D__optname,
-		STRING|REPAINT, 0, NULL, opt_D,
-		{
-			"color desc: ", 
-			"Dadknsu0123456789.",
-			NULL
-		}
-	},
-#endif
 	{ 'e', &e_optname,
 		TRIPLE, OPT_OFF, &quit_at_eof, NULL,
 		{

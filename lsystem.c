@@ -17,21 +17,6 @@
 #include <signal.h>
 #include "position.h"
 
-#if MSDOS_COMPILER
-#include <dos.h>
-#if MSDOS_COMPILER==WIN32C && defined(MINGW)
-#include <direct.h>
-#define setdisk(n) _chdrive((n)+1)
-#else
-#ifdef _MSC_VER
-#include <direct.h>
-#define setdisk(n) _chdrive((n)+1)
-#else
-#include <dir.h>
-#endif
-#endif
-#endif
-
 extern int screen_trashed;
 extern IFILE curr_ifile;
 
@@ -53,9 +38,6 @@ lsystem(cmd, donemsg)
 	char *p;
 #endif
 	IFILE save_ifile;
-#if MSDOS_COMPILER && MSDOS_COMPILER!=WIN32C
-	char cwd[FILENAME_MAX+1];
-#endif
 
 	/*
 	 * Print the command which is to be executed,
@@ -71,22 +53,6 @@ lsystem(cmd, donemsg)
 		putstr("\n");
 	}
 
-#if MSDOS_COMPILER
-#if MSDOS_COMPILER==WIN32C
-	if (*cmd == '\0')
-		cmd = getenv("COMSPEC");
-#else
-	/*
-	 * Working directory is global on MSDOS.
-	 * The child might change the working directory, so we
-	 * must save and restore CWD across calls to "system",
-	 * or else we won't find our file when we return and
-	 * try to "reedit_ifile" it.
-	 */
-	getcwd(cwd, FILENAME_MAX);
-#endif
-#endif
-
 	/*
 	 * Close the current input file.
 	 */
@@ -99,10 +65,6 @@ lsystem(cmd, donemsg)
 	deinit();
 	flush();	/* Make sure the deinit chars get out */
 	raw_mode(0);
-#if MSDOS_COMPILER==WIN32C
-	close_getchr();
-#endif
-
 	/*
 	 * Restore signals to their defaults.
 	 */
@@ -116,12 +78,7 @@ lsystem(cmd, donemsg)
 	 */
 	inp = dup(0);
 	close(0);
-#if OS2
-	/* The __open() system call translates "/dev/tty" to "con". */
-	if (__open("/dev/tty", OPEN_READ) < 0)
-#else
 	if (open("/dev/tty", OPEN_READ) < 0)
-#endif
 		dup(inp);
 #endif
 
@@ -159,21 +116,7 @@ lsystem(cmd, donemsg)
 	system(p);
 	free(p);
 #else
-#if MSDOS_COMPILER==DJGPPC
-	/*
-	 * Make stdin of the child be in cooked mode.
-	 */
-	setmode(0, O_TEXT);
-	/*
-	 * We don't need to catch signals of the child (it
-	 * also makes trouble with some DPMI servers).
-	 */
-	__djgpp_exception_toggle();
-  	system(cmd);
-	__djgpp_exception_toggle();
-#else
 	system(cmd);
-#endif
 #endif
 
 #if HAVE_DUP
@@ -185,9 +128,6 @@ lsystem(cmd, donemsg)
 	close(inp);
 #endif
 
-#if MSDOS_COMPILER==WIN32C
-	open_getchr();
-#endif
 	init_signals(1);
 	raw_mode(1);
 	if (donemsg != NULL)
@@ -200,27 +140,6 @@ lsystem(cmd, donemsg)
 	}
 	init();
 	screen_trashed = 1;
-
-#if MSDOS_COMPILER && MSDOS_COMPILER!=WIN32C
-	/*
-	 * Restore the previous directory (possibly
-	 * changed by the child program we just ran).
-	 */
-	chdir(cwd);
-#if MSDOS_COMPILER != DJGPPC
-	/*
-	 * Some versions of chdir() don't change to the drive
-	 * which is part of CWD.  (DJGPP does this in chdir.)
-	 */
-	if (cwd[1] == ':')
-	{
-		if (cwd[0] >= 'a' && cwd[0] <= 'z')
-			setdisk(cwd[0] - 'a');
-		else if (cwd[0] >= 'A' && cwd[0] <= 'Z')
-			setdisk(cwd[0] - 'A');
-	}
-#endif
-#endif
 
 	/*
 	 * Reopen the current input file.
@@ -323,9 +242,6 @@ pipe_data(cmd, spos, epos)
 	flush();
 	raw_mode(0);
 	init_signals(0);
-#if MSDOS_COMPILER==WIN32C
-	close_getchr();
-#endif
 #ifdef SIGPIPE
 	LSIGNAL(SIGPIPE, SIG_IGN);
 #endif
@@ -359,9 +275,6 @@ pipe_data(cmd, spos, epos)
 
 #ifdef SIGPIPE
 	LSIGNAL(SIGPIPE, SIG_DFL);
-#endif
-#if MSDOS_COMPILER==WIN32C
-	open_getchr();
 #endif
 	init_signals(1);
 	raw_mode(1);

@@ -64,19 +64,6 @@ public char *tagoption = NULL;
 extern char *tags;
 extern char ztags[];
 #endif
-#if MSDOS_COMPILER
-extern int nm_fg_color, nm_bg_color;
-extern int bo_fg_color, bo_bg_color;
-extern int ul_fg_color, ul_bg_color;
-extern int so_fg_color, so_bg_color;
-extern int bl_fg_color, bl_bg_color;
-extern int sgr_mode;
-#if MSDOS_COMPILER==WIN32C
-#ifndef COMMON_LVB_UNDERSCORE
-#define COMMON_LVB_UNDERSCORE 0x8000
-#endif
-#endif
-#endif
 
 
 #if LOGFILE
@@ -514,118 +501,6 @@ opt__V(type, s)
 	}
 }
 
-#if MSDOS_COMPILER
-/*
- * Parse an MSDOS color descriptor.
- */
-   	static void
-colordesc(s, fg_color, bg_color)
-	char *s;
-	int *fg_color;
-	int *bg_color;
-{
-	int fg, bg;
-	int err;
-#if MSDOS_COMPILER==WIN32C
-	int ul = 0;
- 	
-	if (*s == 'u')
-	{
-		ul = COMMON_LVB_UNDERSCORE;
-		++s;
-	}
-#endif
-	fg = getnum(&s, "D", &err);
-	if (err)
-	{
-#if MSDOS_COMPILER==WIN32C
-		if (ul)
-			fg = nm_fg_color;
-		else
-#endif
-		{
-			error("Missing fg color in -D", NULL_PARG);
-			return;
-		}
-	}
-	if (*s != '.')
-		bg = nm_bg_color;
-	else
-	{
-		s++;
-		bg = getnum(&s, "D", &err);
-		if (err)
-		{
-			error("Missing bg color in -D", NULL_PARG);
-			return;
-		}
-	}
-#if MSDOS_COMPILER==WIN32C
-	if (*s == 'u')
-	{
-		ul = COMMON_LVB_UNDERSCORE;
-		++s;
-	}
-	fg |= ul;
-#endif
-	if (*s != '\0')
-		error("Extra characters at end of -D option", NULL_PARG);
-	*fg_color = fg;
-	*bg_color = bg;
-}
-
-/*
- * Handler for the -D option.
- */
-	/*ARGSUSED*/
-	public void
-opt_D(type, s)
-	int type;
-	char *s;
-{
-	PARG p;
-
-	switch (type)
-	{
-	case INIT:
-	case TOGGLE:
-		switch (*s++)
-		{
-		case 'n':
-			colordesc(s, &nm_fg_color, &nm_bg_color);
-			break;
-		case 'd':
-			colordesc(s, &bo_fg_color, &bo_bg_color);
-			break;
-		case 'u':
-			colordesc(s, &ul_fg_color, &ul_bg_color);
-			break;
-		case 'k':
-			colordesc(s, &bl_fg_color, &bl_bg_color);
-			break;
-		case 's':
-			colordesc(s, &so_fg_color, &so_bg_color);
-			break;
-		case 'a':
-			sgr_mode = !sgr_mode;
-			break;
-		default:
-			error("-D must be followed by n, d, u, k, s or a", NULL_PARG);
-			break;
-		}
-		if (type == TOGGLE)
-		{
-			at_enter(AT_STANDOUT);
-			at_exit();
-		}
-		break;
-	case QUERY:
-		p.p_string = (sgr_mode) ? "on" : "off";
-		error("SGR mode is %s", &p);
-		break;
-	}
-}
-#endif
 
 /*
  * Handler for the -x option.
