@@ -193,7 +193,7 @@ close_file(VOID_PARAM)
 	altfilename = get_altfilename(curr_ifile);
 	if (altfilename != NULL)
 	{
-		altpipe = get_altpipe(curr_ifile);
+		altpipe = (FILE *) get_altpipe(curr_ifile);
 		if (altpipe != NULL && !(chflags & CH_KEEPOPEN))
 		{
 			close_pipe(altpipe);
@@ -240,7 +240,7 @@ edit_ifile(ifile)
 	void *altpipe;
 	IFILE was_curr_ifile;
 	PARG parg;
-		
+
 	if (ifile == curr_ifile)
 	{
 		/*
@@ -357,7 +357,7 @@ edit_ifile(ifile)
 			err1:
 			if (alt_filename != NULL)
 			{
-				close_pipe(altpipe);
+				close_pipe((FILE *) altpipe);
 				close_altfile(alt_filename, filename);
 				free(alt_filename);
 			}
@@ -470,7 +470,7 @@ edit_ifile(ifile)
 		if (strcmp(filename, FAKE_HELPFILE) && strcmp(filename, FAKE_EMPTYFILE))
 		{
 			char *qfilename = shell_quote(filename);
-			cmd_addhist(ml_examine, qfilename, 1);
+			cmd_addhist( (struct mlist *)  ml_examine, qfilename, 1);
 			free(qfilename);
 		}
 

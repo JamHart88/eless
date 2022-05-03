@@ -76,7 +76,7 @@ lsystem(cmd, donemsg)
 	inp = dup(0);
 	close(0);
 	if (open("/dev/tty", OPEN_READ) < 0)
-		dup(inp);
+		ignore_result(dup(inp));
 
 	/*
 	 * Pass the command to the system to be executed.
@@ -108,14 +108,14 @@ lsystem(cmd, donemsg)
 		else
 			p = save(cmd);
 	}
-	system(p);
+	ignore_result(system(p));
 	free(p);
 
 	/*
 	 * Restore standard input, reset signals, raw mode, etc.
 	 */
 	close(0);
-	dup(inp);
+	ignore_result(dup(inp));
 	close(inp);
 
 	init_signals(1);

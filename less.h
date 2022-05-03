@@ -29,6 +29,15 @@
 #undef HAVE_SIGSETMASK
 #endif
 
+/**
+ * Wrapping your function call with ignore_result makes it more clear to
+ * readers, compilers and linters that you are, in fact, ignoring the
+ * function's return value on purpose.
+ */
+static inline void ignore_result(long long int unused_result) {
+    (void) unused_result;
+}
+
 /*
  * Language details.
  */

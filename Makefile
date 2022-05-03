@@ -10,7 +10,7 @@ INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
 
-CFLAGS = -g -O2
+CFLAGS = -g -O2 -Wc++-compat -Wall
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
 CPPFLAGS = 

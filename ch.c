@@ -278,7 +278,7 @@ ch_get()
 	 * If we have a log file, write the new data to it.
 	 */
 	if (logfile >= 0 && n > 0)
-		write(logfile, (char *) &bp->data[bp->datasize], n);
+		ignore_result(write(logfile, (char *) &bp->data[bp->datasize], n));
 #endif
 
 	ch_fpos += n;
@@ -421,7 +421,7 @@ sync_logfile()
 			bp = bufnode_buf(bn);
 			if (bp->block == block)
 			{
-				write(logfile, (char *) bp->data, bp->datasize);
+				ignore_result(write(logfile, (char *) bp->data, bp->datasize));
 				wrote = TRUE;
 				break;
 			}

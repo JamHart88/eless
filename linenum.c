@@ -126,7 +126,7 @@ add_lnum(linenum, pos)
 	POSITION pos;
 {
 	struct linenum_info *p;
-	struct linenum_info *new;
+	struct linenum_info *newLineNum;
 	struct linenum_info *nextp;
 	struct linenum_info *prevp;
 	POSITION mingap;
@@ -148,7 +148,7 @@ add_lnum(linenum, pos)
 		 * We still have free (unused) entries.
 		 * Use one of them.
 		 */
-		new = freelist;
+		newLineNum = freelist;
 		freelist = freelist->next;
 	} else
 	{
@@ -156,7 +156,7 @@ add_lnum(linenum, pos)
 		 * No free entries.
 		 * Use the "spare" entry.
 		 */
-		new = spare;
+		newLineNum = spare;
 		spare = NULL;
 	}
 
@@ -164,18 +164,18 @@ add_lnum(linenum, pos)
 	 * Fill in the fields of the new entry,
 	 * and insert it into the proper place in the list.
 	 */
-	new->next = nextp;
-	new->prev = prevp;
-	new->pos = pos;
-	new->line = linenum;
+	newLineNum->next = nextp;
+	newLineNum->prev = prevp;
+	newLineNum->pos = pos;
+	newLineNum->line = linenum;
 
-	nextp->prev = new;
-	prevp->next = new;
+	nextp->prev = newLineNum;
+	prevp->next = newLineNum;
 
 	/*
-	 * Recalculate gaps for the new entry and the neighboring entries.
+	 * Recalculate gaps for the newLineNum entry and the neighboring entries.
 	 */
-	calcgap(new);
+	calcgap(newLineNum);
 	calcgap(nextp);
 	calcgap(prevp);
 
