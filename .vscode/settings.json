@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "less.h": "c",
-        "cmd.h": "c"
+        "cmd.h": "c",
+        "random": "c"
     },
     "cmake.configureOnOpen": false,
     "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",

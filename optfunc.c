@@ -65,15 +65,17 @@ extern char *tags;
 extern char ztags[];
 #endif
 
-
 #if LOGFILE
 /*
  * Handler for -o option.
  */
-	public void
-opt_o(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_o(type, s)
+// 	int type;
+// 	char *s;
+public void opt_o(int type, char *s)
 {
 	PARG parg;
 	char *filename;
@@ -87,12 +89,12 @@ opt_o(type, s)
 	case TOGGLE:
 		if (ch_getflags() & CH_CANSEEK)
 		{
-			error("Input is not a pipe", NULL_PARG);
+			error((char *)"Input is not a pipe", NULL_PARG);
 			return;
 		}
 		if (logfile >= 0)
 		{
-			error("Log file is already in use", NULL_PARG);
+			error((char *)"Log file is already in use", NULL_PARG);
 			return;
 		}
 		s = skipsp(s);
@@ -106,11 +108,11 @@ opt_o(type, s)
 		break;
 	case QUERY:
 		if (logfile < 0)
-			error("No log file", NULL_PARG);
+			error((char *)"No log file", NULL_PARG);
 		else
 		{
 			parg.p_string = namelogfile;
-			error("Log file \"%s\"", &parg);
+			error((char *)"Log file \"%s\"", &parg);
 		}
 		break;
 	}
@@ -119,10 +121,13 @@ opt_o(type, s)
 /*
  * Handler for -O option.
  */
-	public void
-opt__O(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt__O(type, s)
+// 	int type;
+// 	char *s;
+public void opt__O(int type, char *s)
 {
 	force_logfile = TRUE;
 	opt_o(type, s);
@@ -132,10 +137,13 @@ opt__O(type, s)
 /*
  * Handlers for -j option.
  */
-	public void
-opt_j(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_j(type, s)
+// 	int type;
+// 	char *s;
+public void opt_j(int type, char *s)
 {
 	PARG parg;
 	char buf[30]; // Make bigger than Long int in chars
@@ -149,16 +157,16 @@ opt_j(type, s)
 		if (*s == '.')
 		{
 			s++;
-			jump_sline_fraction = getfraction(&s, "j", &err);
+			jump_sline_fraction = getfraction(&s, (char *)"j", &err);
 			if (err)
-				error("Invalid line fraction", NULL_PARG);
+				error((char *)"Invalid line fraction", NULL_PARG);
 			else
 				calc_jump_sline();
 		} else
 		{
-			int sline = getnum(&s, "j", &err);
+			int sline = getnum(&s, (char *)"j", &err);
 			if (err)
-				error("Invalid line number", NULL_PARG);
+				error((char *)"Invalid line number", NULL_PARG);
 			else
 			{
 				jump_sline = sline;
@@ -170,7 +178,7 @@ opt_j(type, s)
 		if (jump_sline_fraction < 0)
 		{
 			parg.p_int =  jump_sline;
-			error("Position target at screen line %d", &parg);
+			error((char *)"Position target at screen line %d", &parg);
 		} else
 		{
 
@@ -180,14 +188,17 @@ opt_j(type, s)
 				len--;
 			buf[len] = '\0';
 			parg.p_string = buf;
-			error("Position target at screen position %s", &parg);
+			error((char *)"Position target at screen position %s", &parg);
 		}
 		break;
 	}
 }
 
-	public void
-calc_jump_sline(VOID_PARAM)
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// calc_jump_sline(VOID_PARAM)
+public void calc_jump_sline(VOID_PARAM)
 {
 	if (jump_sline_fraction < 0)
 		return;
@@ -197,10 +208,13 @@ calc_jump_sline(VOID_PARAM)
 /*
  * Handlers for -# option.
  */
-	public void
-opt_shift(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_shift(type, s)
+// 	int type;
+// 	char *s;
+public void opt_shift(int type, char *s)
 {
 	PARG parg;
 	char buf[30]; // Make bigger than Long int in chars
@@ -214,16 +228,16 @@ opt_shift(type, s)
 		if (*s == '.')
 		{
 			s++;
-			shift_count_fraction = getfraction(&s, "#", &err);
+			shift_count_fraction = getfraction(&s, (char *)"#", &err);
 			if (err)
-				error("Invalid column fraction", NULL_PARG);
+				error((char *)"Invalid column fraction", NULL_PARG);
 			else
 				calc_shift_count();
 		} else
 		{
-			int hs = getnum(&s, "#", &err);
+			int hs = getnum(&s, (char *)"#", &err);
 			if (err)
-				error("Invalid column number", NULL_PARG);
+				error((char *)"Invalid column number", NULL_PARG);
 			else
 			{
 				shift_count = hs;
@@ -235,7 +249,7 @@ opt_shift(type, s)
 		if (shift_count_fraction < 0)
 		{
 			parg.p_int = shift_count;
-			error("Horizontal shift %d columns", &parg);
+			error((char *)"Horizontal shift %d columns", &parg);
 		} else
 		{
 
@@ -245,13 +259,16 @@ opt_shift(type, s)
 				len--;
 			buf[len] = '\0';
 			parg.p_string = buf;
-			error("Horizontal shift %s of screen width", &parg);
+			error((char *)"Horizontal shift %s of screen width", &parg);
 		}
 		break;
 	}
 }
-	public void
-calc_shift_count(VOID_PARAM)
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// calc_shift_count(VOID_PARAM)
+public void calc_shift_count(VOID_PARAM)
 {
 	if (shift_count_fraction < 0)
 		return;
@@ -259,10 +276,13 @@ calc_shift_count(VOID_PARAM)
 }
 
 #if USERFILE
-	public void
-opt_k(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_k(type, s)
+// 	int type;
+// 	char *s;
+public void opt_k(int type, char *s)
 {
 	PARG parg;
 
@@ -272,7 +292,7 @@ opt_k(type, s)
 		if (lesskey(s, 0))
 		{
 			parg.p_string = s;
-			error("Cannot use lesskey file \"%s\"", &parg);
+			error((char *)"Cannot use lesskey file \"%s\"", &parg);
 		}
 		break;
 	}
@@ -283,10 +303,13 @@ opt_k(type, s)
 /*
  * Handler for -t option.
  */
-	public void
-opt_t(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_t(type, s)
+// 	int type;
+// 	char *s;
+public void opt_t(int type, char *s)
 {
 	IFILE save_ifile;
 	POSITION pos;
@@ -320,10 +343,13 @@ opt_t(type, s)
 /*
  * Handler for -T option.
  */
-	public void
-opt__T(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt__T(type, s)
+// 	int type;
+// 	char *s;
+public void opt__T(int type, char *s)
 {
 	PARG parg;
 	char *filename;
@@ -343,7 +369,7 @@ opt__T(type, s)
 		break;
 	case QUERY:
 		parg.p_string = tags;
-		error("Tags file \"%s\"", &parg);
+		error((char *)"Tags file \"%s\"", &parg);
 		break;
 	}
 }
@@ -352,10 +378,13 @@ opt__T(type, s)
 /*
  * Handler for -p option.
  */
-	public void
-opt_p(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_p(type, s)
+// 	int type;
+// 	char *s;
+public void opt_p(int type, char *s)
 {
 	switch (type)
 	{
@@ -379,7 +408,7 @@ opt_p(type, s)
 			  * {{ This won't work if the "/" command is
 			  *    changed or invalidated by a .lesskey file. }}
 			  */
-			ungetsc("/");
+			ungetsc((char *)"/");
 		}
 		break;
 	}
@@ -388,10 +417,13 @@ opt_p(type, s)
 /*
  * Handler for -P option.
  */
-	public void
-opt__P(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt__P(type, s)
+// 	int type;
+// 	char *s;
+public void opt__P(int type, char *s)
 {
 	char **proto;
 	PARG parg;
@@ -418,7 +450,7 @@ opt__P(type, s)
 		break;
 	case QUERY:
 		parg.p_string = prproto[pr_type];
-		error("%s", &parg);
+		error((char *)"%s", &parg);
 		break;
 	}
 }
@@ -427,10 +459,13 @@ opt__P(type, s)
  * Handler for the -b option.
  */
 	/*ARGSUSED*/
-	public void
-opt_b(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_b(type, s)
+// 	int type;
+// 	char *s;
+public void opt_b(int type, char *s)
 {
 	switch (type)
 	{
@@ -450,10 +485,13 @@ opt_b(type, s)
  * Handler for the -i option.
  */
 	/*ARGSUSED*/
-	public void
-opt_i(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_i(type, s)
+// 	int type;
+// 	char *s;
+public void opt_i(int type, char *s)
 {
 	switch (type)
 	{
@@ -470,10 +508,13 @@ opt_i(type, s)
  * Handler for the -V option.
  */
 	/*ARGSUSED*/
-	public void
-opt__V(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt__V(type, s)
+// 	int type;
+// 	char *s;
+public void opt__V(int type, char *s)
 {
 	switch (type)
 	{
@@ -505,10 +546,13 @@ opt__V(type, s)
 /*
  * Handler for the -x option.
  */
-	public void
-opt_x(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_x(type, s)
+// 	int type;
+// 	char *s;
+public void opt_x(int type, char *s)
 {
 	extern int tabstops[];
 	extern int ntabstops;
@@ -554,7 +598,7 @@ opt_x(type, s)
 		sprintf(msg+strlen(msg), "every %d spaces",
 			tabdefault);
 		p.p_string = msg;
-		error("%s", &p);
+		error((char *)"%s", &p);
 		break;
 	}
 }
@@ -563,10 +607,13 @@ opt_x(type, s)
 /*
  * Handler for the -" option.
  */
-	public void
-opt_quote(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_quote(type, s)
+// 	int type;
+// 	char *s;
+public void opt_quote(int type, char *s)
 {
 	char buf[3];
 	PARG parg;
@@ -582,7 +629,7 @@ opt_quote(type, s)
 		}
 		if (s[1] != '\0' && s[2] != '\0')
 		{
-			error("-\" must be followed by 1 or 2 chars", NULL_PARG);
+			error((char *)"-\" must be followed by 1 or 2 chars", NULL_PARG);
 			return;
 		}
 		openquote = s[0];
@@ -596,7 +643,7 @@ opt_quote(type, s)
 		buf[1] = closequote;
 		buf[2] = '\0';
 		parg.p_string = buf;
-		error("quotes %s", &parg);
+		error((char *)"quotes %s", &parg);
 		break;
 	}
 }
@@ -605,10 +652,13 @@ opt_quote(type, s)
  * Handler for the --rscroll option.
  */
 	/*ARGSUSED*/
-	public void
-opt_rscroll(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_rscroll(type, s)
+// 	int type;
+// 	char *s;
+public void opt_rscroll(int type, char *s)
 {
 	PARG p;
 
@@ -618,7 +668,7 @@ opt_rscroll(type, s)
 	case TOGGLE: {
 		char *fmt;
 		int attr = AT_STANDOUT;
-		setfmt(s, &fmt, &attr, "*s>");
+		setfmt(s, &fmt, &attr, (char *) "*s>");
 		if (strcmp(fmt, "-") == 0)
 		{
 			rscroll_char = 0;
@@ -629,8 +679,8 @@ opt_rscroll(type, s)
 		}
 		break; }
 	case QUERY: {
-		p.p_string = rscroll_char ? prchar(rscroll_char) : "-";
-		error("rscroll char is %s", &p);
+		p.p_string = rscroll_char ? (char *) prchar(rscroll_char) : (char *) "-";
+		error((char *)"rscroll char is %s", &p);
 		break; }
 	}
 }
@@ -640,16 +690,19 @@ opt_rscroll(type, s)
  * If from the command line, exit immediately.
  */
 	/*ARGSUSED*/
-	public void
-opt_query(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_query(type, s)
+// 	int type;
+// 	char *s;
+public void opt_query(int type, char *s)
 {
 	switch (type)
 	{
 	case QUERY:
 	case TOGGLE:
-		error("Use \"h\" for help", NULL_PARG);
+		error((char *)"Use \"h\" for help", NULL_PARG);
 		break;
 	case INIT:
 		dohelp = 1;
@@ -660,10 +713,13 @@ opt_query(type, s)
  * Handler for the --mouse option.
  */
 	/*ARGSUSED*/
-	public void
-opt_mousecap(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_mousecap(type, s)
+// 	int type;
+// 	char *s;
+public void opt_mousecap(int type, char *s)
 {
 	switch (type)
 	{
@@ -683,10 +739,13 @@ opt_mousecap(type, s)
  * Handler for the --wheel-lines option.
  */
 	/*ARGSUSED*/
-	public void
-opt_wheel_lines(type, s)
-	int type;
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// opt_wheel_lines(type, s)
+// 	int type;
+// 	char *s;
+public void opt_wheel_lines(int type, char *s)
 {
 	switch (type)
 	{
@@ -703,8 +762,11 @@ opt_wheel_lines(type, s)
 /*
  * Get the "screen window" size.
  */
-	public int
-get_swindow(VOID_PARAM)
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public int
+// get_swindow(VOID_PARAM)
+public int get_swindow(VOID_PARAM)
 {
 	if (swindow > 0)
 		return (swindow);

@@ -40,9 +40,7 @@ extern char closequote;
 /*
  * Remove quotes around a filename.
  */
-	public char *
-shell_unquote(str)
-	char *str;
+public char * shell_unquote(char *str)
 {
 	char *name;
 	char *p;
@@ -79,30 +77,28 @@ shell_unquote(str)
 /*
  * Get the shell's escape character.
  */
-	public char *
-get_meta_escape(VOID_PARAM)
+public char * get_meta_escape(VOID_PARAM)
 {
 	char *s;
 
-	s = lgetenv("LESSMETAESCAPE");
+	s = lgetenv((char *)"LESSMETAESCAPE");
 	if (s == NULL)
-		s = DEF_METAESCAPE;
+		s = (char *)DEF_METAESCAPE;
 	return (s);
 }
 
 /*
  * Get the characters which the shell considers to be "metacharacters".
  */
-	static char *
-metachars(VOID_PARAM)
+static char * metachars(VOID_PARAM)
 {
 	static char *mchars = NULL;
 
 	if (mchars == NULL)
 	{
-		mchars = lgetenv("LESSMETACHARS");
+		mchars = lgetenv((char *)"LESSMETACHARS");
 		if (mchars == NULL)
-			mchars = DEF_METACHARS;
+			mchars =(char *) DEF_METACHARS;
 	}
 	return (mchars);
 }
@@ -110,9 +106,7 @@ metachars(VOID_PARAM)
 /*
  * Is this a shell metacharacter?
  */
-	static int
-metachar(c)
-	char c;
+static int metachar(char c)
 {
 	return (strchr(metachars(), c) != NULL);
 }
@@ -120,9 +114,7 @@ metachar(c)
 /*
  * Insert a backslash before each metacharacter in a string.
  */
-	public char *
-shell_quote(s)
-	char *s;
+public char * shell_quote(char *s)
 {
 	char *p;
 	char *newstr;
@@ -198,10 +190,7 @@ shell_quote(s)
  * Return a pathname that points to a specified file in a specified directory.
  * Return NULL if the file does not exist in the directory.
  */
-	static char *
-dirfile(dirname, filename)
-	char *dirname;
-	char *filename;
+static char * dirfile(char *dirname, char *filename)
 {
 	char *pathname;
 	int len;
@@ -235,16 +224,14 @@ dirfile(dirname, filename)
 /*
  * Return the full pathname of the given file in the "home directory".
  */
-	public char *
-homefile(filename)
-	char *filename;
+public char * homefile(char *filename)
 {
 	char *pathname;
 
 	/*
 	 * Try $HOME/filename.
 	 */
-	pathname = dirfile(lgetenv("HOME"), filename);
+	pathname = dirfile(lgetenv((char *)"HOME"), filename);
 	if (pathname != NULL)
 		return (pathname);
 	return (NULL);
@@ -257,9 +244,7 @@ homefile(filename)
  * Likewise for a string of N "#"s.
  * {{ This is a lot of work just to support % and #. }}
  */
-	public char *
-fexpand(s)
-	char *s;
+public char * fexpand(char *s)
 {
 	char *fr, *to;
 	int n;
@@ -353,9 +338,7 @@ fexpand(s)
  * Return a blank-separated list of filenames which "complete"
  * the given string.
  */
-	public char *
-fcomplete(s)
-	char *s;
+public char * fcomplete(char *s)
 {
 	char *fpat;
 	char *qs;
@@ -388,9 +371,7 @@ fcomplete(s)
  * Try to determine if a file is "binary".
  * This is just a guess, and we need not try too hard to make it accurate.
  */
-	public int
-bin_file(f)
-	int f;
+public int bin_file(int f)
 {
 	int n;
 	int bin_count = 0;
@@ -431,9 +412,7 @@ bin_file(f)
 /*
  * Try to determine the size of a file by seeking to the end.
  */
-	static POSITION
-seek_filesize(f)
-	int f;
+static POSITION seek_filesize(int f)
 {
 	off_t spos;
 
@@ -447,9 +426,7 @@ seek_filesize(f)
  * Read a string from a file.
  * Return a pointer to the string in memory.
  */
-	static char *
-readfd(fd)
-	FILE *fd;
+static char * readfd(FILE *fd)
 {
 	int len;
 	int ch;
@@ -494,15 +471,13 @@ readfd(fd)
  * Execute a shell command.
  * Return a pointer to a pipe connected to the shell command's standard output.
  */
-	static FILE *
-shellcmd(cmd)
-	char *cmd;
+static FILE * shellcmd(char *cmd)
 {
 	FILE *fd;
 
 	char *shell;
 
-	shell = lgetenv("SHELL");
+	shell = lgetenv((char *)"SHELL");
 	if (!isnullenv(shell))
 	{
 		char *scmd;
@@ -543,9 +518,7 @@ shellcmd(cmd)
 /*
  * Expand a filename, doing any system-specific metacharacter substitutions.
  */
-	public char *
-lglob(filename)
-	char *filename;
+public char * lglob(char *filename)
 {
 	char *gfilename;
 
@@ -670,15 +643,15 @@ lglob(filename)
 
 	esc = get_meta_escape();
 	if (strlen(esc) == 0)
-		esc = "-";
+		esc = (char *)"-";
 	esc = shell_quote(esc);
 	if (esc == NULL)
 	{
 		return (filename);
 	}
-	lessecho = lgetenv("LESSECHO");
+	lessecho = lgetenv((char *)"LESSECHO");
 	if (isnullenv(lessecho))
-		lessecho = "lessecho";
+		lessecho =(char *) "lessecho";
 	/*
 	 * Invoke lessecho, and read its output (a globbed list of filenames).
 	 */
@@ -722,9 +695,7 @@ lglob(filename)
 /*
  * @@@
  */
-	public char *
-lrealpath(path)
-	char *path;
+public char * lrealpath(char *path)
 {
 #if HAVE_REALPATH
 	char *rpath = realpath(path, NULL);
@@ -738,9 +709,7 @@ lrealpath(path)
  * Return number of %s escapes in a string.
  * Return a large number if there are any other % escapes besides %s.
  */
-	static int
-num_pct_s(lessopen)
-	char *lessopen;
+static int num_pct_s(char *lessopen)
 {
 	int num = 0;
 
@@ -764,11 +733,7 @@ num_pct_s(lessopen)
  * See if we should open a "replacement file" 
  * instead of the file we're about to open.
  */
-	public char *
-open_altfile(filename, pf, pfd)
-	char *filename;
-	int *pf;
-	void **pfd;
+public char * open_altfile(char *filename, int *pf, void **pfd)
 {
 #if !HAVE_POPEN
 	return (NULL);
@@ -785,7 +750,7 @@ open_altfile(filename, pf, pfd)
 	if (!use_lessopen)
 		return (NULL);
 	ch_ungetchar(-1);
-	if ((lessopen = lgetenv("LESSOPEN")) == NULL)
+	if ((lessopen = lgetenv((char *)"LESSOPEN")) == NULL)
 		return (NULL);
 	while (*lessopen == '|')
 	{
@@ -794,7 +759,7 @@ open_altfile(filename, pf, pfd)
 		 * a "pipe preprocessor".
 		 */
 #if !HAVE_FILENO
-		error("LESSOPEN pipe is not supported", NULL_PARG);
+		error((char *)"LESSOPEN pipe is not supported", NULL_PARG);
 		return (NULL);
 #else
 		lessopen++;
@@ -814,7 +779,7 @@ open_altfile(filename, pf, pfd)
 	}
 	if (num_pct_s(lessopen) != 1)
 	{
-		error("LESSOPEN ignored: must contain exactly one %%s", NULL_PARG);
+		error((char *)"LESSOPEN ignored: must contain exactly one %%s", NULL_PARG);
 		return (NULL);
 	}
 
@@ -882,10 +847,7 @@ open_altfile(filename, pf, pfd)
 /*
  * Close a replacement file.
  */
-	public void
-close_altfile(altfilename, filename)
-	char *altfilename;
-	char *filename;
+public void close_altfile(char *altfilename, char *filename)
 {
 #if HAVE_POPEN
 	char *lessclose;
@@ -894,11 +856,11 @@ close_altfile(altfilename, filename)
 	int len;
 	
 	ch_ungetchar(-1);
-	if ((lessclose = lgetenv("LESSCLOSE")) == NULL)
+	if ((lessclose = lgetenv((char *)"LESSCLOSE")) == NULL)
 	     	return;
 	if (num_pct_s(lessclose) > 2) 
 	{
-		error("LESSCLOSE ignored; must contain no more than 2 %%s", NULL_PARG);
+		error((char *)"LESSCLOSE ignored; must contain no more than 2 %%s", NULL_PARG);
 		return;
 	}
 	len = (int) (strlen(lessclose) + strlen(filename) + strlen(altfilename) + 2);
@@ -914,9 +876,7 @@ close_altfile(altfilename, filename)
 /*
  * Is the specified file a directory?
  */
-	public int
-is_dir(filename)
-	char *filename;
+public int is_dir(char *filename)
 {
 	int isdir = 0;
 
@@ -937,9 +897,7 @@ is_dir(filename)
  * is an ordinary file, otherwise an error message
  * (if it cannot be opened or is a directory, etc.)
  */
-	public char *
-bad_file(filename)
-	char *filename;
+public char * bad_file(char *filename)
 {
 	char *m = NULL;
 
@@ -981,9 +939,7 @@ bad_file(filename)
  * Return the size of a file, as cheaply as possible.
  * In Unix, we can stat the file.
  */
-	public POSITION
-filesize(f)
-	int f;
+public POSITION filesize(int f)
 {
 #if HAVE_STAT
 	struct stat statbuf;
@@ -997,18 +953,15 @@ filesize(f)
 /*
  * 
  */
-	public char *
-shell_coption(VOID_PARAM)
+public char * shell_coption(VOID_PARAM)
 {
-	return ("-c");
+	return ((char *)"-c");
 }
 
 /*
  * Return last component of a pathname.
  */
-	public char *
-last_component(name)
-	char *name;
+public char * last_component(char *name)
 {
 	char *slash;
 

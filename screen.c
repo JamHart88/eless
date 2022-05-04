@@ -164,7 +164,7 @@ extern char *tgoto();
  */
 public void raw_mode(int on)
 {
-	static int curr_on = 0;
+static int curr_on = 0;
 
 	if (on == curr_on)
 		return;
@@ -172,8 +172,8 @@ public void raw_mode(int on)
 #if HAVE_TERMIOS_H && HAVE_TERMIOS_FUNCS
     {
 	struct termios s;
-	static struct termios save_term;
-	static int saved_term = 0;
+static struct termios save_term;
+static int saved_term = 0;
 
 	if (on) 
 	{
@@ -359,8 +359,8 @@ public void raw_mode(int on)
 #ifdef TCGETA
     {
 	struct termio s;
-	static struct termio save_term;
-	static int saved_term = 0;
+static struct termio save_term;
+static int saved_term = 0;
 
 	if (on)
 	{
@@ -409,8 +409,8 @@ public void raw_mode(int on)
 #ifdef TIOCGETP
     {
 	struct sgttyb s;
-	static struct sgttyb save_term;
-	static int saved_term = 0;
+static struct sgttyb save_term;
+static int saved_term = 0;
 
 	if (on)
 	{
@@ -472,7 +472,7 @@ static char * ltget_env(char *capname)
 	if (termcap_debug)
 	{
 		struct env { struct env *next; char *name; char *value; };
-		static struct env *envs = NULL;
+	static struct env *envs = NULL;
 		struct env *p;
 		for (p = envs;  p != NULL;  p = p->next)
 			if (strcmp(p->name, capname) == 0)
@@ -588,10 +588,10 @@ public void scrsize(VOID_PARAM)
 /*
  * Return the characters actually input by a "special" key.
  */
-	public char *
+public char *
 special_key_str(int key)
 {
-	static char tbuf[40];
+static char tbuf[40];
 	char *s;
 
 	char *sp = tbuf;
@@ -646,7 +646,7 @@ special_key_str(int key)
 /*
  * Get terminal capabilities via termcap.
  */
-	public void
+public void
 get_term(VOID_PARAM)
 {
 	termcap_debug = !isnullenv(lgetenv((char *) "LESS_TERMCAP_DEBUG"));
@@ -659,8 +659,8 @@ get_term(VOID_PARAM)
 	 * Some termcap libraries assume termbuf is static
 	 * (accessible after tgetent returns).
 	 */
-	static char termbuf[TERMBUF_SIZE];
-	static char sbuf[TERMSBUF_SIZE];
+static char termbuf[TERMBUF_SIZE];
+static char sbuf[TERMSBUF_SIZE];
 
 	/*
 	 * Find out what kind of terminal this is.

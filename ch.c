@@ -124,8 +124,8 @@ extern int autobuf;
 extern int sigs;
 extern int screen_trashed;
 extern int follow_mode;
-extern constant char helpdata[];
-extern constant int size_helpdata;
+extern char helpdata[];
+extern int size_helpdata;
 extern IFILE curr_ifile;
 #if LOGFILE
 extern int logfile;

@@ -27,10 +27,7 @@ extern IFILE curr_ifile;
  * Pass the specified command to a shell to be executed.
  * Like plain "system()", but handles resetting terminal modes, etc.
  */
-	public void
-lsystem(cmd, donemsg)
-	char *cmd;
-	char *donemsg;
+public void lsystem(char *cmd, char *donemsg)
 {
 	int inp;
 	char *shell;
@@ -85,7 +82,7 @@ lsystem(cmd, donemsg)
 	 * If the command is empty, just invoke a shell.
 	 */
 	p = NULL;
-	if ((shell = lgetenv("SHELL")) != NULL && *shell != '\0')
+	if ((shell = lgetenv((char *)"SHELL")) != NULL && *shell != '\0')
 	{
 		if (*cmd == '\0')
 			p = save(shell);
@@ -163,10 +160,7 @@ lsystem(cmd, donemsg)
  * If the mark is on the current screen, or if the mark is ".",
  * the whole current screen is piped.
  */
-	public int
-pipe_mark(c, cmd)
-	int c;
-	char *cmd;
+public int pipe_mark(int c, char *cmd)
 {
 	POSITION mpos, tpos, bpos;
 
@@ -197,11 +191,7 @@ pipe_mark(c, cmd)
  * Create a pipe to the given shell command.
  * Feed it the file contents between the positions spos and epos.
  */
-	public int
-pipe_data(cmd, spos, epos)
-	char *cmd;
-	POSITION spos;
-	POSITION epos;
+public int pipe_data(char *cmd, POSITION spos, POSITION epos)
 {
 	FILE *f;
 	int c;
@@ -214,13 +204,13 @@ pipe_data(cmd, spos, epos)
 	 */
 	if (ch_seek(spos) != 0)
 	{
-		error("Cannot seek to start position", NULL_PARG);
+		error((char *)"Cannot seek to start position", NULL_PARG);
 		return (-1);
 	}
 
 	if ((f = popen(cmd, "w")) == NULL)
 	{
-		error("Cannot create pipe", NULL_PARG);
+		error((char *)"Cannot create pipe", NULL_PARG);
 		return (-1);
 	}
 	clear_bot();

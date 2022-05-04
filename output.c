@@ -31,35 +31,38 @@ extern int oldbot;
 /*
  * Display the line which is in the line buffer.
  */
-	public void
-put_line(VOID_PARAM)
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// put_line(VOID_PARAM)
+public void put_line(VOID_PARAM)
 {
-	int c;
-	int i;
-	int a;
+    int c;
+    int i;
+    int a;
 
-	if (ABORT_SIGS())
-	{
-		/*
-		 * Don't output if a signal is pending.
-		 */
-		screen_trashed = 1;
-		return;
-	}
+    if (ABORT_SIGS())
+    {
+    	/*
+    	 * Don't output if a signal is pending.
+    	 */
+    	screen_trashed = 1;
+    	return;
+    }
 
-	final_attr = AT_NORMAL;
+    final_attr = AT_NORMAL;
 
-	for (i = 0;  (c = gline(i, &a)) != '\0';  i++)
-	{
-		at_switch(a);
-		final_attr = a;
-		if (c == '\b')
-			putbs();
-		else
-			putchr(c);
-	}
+    for (i = 0;  (c = gline(i, &a)) != '\0';  i++)
+    {
+    	at_switch(a);
+    	final_attr = a;
+    	if (c == '\b')
+    		putbs();
+    	else
+    		putchr(c);
+    }
 
-	at_exit();
+    at_exit();
 }
 
 static char obuf[OUTBUF_SIZE];
@@ -81,94 +84,83 @@ static char *ob = obuf;
  * sure these messages can be seen before they are
  * overwritten or scrolled away.
  */
-	public void
-flush(VOID_PARAM)
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// flush(VOID_PARAM)
+public void flush(VOID_PARAM)
 {
-	int n;
-	int fd;
+    int n;
+    int fd;
 
-	n = (int) (ob - obuf);
-	if (n == 0)
-		return;
+    n = (int) (ob - obuf);
+    if (n == 0)
+    	return;
 
-	fd = (any_display) ? 1 : 2;
-	if (write(fd, obuf, n) != n)
-		screen_trashed = 1;
-	ob = obuf;
+    fd = (any_display) ? 1 : 2;
+    if (write(fd, obuf, n) != n)
+    	screen_trashed = 1;
+    ob = obuf;
 }
 
 /*
  * Output a character.
  */
-	public int
-putchr(c)
-	int c;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public int
+// putchr(c)
+// 	int c;
+public int putchr(int c)
 {
-#if 0 /* fake UTF-8 output for testing */
-	extern int utf_mode;
-	if (utf_mode)
-	{
-		static char ubuf[MAX_UTF_CHAR_LEN];
-		static int ubuf_len = 0;
-		static int ubuf_index = 0;
-		if (ubuf_len == 0)
-		{
-			ubuf_len = utf_len(c);
-			ubuf_index = 0;
-		}
-		ubuf[ubuf_index++] = c;
-		if (ubuf_index < ubuf_len)
-			return c;
-		c = get_wchar(ubuf) & 0xFF;
-		ubuf_len = 0;
-	}
-#endif
-	if (need_clr)
-	{
-		need_clr = 0;
-		clear_bot();
-	}
-	/*
-	 * Some versions of flush() write to *ob, so we must flush
-	 * when we are still one char from the end of obuf.
-	 */
-	if (ob >= &obuf[sizeof(obuf)-1])
-		flush();
-	*ob++ = c;
-	at_prompt = 0;
-	return (c);
+    if (need_clr)
+    {
+    	need_clr = 0;
+    	clear_bot();
+    }
+    /*
+     * Some versions of flush() write to *ob, so we must flush
+     * when we are still one char from the end of obuf.
+     */
+    if (ob >= &obuf[sizeof(obuf)-1])
+    	flush();
+    *ob++ = c;
+    at_prompt = 0;
+    return (c);
 }
 
 /*
  * Output a string.
  */
-	public void
-putstr(s)
-	constant char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+//putstr(s)
+// 	const char *s;
+public void putstr(const char *s)
 {
-	while (*s != '\0')
-		putchr(*s++);
+    while (*s != '\0')
+    	putchr(*s++);
 }
 
 
 /*
  * Convert an integral type to a string.
  */
+
 #define TYPE_TO_A_FUNC(funcname, type) \
-void funcname(num, buf) \
-	type num; \
-	char *buf; \
+void funcname(type num, char *buf) \
 { \
-	int neg = (num < 0); \
-	char tbuf[INT_STRLEN_BOUND(num)+2]; \
-	char *s = tbuf + sizeof(tbuf); \
-	if (neg) num = -num; \
-	*--s = '\0'; \
-	do { \
-		*--s = (num % 10) + '0'; \
-	} while ((num /= 10) != 0); \
-	if (neg) *--s = '-'; \
-	strcpy(buf, s); \
+    int neg = (num < 0); \
+    char tbuf[INT_STRLEN_BOUND(num)+2]; \
+    char *s = tbuf + sizeof(tbuf); \
+    if (neg) num = -num; \
+    *--s = '\0'; \
+    do { \
+    	*--s = (num % 10) + '0'; \
+    } while ((num /= 10) != 0); \
+    if (neg) *--s = '-'; \
+    strcpy(buf, s); \
 }
 
 TYPE_TO_A_FUNC(postoa, POSITION)
@@ -179,18 +171,16 @@ TYPE_TO_A_FUNC(inttoa, int)
  * Convert an string to an integral type.
  */
 #define STR_TO_TYPE_FUNC(funcname, type) \
-type funcname(buf, ebuf) \
-	char *buf; \
-	char **ebuf; \
+type funcname(char *buf, char **ebuf) \
 { \
-	type val = 0; \
-	for (;;) { \
-		char c = *buf++; \
-		if (c < '0' || c > '9') break; \
-		val = 10 * val + c - '0'; \
-	} \
-	if (ebuf != NULL) *ebuf = buf; \
-	return val; \
+    type val = 0; \
+    for (;;) { \
+    	char c = *buf++; \
+    	if (c < '0' || c > '9') break; \
+    	val = 10 * val + c - '0'; \
+    } \
+    if (ebuf != NULL) *ebuf = buf; \
+    return val; \
 }
 
 STR_TO_TYPE_FUNC(lstrtopos, POSITION)
@@ -199,79 +189,88 @@ STR_TO_TYPE_FUNC(lstrtoi, int)
 /*
  * Output an integer in a given radix.
  */
-	static int
-iprint_int(num)
-	int num;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// static int
+// iprint_int(num)
+// 	int num;
+static int iprint_int(int num)
 {
-	char buf[INT_STRLEN_BOUND(num)];
+    char buf[INT_STRLEN_BOUND(num)];
 
-	inttoa(num, buf);
-	putstr(buf);
-	return ((int) strlen(buf));
+    inttoa(num, buf);
+    putstr(buf);
+    return ((int) strlen(buf));
 }
 
 /*
  * Output a line number in a given radix.
  */
-	static int
-iprint_linenum(num)
-	LINENUM num;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// static int
+// iprint_linenum(num)
+// 	LINENUM num;
+static int iprint_linenum(LINENUM num)
 {
-	char buf[INT_STRLEN_BOUND(num)];
+    char buf[INT_STRLEN_BOUND(num)];
 
-	linenumtoa(num, buf);
-	putstr(buf);
-	return ((int) strlen(buf));
+    linenumtoa(num, buf);
+    putstr(buf);
+    return ((int) strlen(buf));
 }
 
 /*
  * This function implements printf-like functionality
  * using a more portable argument list mechanism than printf's.
  */
-	static int
-less_printf(fmt, parg)
-	char *fmt;
-	PARG *parg;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// static int
+// less_printf(fmt, parg)
+// 	char *fmt;
+// 	PARG *parg;
+static int less_printf(char *fmt, PARG *parg)
 {
-	char *s;
-	int col;
+    char *s;
+    int col;
 
-	col = 0;
-	while (*fmt != '\0')
-	{
-		if (*fmt != '%')
-		{
-			putchr(*fmt++);
-			col++;
-		} else
-		{
-			++fmt;
-			switch (*fmt++)
-			{
-			case 's':
-				s = parg->p_string;
-				parg++;
-				while (*s != '\0')
-				{
-					putchr(*s++);
-					col++;
-				}
-				break;
-			case 'd':
-				col += iprint_int(parg->p_int);
-				parg++;
-				break;
-			case 'n':
-				col += iprint_linenum(parg->p_linenum);
-				parg++;
-				break;
-			case '%':
-				putchr('%');
-				break;
-			}
-		}
-	}
-	return (col);
+    col = 0;
+    while (*fmt != '\0')
+    {
+    	if (*fmt != '%')
+    	{
+    		putchr(*fmt++);
+    		col++;
+    	} else
+    	{
+    		++fmt;
+    		switch (*fmt++)
+    		{
+    		case 's':
+    			s = parg->p_string;
+    			parg++;
+    			while (*s != '\0')
+    			{
+    				putchr(*s++);
+    				col++;
+    			}
+    			break;
+    		case 'd':
+    			col += iprint_int(parg->p_int);
+    			parg++;
+    			break;
+    		case 'n':
+    			col += iprint_linenum(parg->p_linenum);
+    			parg++;
+    			break;
+    		case '%':
+    			putchr('%');
+    			break;
+    		}
+    	}
+    }
+    return (col);
 }
 
 /*
@@ -279,18 +278,21 @@ less_printf(fmt, parg)
  * If some other non-trivial char is pressed, unget it, so it will
  * become the next command.
  */
-	public void
-get_return(VOID_PARAM)
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// get_return(VOID_PARAM)
+public void get_return(VOID_PARAM)
 {
-	int c;
+    int c;
 
 #if ONLY_RETURN
-	while ((c = getchr()) != '\n' && c != '\r')
-		bell();
+    while ((c = getchr()) != '\n' && c != '\r')
+    	bell();
 #else
-	c = getchr();
-	if (c != '\n' && c != '\r' && c != ' ' && c != READ_INTR)
-		ungetcc(c);
+    c = getchr();
+    if (c != '\n' && c != '\r' && c != ' ' && c != READ_INTR)
+    	ungetcc(c);
 #endif
 }
 
@@ -298,51 +300,54 @@ get_return(VOID_PARAM)
  * Output a message in the lower left corner of the screen
  * and wait for carriage return.
  */
-	public void
-error(fmt, parg)
-	char *fmt;
-	PARG *parg;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// error(fmt, parg)
+// 	char *fmt;
+// 	PARG *parg;
+public void error(char *fmt, PARG *parg)
 {
-	int col = 0;
-	static char return_to_continue[] = "  (press RETURN)";
+    int col = 0;
+static char return_to_continue[] = "  (press RETURN)";
 
-	errmsgs++;
+    errmsgs++;
 
-	if (any_display && is_tty)
-	{
-		if (!oldbot)
-			squish_check();
-		at_exit();
-		clear_bot();
-		at_enter(AT_STANDOUT);
-		col += so_s_width;
-	}
+    if (any_display && is_tty)
+    {
+    	if (!oldbot)
+    		squish_check();
+    	at_exit();
+    	clear_bot();
+    	at_enter(AT_STANDOUT);
+    	col += so_s_width;
+    }
 
-	col += less_printf(fmt, parg);
+    col += less_printf(fmt, parg);
 
-	if (!(any_display && is_tty))
-	{
-		putchr('\n');
-		return;
-	}
+    if (!(any_display && is_tty))
+    {
+    	putchr('\n');
+    	return;
+    }
 
-	putstr(return_to_continue);
-	at_exit();
-	col += sizeof(return_to_continue) + so_e_width;
+    putstr(return_to_continue);
+    at_exit();
+    col += sizeof(return_to_continue) + so_e_width;
 
-	get_return();
-	lower_left();
-	clear_eol();
+    get_return();
+    lower_left();
+    clear_eol();
 
-	if (col >= sc_width)
-		/*
-		 * Printing the message has probably scrolled the screen.
-		 * {{ Unless the terminal doesn't have auto margins,
-		 *    in which case we just hammered on the right margin. }}
-		 */
-		screen_trashed = 1;
+    if (col >= sc_width)
+    	/*
+    	 * Printing the message has probably scrolled the screen.
+    	 * {{ Unless the terminal doesn't have auto margins,
+    	 *    in which case we just hammered on the right margin. }}
+    	 */
+    	screen_trashed = 1;
 
-	flush();
+    flush();
 }
 
 static char intr_to_abort[] = "... (interrupt to abort)";
@@ -353,49 +358,55 @@ static char intr_to_abort[] = "... (interrupt to abort)";
  * Usually used to warn that we are beginning a potentially
  * time-consuming operation.
  */
-	public void
-ierror(fmt, parg)
-	char *fmt;
-	PARG *parg;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// ierror(fmt, parg)
+// 	char *fmt;
+// 	PARG *parg;
+public void ierror(char *fmt, PARG *parg)
 {
-	at_exit();
-	clear_bot();
-	at_enter(AT_STANDOUT);
-	(void) less_printf(fmt, parg);
-	putstr(intr_to_abort);
-	at_exit();
-	flush();
-	need_clr = 1;
+    at_exit();
+    clear_bot();
+    at_enter(AT_STANDOUT);
+    (void) less_printf(fmt, parg);
+    putstr(intr_to_abort);
+    at_exit();
+    flush();
+    need_clr = 1;
 }
 
 /*
  * Output a message in the lower left corner of the screen
  * and return a single-character response.
  */
-	public int
-query(fmt, parg)
-	char *fmt;
-	PARG *parg;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public int
+// query(fmt, parg)
+// 	char *fmt;
+// 	PARG *parg;
+public int query(char *fmt, PARG *parg)
 {
-	int c;
-	int col = 0;
+    int c;
+    int col = 0;
 
-	if (any_display && is_tty)
-		clear_bot();
+    if (any_display && is_tty)
+    	clear_bot();
 
-	(void) less_printf(fmt, parg);
-	c = getchr();
+    (void) less_printf(fmt, parg);
+    c = getchr();
 
-	if (!(any_display && is_tty))
-	{
-		putchr('\n');
-		return (c);
-	}
+    if (!(any_display && is_tty))
+    {
+    	putchr('\n');
+    	return (c);
+    }
 
-	lower_left();
-	if (col >= sc_width)
-		screen_trashed = 1;
-	flush();
+    lower_left();
+    if (col >= sc_width)
+    	screen_trashed = 1;
+    flush();
 
-	return (c);
+    return (c);
 }

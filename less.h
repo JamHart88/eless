@@ -50,11 +50,6 @@ static inline void ignore_result(long long int unused_result) {
 #define	VOID_PARAM
 #define	void  int
 #endif
-#if HAVE_CONST
-#define	constant	const
-#else
-#define	constant
-#endif
 
 #define	public		/* PUBLIC FUNCTION */
 
@@ -197,7 +192,7 @@ void free();
 #define INT_STRLEN_BOUND(t) ((sizeof(t) * CHAR_BIT - 1) * 302 / 1000 + 1 + 1)
 
 /*
- * Special types and constants.
+ * Special types and consts.
  */
 typedef unsigned long LWCHAR;
 typedef off_t		POSITION;
@@ -347,8 +342,8 @@ struct wchar_range_table
 #if IS_EBCDIC_HOST
 /*
  * Long definition for EBCDIC.
- * Since the argument is usually a constant, this macro normally compiles
- * into a constant.
+ * Since the argument is usually a const, this macro normally compiles
+ * into a const.
  */
 #define CONTROL(c) ( \
 	(c)=='[' ? '\047' : \

@@ -45,8 +45,7 @@ extern char *tagoption;
 /*
  * Sound the bell to indicate user is trying to move past end of file.
  */
-	static void
-eof_bell(VOID_PARAM)
+static void eof_bell(VOID_PARAM)
 {
 	if (quiet == NOT_QUIET)
 		bell();
@@ -57,8 +56,7 @@ eof_bell(VOID_PARAM)
 /*
  * Check to see if the end of file is currently displayed.
  */
-	public int
-eof_displayed(VOID_PARAM)
+public int eof_displayed(VOID_PARAM)
 {
 	POSITION pos;
 
@@ -84,8 +82,7 @@ eof_displayed(VOID_PARAM)
 /*
  * Check to see if the entire file is currently displayed.
  */
-	public int
-entire_file_displayed(VOID_PARAM)
+public int entire_file_displayed(VOID_PARAM)
 {
 	POSITION pos;
 
@@ -104,8 +101,7 @@ entire_file_displayed(VOID_PARAM)
  * of the screen; this can happen when we display a short file
  * for the first time.
  */
-	public void
-squish_check(VOID_PARAM)
+public void squish_check(VOID_PARAM)
 {
 	if (!squished)
 		return;
@@ -122,13 +118,10 @@ squish_check(VOID_PARAM)
  *   real line.  If nblank > 0, the pos must be NULL_POSITION.
  *   The first real line after the blanks will start at ch_zero().
  */
-	public void
-forw(n, pos, force, only_last, nblank)
-	int n;
-	POSITION pos;
-	int force;
-	int only_last;
-	int nblank;
+public void forw(int n, POSITION pos,
+	int force,
+	int only_last,
+	int nblank)
 {
 	int nlines = 0;
 	int do_repaint;
@@ -296,12 +289,7 @@ forw(n, pos, force, only_last, nblank)
 /*
  * Display n lines, scrolling backward.
  */
-	public void
-back(n, pos, force, only_last)
-	int n;
-	POSITION pos;
-	int force;
-	int only_last;
+public void back(int n, POSITION pos, int force, int only_last)
 {
 	int nlines = 0;
 	int do_repaint;
@@ -358,11 +346,7 @@ back(n, pos, force, only_last)
  * Display n more lines, forward.
  * Start just after the line currently displayed at the bottom of the screen.
  */
-	public void
-forward(n, force, only_last)
-	int n;
-	int force;
-	int only_last;
+public void forward( int n, int force, int only_last)
 {
 	POSITION pos;
 
@@ -410,11 +394,7 @@ forward(n, force, only_last)
  * Display n more lines, backward.
  * Start just before the line currently displayed at the top of the screen.
  */
-	public void
-backward(n, force, only_last)
-	int n;
-	int force;
-	int only_last;
+public void backward( int n, int force, int only_last)
 {
 	POSITION pos;
 
@@ -433,8 +413,7 @@ backward(n, force, only_last)
  * back_scroll, because the default case depends on sc_height and
  * top_scroll, as well as back_scroll.
  */
-	public int
-get_back_scroll(VOID_PARAM)
+public int get_back_scroll(VOID_PARAM)
 {
 	if (no_back_scroll)
 		return (0);
@@ -448,8 +427,7 @@ get_back_scroll(VOID_PARAM)
 /*
  * Will the entire file fit on one screen?
  */
-	public int
-get_one_screen(VOID_PARAM)
+public int get_one_screen(VOID_PARAM)
 {
 	int nlines;
 	POSITION pos = ch_zero();

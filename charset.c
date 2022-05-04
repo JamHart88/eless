@@ -253,7 +253,7 @@ setfmt(char *s, char **fmtvarptr, int *attrptr, char *default_fmt)
 	if (s && utf_mode)
 	{
 		/* It would be too hard to account for width otherwise.  */
-		char constant *t = s;
+		char const *t = s;
 		while (*t)
 		{
 			if (*t < ' ' || *t > '~')
@@ -523,7 +523,7 @@ public void utf_skip_to_lead(char **pp ,char *limit)
 /*
  * Get the value of a UTF-8 character.
  */
-public LWCHAR get_wchar(constant char *p)
+public LWCHAR get_wchar(const char *p)
 {
 	switch (utf_len(p[0]))
 	{
@@ -623,7 +623,7 @@ public void put_wchar(char **pp, LWCHAR ch)
 public LWCHAR step_char(
 	char **pp,
 	signed int dir,
-	constant char *limit)
+	const char *limit)
 {
 	LWCHAR ch;
 	int len;

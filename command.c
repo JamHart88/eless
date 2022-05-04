@@ -88,8 +88,7 @@ static void multi_search LESSPARAMS((char *pattern, int n, int silent));
  * This looks nicer if the command takes a long time before
  * updating the screen.
  */
-	static void
-cmd_exec(VOID_PARAM)
+static void cmd_exec(VOID_PARAM)
 {
 	clear_attn();
 	clear_bot();
@@ -99,9 +98,7 @@ cmd_exec(VOID_PARAM)
 /*
  * Indicate we are reading a multi-character command.
  */
-	static void
-set_mca(action)
-	int action;
+static void set_mca(int action)
 {
 	mca = action;
 	deinit_mouse(); /* we don't want mouse events while entering a cmd */
@@ -112,8 +109,7 @@ set_mca(action)
 /*
  * Indicate we are not reading a multi-character command.
  */
-	static void
-clear_mca(VOID_PARAM)
+static void clear_mca(VOID_PARAM)
 {
 	if (mca == 0)
 		return;
@@ -124,20 +120,17 @@ clear_mca(VOID_PARAM)
 /*
  * Set up the display to start a new multi-character command.
  */
-	static void
-start_mca(action, prompt, mlist, cmdflags)
-	int action;
-	constant char *prompt;
-	void *mlist;
-	int cmdflags;
+static void start_mca(int action,
+	const char *prompt,
+	void *mlist,
+	int cmdflags)
 {
 	set_mca(action);
 	cmd_putstr(prompt);
 	set_mlist(mlist, cmdflags);
 }
 
-	public int
-in_mca(VOID_PARAM)
+public int in_mca(VOID_PARAM)
 {
 	return (mca != 0 && mca != A_PREFIX);
 }
@@ -145,8 +138,7 @@ in_mca(VOID_PARAM)
 /*
  * Set up the display to start a new search command.
  */
-	static void
-mca_search(VOID_PARAM)
+static void mca_search(VOID_PARAM)
 {
 #if HILITE_SEARCH
 	if (search_type & SRCH_FILTER)
@@ -185,8 +177,7 @@ mca_search(VOID_PARAM)
 /*
  * Set up the display to start a new toggle-option command.
  */
-	static void
-mca_opt_toggle(VOID_PARAM)
+static void mca_opt_toggle(VOID_PARAM)
 {
 	int no_prompt;
 	int flag;
@@ -194,7 +185,7 @@ mca_opt_toggle(VOID_PARAM)
 	
 	no_prompt = (optflag & OPT_NO_PROMPT);
 	flag = (optflag & ~OPT_NO_PROMPT);
-	dash = (flag == OPT_NO_TOGGLE) ? "_" : "-";
+	dash = (flag == OPT_NO_TOGGLE) ? (char *)"_" : (char *)"-";
 
 	set_mca(A_OPT_TOGGLE);
 	cmd_putstr(dash);
@@ -218,8 +209,7 @@ mca_opt_toggle(VOID_PARAM)
 /*
  * Execute a multicharacter command.
  */
-	static void
-exec_mca(VOID_PARAM)
+static void exec_mca(VOID_PARAM)
 {
 	char *cbuf;
 
@@ -285,16 +275,16 @@ exec_mca(VOID_PARAM)
 		}
 
 		if (shellcmd == NULL)
-			lsystem("", "!done");
+			lsystem((char *)"", (char *)"!done");
 		else
-			lsystem(shellcmd, "!done");
+			lsystem((char *)shellcmd, (char *)"!done");
 		break;
 #endif
 #if PIPEC
 	case A_PIPE:
 		
 		(void) pipe_mark(pipec, cbuf);
-		error("|done", NULL_PARG);
+		error((char *)"|done", NULL_PARG);
 		break;
 #endif
 	}
@@ -303,9 +293,7 @@ exec_mca(VOID_PARAM)
 /*
  * Is a character an erase or kill char?
  */
-	static int
-is_erase_char(c)
-	int c;
+static int is_erase_char( int c)
 {
 	return (c == erase_char || c == erase2_char || c == kill_char);
 }
@@ -313,9 +301,7 @@ is_erase_char(c)
 /*
  * Is a character a carriage return or newline?
  */
-	static int
-is_newline_char(c)
-	int c;
+static int is_newline_char( int c)
 {
 	return (c == '\n' || c == '\r');
 }
@@ -323,9 +309,7 @@ is_newline_char(c)
 /*
  * Handle the first char of an option (after the initial dash).
  */
-	static int
-mca_opt_first_char(c)
-	int c;
+static int mca_opt_first_char(int c)
 {
 	int flag = (optflag & ~OPT_NO_PROMPT);
 	if (flag == OPT_NO_TOGGLE)
@@ -375,9 +359,7 @@ mca_opt_first_char(c)
  * If so, display the complete name and stop 
  * accepting chars until user hits RETURN.
  */
-	static int
-mca_opt_nonfirst_char(c)
-	int c;
+static int mca_opt_nonfirst_char(int c)\
 {
 	char *p;
 	char *oname;
@@ -429,10 +411,8 @@ mca_opt_nonfirst_char(c)
 
 /*
  * Handle a char of an option toggle command.
- */
-	static int
-mca_opt_char(c)
-	int c;
+ */ 
+static int mca_opt_char(int c)
 {
 	PARG parg;
 
@@ -455,7 +435,7 @@ mca_opt_char(c)
 		if (curropt == NULL)
 		{
 			parg.p_string = get_cmdbuf();
-			error("There is no --%s option", &parg);
+			error((char *)"There is no --%s option", &parg);
 			return (MCA_DONE);
 		}
 		optgetname = FALSE;
@@ -471,7 +451,7 @@ mca_opt_char(c)
 		if (curropt == NULL)
 		{
 			parg.p_string = propt(c);
-			error("There is no %s option", &parg);
+			error((char *)"There is no %s option", &parg);
 			return (MCA_DONE);
 		}
 		opt_lower = ASCII_IS_LOWER(c);
@@ -484,7 +464,7 @@ mca_opt_char(c)
 	if ((optflag & ~OPT_NO_PROMPT) != OPT_TOGGLE ||
 	    !opt_has_param(curropt))
 	{
-		toggle_option(curropt, opt_lower, "", optflag);
+		toggle_option(curropt, opt_lower, (char *)"", optflag);
 		return (MCA_DONE);
 	}
 	/*
@@ -497,9 +477,7 @@ mca_opt_char(c)
 /*
  * Handle a char of a search command.
  */
-	static int
-mca_search_char(c)
-	int c;
+static int mca_search_char(int c)
 {
 	int flag = 0;
 
@@ -550,9 +528,7 @@ mca_search_char(c)
 /*
  * Handle a character of a multi-character command.
  */
-	static int
-mca_char(c)
-	int c;
+static int mca_char(int c)
 {
 	int ret;
 
@@ -653,8 +629,7 @@ mca_char(c)
 /*
  * Discard any buffered file data.
  */
-	static void
-clear_buffers(VOID_PARAM)
+static void clear_buffers(VOID_PARAM)
 {
 	if (!(ch_getflags() & CH_CANSEEK))
 		return;
@@ -668,8 +643,7 @@ clear_buffers(VOID_PARAM)
 /*
  * Make sure the screen is displayed.
  */
-	static void
-make_display(VOID_PARAM)
+static void make_display(VOID_PARAM)
 {
 	/*
 	 * If nothing is displayed yet, display starting from initial_scrpos.
@@ -708,10 +682,9 @@ make_display(VOID_PARAM)
 /*
  * Display the appropriate prompt.
  */
-	static void
-prompt(VOID_PARAM)
+static void prompt(VOID_PARAM)
 {
-	constant char *p;
+	const char *p;
 
 	if (ungot != NULL && ungot->ug_char != CHAR_END_COMMAND)
 	{
@@ -778,20 +751,18 @@ prompt(VOID_PARAM)
 /*
  * Display the less version message.
  */
-	public void
-dispversion(VOID_PARAM)
+public void dispversion(VOID_PARAM)
 {
 	PARG parg;
 
 	parg.p_string = version;
-	error("less %s", &parg);
+	error((char *)"less %s", &parg);
 }
 
 /*
  * Return a character to complete a partial command, if possible.
  */
-	static LWCHAR
-getcc_end_command(VOID_PARAM)
+static LWCHAR getcc_end_command(VOID_PARAM)
 {
 	switch (mca)
 	{
@@ -814,8 +785,7 @@ getcc_end_command(VOID_PARAM)
  * but may come from ungotten characters
  * (characters previously given to ungetcc or ungetsc).
  */
-	static LWCHAR
-getccu(VOID_PARAM)
+static LWCHAR getccu(VOID_PARAM)
 {
 	LWCHAR c;
 	if (ungot == NULL)
@@ -842,12 +812,10 @@ getccu(VOID_PARAM)
  * Get a command character, but if we receive the orig sequence,
  * convert it to the repl sequence.
  */
-	static LWCHAR
-getcc_repl(orig, repl, gr_getc, gr_ungetc)
-	char const* orig;
-	char const* repl;
-	LWCHAR (*gr_getc)(VOID_PARAM);
-	void (*gr_ungetc)(LWCHAR);
+static LWCHAR getcc_repl(char const* orig,
+	char const* repl,
+	LWCHAR (*gr_getc)(VOID_PARAM),
+	void (*gr_ungetc)(LWCHAR))
 {
 	LWCHAR c;
 	LWCHAR keys[16];
@@ -859,7 +827,7 @@ getcc_repl(orig, repl, gr_getc, gr_ungetc)
 	for (;;)
 	{
 		keys[ki] = c;
-		if (c != orig[ki] || ki >= sizeof(keys)-1)
+		if (c != (LWCHAR) orig[ki] || ki >=  (int) sizeof(keys)-1)
 		{
 			/* This is not orig we have been receiving.
 			 * If we have stashed chars in keys[],
@@ -886,8 +854,7 @@ getcc_repl(orig, repl, gr_getc, gr_ungetc)
 /*
  * Get command character.
  */
-	public int
-getcc(VOID_PARAM)
+public int getcc(VOID_PARAM)
 {
 	/* Replace kent (keypad Enter) with a newline. */
 	return getcc_repl(kent, "\n", getccu, ungetcc);
@@ -897,9 +864,7 @@ getcc(VOID_PARAM)
  * "Unget" a command character.
  * The next getcc() will return this character.
  */
-	public void
-ungetcc(c)
-	LWCHAR c;
+public void ungetcc(LWCHAR c)
 {
 	struct ungot *ug = (struct ungot *) ecalloc(1, sizeof(struct ungot));
 
@@ -912,9 +877,7 @@ ungetcc(c)
  * Unget a whole string of command characters.
  * The next sequence of getcc()'s will return this string.
  */
-	public void
-ungetsc(s)
-	char *s;
+public void ungetsc(char *s)
 {
 	char *p;
 
@@ -925,8 +888,7 @@ ungetsc(s)
 /*
  * Peek the next command character, without consuming it.
  */
-	public LWCHAR
-peekcc(VOID_PARAM)
+public LWCHAR peekcc(VOID_PARAM)
 {
 	LWCHAR c = getcc();
 	ungetcc(c);
@@ -938,11 +900,9 @@ peekcc(VOID_PARAM)
  * If SRCH_FIRST_FILE is set, begin searching at the first file.
  * If SRCH_PAST_EOF is set, continue the search thru multiple files.
  */
-	static void
-multi_search(pattern, n, silent)
-	char *pattern;
-	int n;
-	int silent;
+static void multi_search(char *pattern,
+	int n,
+	int silent)
 {
 	int nomore;
 	IFILE save_ifile;
@@ -1018,7 +978,7 @@ multi_search(pattern, n, silent)
 	 * Print an error message if we haven't already.
 	 */
 	if (n > 0 && !silent)
-		error("Pattern not found", NULL_PARG);
+		error((char *)"Pattern not found", NULL_PARG);
 
 	if (changed_file)
 	{
@@ -1035,9 +995,7 @@ multi_search(pattern, n, silent)
 /*
  * Forward forever, or until a highlighted line appears.
  */
-	static int
-forw_loop(until_hilite)
-	int until_hilite;
+static int forw_loop(int until_hilite)
 {
 	POSITION curr_len;
 
@@ -1076,8 +1034,7 @@ forw_loop(until_hilite)
  * Main command processor.
  * Accept and execute commands until a quit command.
  */
-	public void
-commands(VOID_PARAM)
+public void commands(VOID_PARAM)
 {
 	int c;
 	int action;
@@ -1449,7 +1406,7 @@ commands(VOID_PARAM)
 				break;
 			cmd_exec();
 			parg.p_string = eq_message();
-			error("%s", &parg);
+			error((char *)"%s", &parg);
 			break;
 
 		case A_VERSION:
@@ -1582,7 +1539,7 @@ commands(VOID_PARAM)
 			hshift = 0;
 			save_bs_mode = bs_mode;
 			bs_mode = BS_SPECIAL;
-			(void) edit(FAKE_HELPFILE);
+			(void) edit((char *)FAKE_HELPFILE);
 			break;
 
 		case A_EXAMINE:
@@ -1595,7 +1552,7 @@ commands(VOID_PARAM)
 			goto again;
 		
 #endif
-			error("Command not available", NULL_PARG);
+			error((char *)"Command not available", NULL_PARG);
 			break;
 			
 		case A_VISUAL:
@@ -1607,12 +1564,12 @@ commands(VOID_PARAM)
 				break;
 			if (strcmp(get_filename(curr_ifile), "-") == 0)
 			{
-				error("Cannot edit standard input", NULL_PARG);
+				error((char *)"Cannot edit standard input", NULL_PARG);
 				break;
 			}
 			if (get_altfilename(curr_ifile) != NULL)
 			{
-				error("WARNING: This file was viewed via LESSOPEN",
+				error((char *)"WARNING: This file was viewed via LESSOPEN",
 					NULL_PARG);
 			}
 			start_mca(A_SHELL, "!", ml_shell, 0);
@@ -1628,7 +1585,7 @@ commands(VOID_PARAM)
 			break;
 		
 #endif
-			error("Command not available", NULL_PARG);
+			error((char *)"Command not available", NULL_PARG);
 			break;
 
 		case A_NEXT_FILE:
@@ -1638,7 +1595,7 @@ commands(VOID_PARAM)
 #if TAGS
 			if (ntags())
 			{
-				error("No next file", NULL_PARG);
+				error((char *)"No next file", NULL_PARG);
 				break;
 			}
 #endif
@@ -1649,8 +1606,8 @@ commands(VOID_PARAM)
 				if (get_quit_at_eof() && eof_displayed() && 
 				    !(ch_getflags() & CH_HELPFILE))
 					quit(QUIT_OK);
-				parg.p_string = (number > 1) ? "(N-th) " : "";
-				error("No %snext file", &parg);
+				parg.p_string = (number > 1) ? (char *)"(N-th) " : (char *)"";
+				error((char *)"No %snext file", &parg);
 			}
 			break;
 
@@ -1661,7 +1618,7 @@ commands(VOID_PARAM)
 #if TAGS
 			if (ntags())
 			{
-				error("No previous file", NULL_PARG);
+				error((char *)"No previous file", NULL_PARG);
 				break;
 			}
 #endif
@@ -1669,8 +1626,8 @@ commands(VOID_PARAM)
 				number = 1;
 			if (edit_prev((int) number))
 			{
-				parg.p_string = (number > 1) ? "(N-th) " : "";
-				error("No %sprevious file", &parg);
+				parg.p_string = (number > 1) ? (char *)"(N-th) " : (char *)"";
+				error((char *)"No %sprevious file", &parg);
 			}
 			break;
 
@@ -1684,7 +1641,7 @@ commands(VOID_PARAM)
 			tagfile = nexttag((int) number);
 			if (tagfile == NULL)
 			{
-				error("No next tag", NULL_PARG);
+				error((char *)"No next tag", NULL_PARG);
 				break;
 			}
 			cmd_exec();
@@ -1695,7 +1652,7 @@ commands(VOID_PARAM)
 					jump_loc(pos, jump_sline);
 			}
 #else
-			error("Command not available", NULL_PARG);
+			error((char *)"Command not available", NULL_PARG);
 #endif
 			break;
 
@@ -1709,7 +1666,7 @@ commands(VOID_PARAM)
 			tagfile = prevtag((int) number);
 			if (tagfile == NULL)
 			{
-				error("No previous tag", NULL_PARG);
+				error((char *)"No previous tag", NULL_PARG);
 				break;
 			}
 			cmd_exec();
@@ -1720,7 +1677,7 @@ commands(VOID_PARAM)
 					jump_loc(pos, jump_sline);
 			}
 #else
-			error("Command not available", NULL_PARG);
+			error((char *)"Command not available", NULL_PARG);
 #endif
 			break;
 
@@ -1731,7 +1688,7 @@ commands(VOID_PARAM)
 			if (number <= 0)
 				number = 1;
 			if (edit_index((int) number))
-				error("No such file", NULL_PARG);
+				error((char *)"No such file", NULL_PARG);
 			break;
 
 		case A_REMOVE_FILE:
@@ -1800,7 +1757,7 @@ commands(VOID_PARAM)
 			goto again;
 		
 #endif
-			error("Command not available", NULL_PARG);
+			error((char *)"Command not available", NULL_PARG);
 			break;
 
 		case A_SETMARK:
@@ -1860,7 +1817,7 @@ commands(VOID_PARAM)
 			c = getcc();
 			goto again;
 #endif
-			error("Command not available", NULL_PARG);
+			error((char *)"Command not available", NULL_PARG);
 			break;
 
 		case A_B_BRACKET:

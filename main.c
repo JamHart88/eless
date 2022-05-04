@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
  * Copy a string to a "safe" place
  * (that is, to a buffer allocated by calloc).
  */
-public char * save(constant char *s)
+public char * save(const char *s)
 {
 	char *p;
 

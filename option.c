@@ -36,11 +36,14 @@ extern int opt_use_backslash;
 /*
  * Return a printable description of an option.
  */
-	static char *
-opt_desc(o)
-	struct loption *o;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// static char *
+// opt_desc(o)
+// 	struct loption *o;
+static char * opt_desc(struct loption *o)
 {
-	static char buf[OPTNAME_MAX + 10];
+static char buf[OPTNAME_MAX + 10];
 	if (o->oletter == OLETTER_NONE)
 		SNPRINTF1(buf, sizeof(buf), "--%s", o->onames->oname);
 	else
@@ -52,11 +55,14 @@ opt_desc(o)
  * Return a string suitable for printing as the "name" of an option.
  * For example, if the option letter is 'x', just return "-x".
  */
-	public char *
-propt(c)
-	int c;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public char *
+// propt(c)
+// 	int c;
+public char * propt(int c)
 {
-	static char buf[8];
+static char buf[8];
 
 	sprintf(buf, "-%s", prchar(c));
 	return (buf);
@@ -66,9 +72,12 @@ propt(c)
  * Scan an argument (either from the command line or from the 
  * LESS environment variable) and process it.
  */
-	public void
-scan_option(s)
-	char *s;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// scan_option(s)
+// 	char *s;
+public void scan_option(char *s)
 {
 	struct loption *o;
 	int optc;
@@ -211,7 +220,7 @@ scan_option(s)
 				    (o->otype & OTYPE) != NUMBER)
 				{
 					parg.p_string = printopt;
-					error("The %s option should not be followed by =",
+					error((char *)"The %s option should not be followed by =",
 						&parg);
 					return;
 				}
@@ -229,10 +238,10 @@ scan_option(s)
 		{
 			parg.p_string = printopt;
 			if (err == OPT_AMBIG)
-				error("%s is an ambiguous abbreviation (\"less --help\" for help)",
+				error((char *) "%s is an ambiguous abbreviation (\"less --help\" for help)",
 					&parg);
 			else
-				error("There is no %s option (\"less --help\" for help)",
+				error((char *)"There is no %s option (\"less --help\" for help)",
 					&parg);
 			return;
 		}
@@ -302,12 +311,15 @@ scan_option(s)
  *	OPT_UNSET	set to the default value
  *	OPT_SET		set to the inverse of the default value
  */
-	public void
-toggle_option(o, lower, s, how_toggle)
-	struct loption *o;
-	int lower;
-	char *s;
-	int how_toggle;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// toggle_option(o, lower, s, how_toggle)
+// 	struct loption *o;
+// 	int lower;
+// 	char *s;
+// 	int how_toggle;
+public void toggle_option(struct loption *o, int lower, char *s, int how_toggle)
 {
 	int num;
 	int no_prompt;
@@ -319,21 +331,21 @@ toggle_option(o, lower, s, how_toggle)
 
 	if (o == NULL)
 	{
-		error("No such option", NULL_PARG);
+		error((char *)"No such option", NULL_PARG);
 		return;
 	}
 
 	if (how_toggle == OPT_TOGGLE && (o->otype & NO_TOGGLE))
 	{
 		parg.p_string = opt_desc(o);
-		error("Cannot change the %s option", &parg);
+		error((char *)"Cannot change the %s option", &parg);
 		return;
 	}
 
 	if (how_toggle == OPT_NO_TOGGLE && (o->otype & NO_QUERY))
 	{
 		parg.p_string = opt_desc(o);
-		error("Cannot query the %s option", &parg);
+		error((char *)"Cannot query the %s option", &parg);
 		return;
 	} 
 
@@ -411,7 +423,7 @@ toggle_option(o, lower, s, how_toggle)
 			{
 			case OPT_SET:
 			case OPT_UNSET:
-				error("Cannot use \"-+\" or \"--\" for a string option",
+				error((char *)"Cannot use \"-+\" or \"--\" for a string option",
 					NULL_PARG);
 				return;
 			}
@@ -431,7 +443,7 @@ toggle_option(o, lower, s, how_toggle)
 				*(o->ovar) = o->odefault;
 				break;
 			case OPT_SET:
-				error("Can't use \"-!\" for a numeric option",
+				error((char *)"Can't use \"-!\" for a numeric option",
 					NULL_PARG);
 				return;
 			}
@@ -488,10 +500,13 @@ toggle_option(o, lower, s, how_toggle)
 /*
  * "Toggle" a triple-valued option.
  */
-	static int
-flip_triple(val, lc)
-	int val;
-	int lc;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// static int
+// flip_triple(val, lc)
+// 	int val;
+// 	int lc;
+static int flip_triple(int val, int lc)
 {
 	if (lc)
 		return ((val == OPT_ON) ? OPT_OFF : OPT_ON);
@@ -502,9 +517,12 @@ flip_triple(val, lc)
 /*
  * Determine if an option takes a parameter.
  */
-	public int
-opt_has_param(o)
-	struct loption *o;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public int
+// opt_has_param(o)
+// 	struct loption *o;
+public int opt_has_param(struct loption *o)
 {
 	if (o == NULL)
 		return (0);
@@ -517,12 +535,15 @@ opt_has_param(o)
  * Return the prompt to be used for a given option letter.
  * Only string and number valued options have prompts.
  */
-	public char *
-opt_prompt(o)
-	struct loption *o;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public char *
+// opt_prompt(o)
+// 	struct loption *o;
+public char * opt_prompt(struct loption *o)
 {
 	if (o == NULL || (o->otype & (STRING|NUMBER)) == 0)
-		return ("?");
+		return ((char *)"?");
 	return (o->odesc[0]);
 }
 
@@ -530,15 +551,18 @@ opt_prompt(o)
  * If the specified option can be toggled, return NULL.
  * Otherwise return an appropriate error message.
  */
-	public char *
-opt_toggle_disallowed(c)
-	int c;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public char *
+// opt_toggle_disallowed(c)
+// 	int c;
+public char * opt_toggle_disallowed(int c)
 {
 	switch (c)
 	{
 	case 'o':
 		if (ch_getflags() & CH_CANSEEK)
-			return "Input is not a pipe";
+			return (char *)"Input is not a pipe";
 		break;
 	}
 	return NULL;
@@ -551,8 +575,11 @@ opt_toggle_disallowed(c)
  * In that case, the current option is taken to be the string for
  * the previous option.
  */
-	public int
-isoptpending(VOID_PARAM)
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public int
+// isoptpending(VOID_PARAM)
+public int isoptpending(VOID_PARAM)
 {
 	return (pendopt != NULL);
 }
@@ -560,20 +587,26 @@ isoptpending(VOID_PARAM)
 /*
  * Print error message about missing string.
  */
-	static void
-nostring(printopt)
-	char *printopt;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// static void
+// nostring(printopt)
+// 	char *printopt;
+static void nostring(char *printopt)
 {
 	PARG parg;
 	parg.p_string = printopt;
-	error("Value is required after %s", &parg);
+	error((char *)"Value is required after %s", &parg);
 }
 
 /*
  * Print error message if a STRING type option is not followed by a string.
  */
-	public void
-nopendopt(VOID_PARAM)
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public void
+// nopendopt(VOID_PARAM)
+public void nopendopt(VOID_PARAM)
 {
 	nostring(opt_desc(pendopt));
 }
@@ -583,12 +616,15 @@ nopendopt(VOID_PARAM)
  * In the latter case, replace the char with a null char.
  * Return a pointer to the remainder of the string, if any.
  */
-	static char *
-optstring(s, p_str, printopt, validchars)
-	char *s;
-	char **p_str;
-	char *printopt;
-	char *validchars;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// static char *
+// optstring(s, p_str, printopt, validchars)
+// 	char *s;
+// 	char **p_str;
+// 	char *printopt;
+// 	char *validchars;
+static char * optstring(char *s, char **p_str, char *printopt, char *validchars)
 {
 	char *p;
 	char *out;
@@ -623,10 +659,13 @@ optstring(s, p_str, printopt, validchars)
 
 /*
  */
-	static int
-num_error(printopt, errp)
-	char *printopt;
-	int *errp;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// static int
+// num_error(printopt, errp)
+// 	char *printopt;
+// 	int *errp;
+static int num_error(char *printopt, int *errp)
 {
 	PARG parg;
 
@@ -638,7 +677,7 @@ num_error(printopt, errp)
 	if (printopt != NULL)
 	{
 		parg.p_string = printopt;
-		error("Number is required after %s", &parg);
+		error((char *)"Number is required after %s", &parg);
 	}
 	return (-1);
 }
@@ -648,11 +687,14 @@ num_error(printopt, errp)
  * Like atoi(), but takes a pointer to a char *, and updates
  * the char * to point after the translated number.
  */
-	public int
-getnum(sp, printopt, errp)
-	char **sp;
-	char *printopt;
-	int *errp;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public int
+// getnum(sp, printopt, errp)
+// 	char **sp;
+// 	char *printopt;
+// 	int *errp;
+public int getnum(char **sp, char *printopt, int *errp)
 {
 	char *s;
 	int n;
@@ -685,11 +727,14 @@ getnum(sp, printopt, errp)
  * The value of the fraction is returned as parts per NUM_FRAC_DENOM.
  * That is, if "n" is returned, the fraction intended is n/NUM_FRAC_DENOM.
  */
-	public long
-getfraction(sp, printopt, errp)
-	char **sp;
-	char *printopt;
-	int *errp;
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public long
+// getfraction(sp, printopt, errp)
+// 	char **sp;
+// 	char *printopt;
+// 	int *errp;
+public long getfraction(char **sp, char *printopt, int *errp)
 {
 	char *s;
 	long frac = 0;
@@ -720,8 +765,11 @@ getfraction(sp, printopt, errp)
 /*
  * Get the value of the -e flag.
  */
-	public int
-get_quit_at_eof(VOID_PARAM)
+// -------------------------------------------
+// Converted from C to C++ - C below
+// public int
+// get_quit_at_eof(VOID_PARAM)
+public int get_quit_at_eof(VOID_PARAM)
 {
 	if (!less_is_more)
 		return quit_at_eof;

@@ -175,7 +175,7 @@ static long regsize;		/* Code size. */
  * Forward declarations for regcomp()'s friends.
  */
 #ifndef STATIC
-#define	STATIC	static
+#definestaticstatic
 #endif
 STATIC char *reg();
 STATIC char *regbranch();
@@ -1145,7 +1145,7 @@ regprop(op)
 char *op;
 {
 	register char *p;
-	static char buf[50];
+static char buf[50];
 
 	(void) strcpy(buf, ":");
 

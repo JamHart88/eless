@@ -25,15 +25,14 @@ extern int top_scroll;
 /*
  * Jump to the end of the file.
  */
-	public void
-jump_forw(VOID_PARAM)
+public void jump_forw(VOID_PARAM)
 {
 	POSITION pos;
 	POSITION end_pos;
 
 	if (ch_end_seek())
 	{
-		error("Cannot seek to end of file", NULL_PARG);
+		error((char *)"Cannot seek to end of file", NULL_PARG);
 		return;
 	}
 	/* 
@@ -63,14 +62,13 @@ jump_forw(VOID_PARAM)
 /*
  * Jump to the last buffered line in the file.
  */
-	public void
-jump_forw_buffered(VOID_PARAM)
+public void jump_forw_buffered(VOID_PARAM)
 {
 	POSITION end;
 
 	if (ch_end_buffer_seek())
 	{
-		error("Cannot seek to end of buffers", NULL_PARG);
+		error((char *)"Cannot seek to end of buffers", NULL_PARG);
 		return;
 	}
 	end = ch_tell();
@@ -81,9 +79,7 @@ jump_forw_buffered(VOID_PARAM)
 /*
  * Jump to line n in the file.
  */
-	public void
-jump_back(linenum)
-	LINENUM linenum;
+public void jump_back( LINENUM linenum)
 {
 	POSITION pos;
 	PARG parg;
@@ -103,19 +99,18 @@ jump_back(linenum)
 	} else if (linenum <= 1 && ch_beg_seek() == 0)
 	{
 		jump_loc(ch_tell(), jump_sline);
-		error("Cannot seek to beginning of file", NULL_PARG);
+		error((char *)"Cannot seek to beginning of file", NULL_PARG);
 	} else
 	{
 		parg.p_linenum = linenum;
-		error("Cannot seek to line number %n", &parg);
+		error((char *)"Cannot seek to line number %n", &parg);
 	}
 }
 
 /*
  * Repaint the screen.
  */
-	public void
-repaint(VOID_PARAM)
+public void repaint(VOID_PARAM)
 {
 	struct scrpos scrpos;
 	/*
@@ -134,10 +129,7 @@ repaint(VOID_PARAM)
 /*
  * Jump to a specified percentage into the file.
  */
-	public void
-jump_percent(percent, fraction)
-	int percent;
-	long fraction;
+public void jump_percent( int percent, long fraction)
 {
 	POSITION pos, len;
 
@@ -147,12 +139,12 @@ jump_percent(percent, fraction)
 	 */
 	if ((len = ch_length()) == NULL_POSITION)
 	{
-		ierror("Determining length of file", NULL_PARG);
+		ierror((char *)"Determining length of file", NULL_PARG);
 		ch_end_seek();
 	}
 	if ((len = ch_length()) == NULL_POSITION)
 	{
-		error("Don't know length of file", NULL_PARG);
+		error((char *)"Don't know length of file", NULL_PARG);
 		return;
 	}
 	pos = percent_pos(len, percent, fraction);
@@ -167,10 +159,7 @@ jump_percent(percent, fraction)
  * Like jump_loc, but the position need not be 
  * the first character in a line.
  */
-	public void
-jump_line_loc(pos, sline)
-	POSITION pos;
-	int sline;
+public void jump_line_loc( POSITION pos, int sline)
 {
 	int c;
 
@@ -195,10 +184,7 @@ jump_line_loc(pos, sline)
  * The position must be the first character in a line.
  * Place the target line on a specified line on the screen.
  */
-	public void
-jump_loc(pos, sline)
-	POSITION pos;
-	int sline;
+public void jump_loc( POSITION pos, int sline)
 {
 	int nline;
 	int sindex;
@@ -234,7 +220,7 @@ jump_loc(pos, sline)
 	 */
 	if (ch_seek(pos))
 	{
-		error("Cannot seek to that file position", NULL_PARG);
+		error((char *)"Cannot seek to that file position", NULL_PARG);
 		return;
 	}
 

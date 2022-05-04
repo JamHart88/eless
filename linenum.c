@@ -72,7 +72,7 @@ extern int screen_trashed;
 /*
  * Initialize the line number structures.
  */
-	public void
+public void
 clr_linenum(VOID_PARAM)
 {
 	struct linenum_info *p;
@@ -100,9 +100,7 @@ clr_linenum(VOID_PARAM)
 /*
  * Calculate the gap for an entry.
  */
-	static void
-calcgap(p)
-	struct linenum_info *p;
+static void calcgap(struct linenum_info *p)
 {
 	/*
 	 * Don't bother to compute a gap for the anchor.
@@ -120,10 +118,7 @@ calcgap(p)
  * The specified position (pos) should be the file position of the
  * FIRST character in the specified line.
  */
-	public void
-add_lnum(linenum, pos)
-	LINENUM linenum;
-	POSITION pos;
+public void add_lnum(LINENUM linenum, POSITION pos)
 {
 	struct linenum_info *p;
 	struct linenum_info *newLineNum;
@@ -208,17 +203,15 @@ add_lnum(linenum, pos)
  * If we get stuck in a long loop trying to figure out the
  * line number, print a message to tell the user what we're doing.
  */
-	static void
-longloopmessage(VOID_PARAM)
+static void longloopmessage(VOID_PARAM)
 {
-	ierror("Calculating line numbers", NULL_PARG);
+	ierror((char *)"Calculating line numbers", NULL_PARG);
 }
 
 static int loopcount;
 static time_type startime;
 
-	static void
-longish(VOID_PARAM)
+static void longish(VOID_PARAM)
 {
 	if (loopcount >= 0 && ++loopcount > 100)
 	{
@@ -235,8 +228,7 @@ longish(VOID_PARAM)
  * Turn off line numbers because the user has interrupted
  * a lengthy line number calculation.
  */
-	static void
-abort_long(VOID_PARAM)
+static void abort_long(VOID_PARAM)
 {
 	if (linenums == OPT_ONPLUS)
 		/*
@@ -244,16 +236,14 @@ abort_long(VOID_PARAM)
 		 */
 		screen_trashed = 1;
 	linenums = 0;
-	error("Line numbers turned off", NULL_PARG);
+	error((char *)"Line numbers turned off", NULL_PARG);
 }
 
 /*
  * Find the line number associated with a given position.
  * Return 0 if we can't figure it out.
  */
-	public LINENUM
-find_linenum(pos)
-	POSITION pos;
+public LINENUM find_linenum(POSITION pos)
 {
 	struct linenum_info *p;
 	LINENUM linenum;
@@ -364,9 +354,7 @@ find_linenum(pos)
  * Find the position of a given line number.
  * Return NULL_POSITION if we can't figure it out.
  */
-	public POSITION
-find_pos(linenum)
-	LINENUM linenum;
+public POSITION find_pos(LINENUM linenum)
 {
 	struct linenum_info *p;
 	POSITION cpos;
@@ -437,9 +425,7 @@ find_pos(linenum)
  * The argument "where" tells which line is to be considered
  * the "current" line (e.g. TOP, BOTTOM, MIDDLE, etc).
  */
-	public LINENUM
-currline(where)
-	int where;
+public LINENUM currline(int where)
 {
 	POSITION pos;
 	POSITION len;
