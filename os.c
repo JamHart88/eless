@@ -61,9 +61,9 @@ extern int sigs;
 // Converted from C to C++ - C below
 // public int
 // iread(fd, buf, len)
-// 	int fd;
-// 	unsigned char *buf;
-// 	unsigned int len;
+//     int fd;
+//     unsigned char *buf;
+//     unsigned int len;
 public int iread(int fd, unsigned char *buf, unsigned int len)
 {
     int n;
@@ -71,22 +71,22 @@ public int iread(int fd, unsigned char *buf, unsigned int len)
 start:
     if (SET_JUMP(read_label))
     {
-    	/*
-    	 * We jumped here from intread.
-    	 */
-    	reading = 0;
+        /*
+         * We jumped here from intread.
+         */
+        reading = 0;
 #if HAVE_SIGPROCMASK
-    	{
-    	  sigset_t mask;
-    	  sigemptyset(&mask);
-    	  sigprocmask(SIG_SETMASK, &mask, NULL);
-    	}
+        {
+          sigset_t mask;
+          sigemptyset(&mask);
+          sigprocmask(SIG_SETMASK, &mask, NULL);
+        }
 #else
 #if HAVE_SIGSETMASK
-    	sigsetmask(0);
+        sigsetmask(0);
 #endif
 #endif
-    	return (READ_INTR);
+        return (READ_INTR);
     }
 
     flush();
@@ -99,39 +99,39 @@ start:
      * start returning 0 forever, instead of -1.
      */
     {
-    	extern int ignore_eoi;
-    	if (!ignore_eoi)
-    	{
-    	static int consecutive_nulls = 0;
-    		if (n == 0)
-    			consecutive_nulls++;
-    		else
-    			consecutive_nulls = 0;
-    		if (consecutive_nulls > 20)
-    			quit(QUIT_ERROR);
-    	}
+        extern int ignore_eoi;
+        if (!ignore_eoi)
+        {
+        static int consecutive_nulls = 0;
+            if (n == 0)
+                consecutive_nulls++;
+            else
+                consecutive_nulls = 0;
+            if (consecutive_nulls > 20)
+                quit(QUIT_ERROR);
+        }
     }
 #endif
     reading = 0;
     if (n < 0)
     {
 #if HAVE_ERRNO
-    	/*
-    	 * Certain values of errno indicate we should just retry the read.
-    	 */
+        /*
+         * Certain values of errno indicate we should just retry the read.
+         */
 #if MUST_DEFINE_ERRNO
-    	extern int errno;
+        extern int errno;
 #endif
 #ifdef EINTR
-    	if (errno == EINTR)
-    		goto start;
+        if (errno == EINTR)
+            goto start;
 #endif
 #ifdef EAGAIN
-    	if (errno == EAGAIN)
-    		goto start;
+        if (errno == EAGAIN)
+            goto start;
 #endif
 #endif
-    	return (-1);
+        return (-1);
     }
     return (n);
 }
@@ -172,7 +172,7 @@ public time_type get_time(VOID_PARAM)
 // Converted from C to C++ - C below
 // public char *
 // errno_message(filename)
-// 	char *filename;
+//     char *filename;
 public char * errno_message(char *filename)
 {
     char *p;
@@ -198,7 +198,7 @@ public char * errno_message(char *filename)
 // Converted from C to C++ - C below
 // static POSITION
 // muldiv(val, num, den)
-// 	POSITION val, num, den;
+//     POSITION val, num, den;
 static POSITION muldiv(POSITION val, POSITION num, POSITION den)
 {
 #if HAVE_FLOAT
@@ -208,12 +208,12 @@ static POSITION muldiv(POSITION val, POSITION num, POSITION den)
     POSITION v = ((POSITION) val) * num;
 
     if (v / num == val)
-    	/* No overflow */
-    	return (POSITION) (v / den);
+        /* No overflow */
+        return (POSITION) (v / den);
     else
-    	/* Above calculation overflows; 
-    	 * use a method that is less precise but won't overflow. */
-    	return (POSITION) (val / (den / num));
+        /* Above calculation overflows; 
+         * use a method that is less precise but won't overflow. */
+        return (POSITION) (val / (den / num));
 #endif
 }
 
@@ -225,8 +225,8 @@ static POSITION muldiv(POSITION val, POSITION num, POSITION den)
 // Converted from C to C++ - C below
 // public int
 // percentage(num, den)
-// 	POSITION num;
-// 	POSITION den;
+//     POSITION num;
+//     POSITION den;
 public int percentage(POSITION num, POSITION den)
 {
     return (int) muldiv(num,  (POSITION) 100, den);
@@ -239,16 +239,16 @@ public int percentage(POSITION num, POSITION den)
 // Converted from C to C++ - C below
 // public POSITION
 // percent_pos(pos, percent, fraction)
-// 	POSITION pos;
-// 	int percent;
-// 	long fraction;
+//     POSITION pos;
+//     int percent;
+//     long fraction;
 public POSITION percent_pos(POSITION pos, int percent, long fraction)
 {
     /* Change percent (parts per 100) to perden (parts per NUM_FRAC_DENOM). */
     POSITION perden = (percent * (NUM_FRAC_DENOM / 100)) + (fraction / 100);
 
     if (perden == 0)
-    	return (0);
+        return (0);
     return (POSITION) muldiv(pos, perden, (POSITION) NUM_FRAC_DENOM);
 }
 

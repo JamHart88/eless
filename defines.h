@@ -23,79 +23,79 @@
  * SHELL_ESCAPE is 1 if you wish to allow shell escapes.
  * (This is possible only if your system supplies the system() function.)
  */
-#define	SHELL_ESCAPE	1
+#define    SHELL_ESCAPE    1
 
 /*
  * EXAMINE is 1 if you wish to allow examining files by name from within less.
  */
-#define	EXAMINE		1
+#define    EXAMINE        1
 
 /*
  * TAB_COMPLETE_FILENAME is 1 if you wish to allow the TAB key
  * to complete filenames at prompts.
  */
-#define	TAB_COMPLETE_FILENAME	1
+#define    TAB_COMPLETE_FILENAME    1
 
 /*
  * CMD_HISTORY is 1 if you wish to allow keys to cycle through
  * previous commands at prompts.
  */
-#define	CMD_HISTORY	1
+#define    CMD_HISTORY    1
 
 /*
  * HILITE_SEARCH is 1 if you wish to have search targets to be 
  * displayed in standout mode.
  */
-#define	HILITE_SEARCH	1
+#define    HILITE_SEARCH    1
 
 /*
  * EDITOR is 1 if you wish to allow editor invocation (the "v" command).
  * (This is possible only if your system supplies the system() function.)
  * EDIT_PGM is the name of the (default) editor to be invoked.
  */
-#define	EDITOR		1
+#define    EDITOR        1
 
 /*
  * TAGS is 1 if you wish to support tag files.
  */
-#define	TAGS		1
+#define    TAGS        1
 
 /*
  * USERFILE is 1 if you wish to allow a .less file to specify 
  * user-defined key bindings.
  */
-#define	USERFILE	1
+#define    USERFILE    1
 
 /*
  * GLOB is 1 if you wish to have shell metacharacters expanded in filenames.
  * This will generally work if your system provides the "popen" function
  * and the "echo" shell command.
  */
-#define	GLOB		1
+#define    GLOB        1
 
 /*
  * PIPEC is 1 if you wish to have the "|" command
  * which allows the user to pipe data into a shell command.
  */
-#define	PIPEC		1
+#define    PIPEC        1
 
 /*
  * LOGFILE is 1 if you wish to allow the -o option (to create log files).
  */
-#define	LOGFILE		1
+#define    LOGFILE        1
 
 /*
  * GNU_OPTIONS is 1 if you wish to support the GNU-style command
  * line options --help and --version.
  */
-#define	GNU_OPTIONS	1
+#define    GNU_OPTIONS    1
 
 /*
  * ONLY_RETURN is 1 if you want RETURN to be the only input which
  * will continue past an error message.
  * Otherwise, any key will continue past an error message.
  */
-#define	ONLY_RETURN	0
+#define    ONLY_RETURN    0
 
 /*
  * LESSKEYFILE is the filename of the default lesskey output file 
@@ -106,10 +106,10 @@
  * LESSHISTFILE is the filename of the history file
  * (in the HOME directory).
  */
-#define	LESSKEYFILE		".less"
-#define	LESSKEYFILE_SYS		SYSDIR "/sysless"
-#define	DEF_LESSKEYINFILE	".lesskey"
-#define LESSHISTFILE		".lesshst"
+#define LESSKEYFILE        ".less"
+#define LESSKEYFILE_SYS    SYSDIR "/sysless"
+#define DEF_LESSKEYINFILE  ".lesskey"
+#define LESSHISTFILE       ".lesshst"
 
 /* ---------------------------------------------------- */
 /* Settings always true on Unix.  */
@@ -119,7 +119,7 @@
 /*
  * Pathname separator character.
  */
-#define	PATHNAME_SEP	"/"
+#define    PATHNAME_SEP    "/"
 
 /*
  * The value returned from tgetent on success.
@@ -136,21 +136,21 @@
 /*
  * Default shell metacharacters and meta-escape character.
  */
-#define	DEF_METACHARS	"; *?\t\n'\"()<>[]|&^`#\\$%=~{},"
-#define	DEF_METAESCAPE	"\\"
+#define    DEF_METACHARS    "; *?\t\n'\"()<>[]|&^`#\\$%=~{},"
+#define    DEF_METAESCAPE    "\\"
 
 /*
  * Sizes of various buffers.
  */
-#define	CMDBUF_SIZE	2048	/* Buffer for multichar commands */
-#define	UNGOT_SIZE	200	/* Max chars to unget() */
-#define	LINEBUF_SIZE	1024	/* Initial max size of line in input file */
-#define	OUTBUF_SIZE	1024	/* Output buffer */
-#define	PROMPT_SIZE	2048	/* Max size of prompt string */
-#define	TERMBUF_SIZE	2048	/* Termcap buffer for tgetent */
-#define	TERMSBUF_SIZE	1024	/* Buffer to hold termcap strings */
-#define	TAGLINE_SIZE	1024	/* Max size of line in tags file */
-#define	TABSTOP_MAX	128	/* Max number of custom tab stops */
+#define    CMDBUF_SIZE     2048    /* Buffer for multichar commands */
+#define    UNGOT_SIZE      200     /* Max chars to unget() */
+#define    LINEBUF_SIZE    1024    /* Initial max size of line in input file */
+#define    OUTBUF_SIZE     1024    /* Output buffer */
+#define    PROMPT_SIZE     2048    /* Max size of prompt string */
+#define    TERMBUF_SIZE    2048    /* Termcap buffer for tgetent */
+#define    TERMSBUF_SIZE   1024    /* Buffer to hold termcap strings */
+#define    TAGLINE_SIZE    1024    /* Max size of line in tags file */
+#define    TABSTOP_MAX     128     /* Max number of custom tab stops */
 
 /* ----------------------------------------------------*/
 /* Settings automatically determined by configure.  */
