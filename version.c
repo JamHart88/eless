@@ -14,4 +14,4 @@
 
 */
 
-char version[] = "001";
+char version[] = "0.1";
