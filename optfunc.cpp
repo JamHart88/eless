@@ -590,7 +590,7 @@ public void opt_x(int type, char *s)
             for (i = 1;  i < ntabstops;  i++)
             {
                 if (i > 1)
-                    strcat(msg, ",");
+                    strncat(msg, ",", 1);
                 sprintf(msg+strlen(msg), "%d", tabstops[i]);
             }
             sprintf(msg+strlen(msg), " and then ");

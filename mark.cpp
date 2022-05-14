@@ -103,6 +103,9 @@ static void mark_get_ifile(struct mark *m)
  */
 static struct mark * getumark(int c) 
 {
+    char mc = static_cast<char>(c);
+    debug ("getumark : ", mc);
+
     if (c >= 'a' && c <= 'z')
         return (&marks[c-'a']);
     if (c >= 'A' && c <= 'Z')
@@ -374,7 +377,8 @@ public void save_marks(FILE *fout, char *hdr)
         char pos_str[INT_STRLEN_BOUND(m->m_scrpos.pos) + 2];
         if (m->m_scrpos.pos == NULL_POSITION)
             continue;
-        postoa(m->m_scrpos.pos, pos_str);
+        typeToStr<POSITION>(m->m_scrpos.pos, pos_str);
+
         filename = m->m_filename;
         if (filename == NULL)
             filename = get_filename(m->m_ifile);
@@ -386,6 +390,10 @@ public void save_marks(FILE *fout, char *hdr)
     }
 }
 
+public void skip_whitespace (char * &line) 
+{
+    while (*line == ' ') line++;
+}
 /*
  * Restore one mark from the history file.
  */
@@ -395,22 +403,30 @@ public void restore_mark(char *line)
     int ln;
     POSITION pos;
 
-#define skip_whitespace while (*line == ' ') line++
+    debug("restore_mark1", line);
+
     if (*line++ != 'm')
         return;
-    skip_whitespace;
+    skip_whitespace(line);
+    debug("restore_mark2", line);
+
     m = getumark(*line++);
     if (m == NULL)
         return;
-    skip_whitespace;
-    ln = lstrtoi(line, &line);
+    skip_whitespace(line);
+    debug("restore_mark3", line);
+
+    ln = strToType<int>(line, &line);
+    debug("ln is ", ln);
     if (ln < 1)
         ln = 1;
     if (ln > sc_height)
         ln = sc_height;
-    skip_whitespace;
-    pos = lstrtopos(line, &line);
-    skip_whitespace;
+    skip_whitespace(line);
+    debug("restore_mark4", line);
+
+    pos = strToType<POSITION>(line, &line);
+    skip_whitespace(line);
     cmark(m, NULL_IFILE, pos, ln);
     m->m_filename = save(line);
 }

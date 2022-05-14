@@ -216,8 +216,8 @@ int ch_get()
     }
 
     read_more:
-    pos = (ch_block * LBUFSIZE) + bp->datasize;
-    if ((len = ch_length()) != NULL_POSITION && pos >= len)
+    pos = (ch_block * LBUFSIZE) + bp->datasize; // NOLINT(clang-analyzer-core.NullDereference)
+    if ((len = ch_length()) != NULL_POSITION && pos >= len) 
         /*
          * At end of file.
          */
@@ -772,9 +772,13 @@ static void ch_delbufs()
 
     while (ch_bufhead != END_OF_CHAIN)
     {
+#ifndef CLANGTIDY
+        // Clang-tidy has problems with this code
         bn = ch_bufhead;
         BUF_RM(bn);
         free(bufnode_buf(bn));
+#endif
+
     }
     ch_nbufs = 0;
     init_hashtbl();

@@ -13,7 +13,8 @@ INSTALL_DATA = ${INSTALL} -m 644
 CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
-CPPFLAGS = -g -O2 -Wall -finstrument-functions -Wl,--demangle
+CPPFLAGS = -std=c++11 -g -O2 -Wall -finstrument-functions -Wl,--demangle 
+#-Werror
 #CPPFLAGS = -g  -Wall 
 EXEEXT = 
 O=o
@@ -41,7 +42,7 @@ SHELL = /bin/sh
 
 # This rule allows us to supply the necessary -D options
 # in addition to whatever the user asks for.
-.c.o:
+.cpp.o:
 	${CC} -I. ${CFLAGS_COMPILE_ONLY} -DBINDIR=\"${bindir}\" -DSYSDIR=\"${sysconfdir}\" ${CPPFLAGS} ${CFLAGS} $<
 
 OBJ = \
@@ -82,7 +83,7 @@ check:
 installcheck:
 
 TAGS:
-	cd ${srcdir} && etags *.c *.h
+	cd ${srcdir} && etags *.cpp *.h
 
 # config.status might not change defines.h
 # Don't rerun config.status if we just configured (so there's no stamp-h).

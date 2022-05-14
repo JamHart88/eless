@@ -680,7 +680,7 @@ static int cmd_updown(int action)
             cmd_offset = 0;
             cmd_home();
             clear_eol();
-            strcpy(cmdbuf, s);
+            strncpy(cmdbuf, s, sizeof(cmdbuf) - 1);
             for (cp = cmdbuf;  *cp != '\0';  )
                 cmd_right();
             return (CC_OK);
@@ -1499,8 +1499,9 @@ static void write_mlist(struct mlist *ml, FILE *f)
 static char * make_tempname(char *filename)
 {
     char lastch;
-    char *tempname = (char *) ecalloc(1, strlen(filename)+1);
-    strcpy(tempname, filename);
+    int len = strlen(filename) + 1;
+    char *tempname = (char *) ecalloc(1, len);
+    strncpy(tempname, filename, len);
     lastch = tempname[strlen(tempname)-1];
     tempname[strlen(tempname)-1] = (lastch == 'Q') ? 'Z' : 'Q';
     return tempname;

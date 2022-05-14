@@ -7,7 +7,7 @@
  * For more information, see the README file.
  */
 
-/*
+/* 
  * Routines to decode user commands.
  *
  * This is all table driven.
@@ -334,7 +334,7 @@ void init_cmds(VOID_PARAM)
     /*
      * Try to add the tables in the system lesskey file.
      */
-    add_hometable((char *)"LESSKEY_SYSTEM", (char *)LESSKEYFILE_SYS, 1);
+    add_hometable((char *)"LESSKEY_SYSTEM", (char *)LESSKEYFILE_SYS, 1); 
     /*
      * Try to add the tables in the standard lesskey file "$HOME/.less".
      */

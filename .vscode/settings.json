@@ -1,9 +1,19 @@
 {
     "files.associations": {
+        "*.c": "cpp",
+        "*.h": "cpp",
         "less.h": "c",
         "cmd.h": "c",
         "random": "c",
-        "chrono": "c"
+        "chrono": "c",
+        "string_view": "cpp",
+        "ratio": "cpp",
+        "bit": "cpp",
+        "deque": "cpp",
+        "*.tcc": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp"
     },
     "cmake.configureOnOpen": false,
     "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",

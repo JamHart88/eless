@@ -194,8 +194,13 @@ public void add_lnum(LINENUM linenum, POSITION pos)
                 mingap = p->gap;
             }
         }
-        spare->next->prev = spare->prev;
-        spare->prev->next = spare->next;
+        if (spare != NULL) {
+            spare->next->prev = spare->prev;
+            spare->prev->next = spare->next;
+        } else {
+            error ((char *)"Error spare null pointer", NULL_PARG);
+            quit (QUIT_ERROR);
+        }
     }
 }
 

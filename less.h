@@ -18,7 +18,7 @@
  * Include the file of compile-time options.
  * The <> make cc search for it in -I., not srcdir.
  */
-#include <defines.h>
+#include "defines.h"
 
 #ifdef _SEQUENT_
 /*
@@ -82,7 +82,7 @@ static inline void ignore_result(long long int unused_result) {
 #endif
 
 #if DEBUG
-#include <debug.h>
+#include "debug.h"
 #endif
 
 #ifdef __TANDEM
@@ -480,8 +480,56 @@ struct hilite_tree;
 #include "funcs.h"
 
 /* Functions not included in funcs.h */
-void postoa LESSPARAMS ((POSITION, char*));
-void linenumtoa LESSPARAMS ((LINENUM, char*));
-void inttoa LESSPARAMS ((int, char*));
-int lstrtoi LESSPARAMS ((char*, char**));
-POSITION lstrtopos LESSPARAMS ((char*, char**));
+
+//int lstrtoi LESSPARAMS ((char*, char**));
+//POSITION lstrtopos LESSPARAMS ((char*, char**));
+
+// ---------------------------------------------------------
+// Template functions
+// ---------------------------------------------------------
+
+
+// ---------------------------------------------------------
+// strToType : Convert a string with a number in to its numeric value
+// Caller must ensure that type is appropriate for the expected
+// number in the string
+template <typename T>
+T strToType(char *buf, char **ebuf)
+{
+  T val = 0;
+  for (;;)
+  {
+    char c = *buf++;
+    if (c < '0' || c > '9')
+      break;
+    val = 10 * val + c - '0';
+  }
+  if (ebuf != NULL)
+    *ebuf = buf;
+  return val;
+}
+
+// ---------------------------------------------------------
+// TypetoStr : Convert a numeric type T to its string representation
+// Caller must ensure that buf is sized to support max possible
+// string length based on the type
+template <typename T>
+void typeToStr(const T num, char *buf)
+{
+  T tempNum = num;
+  int neg = (tempNum < 0);
+  char tbuf[((sizeof(tempNum) * 8 - 1) * 302 / 1000 + 1 + 1)+2];
+  char *s = tbuf + sizeof(tbuf);
+  if (neg)
+    tempNum = -tempNum;
+  *--s = '\0';
+  do
+  {
+    *--s = (tempNum % 10) + '0';
+  } while ((tempNum /= 10) != 0);
+  if (neg)
+    *--s = '-';
+  strncpy(buf, s, sizeof(tbuf));
+}
+
+

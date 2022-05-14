@@ -254,16 +254,16 @@ char *
 save (const char *s)
 {
     char *p;
-
-    p = (char *)ecalloc (strlen (s) + 1, sizeof (char));
-    strcpy (p, s);
+    int len = strlen(s) + 1;
+    p = (char *)ecalloc (len, sizeof (char));
+    strncpy (p, s, len);
     return (p);
 }
 
-/*
- * Allocate memory.
- * Like calloc(), but never returns an error (NULL).
- */
+// ------------------------------------------------
+// ecalloc: Allocate memory.
+// Like calloc(), but never returns an error (NULL).
+//
 public
 VOID_POINTER
 ecalloc (int count, unsigned int size)

@@ -145,29 +145,6 @@ public void putstr(const char *s)
 
 
 /*
- * Convert an integral type to a string.
- */
-
-#define TYPE_TO_A_FUNC(funcname, type) \
-void funcname(type num, char *buf) \
-{ \
-    int neg = (num < 0); \
-    char tbuf[INT_STRLEN_BOUND(num)+2]; \
-    char *s = tbuf + sizeof(tbuf); \
-    if (neg) num = -num; \
-    *--s = '\0'; \
-    do { \
-        *--s = (num % 10) + '0'; \
-    } while ((num /= 10) != 0); \
-    if (neg) *--s = '-'; \
-    strcpy(buf, s); \
-}
-
-TYPE_TO_A_FUNC(postoa, POSITION)
-TYPE_TO_A_FUNC(linenumtoa, LINENUM)
-TYPE_TO_A_FUNC(inttoa, int)
-
-/*
  * Convert an string to an integral type.
  */
 #define STR_TO_TYPE_FUNC(funcname, type) \
@@ -198,7 +175,7 @@ static int iprint_int(int num)
 {
     char buf[INT_STRLEN_BOUND(num)];
 
-    inttoa(num, buf);
+    typeToStr<int>(num, buf);
     putstr(buf);
     return ((int) strlen(buf));
 }
@@ -215,7 +192,7 @@ static int iprint_linenum(LINENUM num)
 {
     char buf[INT_STRLEN_BOUND(num)];
 
-    linenumtoa(num, buf);
+    typeToStr<LINENUM>(num, buf);
     putstr(buf);
     return ((int) strlen(buf));
 }

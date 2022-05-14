@@ -139,17 +139,24 @@ public void jump_percent( int percent, long fraction)
      * Determine the position in the file
      * (the specified percentage of the file's length).
      */
-    if ((len = ch_length()) == NULL_POSITION)
+    len = ch_length();
+
+    if (len == NULL_POSITION)
     {
         ierror((char *)"Determining length of file", NULL_PARG);
         ch_end_seek();
     }
-    if ((len = ch_length()) == NULL_POSITION)
+
+    len = ch_length();
+    
+    if (len == NULL_POSITION)
     {
         error((char *)"Don't know length of file", NULL_PARG);
         return;
     }
+
     pos = percent_pos(len, percent, fraction);
+    
     if (pos >= len)
         pos = len-1;
 

@@ -1055,6 +1055,7 @@ void commands(VOID_PARAM)
 
     for (;;)
     {
+        c='\0';
         debug("Top of command for loop");
         clear_mca();
         cmd_accept();
@@ -1094,7 +1095,7 @@ void commands(VOID_PARAM)
 
     again:
         debug("at again:");
-
+        
         if (sigs)
             continue;
 

@@ -220,7 +220,7 @@ void plinenum(POSITION pos) {
     int pad = 0;
     int n;
 
-    linenumtoa(linenum, buf);
+    typeToStr<LINENUM>(linenum, buf);
     n = (int)strlen(buf);
     if (n < MIN_LINENUM_WIDTH)
       pad = MIN_LINENUM_WIDTH - n;

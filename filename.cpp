@@ -176,7 +176,7 @@ public char * shell_quote(char *s)
                 /*
                  * Add the escape char.
                  */
-                strcpy(p, esc);
+                strncpy(p, esc, sizeof(p)-1);
                 p += esclen;
             }
             *p++ = *s++;
@@ -317,7 +317,7 @@ public char * fexpand(char *s)
                     *to++ = *fr;
                 else
                 {
-                    strcpy(to, get_filename(ifile));
+                    strncpy(to, get_filename(ifile), sizeof(to)-1);
                     to += strlen(to);
                 }
             }
@@ -452,7 +452,7 @@ static char * readfd(FILE *fd)
             len *= 2;
             *p = '\0';
             p = (char *) ecalloc(len, sizeof(char));
-            strcpy(p, buf);
+            strncpy(p, buf, sizeof(p)-1);
             free(buf);
             buf = p;
             p = buf + strlen(buf);
@@ -907,8 +907,8 @@ public char * bad_file(char *filename)
 
         m = (char *) ecalloc(strlen(filename) + sizeof(is_a_dir), 
             sizeof(char));
-        strcpy(m, filename);
-        strcat(m, is_a_dir);
+        strncpy(m, filename, sizeof(m)-1);
+        strncat(m, is_a_dir, sizeof(m) - strlen(is_a_dir) - 1);
     } else
     {
 #if HAVE_STAT
@@ -927,8 +927,8 @@ public char * bad_file(char *filename)
             static char not_reg[] = " is not a regular file (use -f to see it)";
             m = (char *) ecalloc(strlen(filename) + sizeof(not_reg),
                 sizeof(char));
-            strcpy(m, filename);
-            strcat(m, not_reg);
+            strncpy(m, filename, sizeof(m)-1);
+            strncat(m, not_reg, sizeof(m) - strlen(not_reg) - 1);
         }
 #endif
     }
