@@ -150,8 +150,10 @@ public void forw(int n, POSITION pos,
 
     if (!do_repaint)
     {
+        debug("not do_repaint");
         if (top_scroll && n >= sc_height - 1 && pos != ch_length())
         {
+            debug("start new screen");
             /*
              * Start a new screen.
              * {{ This is not really desirable if we happen
@@ -167,6 +169,7 @@ public void forw(int n, POSITION pos,
 
         if (pos != position(BOTTOM_PLUS_ONE) || empty_screen())
         {
+            debug("clear screen and start a new one");
             /*
              * This is not contiguous with what is
              * currently displayed.  Clear the screen image 
@@ -188,6 +191,7 @@ public void forw(int n, POSITION pos,
 
     while (--n >= 0)
     {
+        debug("read next line of input");
         /*
          * Read the next line of input.
          */
@@ -203,6 +207,7 @@ public void forw(int n, POSITION pos,
                 pos = ch_zero();
         } else
         {
+            debug("Get next line from the file");
             /* 
              * Get the next line from the file.
              */
@@ -212,6 +217,7 @@ public void forw(int n, POSITION pos,
 #endif
             if (pos == NULL_POSITION)
             {
+                debug("end of the file - stop");
                 /*
                  * End of file: stop here unless the top line 
                  * is still empty, or "force" is true.
@@ -230,10 +236,13 @@ public void forw(int n, POSITION pos,
          * Add the position of the next line to the position table.
          * Display the current line on the screen.
          */
+        debug("add the position of the next line to pos table");
         add_forw_pos(pos);
         nlines++;
-        if (do_repaint)
+        if (do_repaint) {
+            debug("do-repaint - continue");
             continue;
+        }
         /*
          * If this is the first screen displayed and
          * we hit an early EOF (i.e. before the requested
@@ -254,34 +263,16 @@ public void forw(int n, POSITION pos,
             continue;
         }
         put_line();
-#if 0
-        /* {{ 
-         * Can't call clear_eol here.  The cursor might be at end of line
-         * on an ignaw terminal, so clear_eol would clear the last char
-         * of the current line instead of all of the next line.
-         * If we really need to do this on clear_bg terminals, we need
-         * to find a better way.
-         * }}
-         */
-        if (clear_bg && apply_at_specials(final_attr) != AT_NORMAL)
-        {
-            /*
-             * Writing the last character on the last line
-             * of the display may have scrolled the screen.
-             * If we were in standout mode, clear_bg terminals 
-             * will fill the new line with the standout color.
-             * Now we're in normal mode again, so clear the line.
-             */
-            clear_eol();
-        }
-#endif
+
         forw_prompt = 1;
     }
 
     if (nlines == 0 && !ignore_eoi && same_pos_bell)
         eof_bell();
-    else if (do_repaint)
+    else if (do_repaint) {
+        debug("repaint from forw");
         repaint();
+    }
     first_time = 0;
     (void) currline(BOTTOM);
 }

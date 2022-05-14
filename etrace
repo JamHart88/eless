@@ -1,0 +1,90 @@
+#!/usr/bin/python2.7
+
+import string, os, sys, stat
+
+TRACEFILE="trace.out"
+TEXT_TRACEFILE="trace.txt"
+
+# Create a TRACE file if none exists
+def init_trace():
+    try:
+        os.stat(TEXT_TRACEFILE)
+    except OSError:
+        os.system("rm -f {}".format(TEXT_TRACEFILE))
+        os.mkfifo(TEXT_TRACEFILE)
+
+
+def hex_conv(s):
+    return int(s, 16)
+
+# Load symbols
+def load_symbols(prog):
+    f = os.popen("nm -o "+prog)
+    sym = {}
+    for line in f.readlines():
+        s = string.split(line)
+        v= string.split(s[0], ':')[1]
+        #print ("DBG: s is {} v is {}".format(s, v))
+        if len(v) > 0 and v[0] == "0":
+            val = hex_conv('0x' + v)
+            print ("{} -> {}".format(s, val))
+            #val = hex_conv(s[0])
+            name = s[2]
+            sym[val]=name
+        
+    f.close()
+    return sym
+
+# Print a program's trace
+def parse_trace(prog):
+
+    sym = load_symbols(prog)
+
+    tr = open(TRACEFILE)
+    level = 0
+    prevname = ""
+    count=0
+    while 1:
+        l = tr.readline()
+        if l:
+            s = string.split(l)
+            #if s[0]=="EXIT":
+            #    print ("exit PID", s[1])
+            #    end_trace()
+            s1 = hex_conv(s[8])
+            if s1 in sym.keys():
+                name = sym[s1]
+            else:
+                name = "??"
+            if s[0]=="e":
+                # Check if new name compared to previous input
+                if prevname==name:
+                    # was the counter counting?
+                    if count==0:
+                        # print function name
+                        print ('\n    '+level*'|   '+name,)
+                    count=count+1
+                else:
+                    # New name received. Was the counter counting?
+                    if count>0:
+                        print ("(total: %d times)" % (count+1),)
+                        # re-initialize counter
+                        count=0
+                    print ('\n    '+level*'|   '+name,)
+                level=level+1
+                prevname = name
+            else:
+                level=level-1
+                if name=="main":
+                    if count>0:
+                        print ("(total: %d times)" % (count+1),)
+                    #end_trace()
+    tr.close()
+
+# Main
+if __name__=="__main__":
+    if len(sys.argv)<2:
+        print ("Usage: analysis <binary name>")
+        sys.exit(1)
+    init_trace()
+    parse_trace(sys.argv[1])

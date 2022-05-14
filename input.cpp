@@ -59,6 +59,7 @@ get_forw_line:
 #if HILITE_SEARCH
     if (hilite_search == OPT_ONPLUS || is_filtering() || status_col)
     {
+        debug("line 62 status_col val = ", static_cast<int>(status_col));
         /*
          * If we are ignoring EOI (command F), only prepare
          * one line ahead, to avoid getting stuck waiting for
@@ -127,6 +128,7 @@ get_forw_line:
     (void) pflushmbc();
     pshift_all();
 
+    debug("read the 1st char to display");
     /*
      * Read the first character to display.
      */
@@ -138,6 +140,7 @@ get_forw_line:
     }
     blankline = (c == '\n' || c == '\r');
 
+    debug("Read each character in the line and append to the line buffer");
     /*
      * Read each character in the line and append to the line buffer.
      */
@@ -216,8 +219,10 @@ get_forw_line:
         goto get_forw_line;
     }
 
-    if (status_col && is_hilited(base_pos, ch_tell()-1, 1, NULL))
+    if (status_col && is_hilited(base_pos, ch_tell()-1, 1, NULL)) {
+        debug("line 223 status_col val = ", static_cast<int>(status_col));
         set_status_col('*');
+    }
 #endif
 
     if (squeeze && blankline)
@@ -263,9 +268,11 @@ get_back_line:
         return (NULL_POSITION);
     }
 #if HILITE_SEARCH
-    if (hilite_search == OPT_ONPLUS || is_filtering() || status_col)
+    if (hilite_search == OPT_ONPLUS || is_filtering() || status_col) {
+        debug("line 269 status_col val = ", static_cast<int>(status_col));
         prep_hilite((curr_pos < 3*size_linebuf) ? 
                 0 : curr_pos - 3*size_linebuf, curr_pos, -1);
+    }
 #endif
     if (ch_seek(curr_pos-1))
     {
@@ -419,8 +426,10 @@ get_back_line:
         goto get_back_line;
     }
 
-    if (status_col && curr_pos > 0 && is_hilited(base_pos, curr_pos-1, 1, NULL))
+    if (status_col && curr_pos > 0 && is_hilited(base_pos, curr_pos-1, 1, NULL)) {
+        debug("line 427 status_col val = ", static_cast<int>(status_col));
         set_status_col('*');
+    }
 #endif
 
     return (begin_new_pos);

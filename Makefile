@@ -10,10 +10,11 @@ INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
 
-CFLAGS = -g -O2 -Wall
+CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
-CPPFLAGS = 
+CPPFLAGS = -g -O2 -Wall -finstrument-functions -Wl,--demangle
+#CPPFLAGS = -g  -Wall 
 EXEEXT = 
 O=o
 
@@ -49,7 +50,7 @@ OBJ = \
 	help.${O} ifile.${O} input.${O} jump.${O} line.${O} linenum.${O} \
 	lsystem.${O} mark.${O} optfunc.${O} option.${O} opttbl.${O} os.${O} \
 	output.${O} pattern.${O} position.${O} prompt.${O} search.${O} signal.${O} \
-	tags.${O} ttyin.${O} version.${O}  
+	tags.${O} ttyin.${O} version.${O} debug.${O}
 
 all: less$(EXEEXT)
 

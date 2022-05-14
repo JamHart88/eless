@@ -111,6 +111,8 @@
 #define DEF_LESSKEYINFILE  ".lesskey"
 #define LESSHISTFILE       ".lesshst"
 
+#define DEBUG 1
+
 /* ---------------------------------------------------- */
 /* Settings always true on Unix.  */
 /* ---------------------------------------------------- */

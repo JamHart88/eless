@@ -1,6 +1,6 @@
 ---
 Language:      Cpp
-BasedOnStyle:  GNU
+BasedOnStyle:  Microsoft
 IndentWidth:     4
 
 

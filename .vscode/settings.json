@@ -2,11 +2,19 @@
     "files.associations": {
         "less.h": "c",
         "cmd.h": "c",
-        "random": "c"
+        "random": "c",
+        "chrono": "c"
     },
     "cmake.configureOnOpen": false,
     "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
     "C_Cpp.errorSquiggles": "Disabled",
 
     "clang-format.executable": "/usr/bin/clang-format",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/jamie/Nextcloud/Progs/myless",
+            "binaryPath": "/home/jamie/Nextcloud/Progs/myless/less",
+            "binaryArgs": []
+        }
+    ],
 }

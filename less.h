@@ -81,6 +81,9 @@ static inline void ignore_result(long long int unused_result) {
 #include <string.h>
 #endif
 
+#if DEBUG
+#include <debug.h>
+#endif
 
 #ifdef __TANDEM
 #include <floss.h>

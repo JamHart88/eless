@@ -118,6 +118,8 @@ public void repaint(VOID_PARAM)
      * and redisplay the screen.
      */
     get_scrpos(&scrpos, TOP);
+    int it = static_cast<int>(scrpos.pos);
+    debug("position : ", it);
     pos_clear();
     if (scrpos.pos == NULL_POSITION)
         /* Screen hasn't been drawn yet. */

@@ -981,6 +981,7 @@ void pdone(int endline, int chopped, int forw) {
     add_attr_normal();
   }
 
+  debug("add newline if necessary");
   /*
    * Add a newline if necessary,
    * and append a '\0' to the end of the line.
