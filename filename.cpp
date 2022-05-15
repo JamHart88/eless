@@ -14,7 +14,13 @@
  */
 
 #include "less.h"
+#include "filename.h"
 #include "lglob.h"
+#include "os.h"
+#include "ch.h"
+#include "decode.h"
+#include "ifile.h"
+#include "line.h"
 
 #if HAVE_STAT
 #include <sys/stat.h>

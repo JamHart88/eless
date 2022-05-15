@@ -33,6 +33,10 @@
  */
 
 #include "less.h"
+#include "linenum.h"
+#include "os.h"
+#include "ch.h"
+#include "line.h"
 
 /*
  * Structure to keep track of a line number and the associated file position.

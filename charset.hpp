@@ -1,3 +1,5 @@
+#ifndef CHARSET_H
+#define CHARSET_H
 /*
  * Copyright (C) 1984-2020  Mark Nudelman
  *
@@ -6,6 +8,12 @@
  *
  * For more information, see the README file.
  */
+
+/*
+ * Functions to define the character set
+ * and do things specific to the character set.
+ */
+
 
 #define IS_ASCII_OCTET(c)   (((c) & 0x80) == 0)
 #define IS_UTF8_TRAIL(c)    (((c) & 0xC0) == 0x80)
@@ -16,3 +24,5 @@
 #define IS_UTF8_LEAD6(c)    (((c) & 0xFE) == 0xFC)
 #define IS_UTF8_INVALID(c)  (((c) & 0xFE) == 0xFE)
 #define IS_UTF8_LEAD(c)     (((c) & 0xC0) == 0xC0 && !IS_UTF8_INVALID(c))
+
+#endif

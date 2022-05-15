@@ -1,3 +1,5 @@
+#ifndef DEFINES_H
+#define DEFINES_H
 /* defines.h.  Generated from defines.h.in by configure.  */
 /* defines.h.in.  Generated from configure.ac by autoheader.  */
 
@@ -378,3 +380,4 @@
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 /* #undef size_t */
+#endif

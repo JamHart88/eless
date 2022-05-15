@@ -15,6 +15,13 @@
 #include "less.h"
 #include "position.h"
 #include "charset.h"
+#include "ch.h"
+#include "cmdbuf.h"
+#include "cvt.h"
+#include "input.h"
+#include "jump.h"
+#include "line.h"
+#include "linenum.h"
 
 #define    MINPOS(a,b)    (((a) < (b)) ? (a) : (b))
 #define    MAXPOS(a,b)    (((a) > (b)) ? (a) : (b))

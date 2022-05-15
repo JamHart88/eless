@@ -9,7 +9,16 @@
 
 
 #include "less.h"
+#include "edit.h"
+#include "os.h"
 #include "position.h"
+#include "ch.h"
+#include "cmdbuf.h"
+#include "command.h"
+#include "filename.h"
+#include "ifile.h"
+#include "linenum.h"
+
 #if HAVE_STAT
 #include <sys/stat.h>
 #endif
@@ -150,7 +159,7 @@ static void close_pipe(FILE *pipefd)
 /*
  * Close the current input file.
  */
-static void close_file(VOID_PARAM)
+static void close_file(void)
 {
     struct scrpos scrpos;
     int chflags;
@@ -539,7 +548,7 @@ public int edit_list(char *filelist)
 /*
  * Edit the first file in the command line (ifile) list.
  */
-public int edit_first(VOID_PARAM)
+public int edit_first(void)
 {
     if (nifile() == 0)
         return (edit_stdin());
@@ -550,7 +559,7 @@ public int edit_first(VOID_PARAM)
 /*
  * Edit the last file in the command line (ifile) list.
  */
-public int edit_last(VOID_PARAM)
+public int edit_last(void)
 {
     curr_ifile = NULL_IFILE;
     return (edit_prev(1));
@@ -640,7 +649,7 @@ public int edit_index(int n)
     return (edit_ifile(h));
 }
 
-public IFILE save_curr_ifile(VOID_PARAM)
+public IFILE save_curr_ifile(void)
 {
     if (curr_ifile != NULL_IFILE)
         hold_ifile(curr_ifile, 1);
@@ -688,7 +697,7 @@ public void reedit_ifile(IFILE save_ifile)
     quit(QUIT_ERROR);
 }
 
-public void reopen_curr_ifile(VOID_PARAM)
+public void reopen_curr_ifile(void)
 {
     IFILE save_ifile = save_curr_ifile();
     close_file();
@@ -698,7 +707,7 @@ public void reopen_curr_ifile(VOID_PARAM)
 /*
  * Edit standard input.
  */
-public int edit_stdin(VOID_PARAM)
+public int edit_stdin(void)
 {
     if (isatty(fd0))
     {
@@ -712,7 +721,7 @@ public int edit_stdin(VOID_PARAM)
  * Copy a file directly to standard output.
  * Used if standard output is not a tty.
  */
-public void cat_file(VOID_PARAM)
+public void cat_file(void)
 {
     int c;
 

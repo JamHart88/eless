@@ -1,3 +1,5 @@
+#ifndef CMD_H
+#define CMD_H
 /*
  * Copyright (C) 1984-2020  Mark Nudelman
  *
@@ -143,3 +145,5 @@
 #define SK_BACKTAB             15
 #define SK_CTL_BACKSPACE       16
 #define SK_CONTROL_K           40
+
+#endif

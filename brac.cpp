@@ -7,23 +7,26 @@
  * For more information, see the README file.
  */
 
-
 /*
  * Routines to perform bracket matching functions.
  */
 
+#include "brac.h"
+#include "ch.h"
 #include "less.h"
 #include "position.h"
+#include "jump.h"
 
 /*
- * Try to match the n-th open bracket 
+ * Try to match the n-th open bracket
  *  which appears in the top displayed line (forwdir),
- * or the n-th close bracket 
+ * or the n-th close bracket
  *  which appears in the bottom displayed line (!forwdir).
- * The characters which serve as "open bracket" and 
+ * The characters which serve as "open bracket" and
  * "close bracket" are given.
  */
-public void match_brac(int obrac, int cbrac, int forwdir, int n)
+public
+void match_brac(int obrac, int cbrac, int forwdir, int n)
 {
     int c;
     int nest;
@@ -41,9 +44,9 @@ public void match_brac(int obrac, int cbrac, int forwdir, int n)
     if (pos == NULL_POSITION || ch_seek(pos))
     {
         if (forwdir)
-            error((char *) "Nothing in top line", NULL_PARG);
+            error((char *)"Nothing in top line", NULL_PARG);
         else
-            error((char *) "Nothing in bottom line", NULL_PARG);
+            error((char *)"Nothing in bottom line", NULL_PARG);
         return;
     }
 
@@ -55,9 +58,9 @@ public void match_brac(int obrac, int cbrac, int forwdir, int n)
         if ((c = ch_forw_get()) == '\n' || c == EOI)
         {
             if (forwdir)
-                error((char *) "No bracket in top line", NULL_PARG);
+                error((char *)"No bracket in top line", NULL_PARG);
             else
-                error((char *) "No bracket in bottom line", NULL_PARG);
+                error((char *)"No bracket in bottom line", NULL_PARG);
             return;
         }
     } while (c != obrac || --n > 0);
@@ -69,7 +72,7 @@ public void match_brac(int obrac, int cbrac, int forwdir, int n)
      * If searching backward, skip back over the open bracket.
      */
     if (!forwdir)
-        (void) ch_back_get();
+        (void)ch_back_get();
 
     /*
      * Search the file for the matching bracket.
@@ -91,5 +94,5 @@ public void match_brac(int obrac, int cbrac, int forwdir, int n)
             return;
         }
     }
-    error((char *) "No matching bracket", NULL_PARG);
+    error((char *)"No matching bracket", NULL_PARG);
 }

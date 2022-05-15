@@ -14,7 +14,13 @@
  */
 
 #include "less.h"
+#include "forback.h"
 #include "position.h"
+#include "ch.h"
+#include "edit.h"
+#include "input.h"
+#include "jump.h"
+#include "linenum.h"
 
 public int screen_trashed;
 public int squished;

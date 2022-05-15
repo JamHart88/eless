@@ -1,3 +1,5 @@
+#ifndef OPTION_H
+#define OPTION_H
 /*
  * Copyright (C) 1984-2020  Mark Nudelman
  *
@@ -64,3 +66,4 @@ struct loption
     char *odesc[3];            /* Description of each value */
 };
 
+#endif

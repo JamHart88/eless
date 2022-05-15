@@ -13,9 +13,9 @@ INSTALL_DATA = ${INSTALL} -m 644
 CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
-CPPFLAGS = -std=c++11 -g -O2 -Wall  -Wl,--demangle 
+CPPFLAGS = -std=c++11 -g -O2 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal
 # Removed CPP flags
-#-finstrument-functions -Werror
+#-finstrument-functions -Werror -Wpedantic -Wshadow 
 #CPPFLAGS = -g  -Wall 
 EXEEXT = 
 O=o

@@ -1,7 +1,13 @@
+#Consider using cppcoreguidelines-* - recommendations for making valid C++
+#--- modernize-*
+#--- bugprone-*
+#--- cert-*
+#--- misc-* -- eg misc-unused-parameters
+#--- readability-* ??? maybe too much info
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*'
-WarningsAsErrors: ''
-HeaderFilterRegex: ''
+Checks:          'clang-diagnostic-*,clang-analyzer-*,bugprone-*'
+WarningsAsErrors: false
+HeaderFilterRegex: '.*\.(h|hpp|hxx)$'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
 User:            jamie
@@ -42,5 +48,8 @@ CheckOptions:
     value:           'false'
   - key:             google-readability-function-size.StatementThreshold
     value:           '800'
+  - key:             misc-unused-parameters
+    value:           'true'
 ...
+
 

@@ -1,3 +1,5 @@
+#ifndef LESSKEY_H
+#define LESSKEY_H
 /*
  * Copyright (C) 1984-2020  Mark Nudelman
  *
@@ -37,3 +39,5 @@
 
 /* */
 #define    KRADIX        64
+
+#endif

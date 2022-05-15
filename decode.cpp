@@ -30,7 +30,10 @@
 
 #include "cmd.h"
 #include "less.h"
+#include "decode.h"
 #include "lesskey.h"
+#include "command.h"
+#include "filename.h"
 
 extern int erase_char, erase2_char, kill_char;
 extern int mousecap;

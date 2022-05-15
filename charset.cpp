@@ -14,11 +14,12 @@
  */
 
 #include "less.h"
+#include "charset.h"
 #include <locale.h>
 #include <ctype.h>
 #include <langinfo.h>
 
-#include "charset.h"
+#include "decode.h"
 
 extern int bs_mode;
 

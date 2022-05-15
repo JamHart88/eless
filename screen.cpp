@@ -14,6 +14,7 @@
 
 #include "cmd.h"
 #include "less.h"
+#include "decode.h"
 
 #if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>

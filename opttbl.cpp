@@ -14,6 +14,7 @@
 
 #include "less.h"
 #include "option.h"
+#include "decode.h"
 
 /*
  * Variables controlled by command line options.

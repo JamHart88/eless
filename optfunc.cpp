@@ -26,6 +26,12 @@
 
 #include "less.h"
 #include "option.h"
+#include "ch.h"
+#include "command.h"
+#include "edit.h"
+#include "filename.h"
+#include "decode.h"
+#include "jump.h"
 
 extern int nbufs;
 extern int bufspace;

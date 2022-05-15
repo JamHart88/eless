@@ -13,6 +13,8 @@
  */
 
 #include "less.h"
+#include "os.h"
+
 public int tty;
 extern int sigs;
 extern int utf_mode;

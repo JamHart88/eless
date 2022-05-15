@@ -18,6 +18,9 @@
  */
 
 #include "less.h"
+#include "input.h"
+#include "ch.h"
+#include "line.h"
 
 extern int squeeze;
 extern int chopline;

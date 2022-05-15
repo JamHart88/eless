@@ -19,6 +19,8 @@
 
 // must come after less.h
 #include "option.h"
+#include "ch.h"
+#include "command.h"
 
 
 static struct loption *pendopt;

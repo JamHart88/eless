@@ -15,6 +15,9 @@
  */
 
 #include "less.h"
+#include "os.h"
+#include "ch.h"
+#include "ifile.h"
 
 #if HAVE_STAT_INO
 #include <sys/stat.h>

@@ -10,6 +10,11 @@
 
 #include "less.h"
 #include "position.h"
+#include "ch.h"
+#include "edit.h"
+#include "filename.h"
+#include "ifile.h"
+#include "jump.h"
 
 extern IFILE curr_ifile;
 extern int sc_height;

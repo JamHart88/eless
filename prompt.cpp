@@ -18,7 +18,13 @@
  */
 
 #include "less.h"
+#include "os.h"
 #include "position.h"
+#include "ch.h"
+#include "filename.h"
+#include "forback.h"
+#include "ifile.h"
+#include "linenum.h"
 
 extern int pr_type;
 extern int new_file;

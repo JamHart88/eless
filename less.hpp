@@ -1,3 +1,5 @@
+#ifndef LESS_H
+#define LESS_H
 /*
  * Copyright (C) 1984-2020  Mark Nudelman
  *
@@ -85,11 +87,8 @@ static inline void ignore_result(long long int unused_result) {
 #include "debug.h"
 #endif
 
-
-#ifdef __cplusplus
 // New C++ includes
 #include <cstring>
-#endif
 
 #ifdef __TANDEM
 #include <floss.h>
@@ -541,3 +540,4 @@ int strlen_bound (void)
     return ((sizeof(T) * CHAR_BIT - 1) * 302 / 1000 + 1 + 1);
 } 
 
+#endif

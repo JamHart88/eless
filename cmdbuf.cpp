@@ -14,8 +14,14 @@
  */
 
 #include "less.h"
+#include "cmdbuf.h"
 #include "cmd.h"
 #include "charset.h"
+#include "command.h"
+#include "edit.h"
+#include "filename.h"
+#include "decode.h"
+
 #if HAVE_STAT
 #include <sys/stat.h>
 #endif
@@ -116,7 +122,7 @@ static int cmd_mbc_buf_index;
 /*
  * Reset command buffer (to empty).
  */
-public void cmd_reset(VOID_PARAM)
+public void cmd_reset(void)
 {
     cp = cmdbuf;
     *cp = '\0';
@@ -130,7 +136,7 @@ public void cmd_reset(VOID_PARAM)
 /*
  * Clear command line.
  */
-public void clear_cmd(VOID_PARAM)
+public void clear_cmd(void)
 {
     cmd_col = prompt_col = 0;
     cmd_mbc_buf_len = 0;
@@ -167,7 +173,7 @@ public void cmd_putstr(const char *s)
 /*
  * How many characters are in the command buffer?
  */
-public int len_cmdbuf(VOID_PARAM)
+public int len_cmdbuf(void)
 {
     char *s = cmdbuf;
     char *endline = s + strlen(s);
@@ -291,7 +297,7 @@ static void cmd_repaint(const char *old_cp)
  * Put the cursor at "home" (just after the prompt),
  * and set cp to the corresponding char in cmdbuf.
  */
-static void cmd_home(VOID_PARAM)
+static void cmd_home(void)
 {
     while (cmd_col > prompt_col)
     {
@@ -309,7 +315,7 @@ static void cmd_home(VOID_PARAM)
 /*
  * Shift the cmdbuf display left a half-screen.
  */
-static void cmd_lshift(VOID_PARAM)
+static void cmd_lshift(void)
 {
     char *s;
     char *save_cp;
@@ -346,7 +352,7 @@ static void cmd_lshift(VOID_PARAM)
 /*
  * Shift the cmdbuf display right a half-screen.
  */
-static void cmd_rshift(VOID_PARAM)
+static void cmd_rshift(void)
 {
     char *s;
     char *save_cp;
@@ -376,7 +382,7 @@ static void cmd_rshift(VOID_PARAM)
  * Move cursor right one character.
  */
 static int
-cmd_right(VOID_PARAM)
+cmd_right(void)
 {
     char *pr;
     char *ncp;
@@ -411,7 +417,7 @@ cmd_right(VOID_PARAM)
  * Move cursor left one character.
  */
 static int
-cmd_left(VOID_PARAM)
+cmd_left(void)
 {
     char *ncp;
     int width = 0;
@@ -476,7 +482,7 @@ static int cmd_ichar(char *cs, int clen)
  * Delete the char to the left of the cursor.
  */
 static int
-cmd_erase(VOID_PARAM)
+cmd_erase(void)
 {
     char *s;
     int clen;
@@ -524,7 +530,7 @@ cmd_erase(VOID_PARAM)
 /*
  * Delete the char under the cursor.
  */
-static int cmd_delete(VOID_PARAM)
+static int cmd_delete(void)
 {
     if (*cp == '\0')
     {
@@ -542,7 +548,7 @@ static int cmd_delete(VOID_PARAM)
 /*
  * Delete the "word" to the left of the cursor.
  */
-static int cmd_werase(VOID_PARAM)
+static int cmd_werase(void)
 {
     if (cp > cmdbuf && cp[-1] == ' ')
     {
@@ -567,7 +573,7 @@ static int cmd_werase(VOID_PARAM)
 /*
  * Delete the "word" under the cursor.
  */
-static int cmd_wdelete(VOID_PARAM)
+static int cmd_wdelete(void)
 {
     if (*cp == ' ')
     {
@@ -592,7 +598,7 @@ static int cmd_wdelete(VOID_PARAM)
 /*
  * Delete all chars in the command buffer.
  */
-static int cmd_kill(VOID_PARAM)
+static int cmd_kill(void)
 {
     if (cmdbuf[0] == '\0')
     {
@@ -774,7 +780,7 @@ public void cmd_addhist(struct mlist *mlist,
  * Accept the command in the command buffer.
  * Add it to the currently selected history list.
  */
-public void cmd_accept(VOID_PARAM)
+public void cmd_accept(void)
 {
 #if CMD_HISTORY
     /*
@@ -803,7 +809,7 @@ static int cmd_edit(int c)
 #if TAB_COMPLETE_FILENAME
 #define not_in_completion() in_completion = 0
 #else
-#define not_in_completion(VOID_PARAM)
+#define not_in_completion(void)
 #endif
     
     /*
@@ -935,7 +941,7 @@ static int cmd_istr(char *str)
  * Return pointer to the beginning of the word and put the
  * cursor at the end of the word.
  */
-static char * delimit_word(VOID_PARAM)
+static char * delimit_word(void)
 {
     char *word;
 #if SPACES_IN_FILENAMES
@@ -1021,7 +1027,7 @@ static char * delimit_word(VOID_PARAM)
  * Expand the word under the cursor into a list of filenames 
  * which start with that word, and set tk_text to that list.
  */
-static void init_compl(VOID_PARAM)
+static void init_compl(void)
 {
     char *word;
     char c;
@@ -1302,7 +1308,7 @@ public LINENUM cmd_int(long *frac)
 /*
  * Return a pointer to the command buffer.
  */
-public char * get_cmdbuf(VOID_PARAM)
+public char * get_cmdbuf(void)
 {
     return (cmdbuf);
 }
@@ -1311,7 +1317,7 @@ public char * get_cmdbuf(VOID_PARAM)
 /*
  * Return the last (most recent) string in the current command history.
  */
-public char * cmd_lastpattern(VOID_PARAM)
+public char * cmd_lastpattern(void)
 {
     if (curr_mlist == NULL)
         return (NULL);
@@ -1333,7 +1339,7 @@ static int mlist_size(struct mlist *ml)
 /*
  * Get the name of the history file.
  */
-static char * histfile_name(VOID_PARAM)
+static char * histfile_name(void)
 {
     char *home;
     char *name;
@@ -1445,7 +1451,9 @@ static void read_cmdhist(void (*action)(void*,struct mlist*,char*),
     (*action)(uparam, NULL, NULL); /* signal end of file */
 }
 
-static void addhist_init(void *uparam, struct mlist *ml, char *string)
+// unused param is needed because its used by other actions
+// NOLINTNEXTLINE(misc-unused-parameters)
+static void addhist_init(void *unused, struct mlist *ml, char *string) 
 {
     if (ml != NULL)
         cmd_addhist(ml, string, 0);
@@ -1457,7 +1465,7 @@ static void addhist_init(void *uparam, struct mlist *ml, char *string)
 /*
  * Initialize history from a .lesshist file.
  */
-public void init_cmdhist(VOID_PARAM)
+public void init_cmdhist(void)
 {
 #if CMD_HISTORY
     read_cmdhist(&addhist_init, NULL, 0, 0);
@@ -1578,7 +1586,7 @@ static void make_file_private(FILE *f)
 /*
  * Does the history file need to be updated?
  */
-static int histfile_modified(VOID_PARAM)
+static int histfile_modified(void)
 {
     if (mlist_search.modified)
         return 1;
@@ -1596,7 +1604,7 @@ static int histfile_modified(VOID_PARAM)
 /*
  * Update the .lesshst file.
  */
-public void save_cmdhist(VOID_PARAM)
+public void save_cmdhist(void)
 {
 #if CMD_HISTORY
     char *histname;

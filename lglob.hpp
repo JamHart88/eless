@@ -1,3 +1,5 @@
+#ifndef LGLOB_H
+#define LGLOB_H
 /*
  * Copyright (C) 1984-2020  Mark Nudelman
  *
@@ -21,3 +23,4 @@
  *    matching filenames as a single space-separated string.
  */
 
+#endif

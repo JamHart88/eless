@@ -15,6 +15,19 @@
 #include "less.h"
 #include "option.h"
 #include "position.h"
+#include "brac.h"
+#include "ch.h"
+#include "cmdbuf.h"
+#include "command.h"
+#include "edit.h"
+#include "filename.h"
+#include "decode.h"
+#include "forback.h"
+#include "ifile.h"
+#include "input.h"
+#include "jump.h"
+#include "line.h"
+#include "linenum.h"
 
 extern int erase_char, erase2_char, kill_char;
 extern int sigs;

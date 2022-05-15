@@ -13,6 +13,8 @@
 
 #include "less.h"
 #include "charset.h"
+#include "cvt.h"
+#include "line.h"
 
 extern int utf_mode;
 

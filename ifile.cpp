@@ -20,6 +20,8 @@
  */
 
 #include "less.h"
+#include "ifile.h"
+#include "filename.h"
 
 extern IFILE curr_ifile;
 

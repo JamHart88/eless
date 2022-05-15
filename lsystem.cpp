@@ -16,6 +16,10 @@
 #include "less.h"
 #include <signal.h>
 #include "position.h"
+#include "ch.h"
+#include "edit.h"
+#include "filename.h"
+#include "decode.h"
 
 extern int screen_trashed;
 extern IFILE curr_ifile;

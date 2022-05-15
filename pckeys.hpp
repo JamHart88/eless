@@ -1,3 +1,5 @@
+#ifndef PCKEYS_H
+#define PCKEYS_H
 /*
  * Copyright (C) 1984-2020  Mark Nudelman
  *
@@ -31,3 +33,5 @@
 #define    PCK_CTL_LEFT        '\163'
 #define    PCK_CTL_RIGHT        '\164'
 #define    PCK_CTL_DELETE        '\223'
+
+#endif

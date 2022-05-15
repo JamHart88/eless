@@ -7,7 +7,6 @@
  * For more information, see the README file.
  */
 
-
 /*
  * Operating system dependent routines.
  *
@@ -21,8 +20,10 @@
  */
 
 #include "less.h"
-#include <signal.h>
+#include "os.h"
+
 #include <setjmp.h>
+#include <signal.h>
 #include <time.h>
 #if HAVE_ERRNO_H
 #include <errno.h>
@@ -39,14 +40,15 @@
  * _setjmp() does not exist; we just use setjmp().
  */
 #if HAVE__SETJMP && HAVE_SIGSETMASK
-#define SET_JUMP    _setjmp
-#define LONG_JUMP    _longjmp
+#define SET_JUMP _setjmp
+#define LONG_JUMP _longjmp
 #else
-#define SET_JUMP    setjmp
-#define LONG_JUMP    longjmp
+#define SET_JUMP setjmp
+#define LONG_JUMP longjmp
 #endif
 
-public int reading;
+public
+int reading;
 
 static jmp_buf read_label;
 
@@ -64,7 +66,8 @@ extern int sigs;
 //     int fd;
 //     unsigned char *buf;
 //     unsigned int len;
-public int iread(int fd, unsigned char *buf, unsigned int len)
+public
+int iread(int fd, unsigned char *buf, unsigned int len)
 {
     int n;
 
@@ -77,9 +80,9 @@ start:
         reading = 0;
 #if HAVE_SIGPROCMASK
         {
-          sigset_t mask;
-          sigemptyset(&mask);
-          sigprocmask(SIG_SETMASK, &mask, NULL);
+            sigset_t mask;
+            sigemptyset(&mask);
+            sigprocmask(SIG_SETMASK, &mask, NULL);
         }
 #else
 #if HAVE_SIGSETMASK
@@ -102,7 +105,7 @@ start:
         extern int ignore_eoi;
         if (!ignore_eoi)
         {
-        static int consecutive_nulls = 0;
+            static int consecutive_nulls = 0;
             if (n == 0)
                 consecutive_nulls++;
             else
@@ -143,7 +146,8 @@ start:
 // Converted from C to C++ - C below
 // public void
 // intread(VOID_PARAM)
-public void intread(VOID_PARAM)
+public
+void intread(VOID_PARAM)
 {
     LONG_JUMP(read_label, 1);
 }
@@ -155,15 +159,14 @@ public void intread(VOID_PARAM)
 // Converted from C to C++ - C below
 // public time_type
 // get_time(VOID_PARAM)
-public time_type get_time(VOID_PARAM)
+public
+time_type get_time(VOID_PARAM)
 {
     time_type t;
 
     time(&t);
     return (t);
 }
-
-
 
 /*
  * errno_message: Return an error message based on the value of "errno".
@@ -173,7 +176,8 @@ public time_type get_time(VOID_PARAM)
 // public char *
 // errno_message(filename)
 //     char *filename;
-public char * errno_message(char *filename)
+public
+char *errno_message(char *filename)
 {
     char *p;
     char *m;
@@ -186,8 +190,8 @@ public char * errno_message(char *filename)
 #else
     p = "cannot open";
 #endif
-    len = (int) (strlen(filename) + strlen(p) + 3);
-    m = (char *) ecalloc(len, sizeof(char));
+    len = (int)(strlen(filename) + strlen(p) + 3);
+    m = (char *)ecalloc(len, sizeof(char));
     SNPRINTF2(m, len, "%s: %s", filename, p);
     return (m);
 }
@@ -202,18 +206,18 @@ public char * errno_message(char *filename)
 static POSITION muldiv(POSITION val, POSITION num, POSITION den)
 {
 #if HAVE_FLOAT
-    double v = (((double) val) * num) / den;
-    return ((POSITION) (v + 0.5));
+    double v = (((double)val) * num) / den;
+    return ((POSITION)(v + 0.5));
 #else
-    POSITION v = ((POSITION) val) * num;
+    POSITION v = ((POSITION)val) * num;
 
     if (v / num == val)
         /* No overflow */
-        return (POSITION) (v / den);
+        return (POSITION)(v / den);
     else
-        /* Above calculation overflows; 
+        /* Above calculation overflows;
          * use a method that is less precise but won't overflow. */
-        return (POSITION) (val / (den / num));
+        return (POSITION)(val / (den / num));
 #endif
 }
 
@@ -227,9 +231,10 @@ static POSITION muldiv(POSITION val, POSITION num, POSITION den)
 // percentage(num, den)
 //     POSITION num;
 //     POSITION den;
-public int percentage(POSITION num, POSITION den)
+public
+int percentage(POSITION num, POSITION den)
 {
-    return (int) muldiv(num,  (POSITION) 100, den);
+    return (int)muldiv(num, (POSITION)100, den);
 }
 
 /*
@@ -242,15 +247,13 @@ public int percentage(POSITION num, POSITION den)
 //     POSITION pos;
 //     int percent;
 //     long fraction;
-public POSITION percent_pos(POSITION pos, int percent, long fraction)
+public
+POSITION percent_pos(POSITION pos, int percent, long fraction)
 {
     /* Change percent (parts per 100) to perden (parts per NUM_FRAC_DENOM). */
     POSITION perden = (percent * (NUM_FRAC_DENOM / 100)) + (fraction / 100);
 
     if (perden == 0)
         return (0);
-    return (POSITION) muldiv(pos, perden, (POSITION) NUM_FRAC_DENOM);
+    return (POSITION)muldiv(pos, perden, (POSITION)NUM_FRAC_DENOM);
 }
-
-
-

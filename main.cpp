@@ -12,6 +12,13 @@
  */
 
 #include "less.h"
+#include "cmdbuf.h"
+#include "command.h"
+#include "edit.h"
+#include "decode.h"
+#include "forback.h"
+#include "ifile.h"
+#include "line.h"
 
 public
 char *every_first_cmd = NULL;

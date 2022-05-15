@@ -13,7 +13,13 @@
  */
 
 #include "less.h"
+#include "jump.h"
+#include "os.h"
 #include "position.h"
+#include "ch.h"
+#include "forback.h"
+#include "input.h"
+#include "linenum.h"
 
 extern int jump_sline;
 extern int squished;

@@ -1,3 +1,5 @@
+#ifndef POSITION_H
+#define POSITION_H
 /*
  * Copyright (C) 1984-2020  Mark Nudelman
  *
@@ -16,3 +18,5 @@
 #define    BOTTOM          (-1)
 #define    BOTTOM_PLUS_ONE (-2)
 #define    MIDDLE          (-3)
+
+#endif

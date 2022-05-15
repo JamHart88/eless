@@ -9,6 +9,12 @@
 
 
 #include "less.h"
+#include "cvt.h"
+#include "edit.h"
+#include "filename.h"
+#include "decode.h"
+#include "line.h"
+#include "linenum.h"
 
 #define    WHITESP(c)    ((c)==' ' || (c)=='\t')
 

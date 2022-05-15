@@ -1,3 +1,5 @@
+#ifndef REGEXP_H
+#define REGEXP_H
 /*
  * Definitions etc. for regexp(3) routines.
  *
@@ -32,3 +34,5 @@ extern void regsub _ANSI_ARGS_((regexp *prog, char *source, char *dest));
 extern void regerror _ANSI_ARGS_((char *msg));
 
 #endif /* REGEXP */
+
+#endif

@@ -1,3 +1,5 @@
+#ifndef PATTERN_H
+#define PATTERN_H
 /*
  * Copyright (C) 1984-2020  Mark Nudelman
  *
@@ -63,4 +65,6 @@ extern int reg_show_error;
 #if NO_REGEX
 #define PATTERN_TYPE          void *
 #define CLEAR_PATTERN(name)   
+#endif
+
 #endif

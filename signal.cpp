@@ -19,6 +19,7 @@
  */
 
 #include "less.h"
+#include "os.h"
 #include <signal.h>
 
 /*

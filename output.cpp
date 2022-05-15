@@ -13,6 +13,9 @@
  */
 
 #include "less.h"
+#include "command.h"
+#include "forback.h"
+#include "line.h"
 
 public int errmsgs;    /* Count of messages displayed by error() */
 public int need_clr;

@@ -12,6 +12,7 @@
  */
 
 #include "less.h"
+#include "cvt.h"
 
 extern int caseless;
 extern int utf_mode;
