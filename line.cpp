@@ -216,7 +216,7 @@ void plinenum(POSITION pos) {
    * if the -N option is set.
    */
   if (linenums == OPT_ONPLUS) {
-    char buf[INT_STRLEN_BOUND(linenum) + 2];
+    char buf[strlen_bound<LINENUM>() + 2];
     int pad = 0;
     int n;
 

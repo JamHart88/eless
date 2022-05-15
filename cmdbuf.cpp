@@ -1051,7 +1051,7 @@ static void init_compl(VOID_PARAM)
     if (tk_original != NULL)
         free(tk_original);
     tk_original = (char *) ecalloc(cp-word+1, sizeof(char));
-    strncpy(tk_original, word, cp-word);
+    strcpy(tk_original, word);
     /*
      * Get the expanded filename.
      * This may result in a single filename, or
@@ -1500,8 +1500,8 @@ static char * make_tempname(char *filename)
 {
     char lastch;
     int len = strlen(filename) + 1;
-    char *tempname = (char *) ecalloc(1, len);
-    strncpy(tempname, filename, len);
+    char *tempname = (char *) ecalloc(len, sizeof(char));
+    memcpy(tempname, filename, len);
     lastch = tempname[strlen(tempname)-1];
     tempname[strlen(tempname)-1] = (lastch == 'Q') ? 'Z' : 'Q';
     return tempname;

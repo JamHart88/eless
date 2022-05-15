@@ -173,7 +173,7 @@ STR_TO_TYPE_FUNC(lstrtoi, int)
 //     int num;
 static int iprint_int(int num)
 {
-    char buf[INT_STRLEN_BOUND(num)];
+    char buf[strlen_bound<int>() + 2];
 
     typeToStr<int>(num, buf);
     putstr(buf);
@@ -190,7 +190,7 @@ static int iprint_int(int num)
 //     LINENUM num;
 static int iprint_linenum(LINENUM num)
 {
-    char buf[INT_STRLEN_BOUND(num)];
+    char buf[strlen_bound<LINENUM>() + 2];
 
     typeToStr<LINENUM>(num, buf);
     putstr(buf);

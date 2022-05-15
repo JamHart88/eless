@@ -94,7 +94,7 @@ static void ap_str(char *s)
     len = (int) strlen(s);
     if (mp + len >= message + PROMPT_SIZE)
         len = (int) (message + PROMPT_SIZE - mp - 1);
-    strncpy(mp, s, len);
+    strcpy(mp, s);
     mp += len;
     *mp = '\0';
 }
@@ -126,7 +126,7 @@ static void ap_char(char c)
 //     POSITION pos;
 static void ap_pos(POSITION pos)
 {
-    char buf[INT_STRLEN_BOUND(pos) + 2];
+    char buf[strlen_bound<POSITION>() + 2];
 
     typeToStr<POSITION>(pos, buf);
     ap_str(buf);
@@ -137,7 +137,7 @@ static void ap_pos(POSITION pos)
  */
  static void ap_linenum(LINENUM linenum)
 {
-    char buf[INT_STRLEN_BOUND(linenum) + 2];
+    char buf[strlen_bound<LINENUM>() + 2];
 
     typeToStr<LINENUM>(linenum, buf);
     ap_str(buf);
@@ -153,7 +153,7 @@ static void ap_pos(POSITION pos)
 //     int num;
 static void ap_int(int num)
 {
-    char buf[INT_STRLEN_BOUND(num) + 2];
+    char buf[strlen_bound<int>() + 2];
 
     typeToStr<int>(num, buf);
     ap_str(buf);

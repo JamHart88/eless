@@ -176,7 +176,7 @@ public char * shell_quote(char *s)
                 /*
                  * Add the escape char.
                  */
-                strncpy(p, esc, sizeof(p)-1);
+                strcpy(p, esc);
                 p += esclen;
             }
             *p++ = *s++;
@@ -317,7 +317,7 @@ public char * fexpand(char *s)
                     *to++ = *fr;
                 else
                 {
-                    strncpy(to, get_filename(ifile), sizeof(to)-1);
+                    strcpy(to, get_filename(ifile));
                     to += strlen(to);
                 }
             }
@@ -428,6 +428,7 @@ static POSITION seek_filesize(int f)
  */
 static char * readfd(FILE *fd)
 {
+    D("readfd");
     int len;
     int ch;
     char *buf;
@@ -445,6 +446,7 @@ static char * readfd(FILE *fd)
             break;
         if (p - buf >= len-1)
         {
+            debug("TOOBIG");
             /*
              * The string is too big to fit in the buffer we have.
              * Allocate a new buffer, twice as big.
@@ -452,7 +454,7 @@ static char * readfd(FILE *fd)
             len *= 2;
             *p = '\0';
             p = (char *) ecalloc(len, sizeof(char));
-            strncpy(p, buf, sizeof(p)-1);
+            strcpy(p, buf);
             free(buf);
             buf = p;
             p = buf + strlen(buf);
@@ -907,8 +909,8 @@ public char * bad_file(char *filename)
 
         m = (char *) ecalloc(strlen(filename) + sizeof(is_a_dir), 
             sizeof(char));
-        strncpy(m, filename, sizeof(m)-1);
-        strncat(m, is_a_dir, sizeof(m) - strlen(is_a_dir) - 1);
+        strcpy(m, filename);
+        strcat(m, is_a_dir);
     } else
     {
 #if HAVE_STAT
@@ -927,8 +929,8 @@ public char * bad_file(char *filename)
             static char not_reg[] = " is not a regular file (use -f to see it)";
             m = (char *) ecalloc(strlen(filename) + sizeof(not_reg),
                 sizeof(char));
-            strncpy(m, filename, sizeof(m)-1);
-            strncat(m, not_reg, sizeof(m) - strlen(not_reg) - 1);
+            strcpy(m, filename);
+            strcat(m, not_reg);
         }
 #endif
     }

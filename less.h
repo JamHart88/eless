@@ -85,6 +85,12 @@ static inline void ignore_result(long long int unused_result) {
 #include "debug.h"
 #endif
 
+
+#ifdef __cplusplus
+// New C++ includes
+#include <cstring>
+#endif
+
 #ifdef __TANDEM
 #include <floss.h>
 #endif
@@ -186,13 +192,6 @@ void free();
 #ifndef CHAR_BIT
 #define CHAR_BIT 8
 #endif
-
-/*
- * Upper bound on the string length of an integer converted to string.
- * 302 / 1000 is ceil (log10 (2.0)).  Subtract 1 for the sign bit;
- * add 1 for integer division truncation; add 1 more for a minus sign.
- */
-#define INT_STRLEN_BOUND(t) ((sizeof(t) * CHAR_BIT - 1) * 302 / 1000 + 1 + 1)
 
 /*
  * Special types and consts.
@@ -481,9 +480,6 @@ struct hilite_tree;
 
 /* Functions not included in funcs.h */
 
-//int lstrtoi LESSPARAMS ((char*, char**));
-//POSITION lstrtopos LESSPARAMS ((char*, char**));
-
 // ---------------------------------------------------------
 // Template functions
 // ---------------------------------------------------------
@@ -529,7 +525,19 @@ void typeToStr(const T num, char *buf)
   } while ((tempNum /= 10) != 0);
   if (neg)
     *--s = '-';
-  strncpy(buf, s, sizeof(tbuf));
+  strcpy(buf, s);
 }
 
+
+/*
+ * Upper bound on the string length of an integer converted to string.
+ * 302 / 1000 is ceil (log10 (2.0)).  Subtract 1 for the sign bit;
+ * add 1 for integer division truncation; add 1 more for a minus sign.
+ */
+//#define INT_STRLEN_BOUND(t) ((sizeof(t) * CHAR_BIT - 1) * 302 / 1000 + 1 + 1)
+template <typename T>
+int strlen_bound (void) 
+{
+    return ((sizeof(T) * CHAR_BIT - 1) * 302 / 1000 + 1 + 1);
+} 
 

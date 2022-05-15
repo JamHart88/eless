@@ -114,7 +114,7 @@ void __attribute__((__no_instrument_function__)) debug(const char * str) {
 void __attribute__((__no_instrument_function__)) debug(const char * str1, const char * str2 ) {
     if (fp_trace != NULL)
     {
-        fprintf(fp_trace, "DBG: %s,%s\n", str1, str2);
+        fprintf(fp_trace, "DBG: %s%s\n", str1, str2);
     }
 }
 
@@ -122,6 +122,15 @@ void __attribute__((__no_instrument_function__)) debug(const char * str1, const 
 void __attribute__((__no_instrument_function__)) debug(const char * str, const int val ) {
     if (fp_trace != NULL)
     {
-        fprintf(fp_trace, "DBG: %s,%d\n", str, val);
+        fprintf(fp_trace, "DBG: %s%d\n", str, val);
+    }
+}
+
+
+void __attribute__((__no_instrument_function__)) debug(const char * str1, const int linenum, const char * str2 ) {
+    if (fp_trace != NULL)
+    {
+        fprintf(fp_trace, "DBG: FILE: %s LINE: %d \n", str1, linenum);
+        fprintf(fp_trace, "DBG: %s\n", str2);
     }
 }

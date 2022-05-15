@@ -207,7 +207,7 @@ static struct ifile * find_ifile(char *filename)
              * previously using for this file, adopt shorter name.
              */
             if (strlen(filename) < strlen(p->h_filename))
-                strncpy(p->h_filename, filename, sizeof(p->h_filename) -1);
+                strcpy(p->h_filename, filename);
             break;
         }
     }

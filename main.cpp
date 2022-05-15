@@ -256,7 +256,7 @@ save (const char *s)
     char *p;
     int len = strlen(s) + 1;
     p = (char *)ecalloc (len, sizeof (char));
-    strncpy (p, s, len);
+    memcpy (p, s, len);
     return (p);
 }
 

@@ -366,23 +366,41 @@ public void save_marks(FILE *fout, char *hdr)
 {
     int i;
 
+    debug ("Save marks 1");
+
     if (!perma_marks)
         return;
 
+    debug("save marks 2");
     fprintf(fout, "%s\n", hdr);
+
     for (i = 0;  i < NUMARKS;  i++)
     {
+        debug("Mark:", i);
         char *filename;
         struct mark *m = &marks[i];
-        char pos_str[INT_STRLEN_BOUND(m->m_scrpos.pos) + 2];
+        
+        debug("mark m_letter", m->m_letter);
+        debug("mark filename", m->m_filename);
+        
+
+        char pos_str[strlen_bound<POSITION>() + 2];
+        
         if (m->m_scrpos.pos == NULL_POSITION)
             continue;
+        
         typeToStr<POSITION>(m->m_scrpos.pos, pos_str);
+
+        debug("mark pos: ", pos_str);
 
         filename = m->m_filename;
         if (filename == NULL)
             filename = get_filename(m->m_ifile);
         filename = lrealpath(filename);
+        
+        debug("filename:", filename);
+        debug("ln: ", m->m_scrpos.ln);
+        
         if (strcmp(filename, "-") != 0)
             fprintf(fout, "m %c %d %s %s\n",
                 m->m_letter, m->m_scrpos.ln, pos_str, filename);
@@ -399,36 +417,43 @@ public void skip_whitespace (char * &line)
  */
 public void restore_mark(char *line)
 {
-    struct mark *m;
-    int ln;
-    POSITION pos;
-
-    debug("restore_mark1", line);
+    // Format is "m <markchar> <screenpos> <position> <file>"
+    
+    struct mark *markPtr;
+    int screenpos;
+    POSITION filePos;
 
     if (*line++ != 'm')
         return;
-    skip_whitespace(line);
-    debug("restore_mark2", line);
 
-    m = getumark(*line++);
-    if (m == NULL)
+    skip_whitespace(line);
+
+    // Get mark type from <markchar>
+    markPtr = getumark(*line++);
+    if (markPtr == NULL)
         return;
-    skip_whitespace(line);
-    debug("restore_mark3", line);
 
-    ln = strToType<int>(line, &line);
-    debug("ln is ", ln);
-    if (ln < 1)
-        ln = 1;
-    if (ln > sc_height)
-        ln = sc_height;
     skip_whitespace(line);
-    debug("restore_mark4", line);
 
-    pos = strToType<POSITION>(line, &line);
+    // get the <screenpos> parameter
+    screenpos = strToType<int>(line, &line);
+    
+    if (screenpos < 1)
+        screenpos = 1;
+    if (screenpos > sc_height)
+        screenpos = sc_height;
+    
     skip_whitespace(line);
-    cmark(m, NULL_IFILE, pos, ln);
-    m->m_filename = save(line);
+    
+    // get the <position> value
+    filePos = strToType<POSITION>(line, &line);
+    
+    skip_whitespace(line);
+
+    cmark(markPtr, NULL_IFILE, filePos, screenpos);
+    
+    // get the <filename> parameter
+    markPtr->m_filename = save(line);
 }
 
 #endif /* CMD_HISTORY */
