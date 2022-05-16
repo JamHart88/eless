@@ -34,6 +34,7 @@
 #include "decode.hpp"
 #include "jump.hpp"
 #include "output.hpp"
+#include "screen.hpp"
 
 extern int nbufs;
 extern int bufspace;

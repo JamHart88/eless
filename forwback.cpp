@@ -7,28 +7,33 @@
  * For more information, see the README file.
  */
 
-
 /*
  * Primitives for displaying the file on the screen,
  * scrolling either forward or backward.
  */
 
-#include "less.hpp"
-#include "forback.hpp"
-#include "position.hpp"
 #include "ch.hpp"
 #include "edit.hpp"
+#include "forback.hpp"
 #include "input.hpp"
 #include "jump.hpp"
+#include "less.hpp"
 #include "linenum.hpp"
 #include "option.hpp"
 #include "output.hpp"
+#include "position.hpp"
+#include "screen.hpp"
 
-public int screen_trashed;
-public int squished;
-public int no_back_scroll = 0;
-public int forw_prompt;
-public int same_pos_bell = 1;
+public
+int screen_trashed;
+public
+int squished;
+public
+int no_back_scroll = 0;
+public
+int forw_prompt;
+public
+int same_pos_bell = 1;
 
 extern int sigs;
 extern int top_scroll;
@@ -47,7 +52,7 @@ extern int hilite_search;
 extern int status_col;
 #endif
 #if TAGS
-extern char *tagoption;
+extern char* tagoption;
 #endif
 
 /*
@@ -64,7 +69,8 @@ static void eof_bell(VOID_PARAM)
 /*
  * Check to see if the end of file is currently displayed.
  */
-public int eof_displayed(VOID_PARAM)
+public
+int eof_displayed(VOID_PARAM)
 {
     POSITION pos;
 
@@ -90,7 +96,8 @@ public int eof_displayed(VOID_PARAM)
 /*
  * Check to see if the entire file is currently displayed.
  */
-public int entire_file_displayed(VOID_PARAM)
+public
+int entire_file_displayed(VOID_PARAM)
 {
     POSITION pos;
 
@@ -109,7 +116,8 @@ public int entire_file_displayed(VOID_PARAM)
  * of the screen; this can happen when we display a short file
  * for the first time.
  */
-public void squish_check(VOID_PARAM)
+public
+void squish_check(VOID_PARAM)
 {
     if (!squished)
         return;
@@ -118,7 +126,7 @@ public void squish_check(VOID_PARAM)
 }
 
 /*
- * Display n lines, scrolling forward, 
+ * Display n lines, scrolling forward,
  * starting at position pos in the input file.
  * "force" means display the n lines even if we hit end of file.
  * "only_last" means display only the last screenful if n > screen size.
@@ -126,7 +134,8 @@ public void squish_check(VOID_PARAM)
  *   real line.  If nblank > 0, the pos must be NULL_POSITION.
  *   The first real line after the blanks will start at ch_zero().
  */
-public void forw(int n, POSITION pos,
+public
+void forw(int n, POSITION pos,
     int force,
     int only_last,
     int nblank)
@@ -138,29 +147,26 @@ public void forw(int n, POSITION pos,
     squish_check();
 
     /*
-     * do_repaint tells us not to display anything till the end, 
+     * do_repaint tells us not to display anything till the end,
      * then just repaint the entire screen.
-     * We repaint if we are supposed to display only the last 
+     * We repaint if we are supposed to display only the last
      * screenful and the request is for more than a screenful.
      * Also if the request exceeds the forward scroll limit
      * (but not if the request is for exactly a screenful, since
      * repainting itself involves scrolling forward a screenful).
      */
-    do_repaint = (only_last && n > sc_height-1) || 
-        (forw_scroll >= 0 && n > forw_scroll && n != sc_height-1);
+    do_repaint = (only_last && n > sc_height - 1) || (forw_scroll >= 0 && n > forw_scroll && n != sc_height - 1);
 
 #if HILITE_SEARCH
     if (hilite_search == OPT_ONPLUS || is_filtering() || status_col) {
-        prep_hilite(pos, pos + 4*size_linebuf, ignore_eoi ? 1 : -1);
+        prep_hilite(pos, pos + 4 * size_linebuf, ignore_eoi ? 1 : -1);
         pos = next_unfiltered(pos);
     }
 #endif
 
-    if (!do_repaint)
-    {
+    if (!do_repaint) {
         debug("not do_repaint");
-        if (top_scroll && n >= sc_height - 1 && pos != ch_length())
-        {
+        if (top_scroll && n >= sc_height - 1 && pos != ch_length()) {
             debug("start new screen");
             /*
              * Start a new screen.
@@ -175,68 +181,59 @@ public void forw(int n, POSITION pos,
             home();
         }
 
-        if (pos != position(BOTTOM_PLUS_ONE) || empty_screen())
-        {
+        if (pos != position(BOTTOM_PLUS_ONE) || empty_screen()) {
             debug("clear screen and start a new one");
             /*
              * This is not contiguous with what is
-             * currently displayed.  Clear the screen image 
+             * currently displayed.  Clear the screen image
              * (position table) and start a new screen.
              */
             pos_clear();
             add_forw_pos(pos);
             force = 1;
-            if (top_scroll)
-            {
+            if (top_scroll) {
                 clear();
                 home();
-            } else if (!first_time)
-            {
+            } else if (!first_time) {
                 putstr("...skipping...\n");
             }
         }
     }
 
-    while (--n >= 0)
-    {
+    while (--n >= 0) {
         debug("read next line of input");
         /*
          * Read the next line of input.
          */
-        if (nblank > 0)
-        {
+        if (nblank > 0) {
             /*
-             * Still drawing blanks; don't get a line 
+             * Still drawing blanks; don't get a line
              * from the file yet.
              * If this is the last blank line, get ready to
              * read a line starting at ch_zero() next time.
              */
             if (--nblank == 0)
                 pos = ch_zero();
-        } else
-        {
+        } else {
             debug("Get next line from the file");
-            /* 
+            /*
              * Get the next line from the file.
              */
             pos = forw_line(pos);
 #if HILITE_SEARCH
             pos = next_unfiltered(pos);
 #endif
-            if (pos == NULL_POSITION)
-            {
+            if (pos == NULL_POSITION) {
                 debug("end of the file - stop");
                 /*
-                 * End of file: stop here unless the top line 
+                 * End of file: stop here unless the top line
                  * is still empty, or "force" is true.
                  * Even if force is true, stop when the last
                  * line in the file reaches the top of screen.
                  */
                 if (!force && position(TOP) != NULL_POSITION)
                     break;
-                if (!empty_lines(0, 0) && 
-                    !empty_lines(1, 1) &&
-                     empty_lines(2, sc_height-1))
+                if (!empty_lines(0, 0) && !empty_lines(1, 1) && empty_lines(2, sc_height - 1))
                     break;
             }
         }
@@ -261,12 +258,11 @@ public void forw(int n, POSITION pos,
          * start the display after the beginning of the file,
          * and it is not appropriate to squish in that case.
          */
-        if (first_time && pos == NULL_POSITION && !top_scroll && 
+        if (first_time && pos == NULL_POSITION && !top_scroll &&
 #if TAGS
             tagoption == NULL &&
 #endif
-            !plusoption)
-        {
+            !plusoption) {
             squished = 1;
             continue;
         }
@@ -282,26 +278,26 @@ public void forw(int n, POSITION pos,
         repaint();
     }
     first_time = 0;
-    (void) currline(BOTTOM);
+    (void)currline(BOTTOM);
 }
 
 /*
  * Display n lines, scrolling backward.
  */
-public void back(int n, POSITION pos, int force, int only_last)
+public
+void back(int n, POSITION pos, int force, int only_last)
 {
     int nlines = 0;
     int do_repaint;
 
     squish_check();
-    do_repaint = (n > get_back_scroll() || (only_last && n > sc_height-1));
+    do_repaint = (n > get_back_scroll() || (only_last && n > sc_height - 1));
 #if HILITE_SEARCH
     if (hilite_search == OPT_ONPLUS || is_filtering() || status_col) {
-        prep_hilite((pos < 3*size_linebuf) ?  0 : pos - 3*size_linebuf, pos, -1);
+        prep_hilite((pos < 3 * size_linebuf) ? 0 : pos - 3 * size_linebuf, pos, -1);
     }
 #endif
-    while (--n >= 0)
-    {
+    while (--n >= 0) {
         /*
          * Get the previous line of input.
          */
@@ -310,8 +306,7 @@ public void back(int n, POSITION pos, int force, int only_last)
 #endif
 
         pos = back_line(pos);
-        if (pos == NULL_POSITION)
-        {
+        if (pos == NULL_POSITION) {
             /*
              * Beginning of file: stop here unless "force" is true.
              */
@@ -324,8 +319,7 @@ public void back(int n, POSITION pos, int force, int only_last)
          */
         add_back_pos(pos);
         nlines++;
-        if (!do_repaint)
-        {
+        if (!do_repaint) {
             home();
             add_line();
             put_line();
@@ -338,19 +332,19 @@ public void back(int n, POSITION pos, int force, int only_last)
         repaint();
     else if (!oldbot)
         lower_left();
-    (void) currline(BOTTOM);
+    (void)currline(BOTTOM);
 }
 
 /*
  * Display n more lines, forward.
  * Start just after the line currently displayed at the bottom of the screen.
  */
-public void forward( int n, int force, int only_last)
+public
+void forward(int n, int force, int only_last)
 {
     POSITION pos;
 
-    if (get_quit_at_eof() && eof_displayed() && !(ch_getflags() & CH_HELPFILE))
-    {
+    if (get_quit_at_eof() && eof_displayed() && !(ch_getflags() & CH_HELPFILE)) {
         /*
          * If the -e flag is set and we're trying to go
          * forward from end-of-file, go on to the next file.
@@ -361,10 +355,8 @@ public void forward( int n, int force, int only_last)
     }
 
     pos = position(BOTTOM_PLUS_ONE);
-    if (pos == NULL_POSITION && (!force || empty_lines(2, sc_height-1)))
-    {
-        if (ignore_eoi)
-        {
+    if (pos == NULL_POSITION && (!force || empty_lines(2, sc_height - 1))) {
+        if (ignore_eoi) {
             /*
              * ignore_eoi is to support A_F_FOREVER.
              * Back up until there is a line at the bottom
@@ -372,16 +364,13 @@ public void forward( int n, int force, int only_last)
              */
             if (empty_screen())
                 pos = ch_zero();
-            else
-            {
-                do
-                {
+            else {
+                do {
                     back(1, position(TOP), 1, 0);
                     pos = position(BOTTOM_PLUS_ONE);
                 } while (pos == NULL_POSITION);
             }
-        } else
-        {
+        } else {
             eof_bell();
             return;
         }
@@ -393,15 +382,15 @@ public void forward( int n, int force, int only_last)
  * Display n more lines, backward.
  * Start just before the line currently displayed at the top of the screen.
  */
-public void backward( int n, int force, int only_last)
+public
+void backward(int n, int force, int only_last)
 {
     POSITION pos;
 
     pos = position(TOP);
-    if (pos == NULL_POSITION && (!force || position(BOTTOM) == 0))
-    {
+    if (pos == NULL_POSITION && (!force || position(BOTTOM) == 0)) {
         eof_bell();
-        return;   
+        return;
     }
     back(n, pos, force, only_last);
 }
@@ -412,7 +401,8 @@ public void backward( int n, int force, int only_last)
  * back_scroll, because the default case depends on sc_height and
  * top_scroll, as well as back_scroll.
  */
-public int get_back_scroll(VOID_PARAM)
+public
+int get_back_scroll(VOID_PARAM)
 {
     if (no_back_scroll)
         return (0);
@@ -426,15 +416,16 @@ public int get_back_scroll(VOID_PARAM)
 /*
  * Will the entire file fit on one screen?
  */
-public int get_one_screen(VOID_PARAM)
+public
+int get_one_screen(VOID_PARAM)
 {
     int nlines;
     POSITION pos = ch_zero();
 
-    for (nlines = 0;  nlines < sc_height;  nlines++)
-    {
+    for (nlines = 0; nlines < sc_height; nlines++) {
         pos = forw_line(pos);
-        if (pos == NULL_POSITION) break;
+        if (pos == NULL_POSITION)
+            break;
     }
     return (nlines < sc_height);
 }

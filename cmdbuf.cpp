@@ -7,23 +7,23 @@
  * For more information, see the README file.
  */
 
-
 /*
  * Functions which manipulate the command buffer.
  * Used only by command() and related functions.
  */
 
-#include "less.hpp"
 #include "cmdbuf.hpp"
-#include "cmd.hpp"
 #include "charset.hpp"
+#include "cmd.hpp"
 #include "command.hpp"
+#include "decode.hpp"
 #include "edit.hpp"
 #include "filename.hpp"
-#include "decode.hpp"
+#include "less.hpp"
 #include "mark.hpp"
 #include "option.hpp"
 #include "output.hpp"
+#include "screen.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>
@@ -34,13 +34,16 @@ extern int utf_mode;
 extern int no_hist_dups;
 extern int marks_modified;
 
+// TODO: Update clang format rules to auto align comments like this
+// clang-format off
 static char cmdbuf[CMDBUF_SIZE]; /* Buffer for holding a multi-char command */
-static int cmd_col;     /* Current column of the cursor */
-static int prompt_col;  /* Column of cursor just after prompt */
-static char *cp;        /* Pointer into cmdbuf */
-static int cmd_offset;  /* Index into cmdbuf of first displayed char */
-static int literal;     /* Next input char should not be interpreted */
-static int updown_match = -1; /* Prefix length in up/down movement */
+static int cmd_col;              /* Current column of the cursor */
+static int prompt_col;           /* Column of cursor just after prompt */
+static char *cp;                 /* Pointer into cmdbuf */
+static int cmd_offset;           /* Index into cmdbuf of first displayed char */
+static int literal;              /* Next input char should not be interpreted */
+static int updown_match = -1;    /* Prefix length in up/down movement */
+// clang-format off
 
 #if TAB_COMPLETE_FILENAME
 static int cmd_complete LESSPARAMS((int action));

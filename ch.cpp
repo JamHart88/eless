@@ -20,6 +20,7 @@
 #include "os.hpp"
 #include "output.hpp"
 #include "prompt.hpp"
+#include "screen.hpp"
 
 #if HAVE_STAT_INO
 #include <sys/stat.h>

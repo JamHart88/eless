@@ -7,25 +7,25 @@
  * For more information, see the README file.
  */
 
-
 /*
  * Routines to search a file for a pattern.
  */
 
-#include "less.hpp"
-#include "position.hpp"
-#include "charset.hpp"
 #include "ch.hpp"
+#include "charset.hpp"
 #include "cmdbuf.hpp"
 #include "cvt.hpp"
 #include "input.hpp"
 #include "jump.hpp"
+#include "less.hpp"
 #include "line.hpp"
 #include "linenum.hpp"
 #include "output.hpp"
+#include "position.hpp"
+#include "screen.hpp"
 
-#define    MINPOS(a,b)    (((a) < (b)) ? (a) : (b))
-#define    MAXPOS(a,b)    (((a) > (b)) ? (a) : (b))
+#define MINPOS(a, b) (((a) < (b)) ? (a) : (b))
+#define MAXPOS(a, b) (((a) > (b)) ? (a) : (b))
 
 extern int sigs;
 extern int how_search;
@@ -36,7 +36,7 @@ extern int jump_sline;
 extern int bs_mode;
 extern int ctldisp;
 extern int status_col;
-extern void *ml_search;
+extern void* ml_search;
 extern POSITION start_attnpos;
 extern POSITION end_attnpos;
 extern int utf_mode;
@@ -68,36 +68,40 @@ static int is_ucase_pattern;
  * need to maintain a usage bitmap or freelist and can just return nodes
  * from the pool in-order until capacity is reached.
  */
-struct hilite
-{
+
+struct hilite {
     POSITION hl_startpos;
     POSITION hl_endpos;
 };
-struct hilite_node
-{
-    struct hilite_node *parent;
-    struct hilite_node *left;
-    struct hilite_node *right;
-    struct hilite_node *prev;
-    struct hilite_node *next;
+
+struct hilite_node {
+    struct hilite_node* parent;
+    struct hilite_node* left;
+    struct hilite_node* right;
+    struct hilite_node* prev;
+    struct hilite_node* next;
     int red;
     struct hilite r;
 };
-struct hilite_storage
-{
+
+struct hilite_storage {
     int capacity;
     int used;
-    struct hilite_storage *next;
-    struct hilite_node *nodes;
+    struct hilite_storage* next;
+    struct hilite_node* nodes;
 };
-struct hilite_tree
-{
-    struct hilite_storage *first;
-    struct hilite_storage *current;
-    struct hilite_node *root;
-    struct hilite_node *lookaside;
+
+struct hilite_tree {
+    struct hilite_storage* first;
+    struct hilite_storage* current;
+    struct hilite_node* root;
+    struct hilite_node* lookaside;
 };
-#define HILITE_INITIALIZER() { NULL, NULL, NULL, NULL }
+
+#define HILITE_INITIALIZER()   \
+    {                          \
+        NULL, NULL, NULL, NULL \
+    }
 #define HILITE_LOOKASIDE_STEPS 2
 
 static struct hilite_tree hilite_anchor = HILITE_INITIALIZER();
@@ -120,7 +124,7 @@ struct pattern_info {
 #else
 #define info_compiled(info) ((info)->compiled)
 #endif
-    
+
 static struct pattern_info search_info;
 static struct pattern_info filter_info;
 
@@ -132,13 +136,12 @@ static struct pattern_info filter_info;
 // static int
 // is_ucase(str)
 //     char *str;
-static int is_ucase(char *str)
+static int is_ucase(char* str)
 {
-    char *str_end = str + strlen(str);
+    char* str_end = str + strlen(str);
     LWCHAR ch;
 
-    while (str < str_end)
-    {
+    while (str < str_end) {
         ch = step_char(&str, +1, str_end);
         if (IS_UPPER(ch))
             return (1);
@@ -156,7 +159,7 @@ static int is_ucase(char *str)
 //     struct pattern_info *info;
 //     char *pattern;
 //     int search_type;
-static int set_pattern(struct pattern_info *info, char *pattern, int search_type)
+static int set_pattern(struct pattern_info* info, char* pattern, int search_type)
 {
 #if !NO_REGEX
     if (pattern == NULL)
@@ -168,9 +171,8 @@ static int set_pattern(struct pattern_info *info, char *pattern, int search_type
     if (info->text != NULL)
         free(info->text);
     info->text = NULL;
-    if (pattern != NULL)
-    {
-        info->text = (char *) ecalloc(1, strlen(pattern)+1);
+    if (pattern != NULL) {
+        info->text = (char*)ecalloc(1, strlen(pattern) + 1);
         strcpy(info->text, pattern);
     }
     info->search_type = search_type;
@@ -195,7 +197,7 @@ static int set_pattern(struct pattern_info *info, char *pattern, int search_type
 // static void
 // clear_pattern(info)
 //     struct pattern_info *info;
-static void clear_pattern(struct pattern_info *info)
+static void clear_pattern(struct pattern_info* info)
 {
     if (info->text != NULL)
         free(info->text);
@@ -213,7 +215,7 @@ static void clear_pattern(struct pattern_info *info)
 // static void
 // init_pattern(info)
 //     struct pattern_info *info;
-static void init_pattern(struct pattern_info *info)
+static void init_pattern(struct pattern_info* info)
 {
     CLEAR_PATTERN(info->compiled);
     info->text = NULL;
@@ -227,7 +229,8 @@ static void init_pattern(struct pattern_info *info)
 // Converted from C to C++ - C below
 // public void
 // init_search(VOID_PARAM)
-public void init_search(VOID_PARAM)
+public
+void init_search(VOID_PARAM)
 {
     init_pattern(&search_info);
     init_pattern(&filter_info);
@@ -243,16 +246,14 @@ public void init_search(VOID_PARAM)
 static int get_cvt_ops(VOID_PARAM)
 {
     int ops = 0;
-    if (is_caseless || bs_mode == BS_SPECIAL)
-    {
-        if (is_caseless) 
+    if (is_caseless || bs_mode == BS_SPECIAL) {
+        if (is_caseless)
             ops |= CVT_TO_LC;
         if (bs_mode == BS_SPECIAL)
             ops |= CVT_BS;
         if (bs_mode != BS_CONTROL)
             ops |= CVT_CRLF;
-    } else if (bs_mode != BS_CONTROL)
-    {
+    } else if (bs_mode != BS_CONTROL) {
         ops |= CVT_CRLF;
     }
     if (ctldisp == OPT_ONPLUS)
@@ -268,7 +269,7 @@ static int get_cvt_ops(VOID_PARAM)
 // static int
 // prev_pattern(info)
 //     struct pattern_info *info;
-static int prev_pattern(struct pattern_info *info)
+static int prev_pattern(struct pattern_info* info)
 {
 #if !NO_REGEX
     if ((info->search_type & SRCH_NO_REGEX) == 0)
@@ -288,7 +289,8 @@ static int prev_pattern(struct pattern_info *info)
 // public void
 // repaint_hilite(on)
 //     int on;
-public void repaint_hilite(int on)
+public
+void repaint_hilite(int on)
 {
     int sindex;
     POSITION pos;
@@ -298,26 +300,23 @@ public void repaint_hilite(int on)
         repaint();
 
     save_hide_hilite = hide_hilite;
-    if (!on)
-    {
+    if (!on) {
         if (hide_hilite)
             return;
         hide_hilite = 1;
     }
 
-    if (!can_goto_line)
-    {
+    if (!can_goto_line) {
         repaint();
         hide_hilite = save_hide_hilite;
         return;
     }
 
-    for (sindex = TOP;  sindex < TOP + sc_height-1;  sindex++)
-    {
+    for (sindex = TOP; sindex < TOP + sc_height - 1; sindex++) {
         pos = position(sindex);
         if (pos == NULL_POSITION)
             continue;
-        (void) forw_line(pos);
+        (void)forw_line(pos);
         goto_line(sindex);
         put_line();
     }
@@ -332,7 +331,8 @@ public void repaint_hilite(int on)
 // Converted from C to C++ - C below
 // public void
 // clear_attn(VOID_PARAM)
-public void clear_attn(VOID_PARAM)
+public
+void clear_attn(VOID_PARAM)
 {
     int sindex;
     POSITION old_start_attnpos;
@@ -347,24 +347,20 @@ public void clear_attn(VOID_PARAM)
     old_end_attnpos = end_attnpos;
     start_attnpos = end_attnpos = NULL_POSITION;
 
-    if (!can_goto_line)
-    {
+    if (!can_goto_line) {
         repaint();
         return;
     }
     if (squished)
         repaint();
 
-    for (sindex = TOP;  sindex < TOP + sc_height-1;  sindex++)
-    {
+    for (sindex = TOP; sindex < TOP + sc_height - 1; sindex++) {
         pos = position(sindex);
         if (pos == NULL_POSITION)
             continue;
-        epos = position(sindex+1);
-        if (pos <= old_end_attnpos &&
-             (epos == NULL_POSITION || epos > old_start_attnpos))
-        {
-            (void) forw_line(pos);
+        epos = position(sindex + 1);
+        if (pos <= old_end_attnpos && (epos == NULL_POSITION || epos > old_start_attnpos)) {
+            (void)forw_line(pos);
             goto_line(sindex);
             put_line();
             moved = 1;
@@ -382,13 +378,12 @@ public void clear_attn(VOID_PARAM)
 // Converted from C to C++ - C below
 // public void
 // undo_search(VOID_PARAM)
-public void undo_search(VOID_PARAM)
+public
+void undo_search(VOID_PARAM)
 {
-    if (!prev_pattern(&search_info))
-    {
-        if (hilite_anchor.first == NULL)
-        {
-            error((char *)"No previous regular expression", NULL_PARG);
+    if (!prev_pattern(&search_info)) {
+        if (hilite_anchor.first == NULL) {
+            error((char*)"No previous regular expression", NULL_PARG);
             return;
         }
         clr_hilite(); /* Next time, hilite_anchor.first will be NULL. */
@@ -409,13 +404,13 @@ public void undo_search(VOID_PARAM)
 // public void
 // clr_hlist(anchor)
 //     struct hilite_tree *anchor;
-public void clr_hlist(struct hilite_tree *anchor)
+public
+void clr_hlist(struct hilite_tree* anchor)
 {
-    struct hilite_storage *hls;
-    struct hilite_storage *nexthls;
+    struct hilite_storage* hls;
+    struct hilite_storage* nexthls;
 
-    for (hls = anchor->first;  hls != NULL;  hls = nexthls)
-    {
+    for (hls = anchor->first; hls != NULL; hls = nexthls) {
         nexthls = hls->next;
         free((void*)hls->nodes);
         free((void*)hls);
@@ -433,7 +428,8 @@ public void clr_hlist(struct hilite_tree *anchor)
 // Converted from C to C++ - C below
 // public void
 // clr_hilite(VOID_PARAM)
-public void clr_hilite(VOID_PARAM)
+public
+void clr_hilite(VOID_PARAM)
 {
     clr_hlist(&hilite_anchor);
 }
@@ -442,25 +438,26 @@ public void clr_hilite(VOID_PARAM)
 // Converted from C to C++ - C below
 // public void
 // clr_filter(VOID_PARAM)
-public void clr_filter(VOID_PARAM)
+public
+void clr_filter(VOID_PARAM)
 {
     clr_hlist(&filter_anchor);
 }
 
-struct hilite_node*    hlist_last(struct hilite_tree *anchor)
+struct hilite_node* hlist_last(struct hilite_tree* anchor)
 {
-    struct hilite_node *n = anchor->root;
+    struct hilite_node* n = anchor->root;
     while (n != NULL && n->right != NULL)
         n = n->right;
     return n;
 }
 
-struct hilite_node* hlist_next(struct hilite_node *n)
+struct hilite_node* hlist_next(struct hilite_node* n)
 {
     return n->next;
 }
 
-struct hilite_node* hlist_prev(struct hilite_node *n)
+struct hilite_node* hlist_prev(struct hilite_node* n)
 {
     return n->prev;
 }
@@ -471,28 +468,23 @@ struct hilite_node* hlist_prev(struct hilite_node *n)
  * to speed up subsequent searches for the same or similar positions (if
  * we return NULL, remember the last node.)
  */
-struct hilite_node* hlist_find(struct hilite_tree *anchor, POSITION pos)
+struct hilite_node* hlist_find(struct hilite_tree* anchor, POSITION pos)
 {
     struct hilite_node *n, *m;
 
-    if (anchor->lookaside)
-    {
+    if (anchor->lookaside) {
         int steps = 0;
         int hit = 0;
 
         n = anchor->lookaside;
 
-        for (;;)
-        {
-            if (pos < n->r.hl_endpos)
-            {
-                if (n->prev == NULL || pos >= n->prev->r.hl_endpos)
-                {
+        for (;;) {
+            if (pos < n->r.hl_endpos) {
+                if (n->prev == NULL || pos >= n->prev->r.hl_endpos) {
                     hit = 1;
                     break;
                 }
-            } else if (n->next == NULL)
-            {
+            } else if (n->next == NULL) {
                 n = NULL;
                 hit = 1;
                 break;
@@ -519,30 +511,23 @@ struct hilite_node* hlist_find(struct hilite_tree *anchor, POSITION pos)
     n = anchor->root;
     m = NULL;
 
-    while (n != NULL)
-    {
-        if (pos < n->r.hl_startpos)
-        {
-            if (n->left != NULL)
-            {
+    while (n != NULL) {
+        if (pos < n->r.hl_startpos) {
+            if (n->left != NULL) {
                 m = n;
                 n = n->left;
                 continue;
             }
             break;
         }
-        if (pos >= n->r.hl_endpos)
-        {
-            if (n->right != NULL)
-            {
+        if (pos >= n->r.hl_endpos) {
+            if (n->right != NULL) {
                 n = n->right;
                 continue;
             }
-            if (m != NULL)
-            {
+            if (m != NULL) {
                 n = m;
-            } else
-            {
+            } else {
                 m = n;
                 n = NULL;
             }
@@ -569,11 +554,11 @@ struct hilite_node* hlist_find(struct hilite_tree *anchor, POSITION pos)
 //     POSITION epos;
 static int is_hilited_range(POSITION pos, POSITION epos)
 {
-    struct hilite_node *n = hlist_find(&hilite_anchor, pos);
+    struct hilite_node* n = hlist_find(&hilite_anchor, pos);
     return (n != NULL && (epos == NULL_POSITION || epos > n->r.hl_startpos));
 }
 
-/* 
+/*
  * Is a line "filtered" -- that is, should it be hidden?
  */
 // -------------------------------------------
@@ -581,9 +566,10 @@ static int is_hilited_range(POSITION pos, POSITION epos)
 // public int
 // is_filtered(pos)
 //     POSITION pos;
-public int is_filtered(POSITION pos)
+public
+int is_filtered(POSITION pos)
 {
-    struct hilite_node *n;
+    struct hilite_node* n;
 
     if (ch_getflags() & CH_HELPFILE)
         return (0);
@@ -601,16 +587,16 @@ public int is_filtered(POSITION pos)
 // public POSITION
 // next_unfiltered(pos)
 //     POSITION pos;
-public POSITION next_unfiltered(POSITION pos)
+public
+POSITION next_unfiltered(POSITION pos)
 {
-    struct hilite_node *n;
+    struct hilite_node* n;
 
     if (ch_getflags() & CH_HELPFILE)
         return (pos);
 
     n = hlist_find(&filter_anchor, pos);
-    while (n != NULL && pos >= n->r.hl_startpos)
-    {
+    while (n != NULL && pos >= n->r.hl_startpos) {
         pos = n->r.hl_endpos;
         n = n->next;
     }
@@ -626,16 +612,16 @@ public POSITION next_unfiltered(POSITION pos)
 // public POSITION
 // prev_unfiltered(pos)
 //     POSITION pos;
-public POSITION prev_unfiltered(POSITION pos)
+public
+POSITION prev_unfiltered(POSITION pos)
 {
-    struct hilite_node *n;
+    struct hilite_node* n;
 
     if (ch_getflags() & CH_HELPFILE)
         return (pos);
 
     n = hlist_find(&filter_anchor, pos);
-    while (n != NULL && pos >= n->r.hl_startpos)
-    {
+    while (n != NULL && pos >= n->r.hl_startpos) {
         pos = n->r.hl_startpos;
         if (pos == 0)
             break;
@@ -644,7 +630,6 @@ public POSITION prev_unfiltered(POSITION pos)
     }
     return (pos);
 }
-
 
 /*
  * Should any characters in a specified range be highlighted?
@@ -658,17 +643,15 @@ public POSITION prev_unfiltered(POSITION pos)
 //     POSITION epos;
 //     int nohide;
 //     int *p_matches;
-public int is_hilited(POSITION pos, POSITION epos, int nohide, int *p_matches)
+public
+int is_hilited(POSITION pos, POSITION epos, int nohide, int* p_matches)
 {
     int match;
 
     if (p_matches != NULL)
         *p_matches = 0;
 
-    if (!status_col &&
-        start_attnpos != NULL_POSITION && 
-        pos < end_attnpos &&
-         (epos == NULL_POSITION || epos > start_attnpos))
+    if (!status_col && start_attnpos != NULL_POSITION && pos < end_attnpos && (epos == NULL_POSITION || epos > start_attnpos))
         /*
          * The attn line overlaps this range.
          */
@@ -715,20 +698,19 @@ public int is_hilited(POSITION pos, POSITION epos, int nohide, int *p_matches)
 // static struct hilite_storage*
 // hlist_getstorage(anchor)
 //     struct hilite_tree *anchor;
-static struct hilite_storage* hlist_getstorage(struct hilite_tree *anchor)
+static struct hilite_storage* hlist_getstorage(struct hilite_tree* anchor)
 {
     int capacity = 1;
-    struct hilite_storage *s;
+    struct hilite_storage* s;
 
-    if (anchor->current)
-    {
+    if (anchor->current) {
         if (anchor->current->used < anchor->current->capacity)
             return anchor->current;
         capacity = anchor->current->capacity * 2;
     }
 
-    s = (struct hilite_storage *) ecalloc(1, sizeof(struct hilite_storage));
-    s->nodes = (struct hilite_node *) ecalloc(capacity, sizeof(struct hilite_node));
+    s = (struct hilite_storage*)ecalloc(1, sizeof(struct hilite_storage));
+    s->nodes = (struct hilite_node*)ecalloc(capacity, sizeof(struct hilite_node));
     s->capacity = capacity;
     s->used = 0;
     s->next = NULL;
@@ -749,9 +731,9 @@ static struct hilite_storage* hlist_getstorage(struct hilite_tree *anchor)
 // static struct hilite_node*
 // hlist_getnode(anchor)
 //     struct hilite_tree *anchor;
-static struct hilite_node* hlist_getnode(struct hilite_tree *anchor)
+static struct hilite_node* hlist_getnode(struct hilite_tree* anchor)
 {
-    struct hilite_storage *s = hlist_getstorage(anchor);
+    struct hilite_storage* s = hlist_getstorage(anchor);
     return &s->nodes[s->used++];
 }
 
@@ -764,20 +746,18 @@ static struct hilite_node* hlist_getnode(struct hilite_tree *anchor)
 // hlist_rotate_left(anchor, n)
 //     struct hilite_tree *anchor;
 //     struct hilite_node *n;
-static void hlist_rotate_left(struct hilite_tree *anchor, struct hilite_node *n)
+static void hlist_rotate_left(struct hilite_tree* anchor, struct hilite_node* n)
 {
-    struct hilite_node *np = n->parent;
-    struct hilite_node *nr = n->right;
-    struct hilite_node *nrl = n->right->left;
+    struct hilite_node* np = n->parent;
+    struct hilite_node* nr = n->right;
+    struct hilite_node* nrl = n->right->left;
 
-    if (np != NULL)
-    {
+    if (np != NULL) {
         if (n == np->left)
             np->left = nr;
         else
             np->right = nr;
-    } else
-    {
+    } else {
         anchor->root = nr;
     }
     nr->left = n;
@@ -798,20 +778,18 @@ static void hlist_rotate_left(struct hilite_tree *anchor, struct hilite_node *n)
 // hlist_rotate_right(anchor, n)
 //     struct hilite_tree *anchor;
 //     struct hilite_node *n;
-static void hlist_rotate_right(struct hilite_tree *anchor, struct hilite_node *n)
+static void hlist_rotate_right(struct hilite_tree* anchor, struct hilite_node* n)
 {
-    struct hilite_node *np = n->parent;
-    struct hilite_node *nl = n->left;
-    struct hilite_node *nlr = n->left->right;
+    struct hilite_node* np = n->parent;
+    struct hilite_node* nl = n->left;
+    struct hilite_node* nlr = n->left->right;
 
-    if (np != NULL)
-    {
+    if (np != NULL) {
         if (n == np->right)
             np->right = nl;
         else
             np->left = nl;
-    } else
-    {
+    } else {
         anchor->root = nl;
     }
     nl->right = n;
@@ -823,7 +801,6 @@ static void hlist_rotate_right(struct hilite_tree *anchor, struct hilite_node *n
         nlr->parent = n;
 }
 
-
 /*
  * Add a new hilite to a hilite list.
  */
@@ -833,7 +810,7 @@ static void hlist_rotate_right(struct hilite_tree *anchor, struct hilite_node *n
 // add_hilite(anchor, hl)
 //     struct hilite_tree *anchor;
 //     struct hilite *hl;
-static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
+static void add_hilite(struct hilite_tree* anchor, struct hilite* hl)
 {
     struct hilite_node *p, *n, *u;
 
@@ -844,8 +821,7 @@ static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
     p = anchor->root;
 
     /* Inserting the very first node is trivial. */
-    if (p == NULL)
-    {
+    if (p == NULL) {
         n = hlist_getnode(anchor);
         n->r = *hl;
         anchor->root = n;
@@ -858,14 +834,11 @@ static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
      * or adjoining existing ranges, shrink our range and discard
      * if it become empty.
      */
-    for (;;)
-    {
-        if (hl->hl_startpos < p->r.hl_startpos)
-        {
+    for (;;) {
+        if (hl->hl_startpos < p->r.hl_startpos) {
             if (hl->hl_endpos > p->r.hl_startpos)
                 hl->hl_endpos = p->r.hl_startpos;
-            if (p->left != NULL)
-            {
+            if (p->left != NULL) {
                 p = p->left;
                 continue;
             }
@@ -876,8 +849,7 @@ static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
             if (hl->hl_startpos >= hl->hl_endpos)
                 return;
         }
-        if (p->right != NULL)
-        {
+        if (p->right != NULL) {
             p = p->right;
             continue;
         }
@@ -890,28 +862,24 @@ static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
      * insertion. Otherwise insert a new node at the leaf.
      */
     if (hl->hl_startpos < p->r.hl_startpos) {
-        if (hl->hl_endpos == p->r.hl_startpos)
-        {
+        if (hl->hl_endpos == p->r.hl_startpos) {
             p->r.hl_startpos = hl->hl_startpos;
             return;
         }
-        if (p->prev != NULL && p->prev->r.hl_endpos == hl->hl_startpos)
-        {
+        if (p->prev != NULL && p->prev->r.hl_endpos == hl->hl_startpos) {
             p->prev->r.hl_endpos = hl->hl_endpos;
             return;
         }
 
         p->left = n = hlist_getnode(anchor);
         n->next = p;
-        if (p->prev != NULL)
-        {
+        if (p->prev != NULL) {
             n->prev = p->prev;
             p->prev->next = n;
         }
         p->prev = n;
     } else {
-        if (p->r.hl_endpos == hl->hl_startpos)
-        {
+        if (p->r.hl_endpos == hl->hl_startpos) {
             p->r.hl_endpos = hl->hl_endpos;
             return;
         }
@@ -922,8 +890,7 @@ static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
 
         p->right = n = hlist_getnode(anchor);
         n->prev = p;
-        if (p->next != NULL)
-        {
+        if (p->next != NULL) {
             n->next = p->next;
             p->next->prev = n;
         }
@@ -938,11 +905,9 @@ static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
      * now, but may have become unbalanced. Rebalance it using the
      * standard red-black tree constraints and operations.
      */
-    for (;;)
-    {
+    for (;;) {
         /* case 1 - current is root, root is always black */
-        if (n->parent == NULL)
-        {
+        if (n->parent == NULL) {
             n->red = 0;
             break;
         }
@@ -962,10 +927,9 @@ static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
          * the grandparent red, and start again at the grandparent.
          */
         u = n->parent->parent->left;
-        if (n->parent == u) 
+        if (n->parent == u)
             u = n->parent->parent->right;
-        if (u != NULL && u->red)
-        {
+        if (u != NULL && u->red) {
             n->parent->red = 0;
             u->red = 0;
             n = n->parent->parent;
@@ -980,14 +944,10 @@ static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
          * our branch and lengthen the sibling, between them
          * restoring balance.
          */
-        if (n == n->parent->right &&
-            n->parent == n->parent->parent->left)
-        {
+        if (n == n->parent->right && n->parent == n->parent->parent->left) {
             hlist_rotate_left(anchor, n->parent);
             n = n->left;
-        } else if (n == n->parent->left &&
-               n->parent == n->parent->parent->right)
-        {
+        } else if (n == n->parent->left && n->parent == n->parent->parent->right) {
             hlist_rotate_right(anchor, n->parent);
             n = n->right;
         }
@@ -1017,7 +977,7 @@ static void add_hilite(struct hilite_tree *anchor, struct hilite *hl)
 //     int start_index;
 //     int end_index;
 //     int *chpos;
-static void create_hilites(POSITION linepos, int start_index, int end_index, int *chpos)
+static void create_hilites(POSITION linepos, int start_index, int end_index, int* chpos)
 {
     struct hilite hl;
     int i;
@@ -1033,15 +993,12 @@ static void create_hilites(POSITION linepos, int start_index, int end_index, int
      * Otherwise (there are backspaces or something involved),
      * finish the current hilite and start a new one.
      */
-    for (i = start_index+1;  i <= end_index;  i++)
-    {
-        if (chpos[i] != chpos[i-1] + 1 || i == end_index)
-        {
-            hl.hl_endpos = linepos + chpos[i-1] + 1;
+    for (i = start_index + 1; i <= end_index; i++) {
+        if (chpos[i] != chpos[i - 1] + 1 || i == end_index) {
+            hl.hl_endpos = linepos + chpos[i - 1] + 1;
             add_hilite(&hilite_anchor, &hl);
             /* Start new hilite unless this is the last char. */
-            if (i < end_index)
-            {
+            if (i < end_index) {
                 hl.hl_startpos = linepos + chpos[i];
             }
         }
@@ -1049,7 +1006,7 @@ static void create_hilites(POSITION linepos, int start_index, int end_index, int
 }
 
 /*
- * Make a hilite for each string in a physical line which matches 
+ * Make a hilite for each string in a physical line which matches
  * the current pattern.
  * sp,ep delimit the first match already found.
  */
@@ -1064,10 +1021,10 @@ static void create_hilites(POSITION linepos, int start_index, int end_index, int
 //     char *sp;
 //     char *ep;
 //     int cvt_ops;
-static void hilite_line(POSITION linepos, char *line, int line_len, int *chpos, char *sp, char *ep, int cvt_ops)
+static void hilite_line(POSITION linepos, char* line, int line_len, int* chpos, char* sp, char* ep, int cvt_ops)
 {
-    char *searchp;
-    char *line_end = line + line_len;
+    char* searchp;
+    char* line_end = line + line_len;
 
     /*
      * sp and ep delimit the first match in the line.
@@ -1083,7 +1040,7 @@ static void hilite_line(POSITION linepos, char *line, int line_len, int *chpos, 
     do {
         if (sp == NULL || ep == NULL)
             return;
-        create_hilites(linepos, sp-line, ep-line, chpos);
+        create_hilites(linepos, sp - line, ep - line, chpos);
         /*
          * If we matched more than zero characters,
          * move to the first char after the string we matched.
@@ -1096,7 +1053,7 @@ static void hilite_line(POSITION linepos, char *line, int line_len, int *chpos, 
         else /* end of line */
             break;
     } while (match_pattern(info_compiled(&search_info), search_info.text,
-            searchp, line_end - searchp, &sp, &ep, 1, search_info.search_type));
+        searchp, line_end - searchp, &sp, &ep, 1, search_info.search_type));
 }
 #endif
 
@@ -1126,7 +1083,8 @@ static void hilite_screen(VOID_PARAM)
 // Converted from C to C++ - C below
 // public void
 // chg_hilite(VOID_PARAM)
-public void chg_hilite(VOID_PARAM)
+public
+void chg_hilite(VOID_PARAM)
 {
     /*
      * Erase any highlights currently on screen.
@@ -1155,81 +1113,69 @@ static POSITION search_pos(int search_type)
     POSITION pos;
     int sindex;
 
-    if (empty_screen())
-    {
+    if (empty_screen()) {
         /*
          * Start at the beginning (or end) of the file.
-         * The empty_screen() case is mainly for 
+         * The empty_screen() case is mainly for
          * command line initiated searches;
          * for example, "+/xyz" on the command line.
          * Also for multi-file (SRCH_PAST_EOF) searches.
          */
-        if (search_type & SRCH_FORW)
-        {
+        if (search_type & SRCH_FORW) {
             pos = ch_zero();
-        } else
-        {
+        } else {
             pos = ch_length();
-            if (pos == NULL_POSITION)
-            {
-                (void) ch_end_seek();
+            if (pos == NULL_POSITION) {
+                (void)ch_end_seek();
                 pos = ch_length();
             }
         }
         sindex = 0;
-    } else 
-    {
+    } else {
         int add_one = 0;
 
-        if (how_search == OPT_ON)
-        {
+        if (how_search == OPT_ON) {
             /*
              * Search does not include current screen.
              */
             if (search_type & SRCH_FORW)
-                sindex = sc_height-1; /* BOTTOM_PLUS_ONE */
+                sindex = sc_height - 1; /* BOTTOM_PLUS_ONE */
             else
                 sindex = 0; /* TOP */
-        } else if (how_search == OPT_ONPLUS && !(search_type & SRCH_AFTER_TARGET))
-        {
+        } else if (how_search == OPT_ONPLUS && !(search_type & SRCH_AFTER_TARGET)) {
             /*
              * Search includes all of displayed screen.
              */
             if (search_type & SRCH_FORW)
                 sindex = 0; /* TOP */
             else
-                sindex = sc_height-1; /* BOTTOM_PLUS_ONE */
-        } else 
-        {
+                sindex = sc_height - 1; /* BOTTOM_PLUS_ONE */
+        } else {
             /*
              * Search includes the part of current screen beyond the jump target.
              * It starts at the jump target (if searching backwards),
              * or at the jump target plus one (if forwards).
              */
             sindex = sindex_from_sline(jump_sline);
-            if (search_type & SRCH_FORW) 
+            if (search_type & SRCH_FORW)
                 add_one = 1;
         }
         pos = position(sindex);
         if (add_one)
-            pos = forw_raw_line(pos, (char **)NULL, (int *)NULL);
+            pos = forw_raw_line(pos, (char**)NULL, (int*)NULL);
     }
 
     /*
      * If the line is empty, look around for a plausible starting place.
      */
-    if (search_type & SRCH_FORW) 
-    {
-        while (pos == NULL_POSITION)
-        {
+    if (search_type & SRCH_FORW) {
+        while (pos == NULL_POSITION) {
             if (++sindex >= sc_height)
                 break;
             pos = position(sindex);
         }
-    } else 
-    {
-        while (pos == NULL_POSITION)
-        {
+    } else {
+        while (pos == NULL_POSITION) {
             if (--sindex < 0)
                 break;
             pos = position(sindex);
@@ -1252,38 +1198,35 @@ static POSITION search_pos(int search_type)
 //     int maxlines;
 //     POSITION *plinepos;
 //     POSITION *pendpos;
-static int search_range(POSITION pos, POSITION endpos, int search_type, int matches, int maxlines, POSITION *plinepos, POSITION *pendpos)
+static int search_range(POSITION pos, POSITION endpos, int search_type, int matches, int maxlines, POSITION* plinepos, POSITION* pendpos)
 {
-    char *line;
-    char *cline;
+    char* line;
+    char* cline;
     int line_len;
     LINENUM linenum;
     char *sp, *ep;
     int line_match;
     int cvt_ops;
     int cvt_len;
-    int *chpos;
+    int* chpos;
     POSITION linepos, oldpos;
 
     linenum = find_linenum(pos);
     oldpos = pos;
-    for (;;)
-    {
+    for (;;) {
         /*
          * Get lines until we find a matching one or until
-         * we hit end-of-file (or beginning-of-file if we're 
+         * we hit end-of-file (or beginning-of-file if we're
          * going backwards), or until we hit the end position.
          */
-        if (ABORT_SIGS())
-        {
+        if (ABORT_SIGS()) {
             /*
              * A signal aborts the search.
              */
             return (-1);
         }
 
-        if ((endpos != NULL_POSITION && pos >= endpos) || maxlines == 0)
-        {
+        if ((endpos != NULL_POSITION && pos >= endpos) || maxlines == 0) {
             /*
              * Reached end position without a match.
              */
@@ -1294,18 +1237,16 @@ static int search_range(POSITION pos, POSITION endpos, int search_type, int matc
         if (maxlines > 0)
             maxlines--;
 
-        if (search_type & SRCH_FORW)
-        {
+        if (search_type & SRCH_FORW) {
             /*
-             * Read the next line, and save the 
+             * Read the next line, and save the
              * starting position of that line in linepos.
              */
             linepos = pos;
             pos = forw_raw_line(pos, &line, &line_len);
             if (linenum != 0)
                 linenum++;
-        } else
-        {
+        } else {
             /*
              * Read the previous line and save the
              * starting position of that line in linepos.
@@ -1316,8 +1257,7 @@ static int search_range(POSITION pos, POSITION endpos, int search_type, int matc
                 linenum--;
         }
 
-        if (pos == NULL_POSITION)
-        {
+        if (pos == NULL_POSITION) {
             /*
              * Reached EOF/BOF without a match.
              */
@@ -1347,7 +1287,7 @@ static int search_range(POSITION pos, POSITION endpos, int search_type, int matc
          */
         cvt_ops = get_cvt_ops();
         cvt_len = cvt_length(line_len, cvt_ops);
-        cline = (char *) ecalloc(1, cvt_len);
+        cline = (char*)ecalloc(1, cvt_len);
         chpos = cvt_alloc_chpos(cvt_len);
         cvt_text(cline, line, chpos, &line_len, cvt_ops);
 
@@ -1356,14 +1296,10 @@ static int search_range(POSITION pos, POSITION endpos, int search_type, int matc
          * Check to see if the line matches the filter pattern.
          * If so, add an entry to the filter list.
          */
-        if (((search_type & SRCH_FIND_ALL) ||
-             prep_startpos == NULL_POSITION ||
-             linepos < prep_startpos || linepos >= prep_endpos) &&
-            prev_pattern(&filter_info)) {
+        if (((search_type & SRCH_FIND_ALL) || prep_startpos == NULL_POSITION || linepos < prep_startpos || linepos >= prep_endpos) && prev_pattern(&filter_info)) {
             int line_filter = match_pattern(info_compiled(&filter_info), filter_info.text,
                 cline, line_len, &sp, &ep, 0, filter_info.search_type);
-            if (line_filter)
-            {
+            if (line_filter) {
                 struct hilite hl;
                 hl.hl_startpos = linepos;
                 hl.hl_endpos = pos;
@@ -1380,34 +1316,29 @@ static int search_range(POSITION pos, POSITION endpos, int search_type, int matc
          * We are successful if we either want a match and got one,
          * or if we want a non-match and got one.
          */
-        if (prev_pattern(&search_info))
-        {
+        if (prev_pattern(&search_info)) {
             line_match = match_pattern(info_compiled(&search_info), search_info.text,
                 cline, line_len, &sp, &ep, 0, search_type);
-            if (line_match)
-            {
+            if (line_match) {
                 /*
                  * Got a match.
                  */
-                if (search_type & SRCH_FIND_ALL)
-                {
+                if (search_type & SRCH_FIND_ALL) {
 #if HILITE_SEARCH
                     /*
                      * We are supposed to find all matches in the range.
-                     * Just add the matches in this line to the 
+                     * Just add the matches in this line to the
                      * hilite list and keep searching.
                      */
                     hilite_line(linepos, cline, line_len, chpos, sp, ep, cvt_ops);
 #endif
-                } else if (--matches <= 0)
-                {
+                } else if (--matches <= 0) {
                     /*
                      * Found the one match we're looking for.
                      * Return it.
                      */
 #if HILITE_SEARCH
-                    if (hilite_search == OPT_ON)
-                    {
+                    if (hilite_search == OPT_ON) {
                         /*
                          * Clear the hilite list and add only
                          * the matches in this one line.
@@ -1434,13 +1365,13 @@ static int search_range(POSITION pos, POSITION endpos, int search_type, int matc
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// static int 
-// hist_pattern(search_type) 
+// static int
+// hist_pattern(search_type)
 //     int search_type;
-static int  hist_pattern(int search_type)
+static int hist_pattern(int search_type)
 {
 #if CMD_HISTORY
-    char *pattern;
+    char* pattern;
 
     set_mlist(ml_search, 0);
     pattern = cmd_lastpattern();
@@ -1462,14 +1393,15 @@ static int  hist_pattern(int search_type)
 }
 
 /*
- * Change the caseless-ness of searches.  
+ * Change the caseless-ness of searches.
  * Updates the internal search state to reflect a change in the -i flag.
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
 // chg_caseless(VOID_PARAM)
-public void chg_caseless(VOID_PARAM)
+public
+void chg_caseless(VOID_PARAM)
 {
     if (!is_ucase_pattern)
         /*
@@ -1477,8 +1409,7 @@ public void chg_caseless(VOID_PARAM)
          * Just set the search caselessness to the global caselessness.
          */
         is_caseless = caseless;
-    else
-    {
+    else {
         /*
          * Pattern did have uppercase.
          * Regenerate the pattern using the new state.
@@ -1489,12 +1420,12 @@ public void chg_caseless(VOID_PARAM)
 }
 
 /*
- * Search for the n-th occurrence of a specified pattern, 
+ * Search for the n-th occurrence of a specified pattern,
  * either forward or backward.
  * Return the number of matches not yet found in this file
  * (that is, n minus the number of matches found).
  * Return -1 if the search should be aborted.
- * Caller may continue the search in another file 
+ * Caller may continue the search in another file
  * if less than n matches are found in this file.
  */
 // -------------------------------------------
@@ -1504,38 +1435,33 @@ public void chg_caseless(VOID_PARAM)
 //     int search_type;
 //     char *pattern;
 //     int n;
-public int search(int search_type, char *pattern, int n)
+public
+int search(int search_type, char* pattern, int n)
 {
     POSITION pos;
 
-    if (pattern == NULL || *pattern == '\0')
-    {
+    if (pattern == NULL || *pattern == '\0') {
         /*
          * A null pattern means use the previously compiled pattern.
          */
         search_type |= SRCH_AFTER_TARGET;
-        if (!prev_pattern(&search_info) && !hist_pattern(search_type))
-        {
-            error((char *)"No previous regular expression", NULL_PARG);
+        if (!prev_pattern(&search_info) && !hist_pattern(search_type)) {
+            error((char*)"No previous regular expression", NULL_PARG);
             return (-1);
         }
-        if ((search_type & SRCH_NO_REGEX) != 
-              (search_info.search_type & SRCH_NO_REGEX))
-        {
-            error((char *)"Please re-enter search pattern", NULL_PARG);
+        if ((search_type & SRCH_NO_REGEX) != (search_info.search_type & SRCH_NO_REGEX)) {
+            error((char*)"Please re-enter search pattern", NULL_PARG);
             return -1;
         }
 #if HILITE_SEARCH
-        if (hilite_search == OPT_ON || status_col)
-        {
+        if (hilite_search == OPT_ON || status_col) {
             /*
              * Erase the highlights currently on screen.
              * If the search fails, we'll redisplay them later.
              */
             repaint_hilite(0);
         }
-        if (hilite_search == OPT_ONPLUS && hide_hilite)
-        {
+        if (hilite_search == OPT_ONPLUS && hide_hilite) {
             /*
              * Highlight any matches currently on screen,
              * before we actually start the search.
@@ -1545,16 +1471,14 @@ public int search(int search_type, char *pattern, int n)
         }
         hide_hilite = 0;
 #endif
-    } else
-    {
+    } else {
         /*
          * Compile the pattern.
          */
         if (set_pattern(&search_info, pattern, search_type) < 0)
             return (-1);
 #if HILITE_SEARCH
-        if (hilite_search || status_col)
-        {
+        if (hilite_search || status_col) {
             /*
              * Erase the highlights currently on screen.
              * Also permanently delete them from the hilite list.
@@ -1563,8 +1487,7 @@ public int search(int search_type, char *pattern, int n)
             hide_hilite = 0;
             clr_hilite();
         }
-        if (hilite_search == OPT_ONPLUS || status_col)
-        {
+        if (hilite_search == OPT_ONPLUS || status_col) {
             /*
              * Highlight any matches currently on screen,
              * before we actually start the search.
@@ -1578,8 +1501,7 @@ public int search(int search_type, char *pattern, int n)
      * Figure out where to start the search.
      */
     pos = search_pos(search_type);
-    if (pos == NULL_POSITION)
-    {
+    if (pos == NULL_POSITION) {
         /*
          * Can't find anyplace to start searching from.
          */
@@ -1587,14 +1509,13 @@ public int search(int search_type, char *pattern, int n)
             return (n);
         if (hilite_search == OPT_ON || status_col)
             repaint_hilite(1);
-        error((char *)"Nothing to search", NULL_PARG);
+        error((char*)"Nothing to search", NULL_PARG);
         return (-1);
     }
 
     n = search_range(pos, NULL_POSITION, search_type, n, -1,
-            &pos, (POSITION*)NULL);
-    if (n != 0)
-    {
+        &pos, (POSITION*)NULL);
+    if (n != 0) {
         /*
          * Search was unsuccessful.
          */
@@ -1608,8 +1529,7 @@ public int search(int search_type, char *pattern, int n)
         return (n);
     }
 
-    if (!(search_type & SRCH_NO_MOVE))
-    {
+    if (!(search_type & SRCH_NO_MOVE)) {
         /*
          * Go to the matching line.
          */
@@ -1625,7 +1545,6 @@ public int search(int search_type, char *pattern, int n)
 #endif
     return (0);
 }
-
 
 #if HILITE_SEARCH
 /*
@@ -1645,7 +1564,8 @@ public int search(int search_type, char *pattern, int n)
 //     POSITION spos;
 //     POSITION epos;
 //     int maxlines;
-public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
+public
+void prep_hilite(POSITION spos, POSITION epos, int maxlines)
 {
     POSITION nprep_startpos = prep_startpos;
     POSITION nprep_endpos = prep_endpos;
@@ -1658,7 +1578,7 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
  * Search beyond where we're asked to search, so the prep region covers
  * more than we need.  Do one big search instead of a bunch of small ones.
  */
-#define    SEARCH_MORE (3*size_linebuf)
+#define SEARCH_MORE (3 * size_linebuf)
 
     if (!prev_pattern(&search_info) && !is_filtering())
         return;
@@ -1667,7 +1587,7 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
      * Make sure our prep region always starts at the beginning of
      * a line. (search_range takes care of the end boundary below.)
      */
-    spos = back_raw_line(spos+1, (char **)NULL, (int *)NULL);
+    spos = back_raw_line(spos + 1, (char**)NULL, (int*)NULL);
 
     /*
      * If we're limited to a max number of lines, figure out the
@@ -1675,11 +1595,10 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
      */
     if (maxlines < 0)
         max_epos = NULL_POSITION;
-    else
-    {
+    else {
         max_epos = spos;
-        for (i = 0;  i < maxlines;  i++)
-            max_epos = forw_raw_line(max_epos, (char **)NULL, (int *)NULL);
+        for (i = 0; i < maxlines; i++)
+            max_epos = forw_raw_line(max_epos, (char**)NULL, (int*)NULL);
     }
 
     /*
@@ -1688,10 +1607,7 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
      * the "prep" region will then cover (nprep_startpos,nprep_endpos).
      */
 
-    if (prep_startpos == NULL_POSITION ||
-        (epos != NULL_POSITION && epos < prep_startpos) ||
-        spos > prep_endpos)
-    {
+    if (prep_startpos == NULL_POSITION || (epos != NULL_POSITION && epos < prep_startpos) || spos > prep_endpos) {
         /*
          * New range is not contiguous with old prep region.
          * Discard the old prep region and start a new one.
@@ -1701,19 +1617,16 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
         if (epos != NULL_POSITION)
             epos += SEARCH_MORE;
         nprep_startpos = spos;
-    } else
-    {
+    } else {
         /*
          * New range partially or completely overlaps old prep region.
          */
-        if (epos == NULL_POSITION)
-        {
+        if (epos == NULL_POSITION) {
             /*
              * New range goes to end of file.
              */
             ;
-        } else if (epos > prep_endpos)
-        {
+        } else if (epos > prep_endpos) {
             /*
              * New range ends after old prep region.
              * Extend prep region to end at end of new range.
@@ -1728,11 +1641,10 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
             epos = prep_startpos;
         }
 
-        if (spos < prep_startpos)
-        {
+        if (spos < prep_startpos) {
             /*
              * New range starts before old prep region.
-             * Extend old prep region backwards to start at 
+             * Extend old prep region backwards to start at
              * start of new range.
              */
             if (spos < SEARCH_MORE)
@@ -1750,19 +1662,16 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
         }
     }
 
-    if (epos != NULL_POSITION && max_epos != NULL_POSITION &&
-        epos > max_epos)
+    if (epos != NULL_POSITION && max_epos != NULL_POSITION && epos > max_epos)
         /*
          * Don't go past the max position we're allowed.
          */
         epos = max_epos;
 
-    if (epos == NULL_POSITION || epos > spos)
-    {
+    if (epos == NULL_POSITION || epos > spos) {
         int search_type = SRCH_FORW | SRCH_FIND_ALL;
         search_type |= (search_info.search_type & SRCH_NO_REGEX);
-        for (;;) 
-        {
+        for (;;) {
             result = search_range(spos, epos, search_type, 0, maxlines, (POSITION*)NULL, &new_epos);
             if (result < 0)
                 return;
@@ -1775,12 +1684,10 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
              * keep going at least one more line until we find
              * something that isn't filtered, or hit the end.
              */
-            if (prep_endpos == NULL_POSITION || nprep_endpos > prep_endpos)
-            {
-                if (new_epos >= nprep_endpos && is_filtered(new_epos-1))
-                {
+            if (prep_endpos == NULL_POSITION || nprep_endpos > prep_endpos) {
+                if (new_epos >= nprep_endpos && is_filtered(new_epos - 1)) {
                     spos = nprep_endpos;
-                    epos = forw_raw_line(nprep_endpos, (char **)NULL, (int *)NULL);
+                    epos = forw_raw_line(nprep_endpos, (char**)NULL, (int*)NULL);
                     if (epos == NULL_POSITION)
                         break;
                     maxlines = 1;
@@ -1788,12 +1695,10 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
                 }
             }
 
-            if (prep_startpos == NULL_POSITION || nprep_startpos < prep_startpos)
-            {
-                if (nprep_startpos > 0 && is_filtered(nprep_startpos))
-                {
+            if (prep_startpos == NULL_POSITION || nprep_startpos < prep_startpos) {
+                if (nprep_startpos > 0 && is_filtered(nprep_startpos)) {
                     epos = nprep_startpos;
-                    spos = back_raw_line(nprep_startpos, (char **)NULL, (int *)NULL);
+                    spos = back_raw_line(nprep_startpos, (char**)NULL, (int*)NULL);
                     if (spos == NULL_POSITION)
                         break;
                     nprep_startpos = spos;
@@ -1817,7 +1722,8 @@ public void prep_hilite(POSITION spos, POSITION epos, int maxlines)
 // set_filter_pattern(pattern, search_type)
 //     char *pattern;
 //     int search_type;
-public void set_filter_pattern(char *pattern, int search_type)
+public
+void set_filter_pattern(char* pattern, int search_type)
 {
     clr_filter();
     if (pattern == NULL || *pattern == '\0')
@@ -1834,7 +1740,8 @@ public void set_filter_pattern(char *pattern, int search_type)
 // Converted from C to C++ - C below
 // public int
 // is_filtering(VOID_PARAM)
-public int is_filtering(VOID_PARAM)
+public
+int is_filtering(VOID_PARAM)
 {
     if (ch_getflags() & CH_HELPFILE)
         return (0);
@@ -1844,26 +1751,26 @@ public int is_filtering(VOID_PARAM)
 
 #if HAVE_V8_REGCOMP
 /*
- * This function is called by the V8 regcomp to report 
+ * This function is called by the V8 regcomp to report
  * errors in regular expressions.
  */
-public int reg_show_error = 1;
+public
+int reg_show_error = 1;
 
-    void 
-regerror((char *)s) 
-    char *s; 
+void
+    regerror((char*)s) char* s;
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public int
 // is_filtering(VOID_PARAM)
-public int is_filtering(VOID_PARAM)
+public
+int is_filtering(VOID_PARAM)
 {
     PARG parg;
 
     if (!reg_show_error)
         return;
     parg.p_string = s;
-    error((char *)"%s", &parg);
+    error((char*)"%s", &parg);
 }
 #endif
-

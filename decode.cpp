@@ -7,7 +7,7 @@
  * For more information, see the README file.
  */
 
-/* 
+/*
  * Routines to decode user commands.
  *
  * This is all table driven.
@@ -28,14 +28,15 @@
  * All the tables are linked together and are searched in order.
  */
 
-#include "cmd.hpp"
-#include "less.hpp"
 #include "decode.hpp"
-#include "lesskey.hpp"
+#include "cmd.hpp"
 #include "command.hpp"
 #include "filename.hpp"
+#include "less.hpp"
+#include "lesskey.hpp"
 #include "mark.hpp"
 #include "output.hpp"
+#include "screen.hpp"
 
 extern int erase_char, erase2_char, kill_char;
 extern int mousecap;
@@ -220,42 +221,38 @@ static unsigned char edittable[] =
 /*
  * Structure to support a list of command tables.
  */
-struct tablelist
-{
-    struct tablelist *t_next;
-    char *t_start;
-    char *t_end;
+struct tablelist {
+    struct tablelist* t_next;
+    char* t_start;
+    char* t_end;
 };
 
 /*
  * List of command tables and list of line-edit tables.
  */
-static struct tablelist *list_fcmd_tables = NULL;
-static struct tablelist *list_ecmd_tables = NULL;
-static struct tablelist *list_var_tables = NULL;
-static struct tablelist *list_sysvar_tables = NULL;
+static struct tablelist* list_fcmd_tables = NULL;
+static struct tablelist* list_ecmd_tables = NULL;
+static struct tablelist* list_var_tables = NULL;
+static struct tablelist* list_sysvar_tables = NULL;
 
 /*
  * Expand special key abbreviations in a command table.
  */
-static void expand_special_keys(char *table, int len)
+static void expand_special_keys(char* table, int len)
 {
-    char *fm;
-    char *to;
+    char* fm;
+    char* to;
     int a;
-    char *repl;
+    char* repl;
     int klen;
 
-    for (fm = table; fm < table + len;)
-    {
+    for (fm = table; fm < table + len;) {
         /*
          * Rewrite each command in the table with any
          * special key abbreviations expanded.
          */
-        for (to = fm; *fm != '\0';)
-        {
-            if (*fm != SK_SPECIAL_KEY)
-            {
+        for (to = fm; *fm != '\0';) {
+            if (*fm != SK_SPECIAL_KEY) {
                 *to++ = *fm++;
                 continue;
             }
@@ -272,7 +269,7 @@ static void expand_special_keys(char *table, int len)
             klen = fm[2] & 0377;
             fm += klen;
             if (repl == NULL || (int)strlen(repl) > klen)
-                repl = (char *)"\377";
+                repl = (char*)"\377";
             while (*repl != '\0')
                 *to++ = *repl++;
         }
@@ -285,8 +282,7 @@ static void expand_special_keys(char *table, int len)
             *to++ = A_SKIP;
         fm++;
         a = *fm++ & 0377;
-        if (a & A_EXTRA)
-        {
+        if (a & A_EXTRA) {
             while (*fm++ != '\0')
                 continue;
         }
@@ -296,11 +292,10 @@ static void expand_special_keys(char *table, int len)
 /*
  * Expand special key abbreviations in a list of command tables.
  */
-static void expand_cmd_table(struct tablelist *tlist)
+static void expand_cmd_table(struct tablelist* tlist)
 {
-    struct tablelist *t;
-    for (t = tlist; t != NULL; t = t->t_next)
-    {
+    struct tablelist* t;
+    for (t = tlist; t != NULL; t = t->t_next) {
         expand_special_keys(t->t_start, t->t_end - t->t_start);
     }
 }
@@ -326,33 +321,33 @@ void init_cmds(VOID_PARAM)
     /*
      * Add the default command tables.
      */
-    add_fcmd_table((char *)cmdtable, sizeof(cmdtable));
-    add_ecmd_table((char *)edittable, sizeof(edittable));
+    add_fcmd_table((char*)cmdtable, sizeof(cmdtable));
+    add_ecmd_table((char*)edittable, sizeof(edittable));
 #if USERFILE
     /*
      * For backwards compatibility,
      * try to add tables in the OLD system lesskey file.
      */
 #ifdef BINDIR
-    add_hometable(NULL, (char *)BINDIR "/.sysless", 1);
+    add_hometable(NULL, (char*)BINDIR "/.sysless", 1);
 #endif
     /*
      * Try to add the tables in the system lesskey file.
      */
-    add_hometable((char *)"LESSKEY_SYSTEM", (char *)LESSKEYFILE_SYS, 1); 
+    add_hometable((char*)"LESSKEY_SYSTEM", (char*)LESSKEYFILE_SYS, 1);
     /*
      * Try to add the tables in the standard lesskey file "$HOME/.less".
      */
-    add_hometable((char *)"LESSKEY", (char *)LESSKEYFILE, 0);
+    add_hometable((char*)"LESSKEY", (char*)LESSKEYFILE, 0);
 #endif
 }
 
 /*
  * Add a command table.
  */
-static int add_cmd_table(struct tablelist **tlist, char *buf, int len)
+static int add_cmd_table(struct tablelist** tlist, char* buf, int len)
 {
-    struct tablelist *t;
+    struct tablelist* t;
 
     if (len == 0)
         return (0);
@@ -360,8 +355,7 @@ static int add_cmd_table(struct tablelist **tlist, char *buf, int len)
      * Allocate a tablelist structure, initialize it,
      * and link it into the list of tables.
      */
-    if ((t = (struct tablelist *)calloc(1, sizeof(struct tablelist))) == NULL)
-    {
+    if ((t = (struct tablelist*)calloc(1, sizeof(struct tablelist))) == NULL) {
         return (-1);
     }
     t->t_start = buf;
@@ -375,31 +369,31 @@ static int add_cmd_table(struct tablelist **tlist, char *buf, int len)
  * Add a command table.
  */
 public
-void add_fcmd_table(char *buf, int len)
+void add_fcmd_table(char* buf, int len)
 {
     if (add_cmd_table(&list_fcmd_tables, buf, len) < 0)
-        error((char *)"Warning: some commands disabled", NULL_PARG);
+        error((char*)"Warning: some commands disabled", NULL_PARG);
 }
 
 /*
  * Add an editing command table.
  */
 public
-void add_ecmd_table(char *buf, int len)
+void add_ecmd_table(char* buf, int len)
 {
     if (add_cmd_table(&list_ecmd_tables, buf, len) < 0)
-        error((char *)"Warning: some edit commands disabled", NULL_PARG);
+        error((char*)"Warning: some edit commands disabled", NULL_PARG);
 }
 
 /*
  * Add an environment variable table.
  */
-static void add_var_table(struct tablelist **tlist, char *buf, int len)
+static void add_var_table(struct tablelist** tlist, char* buf, int len)
 {
     if (add_cmd_table(tlist, buf, len) < 0)
-        error((char *)"Warning: environment variables from lesskey file "
-                      "unavailable",
-              NULL_PARG);
+        error((char*)"Warning: environment variables from lesskey file "
+                     "unavailable",
+            NULL_PARG);
 }
 
 /*
@@ -427,8 +421,7 @@ static int mouse_button_rel(int x, int y)
      * {{ It would be better to return an action and then do this
      *    in commands() but it's nontrivial to pass y to it. }}
      */
-    if (y < sc_height - 1)
-    {
+    if (y < sc_height - 1) {
         setmark('#', y);
         screen_trashed = 1;
     }
@@ -439,15 +432,13 @@ static int mouse_button_rel(int x, int y)
  * Read a decimal integer. Return the integer and set *pterm to the terminating
  * char.
  */
-static int getcc_int(char *pterm)
+static int getcc_int(char* pterm)
 {
     int num = 0;
     int digits = 0;
-    for (;;)
-    {
+    for (;;) {
         char ch = getcc();
-        if (ch < '0' || ch > '9')
-        {
+        if (ch < '0' || ch > '9') {
             if (pterm != NULL)
                 *pterm = ch;
             if (digits == 0)
@@ -468,8 +459,7 @@ static int x11mouse_action(VOID_PARAM)
     int b = getcc() - X11MOUSE_OFFSET;
     int x = getcc() - X11MOUSE_OFFSET - 1;
     int y = getcc() - X11MOUSE_OFFSET - 1;
-    switch (b)
-    {
+    switch (b) {
     default:
         return (A_NOACTION);
     case X11MOUSE_WHEEL_DOWN:
@@ -498,8 +488,7 @@ static int x116mouse_action(VOID_PARAM)
     y = getcc_int(&ch) - 1;
     if (y < 0)
         return (A_NOACTION);
-    switch (b)
-    {
+    switch (b) {
     case X11MOUSE_WHEEL_DOWN:
         return mouse_wheel_down();
     case X11MOUSE_WHEEL_UP:
@@ -514,17 +503,15 @@ static int x116mouse_action(VOID_PARAM)
 /*
  * Search a single command table for the command string in cmd.
  */
-static int cmd_search(char *cmd, char *table, char *endtable, char **sp)
+static int cmd_search(char* cmd, char* table, char* endtable, char** sp)
 {
-    char *p;
-    char *q;
+    char* p;
+    char* q;
     int a;
 
     *sp = NULL;
-    for (p = table, q = cmd; p < endtable; p++, q++)
-    {
-        if (*p == *q)
-        {
+    for (p = table, q = cmd; p < endtable; p++, q++) {
+        if (*p == *q) {
             /*
              * Current characters match.
              * If we're at the end of the string, we've found it.
@@ -532,13 +519,11 @@ static int cmd_search(char *cmd, char *table, char *endtable, char **sp)
              * after the null at the end of the string
              * in the command table.
              */
-            if (*p == '\0')
-            {
+            if (*p == '\0') {
                 a = *++p & 0377;
                 while (a == A_SKIP)
                     a = *++p & 0377;
-                if (a == A_END_LIST)
-                {
+                if (a == A_END_LIST) {
                     /*
                      * We get here only if the original
                      * cmd string passed in was empty ("").
@@ -550,8 +535,7 @@ static int cmd_search(char *cmd, char *table, char *endtable, char **sp)
                 /*
                  * Check for an "extra" string.
                  */
-                if (a & A_EXTRA)
-                {
+                if (a & A_EXTRA) {
                     *sp = ++p;
                     a &= ~A_EXTRA;
                 }
@@ -561,26 +545,21 @@ static int cmd_search(char *cmd, char *table, char *endtable, char **sp)
                     a = x116mouse_action();
                 return (a);
             }
-        }
-        else if (*q == '\0')
-        {
+        } else if (*q == '\0') {
             /*
              * Hit the end of the user's command,
              * but not the end of the string in the command table.
              * The user's command is incomplete.
              */
             return (A_PREFIX);
-        }
-        else
-        {
+        } else {
             /*
              * Not a match.
              * Skip ahead to the next command in the
              * command table, and reset the pointer
              * to the beginning of the user's command.
              */
-            if (*p == '\0' && p[1] == A_END_LIST)
-            {
+            if (*p == '\0' && p[1] == A_END_LIST) {
                 /*
                  * A_END_LIST is a special marker that tells
                  * us to abort the cmd search.
@@ -607,17 +586,16 @@ static int cmd_search(char *cmd, char *table, char *endtable, char **sp)
  * Decode a command character and return the associated action.
  * The "extra" string, if any, is returned in sp.
  */
-static int cmd_decode(struct tablelist *tlist, char *cmd, char **sp)
+static int cmd_decode(struct tablelist* tlist, char* cmd, char** sp)
 {
-    struct tablelist *t;
+    struct tablelist* t;
     int action = A_INVALID;
 
     /*
      * Search thru all the command tables.
      * Stop when we find an action which is not A_INVALID.
      */
-    for (t = tlist; t != NULL; t = t->t_next)
-    {
+    for (t = tlist; t != NULL; t = t->t_next) {
         action = cmd_search(cmd, t->t_start, t->t_end, sp);
         if (action != A_INVALID)
             break;
@@ -631,7 +609,7 @@ static int cmd_decode(struct tablelist *tlist, char *cmd, char **sp)
  * Decode a command from the cmdtables list.
  */
 public
-int fcmd_decode(char *cmd, char **sp)
+int fcmd_decode(char* cmd, char** sp)
 {
     return (cmd_decode(list_fcmd_tables, cmd, sp));
 }
@@ -640,7 +618,7 @@ int fcmd_decode(char *cmd, char **sp)
  * Decode a command from the edittables list.
  */
 public
-int ecmd_decode(char *cmd, char **sp)
+int ecmd_decode(char* cmd, char** sp)
 {
     return (cmd_decode(list_ecmd_tables, cmd, sp));
 }
@@ -650,10 +628,10 @@ int ecmd_decode(char *cmd, char **sp)
  * Looks first in the lesskey file, then in the real environment.
  */
 public
-char *lgetenv(char *var)
+char* lgetenv(char* var)
 {
     int a;
-    char *s;
+    char* s;
 
     a = cmd_decode(list_var_tables, var, &s);
     if (a == EV_OK)
@@ -671,7 +649,7 @@ char *lgetenv(char *var)
  * Is a string null or empty?
  */
 public
-int isnullenv(char *s)
+int isnullenv(char* s)
 {
     return (s == NULL || *s == '\0');
 }
@@ -682,7 +660,7 @@ int isnullenv(char *s)
  * Integers are stored in a funny format:
  * two bytes, low order first, in radix KRADIX.
  */
-static int gint(char **sp)
+static int gint(char** sp)
 {
     int n;
 
@@ -694,7 +672,7 @@ static int gint(char **sp)
 /*
  * Process an old (pre-v241) lesskey file.
  */
-static int old_lesskey(char *buf, int len)
+static int old_lesskey(char* buf, int len)
 {
     /*
      * Old-style lesskey file.
@@ -712,9 +690,9 @@ static int old_lesskey(char *buf, int len)
 /*
  * Process a new (post-v241) lesskey file.
  */
-static int new_lesskey(char *buf, int len, int sysvar)
+static int new_lesskey(char* buf, int len, int sysvar)
 {
-    char *p;
+    char* p;
     int c;
     int n;
 
@@ -722,15 +700,12 @@ static int new_lesskey(char *buf, int len, int sysvar)
      * New-style lesskey file.
      * Extract the pieces.
      */
-    if (buf[len - 3] != C0_END_LESSKEY_MAGIC || buf[len - 2] != C1_END_LESSKEY_MAGIC ||
-        buf[len - 1] != C2_END_LESSKEY_MAGIC)
+    if (buf[len - 3] != C0_END_LESSKEY_MAGIC || buf[len - 2] != C1_END_LESSKEY_MAGIC || buf[len - 1] != C2_END_LESSKEY_MAGIC)
         return (-1);
     p = buf + 4;
-    for (;;)
-    {
+    for (;;) {
         c = *p++;
-        switch (c)
-        {
+        switch (c) {
         case CMD_SECTION:
             n = gint(&p);
             add_fcmd_table(p, n);
@@ -761,9 +736,9 @@ static int new_lesskey(char *buf, int len, int sysvar)
  * Set up a user command table, based on a "lesskey" file.
  */
 public
-int lesskey(char *filename, int sysvar)
+int lesskey(char* filename, int sysvar)
 {
-    char *buf;
+    char* buf;
     POSITION len;
     long n;
     int f;
@@ -784,29 +759,25 @@ int lesskey(char *filename, int sysvar)
      *    rely on the lesskey program to generate a good .less file. }}
      */
     len = filesize(f);
-    if (len == NULL_POSITION || len < 3)
-    {
+    if (len == NULL_POSITION || len < 3) {
         /*
          * Bad file (valid file must have at least 3 chars).
          */
         close(f);
         return (-1);
     }
-    if ((buf = (char *)calloc((int)len, sizeof(char))) == NULL)
-    {
+    if ((buf = (char*)calloc((int)len, sizeof(char))) == NULL) {
         close(f);
         return (-1);
     }
-    if (lseek(f, (off_t)0, SEEK_SET) == BAD_LSEEK)
-    {
+    if (lseek(f, (off_t)0, SEEK_SET) == BAD_LSEEK) {
         free(buf);
         close(f);
         return (-1);
     }
     n = read(f, buf, (unsigned int)len);
     close(f);
-    if (n != len)
-    {
+    if (n != len) {
         free(buf);
         return (-1);
     }
@@ -815,8 +786,7 @@ int lesskey(char *filename, int sysvar)
      * Figure out if this is an old-style (before version 241)
      * or new-style lesskey file format.
      */
-    if (buf[0] != C0_LESSKEY_MAGIC || buf[1] != C1_LESSKEY_MAGIC || buf[2] != C2_LESSKEY_MAGIC ||
-        buf[3] != C3_LESSKEY_MAGIC)
+    if (buf[0] != C0_LESSKEY_MAGIC || buf[1] != C1_LESSKEY_MAGIC || buf[2] != C2_LESSKEY_MAGIC || buf[3] != C3_LESSKEY_MAGIC)
         return (old_lesskey(buf, (int)len));
     return (new_lesskey(buf, (int)len, sysvar));
 }
@@ -825,9 +795,9 @@ int lesskey(char *filename, int sysvar)
  * Add the standard lesskey file "$HOME/.less"
  */
 public
-void add_hometable(char *envname, char *def_filename, int sysvar)
+void add_hometable(char* envname, char* def_filename, int sysvar)
 {
-    char *filename;
+    char* filename;
     PARG parg;
 
     if (envname != NULL && (filename = lgetenv(envname)) != NULL)
@@ -838,10 +808,9 @@ void add_hometable(char *envname, char *def_filename, int sysvar)
         filename = homefile(def_filename);
     if (filename == NULL)
         return;
-    if (lesskey(filename, sysvar) < 0)
-    {
+    if (lesskey(filename, sysvar) < 0) {
         parg.p_string = filename;
-        error((char *)"Cannot use lesskey file \"%s\"", &parg);
+        error((char*)"Cannot use lesskey file \"%s\"", &parg);
     }
     free(filename);
 }
@@ -855,7 +824,7 @@ int editchar(int c, int flags)
 {
     int action;
     int nch;
-    char *s;
+    char* s;
     char usercmd[MAX_CMDLEN + 1];
 
     /*
@@ -867,8 +836,7 @@ int editchar(int c, int flags)
      */
     if (c == erase_char || c == erase2_char)
         return (EC_BACKSPACE);
-    if (c == kill_char)
-    {
+    if (c == kill_char) {
         return (EC_LINEKILL);
     }
 
@@ -877,8 +845,7 @@ int editchar(int c, int flags)
      * Start with the one we have, and get more if we need them.
      */
     nch = 0;
-    do
-    {
+    do {
         if (nch > 0)
             c = getcc();
         usercmd[nch] = c;
@@ -887,10 +854,8 @@ int editchar(int c, int flags)
         action = ecmd_decode(usercmd, &s);
     } while (action == A_PREFIX);
 
-    if (flags & EC_NORIGHTLEFT)
-    {
-        switch (action)
-        {
+    if (flags & EC_NORIGHTLEFT) {
+        switch (action) {
         case EC_RIGHT:
         case EC_LEFT:
             action = A_INVALID;
@@ -898,14 +863,12 @@ int editchar(int c, int flags)
         }
     }
 #if CMD_HISTORY
-    if (flags & EC_NOHISTORY)
-    {
+    if (flags & EC_NOHISTORY) {
         /*
          * The caller says there is no history list.
          * Reject any history-manipulation action.
          */
-        switch (action)
-        {
+        switch (action) {
         case EC_UP:
         case EC_DOWN:
             action = A_INVALID;
@@ -914,14 +877,12 @@ int editchar(int c, int flags)
     }
 #endif
 #if TAB_COMPLETE_FILENAME
-    if (flags & EC_NOCOMPLETE)
-    {
+    if (flags & EC_NOCOMPLETE) {
         /*
          * The caller says we don't want any filename completion cmds.
          * Reject them.
          */
-        switch (action)
-        {
+        switch (action) {
         case EC_F_COMPLETE:
         case EC_B_COMPLETE:
         case EC_EXPAND:
@@ -930,21 +891,17 @@ int editchar(int c, int flags)
         }
     }
 #endif
-    if ((flags & EC_PEEK) || action == A_INVALID)
-    {
+    if ((flags & EC_PEEK) || action == A_INVALID) {
         /*
          * We're just peeking, or we didn't understand the command.
          * Unget all the characters we read in the loop above.
          * This does NOT include the original character that was
          * passed in as a parameter.
          */
-        while (nch > 1)
-        {
+        while (nch > 1) {
             ungetcc(usercmd[--nch]);
         }
-    }
-    else
-    {
+    } else {
         if (s != NULL)
             ungetsc(s);
     }

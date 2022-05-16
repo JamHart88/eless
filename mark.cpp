@@ -7,15 +7,16 @@
  * For more information, see the README file.
  */
 
-#include "less.hpp"
 #include "mark.hpp"
-#include "position.hpp"
 #include "ch.hpp"
 #include "edit.hpp"
 #include "filename.hpp"
 #include "ifile.hpp"
 #include "jump.hpp"
+#include "less.hpp"
 #include "output.hpp"
+#include "position.hpp"
+#include "screen.hpp"
 
 extern IFILE curr_ifile;
 extern int sc_height;
@@ -25,18 +26,20 @@ extern int perma_marks;
 /*
  * A mark is an ifile (input file) plus a position within the file.
  */
-struct mark 
-{
+struct mark {
     /*
      * Normally m_ifile != IFILE_NULL and m_filename == NULL.
      * For restored marks we set m_filename instead of m_ifile
-     * because we don't want to create an ifile until the 
+     * because we don't want to create an ifile until the
      * user explicitly requests the file (by name or mark).
      */
-    char m_letter;           /* Associated character */
-    IFILE m_ifile;           /* Input file being marked */
-    char *m_filename;        /* Name of the input file */
-    struct scrpos m_scrpos;  /* Position of the mark */
+    char m_letter; /* Associated character */
+
+    IFILE m_ifile; /* Input file being marked */
+
+    char* m_filename; /* Name of the input file */
+
+    struct scrpos m_scrpos; /* Position of the mark */
 };
 
 /*
@@ -44,18 +47,18 @@ struct mark
  * Each mark is identified by a lowercase or uppercase letter.
  * The final one is lmark, for the "last mark"; addressed by the apostrophe.
  */
-#define    NMARKS      ((2*26)+2)  /* a-z, A-Z, mousemark, lastmark */
-#define    NUMARKS     ((2*26)+1) /* user marks (not lastmark) */
-#define    MOUSEMARK   (NMARKS-2)
-#define    LASTMARK    (NMARKS-1)
+#define NMARKS ((2 * 26) + 2) /* a-z, A-Z, mousemark, lastmark */
+#define NUMARKS ((2 * 26) + 1) /* user marks (not lastmark) */
+#define MOUSEMARK (NMARKS - 2)
+#define LASTMARK (NMARKS - 1)
 static struct mark marks[NMARKS];
-public int marks_modified = 0;
-
+public
+int marks_modified = 0;
 
 /*
  * Initialize a mark struct.
  */
-static void cmark(struct mark *m, IFILE ifile, POSITION pos, int ln)
+static void cmark(struct mark* m, IFILE ifile, POSITION pos, int ln)
 {
     m->m_ifile = ifile;
     m->m_scrpos.pos = pos;
@@ -66,17 +69,23 @@ static void cmark(struct mark *m, IFILE ifile, POSITION pos, int ln)
 /*
  * Initialize the mark table to show no marks are set.
  */
-public void init_mark(VOID_PARAM)
+public
+void init_mark(VOID_PARAM)
 {
     int i;
 
-    for (i = 0;  i < NMARKS;  i++)
-    {
+    for (i = 0; i < NMARKS; i++) {
         char letter;
         switch (i) {
-        case MOUSEMARK: letter = '#'; break;
-        case LASTMARK: letter = '\''; break;
-        default: letter = (i < 26) ? 'a'+i : 'A'+i-26; break;
+        case MOUSEMARK:
+            letter = '#';
+            break;
+        case LASTMARK:
+            letter = '\'';
+            break;
+        default:
+            letter = (i < 26) ? 'a' + i : 'A' + i - 26;
+            break;
         }
         marks[i].m_letter = letter;
         cmark(&marks[i], NULL_IFILE, NULL_POSITION, -1);
@@ -86,7 +95,7 @@ public void init_mark(VOID_PARAM)
 /*
  * Set m_ifile and clear m_filename.
  */
-static void mark_set_ifile(struct mark *m, IFILE ifile) 
+static void mark_set_ifile(struct mark* m, IFILE ifile)
 {
     m->m_ifile = ifile;
     /* With m_ifile set, m_filename is no longer needed. */
@@ -97,7 +106,7 @@ static void mark_set_ifile(struct mark *m, IFILE ifile)
 /*
  * Populate the m_ifile member of a mark struct from m_filename.
  */
-static void mark_get_ifile(struct mark *m) 
+static void mark_get_ifile(struct mark* m)
 {
     if (m->m_ifile != NULL_IFILE)
         return; /* m_ifile is already set */
@@ -107,18 +116,18 @@ static void mark_get_ifile(struct mark *m)
 /*
  * Return the user mark struct identified by a character.
  */
-static struct mark * getumark(int c) 
+static struct mark* getumark(int c)
 {
     char mc = static_cast<char>(c);
-    debug ("getumark : ", mc);
+    debug("getumark : ", mc);
 
     if (c >= 'a' && c <= 'z')
-        return (&marks[c-'a']);
+        return (&marks[c - 'a']);
     if (c >= 'A' && c <= 'Z')
-        return (&marks[c-'A'+26]);
+        return (&marks[c - 'A' + 26]);
     if (c == '#')
         return (&marks[MOUSEMARK]);
-    error((char *)"Invalid mark letter", NULL_PARG);
+    error((char*)"Invalid mark letter", NULL_PARG);
     return (NULL);
 }
 
@@ -127,13 +136,12 @@ static struct mark * getumark(int c)
  * The mark struct may either be in the mark table (user mark)
  * or may be constructed on the fly for certain characters like ^, $.
  */
-static struct mark * getmark(int c)
+static struct mark* getmark(int c)
 {
-    struct mark *m;
+    struct mark* m;
     static struct mark sm;
 
-    switch (c)
-    {
+    switch (c) {
     case '^':
         /*
          * Beginning of the current file.
@@ -145,9 +153,8 @@ static struct mark * getmark(int c)
         /*
          * End of the current file.
          */
-        if (ch_end_seek())
-        {
-            error((char *)"Cannot seek to end of file", NULL_PARG);
+        if (ch_end_seek()) {
+            error((char*)"Cannot seek to end of file", NULL_PARG);
             return (NULL);
         }
         m = &sm;
@@ -174,9 +181,8 @@ static struct mark * getmark(int c)
         m = getumark(c);
         if (m == NULL)
             break;
-        if (m->m_scrpos.pos == NULL_POSITION)
-        {
-            error((char *)"Mark not set", NULL_PARG);
+        if (m->m_scrpos.pos == NULL_POSITION) {
+            error((char*)"Mark not set", NULL_PARG);
             return (NULL);
         }
         break;
@@ -187,7 +193,8 @@ static struct mark * getmark(int c)
 /*
  * Is a mark letter invalid?
  */
-public int badmark(int c)
+public
+int badmark(int c)
 {
     return (getmark(c) == NULL);
 }
@@ -195,17 +202,17 @@ public int badmark(int c)
 /*
  * Set a user-defined mark.
  */
-public void setmark(int c, int where)
+public
+void setmark(int c, int where)
 {
-    struct mark *m;
+    struct mark* m;
     struct scrpos scrpos;
 
     m = getumark(c);
     if (m == NULL)
         return;
     get_scrpos(&scrpos, where);
-    if (scrpos.pos == NULL_POSITION)
-    {
+    if (scrpos.pos == NULL_POSITION) {
         bell();
         return;
     }
@@ -216,15 +223,15 @@ public void setmark(int c, int where)
 /*
  * Clear a user-defined mark.
  */
-public void clrmark(int c)
+public
+void clrmark(int c)
 {
-    struct mark *m;
+    struct mark* m;
 
     m = getumark(c);
     if (m == NULL)
         return;
-    if (m->m_scrpos.pos == NULL_POSITION)
-    {
+    if (m->m_scrpos.pos == NULL_POSITION) {
         bell();
         return;
     }
@@ -235,7 +242,8 @@ public void clrmark(int c)
 /*
  * Set lmark (the mark named by the apostrophe).
  */
-public void lastmark(VOID_PARAM)
+public
+void lastmark(VOID_PARAM)
 {
     struct scrpos scrpos;
 
@@ -250,9 +258,10 @@ public void lastmark(VOID_PARAM)
 /*
  * Go to a mark.
  */
-public void gomark(int c)
+public
+void gomark(int c)
 {
-    struct mark *m;
+    struct mark* m;
     struct scrpos scrpos;
 
     m = getmark(c);
@@ -260,7 +269,7 @@ public void gomark(int c)
         return;
 
     /*
-     * If we're trying to go to the lastmark and 
+     * If we're trying to go to the lastmark and
      * it has not been set to anything yet,
      * set it to the beginning of the current file.
      * {{ Couldn't we instead set marks[LASTMARK] in edit()? }}
@@ -272,8 +281,7 @@ public void gomark(int c)
 
     /* Save scrpos; if it's LASTMARK it could change in edit_ifile. */
     scrpos = m->m_scrpos;
-    if (m->m_ifile != curr_ifile)
-    {
+    if (m->m_ifile != curr_ifile) {
         /*
          * Not in the current file; edit the correct file.
          */
@@ -287,21 +295,21 @@ public void gomark(int c)
 /*
  * Return the position associated with a given mark letter.
  *
- * We don't return which screen line the position 
+ * We don't return which screen line the position
  * is associated with, but this doesn't matter much,
  * because it's always the first non-blank line on the screen.
  */
-public POSITION markpos(int c)
+public
+POSITION markpos(int c)
 {
-    struct mark *m;
+    struct mark* m;
 
     m = getmark(c);
     if (m == NULL)
         return (NULL_POSITION);
 
-    if (m->m_ifile != curr_ifile)
-    {
-        error((char *)"Mark not in current file", NULL_PARG);
+    if (m->m_ifile != curr_ifile) {
+        error((char*)"Mark not in current file", NULL_PARG);
         return (NULL_POSITION);
     }
     return (m->m_scrpos.pos);
@@ -310,17 +318,18 @@ public POSITION markpos(int c)
 /*
  * Return the mark associated with a given position, if any.
  */
-public char posmark(POSITION pos)
+public
+char posmark(POSITION pos)
 {
     int i;
 
     /* Only user marks */
-    for (i = 0;  i < NUMARKS;  i++)
-    {
-        if (marks[i].m_ifile == curr_ifile && marks[i].m_scrpos.pos == pos)
-        {
-            if (i < 26) return 'a' + i;
-            if (i < 26*2) return 'A' + (i - 26);
+    for (i = 0; i < NUMARKS; i++) {
+        if (marks[i].m_ifile == curr_ifile && marks[i].m_scrpos.pos == pos) {
+            if (i < 26)
+                return 'a' + i;
+            if (i < 26 * 2)
+                return 'A' + (i - 26);
             return '#';
         }
     }
@@ -330,11 +339,12 @@ public char posmark(POSITION pos)
 /*
  * Clear the marks associated with a specified ifile.
  */
-public void unmark(IFILE ifile)
+public
+void unmark(IFILE ifile)
 {
     int i;
 
-    for (i = 0;  i < NMARKS;  i++)
+    for (i = 0; i < NMARKS; i++)
         if (marks[i].m_ifile == ifile)
             marks[i].m_scrpos.pos = NULL_POSITION;
 }
@@ -343,17 +353,16 @@ public void unmark(IFILE ifile)
  * Check if any marks refer to a specified ifile vi m_filename
  * rather than m_ifile.
  */
-public void mark_check_ifile(IFILE ifile)
+public
+void mark_check_ifile(IFILE ifile)
 {
     int i;
-    char *filename = lrealpath(get_filename(ifile));
+    char* filename = lrealpath(get_filename(ifile));
 
-    for (i = 0;  i < NMARKS;  i++)
-    {
-        struct mark *m = &marks[i];
-        char *mark_filename = m->m_filename;
-        if (mark_filename != NULL)
-        {
+    for (i = 0; i < NMARKS; i++) {
+        struct mark* m = &marks[i];
+        char* mark_filename = m->m_filename;
+        if (mark_filename != NULL) {
             mark_filename = lrealpath(mark_filename);
             if (strcmp(filename, mark_filename) == 0)
                 mark_set_ifile(m, ifile);
@@ -368,11 +377,12 @@ public void mark_check_ifile(IFILE ifile)
 /*
  * Save marks to history file.
  */
-public void save_marks(FILE *fout, char *hdr)
+public
+void save_marks(FILE* fout, char* hdr)
 {
     int i;
 
-    debug ("Save marks 1");
+    debug("Save marks 1");
 
     if (!perma_marks)
         return;
@@ -380,21 +390,19 @@ public void save_marks(FILE *fout, char *hdr)
     debug("save marks 2");
     fprintf(fout, "%s\n", hdr);
 
-    for (i = 0;  i < NUMARKS;  i++)
-    {
+    for (i = 0; i < NUMARKS; i++) {
         debug("Mark:", i);
-        char *filename;
-        struct mark *m = &marks[i];
-        
+        char* filename;
+        struct mark* m = &marks[i];
+
         debug("mark m_letter", m->m_letter);
         debug("mark filename", m->m_filename);
-        
 
         char pos_str[strlen_bound<POSITION>() + 2];
-        
+
         if (m->m_scrpos.pos == NULL_POSITION)
             continue;
-        
+
         typeToStr<POSITION>(m->m_scrpos.pos, pos_str);
 
         debug("mark pos: ", pos_str);
@@ -403,10 +411,10 @@ public void save_marks(FILE *fout, char *hdr)
         if (filename == NULL)
             filename = get_filename(m->m_ifile);
         filename = lrealpath(filename);
-        
+
         debug("filename:", filename);
         debug("ln: ", m->m_scrpos.ln);
-        
+
         if (strcmp(filename, "-") != 0)
             fprintf(fout, "m %c %d %s %s\n",
                 m->m_letter, m->m_scrpos.ln, pos_str, filename);
@@ -414,18 +422,21 @@ public void save_marks(FILE *fout, char *hdr)
     }
 }
 
-public void skip_whitespace (char * &line) 
+public
+void skip_whitespace(char*& line)
 {
-    while (*line == ' ') line++;
+    while (*line == ' ')
+        line++;
 }
 /*
  * Restore one mark from the history file.
  */
-public void restore_mark(char *line)
+public
+void restore_mark(char* line)
 {
     // Format is "m <markchar> <screenpos> <position> <file>"
-    
-    struct mark *markPtr;
+
+    struct mark* markPtr;
     int screenpos;
     POSITION filePos;
 
@@ -443,21 +454,21 @@ public void restore_mark(char *line)
 
     // get the <screenpos> parameter
     screenpos = strToType<int>(line, &line);
-    
+
     if (screenpos < 1)
         screenpos = 1;
     if (screenpos > sc_height)
         screenpos = sc_height;
-    
+
     skip_whitespace(line);
-    
+
     // get the <position> value
     filePos = strToType<POSITION>(line, &line);
-    
+
     skip_whitespace(line);
 
     cmark(markPtr, NULL_IFILE, filePos, screenpos);
-    
+
     // get the <filename> parameter
     markPtr->m_filename = save(line);
 }

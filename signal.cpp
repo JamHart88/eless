@@ -7,7 +7,6 @@
  * For more information, see the README file.
  */
 
-
 /*
  * Routines dealing with signals.
  *
@@ -19,16 +18,18 @@
  */
 
 #include "less.hpp"
-#include "os.hpp"
 #include "optfunc.hpp"
+#include "os.hpp"
 #include "output.hpp"
+#include "screen.hpp"
 
 #include <signal.h>
 
 /*
  * "sigs" contains bits indicating signals which need to be processed.
  */
-public int sigs;
+public
+int sigs;
 
 extern int sc_width, sc_height;
 extern int screen_trashed;
@@ -42,7 +43,7 @@ extern long jump_sline_fraction;
 /*
  * Interrupt signal handler.
  */
-    /* ARGSUSED*/
+/* ARGSUSED*/
 // -------------------------------------------
 // Converted from C to C++ - C below
 // static RETSIGTYPE
@@ -61,7 +62,7 @@ static RETSIGTYPE u_interrupt(int type)
 /*
  * "Stop" (^Z) signal handler.
  */
-    /* ARGSUSED*/
+/* ARGSUSED*/
 // -------------------------------------------
 // Converted from C to C++ - C below
 // static RETSIGTYPE
@@ -89,13 +90,14 @@ static RETSIGTYPE stop(int type)
 /*
  * "Window" change handler
  */
-    /* ARGSUSED*/
+/* ARGSUSED*/
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public RETSIGTYPE
 // winch(type)
 //     int type;
-public RETSIGTYPE winch(int type)
+public
+RETSIGTYPE winch(int type)
 {
     LSIGNAL(SIG_LESSWINDOW, winch);
     sigs |= S_WINCH;
@@ -122,49 +124,48 @@ static RETSIGTYPE terminate(int type)
 // public void
 // init_signals(on)
 //     int on;
-public void init_signals(int on)
+public
+void init_signals(int on)
 {
-    if (on)
-    {
+    if (on) {
         /*
          * Set signal handlers.
          */
-        (void) LSIGNAL(SIGINT, u_interrupt);
+        (void)LSIGNAL(SIGINT, u_interrupt);
 #ifdef SIGTSTP
-        (void) LSIGNAL(SIGTSTP, stop);
+        (void)LSIGNAL(SIGTSTP, stop);
 #endif
 #ifdef SIGWINCH
-        (void) LSIGNAL(SIGWINCH, winch);
+        (void)LSIGNAL(SIGWINCH, winch);
 #endif
 #ifdef SIGWIND
-        (void) LSIGNAL(SIGWIND, winch);
+        (void)LSIGNAL(SIGWIND, winch);
 #endif
 #ifdef SIGQUIT
-        (void) LSIGNAL(SIGQUIT, SIG_IGN);
+        (void)LSIGNAL(SIGQUIT, SIG_IGN);
 #endif
 #ifdef SIGTERM
-        (void) LSIGNAL(SIGTERM, terminate);
+        (void)LSIGNAL(SIGTERM, terminate);
 #endif
-    } else
-    {
+    } else {
         /*
          * Restore signals to defaults.
          */
-        (void) LSIGNAL(SIGINT, SIG_DFL);
+        (void)LSIGNAL(SIGINT, SIG_DFL);
 #ifdef SIGTSTP
-        (void) LSIGNAL(SIGTSTP, SIG_DFL);
+        (void)LSIGNAL(SIGTSTP, SIG_DFL);
 #endif
 #ifdef SIGWINCH
-        (void) LSIGNAL(SIGWINCH, SIG_IGN);
+        (void)LSIGNAL(SIGWINCH, SIG_IGN);
 #endif
 #ifdef SIGWIND
-        (void) LSIGNAL(SIGWIND, SIG_IGN);
+        (void)LSIGNAL(SIGWIND, SIG_IGN);
 #endif
 #ifdef SIGQUIT
-        (void) LSIGNAL(SIGQUIT, SIG_DFL);
+        (void)LSIGNAL(SIGQUIT, SIG_DFL);
 #endif
 #ifdef SIGTERM
-        (void) LSIGNAL(SIGTERM, SIG_DFL);
+        (void)LSIGNAL(SIGTERM, SIG_DFL);
 #endif
     }
 }
@@ -177,7 +178,8 @@ public void init_signals(int on)
 // Converted from C to C++ - C below
 // public void
 // psignals(VOID_PARAM)
-public void psignals(VOID_PARAM)
+public
+void psignals(VOID_PARAM)
 {
     int tsignals;
 
@@ -186,8 +188,7 @@ public void psignals(VOID_PARAM)
     sigs = 0;
 
 #ifdef SIGTSTP
-    if (tsignals & S_STOP)
-    {
+    if (tsignals & S_STOP) {
         /*
          * Clean up the terminal.
          */
@@ -217,8 +218,7 @@ public void psignals(VOID_PARAM)
     }
 #endif
 #ifdef S_WINCH
-    if (tsignals & S_WINCH)
-    {
+    if (tsignals & S_WINCH) {
         int old_width, old_height;
         /*
          * Re-execute scrsize() to read the new window size.
@@ -226,8 +226,7 @@ public void psignals(VOID_PARAM)
         old_width = sc_width;
         old_height = sc_height;
         get_term();
-        if (sc_width != old_width || sc_height != old_height)
-        {
+        if (sc_width != old_width || sc_height != old_height) {
             wscroll = (sc_height + 1) / 2;
             calc_jump_sline();
             calc_shift_count();
@@ -235,8 +234,7 @@ public void psignals(VOID_PARAM)
         screen_trashed = 1;
     }
 #endif
-    if (tsignals & S_INTERRUPT)
-    {
+    if (tsignals & S_INTERRUPT) {
         if (quit_on_intr)
             quit(QUIT_INTERRUPT);
     }

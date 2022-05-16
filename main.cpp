@@ -24,6 +24,7 @@
 #include "option.hpp"
 #include "output.hpp"
 #include "prompt.hpp"
+#include "screen.hpp"
 
 public
 char *every_first_cmd = NULL;

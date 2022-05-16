@@ -7,26 +7,25 @@
  * For more information, see the README file.
  */
 
-
 /*
  * Routines to execute other programs.
  * Necessarily very OS dependent.
  */
 
-#include "less.hpp"
 #include "lsystem.hpp"
-#include <signal.h>
-#include "position.hpp"
 #include "ch.hpp"
+#include "decode.hpp"
 #include "edit.hpp"
 #include "filename.hpp"
-#include "decode.hpp"
+#include "less.hpp"
 #include "mark.hpp"
 #include "output.hpp"
+#include "position.hpp"
+#include "screen.hpp"
+#include <signal.h>
 
 extern int screen_trashed;
 extern IFILE curr_ifile;
-
 
 #if HAVE_SYSTEM
 
@@ -34,11 +33,12 @@ extern IFILE curr_ifile;
  * Pass the specified command to a shell to be executed.
  * Like plain "system()", but handles resetting terminal modes, etc.
  */
-public void lsystem(char *cmd, char *donemsg)
+public
+void lsystem(char* cmd, char* donemsg)
 {
     int inp;
-    char *shell;
-    char *p;
+    char* shell;
+    char* p;
     IFILE save_ifile;
 
     /*
@@ -47,8 +47,7 @@ public void lsystem(char *cmd, char *donemsg)
      */
     if (cmd[0] == '-')
         cmd++;
-    else
-    {
+    else {
         clear_bot();
         putstr("!");
         putstr(cmd);
@@ -59,7 +58,7 @@ public void lsystem(char *cmd, char *donemsg)
      * Close the current input file.
      */
     save_ifile = save_curr_ifile();
-    (void) edit_ifile(NULL_IFILE);
+    (void)edit_ifile(NULL_IFILE);
 
     /*
      * De-initialize the terminal and take out of raw mode.
@@ -74,7 +73,7 @@ public void lsystem(char *cmd, char *donemsg)
 
     /*
      * Force standard input to be the user's terminal
-     * (the normal standard input), even if less's standard input 
+     * (the normal standard input), even if less's standard input
      * is coming from a pipe.
      */
     inp = dup(0);
@@ -89,24 +88,20 @@ public void lsystem(char *cmd, char *donemsg)
      * If the command is empty, just invoke a shell.
      */
     p = NULL;
-    if ((shell = lgetenv((char *)"SHELL")) != NULL && *shell != '\0')
-    {
+    if ((shell = lgetenv((char*)"SHELL")) != NULL && *shell != '\0') {
         if (*cmd == '\0')
             p = save(shell);
-        else
-        {
-            char *esccmd = shell_quote(cmd);
-            if (esccmd != NULL)
-            {
-                int len = (int) (strlen(shell) + strlen(esccmd) + 5);
-                p = (char *) ecalloc(len, sizeof(char));
+        else {
+            char* esccmd = shell_quote(cmd);
+            if (esccmd != NULL) {
+                int len = (int)(strlen(shell) + strlen(esccmd) + 5);
+                p = (char*)ecalloc(len, sizeof(char));
                 SNPRINTF3(p, len, "%s %s %s", shell, shell_coption(), esccmd);
                 free(esccmd);
             }
         }
     }
-    if (p == NULL)
-    {
+    if (p == NULL) {
         if (*cmd == '\0')
             p = save("sh");
         else
@@ -124,8 +119,7 @@ public void lsystem(char *cmd, char *donemsg)
 
     init_signals(1);
     raw_mode(1);
-    if (donemsg != NULL)
-    {
+    if (donemsg != NULL) {
         putstr(donemsg);
         putstr("  (press RETURN)");
         get_return();
@@ -167,7 +161,8 @@ public void lsystem(char *cmd, char *donemsg)
  * If the mark is on the current screen, or if the mark is ".",
  * the whole current screen is piped.
  */
-public int pipe_mark(int c, char *cmd)
+public
+int pipe_mark(int c, char* cmd)
 {
     POSITION mpos, tpos, bpos;
 
@@ -184,23 +179,24 @@ public int pipe_mark(int c, char *cmd)
         tpos = ch_zero();
     bpos = position(BOTTOM);
 
-     if (c == '.') 
-         return (pipe_data(cmd, tpos, bpos));
-     else if (mpos <= tpos)
-         return (pipe_data(cmd, mpos, bpos));
-     else if (bpos == NULL_POSITION)
-         return (pipe_data(cmd, tpos, bpos));
-     else
-         return (pipe_data(cmd, tpos, mpos));
+    if (c == '.')
+        return (pipe_data(cmd, tpos, bpos));
+    else if (mpos <= tpos)
+        return (pipe_data(cmd, mpos, bpos));
+    else if (bpos == NULL_POSITION)
+        return (pipe_data(cmd, tpos, bpos));
+    else
+        return (pipe_data(cmd, tpos, mpos));
 }
 
 /*
  * Create a pipe to the given shell command.
  * Feed it the file contents between the positions spos and epos.
  */
-public int pipe_data(char *cmd, POSITION spos, POSITION epos)
+public
+int pipe_data(char* cmd, POSITION spos, POSITION epos)
 {
-    FILE *f;
+    FILE* f;
     int c;
 
     /*
@@ -209,15 +205,13 @@ public int pipe_data(char *cmd, POSITION spos, POSITION epos)
      * to perform the necessary deinitialization before running
      * the command, and reinitialization after it.
      */
-    if (ch_seek(spos) != 0)
-    {
-        error((char *)"Cannot seek to start position", NULL_PARG);
+    if (ch_seek(spos) != 0) {
+        error((char*)"Cannot seek to start position", NULL_PARG);
         return (-1);
     }
 
-    if ((f = popen(cmd, "w")) == NULL)
-    {
-        error((char *)"Cannot create pipe", NULL_PARG);
+    if ((f = popen(cmd, "w")) == NULL) {
+        error((char*)"Cannot create pipe", NULL_PARG);
         return (-1);
     }
     clear_bot();
@@ -234,8 +228,7 @@ public int pipe_data(char *cmd, POSITION spos, POSITION epos)
 #endif
 
     c = EOI;
-    while (epos == NULL_POSITION || spos++ <= epos)
-    {
+    while (epos == NULL_POSITION || spos++ <= epos) {
         /*
          * Read a character from the file and give it to the pipe.
          */
@@ -249,14 +242,13 @@ public int pipe_data(char *cmd, POSITION spos, POSITION epos)
     /*
      * Finish up the last line.
      */
-     while (c != '\n' && c != EOI ) 
-     {
-         c = ch_forw_get();
-         if (c == EOI)
-             break;
-         if (putc(c, f) == EOF)
-             break;
-     }
+    while (c != '\n' && c != EOI) {
+        c = ch_forw_get();
+        if (c == EOI)
+            break;
+        if (putc(c, f) == EOF)
+            break;
+    }
 
     pclose(f);
 

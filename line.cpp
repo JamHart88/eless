@@ -19,44 +19,58 @@
 #include "decode.hpp"
 #include "input.hpp"
 #include "less.hpp"
-#include "position.hpp"
 #include "linenum.hpp"
 #include "mark.hpp"
+#include "position.hpp"
+#include "screen.hpp"
 
-static char *linebuf = NULL; /* Buffer which holds the current output line */
-static char *attr = NULL;    /* Extension of linebuf to hold attributes */
+static char* linebuf = NULL; /* Buffer which holds the current output line */
+
+static char* attr = NULL; /* Extension of linebuf to hold attributes */
+
 public
 int size_linebuf = 0; /* Size of line buffer (and attr buffer) */
 
 static int cshift; /* Current left-shift of output line buffer */
+
 public
 int hshift; /* Desired left-shift of output line buffer */
+
 public
-int tabstops[TABSTOP_MAX] = {0}; /* Custom tabstops */
+int tabstops[TABSTOP_MAX] = { 0 }; /* Custom tabstops */
+
 public
 int ntabstops = 1; /* Number of tabstops */
+
 public
 int tabdefault = 8; /* Default repeated tabstops */
+
 public
 POSITION highest_hilite; /* Pos of last hilite in file found so far */
 
-static int curr;   /* Index into linebuf */
+static int curr; /* Index into linebuf */
+
 static int column; /* Printable length, accounting for
-            backspaces, etc. */
+                      backspaces, etc. */
+
 static int right_curr;
 static int right_column;
+
 static int overstrike; /* Next char should overstrike previous char */
 static int last_overstrike = AT_NORMAL;
+
 static int is_null_line; /* There is no current line */
-static int lmargin;      /* Left margin */
+
+static int lmargin; /* Left margin */
+
 static LWCHAR pendc;
 static POSITION pendpos;
-static char *end_ansi_chars;
-static char *mid_ansi_chars;
+static char* end_ansi_chars;
+static char* mid_ansi_chars;
 
 static int attr_swidth LESSPARAMS((int a));
 static int attr_ewidth LESSPARAMS((int a));
-static int do_append LESSPARAMS((LWCHAR ch, char *rep, POSITION pos));
+static int do_append LESSPARAMS((LWCHAR ch, char* rep, POSITION pos));
 
 extern int sigs;
 extern int bs_mode;
@@ -88,16 +102,16 @@ static POSITION mbc_pos;
 public
 void init_line(VOID_PARAM)
 {
-    end_ansi_chars = lgetenv((char *)"LESSANSIENDCHARS");
+    end_ansi_chars = lgetenv((char*)"LESSANSIENDCHARS");
     if (isnullenv(end_ansi_chars))
-        end_ansi_chars = (char *)"m";
+        end_ansi_chars = (char*)"m";
 
-    mid_ansi_chars = lgetenv((char *)"LESSANSIMIDCHARS");
+    mid_ansi_chars = lgetenv((char*)"LESSANSIMIDCHARS");
     if (isnullenv(mid_ansi_chars))
-        mid_ansi_chars = (char *)"0123456789:;[?!\"'#%()*+ ";
+        mid_ansi_chars = (char*)"0123456789:;[?!\"'#%()*+ ";
 
-    linebuf = (char *)ecalloc(LINEBUF_SIZE, sizeof(char));
-    attr = (char *)ecalloc(LINEBUF_SIZE, sizeof(char));
+    linebuf = (char*)ecalloc(LINEBUF_SIZE, sizeof(char));
+    attr = (char*)ecalloc(LINEBUF_SIZE, sizeof(char));
     size_linebuf = LINEBUF_SIZE;
 }
 
@@ -111,14 +125,13 @@ static int expand_linebuf(VOID_PARAM)
 
     /* Just realloc to expand the buffer, if we can. */
 #if HAVE_REALLOC
-    char *new_buf = (char *)realloc(linebuf, new_size);
-    char *new_attr = (char *)realloc(attr, new_size);
+    char* new_buf = (char*)realloc(linebuf, new_size);
+    char* new_attr = (char*)realloc(attr, new_size);
 #else
-    char *new_buf = (char *)calloc(new_size, sizeof(char));
-    char *new_attr = (char *)calloc(new_size, sizeof(char));
+    char* new_buf = (char*)calloc(new_size, sizeof(char));
+    char* new_attr = (char*)calloc(new_size, sizeof(char));
 #endif
-    if (new_buf == NULL || new_attr == NULL)
-    {
+    if (new_buf == NULL || new_attr == NULL) {
         if (new_attr != NULL)
             free(new_attr);
         if (new_buf != NULL)
@@ -197,8 +210,7 @@ void plinenum(POSITION pos)
     LINENUM linenum = 0;
     int i;
 
-    if (linenums == OPT_ONPLUS)
-    {
+    if (linenums == OPT_ONPLUS) {
         /*
          * Get the line number and put it in the current line.
          * {{ Note: since find_linenum calls forw_raw_line,
@@ -213,19 +225,17 @@ void plinenum(POSITION pos)
     /*
      * Display a status column if the -J option is set.
      */
-    if (status_col)
-    {
+    if (status_col) {
         int a = AT_NORMAL;
         char c = posmark(pos);
         if (c != 0)
             a |= AT_HILITE;
-        else
-        {
+        else {
             c = ' ';
             if (start_attnpos != NULL_POSITION && pos >= start_attnpos && pos <= end_attnpos)
                 a |= AT_HILITE;
         }
-        add_linebuf(c, a, 1);           /* column 0: status */
+        add_linebuf(c, a, 1); /* column 0: status */
         add_linebuf(' ', AT_NORMAL, 1); /* column 1: empty */
     }
 
@@ -233,8 +243,7 @@ void plinenum(POSITION pos)
      * Display the line number at the start of each line
      * if the -N option is set.
      */
-    if (linenums == OPT_ONPLUS)
-    {
+    if (linenums == OPT_ONPLUS) {
         char buf[strlen_bound<LINENUM>() + 2];
         int pad = 0;
         int n;
@@ -253,8 +262,7 @@ void plinenum(POSITION pos)
     /*
      * Append enough spaces to bring us to the lmargin.
      */
-    while (column < lmargin)
-    {
+    while (column < lmargin) {
         add_linebuf(' ', AT_NORMAL, 1);
     }
 }
@@ -285,16 +293,13 @@ static void pshift(int shift)
      * We keep on going when shifted == shift
      * to get all combining chars.
      */
-    while (shifted <= shift && from < curr)
-    {
+    while (shifted <= shift && from < curr) {
         c = linebuf[from];
-        if (ctldisp == OPT_ONPLUS && IS_CSI_START(c))
-        {
+        if (ctldisp == OPT_ONPLUS && IS_CSI_START(c)) {
             /* Keep cumulative effect.  */
             linebuf[to] = c;
             attr[to++] = attr[from++];
-            while (from < curr && linebuf[from])
-            {
+            while (from < curr && linebuf[from]) {
                 linebuf[to] = linebuf[from];
                 attr[to++] = attr[from];
                 if (!is_ansi_middle(linebuf[from++]))
@@ -305,8 +310,7 @@ static void pshift(int shift)
 
         width = 0;
 
-        if (!IS_ASCII_OCTET(c) && utf_mode)
-        {
+        if (!IS_ASCII_OCTET(c) && utf_mode) {
             /* Assumes well-formedness validation already done.  */
             LWCHAR ch;
 
@@ -317,9 +321,7 @@ static void pshift(int shift)
             if (!is_composing_char(ch) && !is_combining_char(prev_ch, ch))
                 width = is_wide_char(ch) ? 2 : 1;
             prev_ch = ch;
-        }
-        else
-        {
+        } else {
             len = 1;
             if (c == '\b')
                 /* XXX - Incorrect if several '\b' in a row.  */
@@ -329,8 +331,7 @@ static void pshift(int shift)
             prev_ch = 0;
         }
 
-        if (width == 2 && shift - shifted == 1)
-        {
+        if (width == 2 && shift - shifted == 1) {
             /* Should never happen when called by pshift_all().  */
             attr[to] = attr[from];
             /*
@@ -347,13 +348,11 @@ static void pshift(int shift)
         /* Adjust width for magic cookies. */
         prev_attr = (to > 0) ? attr[to - 1] : AT_NORMAL;
         next_attr = (from + len < curr) ? attr[from + len] : prev_attr;
-        if (!is_at_equiv(attr[from], prev_attr) && !is_at_equiv(attr[from], next_attr))
-        {
+        if (!is_at_equiv(attr[from], prev_attr) && !is_at_equiv(attr[from], next_attr)) {
             width += attr_swidth(attr[from]);
             if (from + len < curr)
                 width += attr_ewidth(attr[from]);
-            if (is_at_equiv(prev_attr, next_attr))
-            {
+            if (is_at_equiv(prev_attr, next_attr)) {
                 width += attr_ewidth(prev_attr);
                 if (from + len < curr)
                     width += attr_swidth(next_attr);
@@ -367,8 +366,7 @@ static void pshift(int shift)
         if (shifted < 0)
             shifted = 0;
     }
-    while (from < curr)
-    {
+    while (from < curr) {
         linebuf[to] = linebuf[from];
         attr[to++] = attr[from++];
     }
@@ -447,10 +445,8 @@ static int pwidth(LWCHAR ch, int a, LWCHAR prev_ch)
          */
         return (utf_mode && is_wide_char(prev_ch)) ? -2 : -1;
 
-    if (!utf_mode || is_ascii_char(ch))
-    {
-        if (control_char((char)ch))
-        {
+    if (!utf_mode || is_ascii_char(ch)) {
+        if (control_char((char)ch)) {
             /*
              * Control characters do unpredictable things,
              * so we don't even try to guess; say it doesn't move.
@@ -458,11 +454,8 @@ static int pwidth(LWCHAR ch, int a, LWCHAR prev_ch)
              */
             return (0);
         }
-    }
-    else
-    {
-        if (is_composing_char(ch) || is_combining_char(prev_ch, ch))
-        {
+    } else {
+        if (is_composing_char(ch) || is_combining_char(prev_ch, ch)) {
             /*
              * Composing and combining chars take up no space.
              *
@@ -499,13 +492,12 @@ static int pwidth(LWCHAR ch, int a, LWCHAR prev_ch)
 static int backc(VOID_PARAM)
 {
     LWCHAR prev_ch;
-    char *p = linebuf + curr;
+    char* p = linebuf + curr;
     LWCHAR ch = step_char(&p, -1, linebuf + lmargin);
     int width;
 
     /* This assumes that there is no '\b' in linebuf.  */
-    while (curr > lmargin && column > lmargin && (!(attr[curr - 1] & (AT_ANSI | AT_BINARY))))
-    {
+    while (curr > lmargin && column > lmargin && (!(attr[curr - 1] & (AT_ANSI | AT_BINARY)))) {
         curr = (int)(p - linebuf);
         prev_ch = step_char(&p, -1, linebuf + lmargin);
         width = pwidth(ch, attr[curr], prev_ch);
@@ -523,14 +515,13 @@ static int backc(VOID_PARAM)
  */
 static int in_ansi_esc_seq(VOID_PARAM)
 {
-    char *p;
+    char* p;
 
     /*
      * Search backwards for either an ESC (which means we ARE in a seq);
      * or an end char (which means we're NOT in a seq).
      */
-    for (p = &linebuf[curr]; p > linebuf;)
-    {
+    for (p = &linebuf[curr]; p > linebuf;) {
         LWCHAR ch = step_char(&p, -1, linebuf);
         if (IS_CSI_START(ch))
             return (1);
@@ -569,11 +560,10 @@ int is_ansi_middle(LWCHAR ch)
  * pp is initially positioned just after the CSI_START char.
  */
 public
-void skip_ansi(char **pp, const char *limit)
+void skip_ansi(char** pp, const char* limit)
 {
     LWCHAR c;
-    do
-    {
+    do {
         c = step_char(pp, +1, limit);
     } while (*pp < limit && is_ansi_middle(c));
     /* Note that we discard final char, for which is_ansi_middle is false. */
@@ -582,14 +572,13 @@ void skip_ansi(char **pp, const char *limit)
 /*
  * Append a character and attribute to the line buffer.
  */
-#define STORE_CHAR(ch, a, rep, pos)                                                                                    \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        if (store_char((ch), (a), (rep), (pos)))                                                                       \
-            return (1);                                                                                                \
+#define STORE_CHAR(ch, a, rep, pos)              \
+    do {                                         \
+        if (store_char((ch), (a), (rep), (pos))) \
+            return (1);                          \
     } while (0)
 
-static int store_char(LWCHAR ch, int a, char *rep, POSITION pos)
+static int store_char(LWCHAR ch, int a, char* rep, POSITION pos)
 {
     int w;
     int replen;
@@ -602,14 +591,12 @@ static int store_char(LWCHAR ch, int a, char *rep, POSITION pos)
 #if HILITE_SEARCH
     {
         int matches;
-        if (is_hilited(pos, pos + 1, 0, &matches))
-        {
+        if (is_hilited(pos, pos + 1, 0, &matches)) {
             /*
              * This character should be highlighted.
              * Override the attribute passed in.
              */
-            if (a != AT_ANSI)
-            {
+            if (a != AT_ANSI) {
                 if (highest_hilite != NULL_POSITION && pos > highest_hilite)
                     highest_hilite = pos;
                 a |= AT_HILITE;
@@ -618,15 +605,12 @@ static int store_char(LWCHAR ch, int a, char *rep, POSITION pos)
     }
 #endif
 
-    if (ctldisp == OPT_ONPLUS && in_ansi_esc_seq())
-    {
-        if (!is_ansi_end(ch) && !is_ansi_middle(ch))
-        {
+    if (ctldisp == OPT_ONPLUS && in_ansi_esc_seq()) {
+        if (!is_ansi_end(ch) && !is_ansi_middle(ch)) {
             /* Remove whole unrecognized sequence.  */
-            char *p = &linebuf[curr];
+            char* p = &linebuf[curr];
             LWCHAR bch;
-            do
-            {
+            do {
                 bch = step_char(&p, -1, linebuf);
             } while (p > linebuf && !IS_CSI_START(bch));
             curr = (int)(p - linebuf);
@@ -634,15 +618,11 @@ static int store_char(LWCHAR ch, int a, char *rep, POSITION pos)
         }
         a = AT_ANSI; /* Will force re-AT_'ing around it.  */
         w = 0;
-    }
-    else if (ctldisp == OPT_ONPLUS && IS_CSI_START(ch))
-    {
+    } else if (ctldisp == OPT_ONPLUS && IS_CSI_START(ch)) {
         a = AT_ANSI; /* Will force re-AT_'ing around it.  */
         w = 0;
-    }
-    else
-    {
-        char *p = &linebuf[curr];
+    } else {
+        char* p = &linebuf[curr];
         LWCHAR prev_ch = step_char(&p, -1, linebuf);
         w = pwidth(ch, a, prev_ch);
     }
@@ -653,18 +633,14 @@ static int store_char(LWCHAR ch, int a, char *rep, POSITION pos)
          */
         return (1);
 
-    if (rep == NULL)
-    {
+    if (rep == NULL) {
         cs = (char)ch;
         rep = &cs;
         replen = 1;
-    }
-    else
-    {
+    } else {
         replen = utf_len(rep[0]);
     }
-    if (curr + replen >= size_linebuf - 6)
-    {
+    if (curr + replen >= size_linebuf - 6) {
         /*
          * Won't fit in line buffer.
          * Try to expand it.
@@ -673,14 +649,12 @@ static int store_char(LWCHAR ch, int a, char *rep, POSITION pos)
             return (1);
     }
 
-    if (column > right_column && w > 0)
-    {
+    if (column > right_column && w > 0) {
         right_column = column;
         right_curr = curr;
     }
 
-    while (replen-- > 0)
-    {
+    while (replen-- > 0) {
         add_linebuf(*rep++, a, 0);
     }
     column += w;
@@ -691,11 +665,10 @@ static int store_char(LWCHAR ch, int a, char *rep, POSITION pos)
  * Append a tab to the line buffer.
  * Store spaces to represent the tab.
  */
-#define STORE_TAB(a, pos)                                                                                              \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        if (store_tab((a), (pos)))                                                                                     \
-            return (1);                                                                                                \
+#define STORE_TAB(a, pos)          \
+    do {                           \
+        if (store_tab((a), (pos))) \
+            return (1);            \
     } while (0)
 
 static int store_tab(int attr, POSITION pos)
@@ -705,8 +678,7 @@ static int store_tab(int attr, POSITION pos)
 
     if (ntabstops < 2 || to_tab >= tabstops[ntabstops - 1])
         to_tab = tabdefault - ((to_tab - tabstops[ntabstops - 1]) % tabdefault);
-    else
-    {
+    else {
         for (i = ntabstops - 2; i >= 0; i--)
             if (to_tab >= tabstops[i])
                 break;
@@ -716,23 +688,21 @@ static int store_tab(int attr, POSITION pos)
     if (column + to_tab - 1 + pwidth(' ', attr, 0) + attr_ewidth(attr) > sc_width)
         return 1;
 
-    do
-    {
-        STORE_CHAR(' ', attr, (char *)" ", pos);
+    do {
+        STORE_CHAR(' ', attr, (char*)" ", pos);
     } while (--to_tab > 0);
     return 0;
 }
 
-#define STORE_PRCHAR(c, pos)                                                                                           \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        if (store_prchar((c), (pos)))                                                                                  \
-            return 1;                                                                                                  \
+#define STORE_PRCHAR(c, pos)          \
+    do {                              \
+        if (store_prchar((c), (pos))) \
+            return 1;                 \
     } while (0)
 
 static int store_prchar(LWCHAR c, POSITION pos)
 {
-    char *s;
+    char* s;
 
     /*
      * Convert to printable representation.
@@ -773,8 +743,7 @@ int pappend(int c, POSITION pos)
 {
     int r;
 
-    if (pendc)
-    {
+    if (pendc) {
         if (c == '\r' && pendc == '\r')
             return (0);
         if (do_append(pendc, NULL, pendpos))
@@ -786,8 +755,7 @@ int pappend(int c, POSITION pos)
         pendc = '\0';
     }
 
-    if (c == '\r' && bs_mode == BS_SPECIAL)
-    {
+    if (c == '\r' && bs_mode == BS_SPECIAL) {
         if (mbc_buf_len > 0) /* utf_mode must be on. */
         {
             /* Flush incomplete (truncated) sequence. */
@@ -808,32 +776,24 @@ int pappend(int c, POSITION pos)
         return (0);
     }
 
-    if (!utf_mode)
-    {
+    if (!utf_mode) {
         r = do_append(c, NULL, pos);
-    }
-    else
-    {
+    } else {
         /* Perform strict validation in all possible cases. */
-        if (mbc_buf_len == 0)
-        {
+        if (mbc_buf_len == 0) {
         retry:
             mbc_buf_index = 1;
             *mbc_buf = c;
             if (IS_ASCII_OCTET(c))
                 r = do_append(c, NULL, pos);
-            else if (IS_UTF8_LEAD(c))
-            {
+            else if (IS_UTF8_LEAD(c)) {
                 mbc_buf_len = utf_len(c);
                 mbc_pos = pos;
                 return (0);
-            }
-            else
+            } else
                 /* UTF8_INVALID or stray UTF8_TRAIL */
                 r = flush_mbc_buf(pos);
-        }
-        else if (IS_UTF8_TRAIL(c))
-        {
+        } else if (IS_UTF8_TRAIL(c)) {
             mbc_buf[mbc_buf_index++] = c;
             if (mbc_buf_index < mbc_buf_len)
                 return (0);
@@ -843,9 +803,7 @@ int pappend(int c, POSITION pos)
                 /* Complete, but not shortest form, sequence. */
                 mbc_buf_index = r = flush_mbc_buf(mbc_pos);
             mbc_buf_len = 0;
-        }
-        else
-        {
+        } else {
             /* Flush incomplete (truncated) sequence.  */
             r = flush_mbc_buf(mbc_pos);
             mbc_buf_index = r + 1;
@@ -862,28 +820,25 @@ int pappend(int c, POSITION pos)
      * so shifting it doesn't affect the chars we're currently
      * pappending.  (Bold & underline can get messed up otherwise.)
      */
-    if (cshift < hshift && column > sc_width / 2)
-    {
+    if (cshift < hshift && column > sc_width / 2) {
         linebuf[curr] = '\0';
         pshift(hshift - cshift);
     }
-    if (r)
-    {
+    if (r) {
         /* How many chars should caller back up? */
         r = (!utf_mode) ? 1 : mbc_buf_index;
     }
     return (r);
 }
 
-static int do_append(LWCHAR ch, char *rep, POSITION pos)
+static int do_append(LWCHAR ch, char* rep, POSITION pos)
 {
     int a;
     LWCHAR prev_ch;
 
     a = AT_NORMAL;
 
-    if (ch == '\b')
-    {
+    if (ch == '\b') {
         if (bs_mode == BS_CONTROL)
             goto do_control_char;
 
@@ -902,8 +857,7 @@ static int do_append(LWCHAR ch, char *rep, POSITION pos)
         return 0;
     }
 
-    if (overstrike > 0)
-    {
+    if (overstrike > 0) {
         /*
          * Overstrike the character at the current position
          * in the line buffer.  This will cause either
@@ -912,18 +866,14 @@ static int do_append(LWCHAR ch, char *rep, POSITION pos)
          * or just deletion of the character in the buffer.
          */
         overstrike = utf_mode ? -1 : 0;
-        if (utf_mode)
-        {
+        if (utf_mode) {
             /* To be correct, this must be a base character.  */
             prev_ch = get_wchar(linebuf + curr);
-        }
-        else
-        {
+        } else {
             prev_ch = (unsigned char)linebuf[curr];
         }
         a = attr[curr];
-        if (ch == prev_ch)
-        {
+        if (ch == prev_ch) {
             /*
              * Overstriking a char with itself means make it bold.
              * But overstriking an underscore with itself is
@@ -931,32 +881,24 @@ static int do_append(LWCHAR ch, char *rep, POSITION pos)
              * it could mean make it underlined.
              * Use the previous overstrike to resolve it.
              */
-            if (ch == '_')
-            {
+            if (ch == '_') {
                 if ((a & (AT_BOLD | AT_UNDERLINE)) != AT_NORMAL)
                     a |= (AT_BOLD | AT_UNDERLINE);
                 else if (last_overstrike != AT_NORMAL)
                     a |= last_overstrike;
                 else
                     a |= AT_BOLD;
-            }
-            else
+            } else
                 a |= AT_BOLD;
-        }
-        else if (ch == '_')
-        {
+        } else if (ch == '_') {
             a |= AT_UNDERLINE;
             ch = prev_ch;
             rep = linebuf + curr;
-        }
-        else if (prev_ch == '_')
-        {
+        } else if (prev_ch == '_') {
             a |= AT_UNDERLINE;
         }
         /* Else we replace prev_ch, but we keep its attributes.  */
-    }
-    else if (overstrike < 0)
-    {
+    } else if (overstrike < 0) {
         if (is_composing_char(ch) || is_combining_char(get_wchar(linebuf + curr), ch))
             /* Continuation of the same overstrike.  */
             a = last_overstrike;
@@ -964,13 +906,11 @@ static int do_append(LWCHAR ch, char *rep, POSITION pos)
             overstrike = 0;
     }
 
-    if (ch == '\t')
-    {
+    if (ch == '\t') {
         /*
          * Expand a tab into spaces.
          */
-        switch (bs_mode)
-        {
+        switch (bs_mode) {
         case BS_CONTROL:
             goto do_control_char;
         case BS_NORMAL:
@@ -978,25 +918,18 @@ static int do_append(LWCHAR ch, char *rep, POSITION pos)
             STORE_TAB(a, pos);
             break;
         }
-    }
-    else if ((!utf_mode || is_ascii_char(ch)) && control_char((char)ch))
-    {
+    } else if ((!utf_mode || is_ascii_char(ch)) && control_char((char)ch)) {
     do_control_char:
-        if (ctldisp == OPT_ON || (ctldisp == OPT_ONPLUS && IS_CSI_START(ch)))
-        {
+        if (ctldisp == OPT_ON || (ctldisp == OPT_ONPLUS && IS_CSI_START(ch))) {
             /*
              * Output as a normal character.
              */
             STORE_CHAR(ch, AT_NORMAL, rep, pos);
-        }
-        else
-        {
+        } else {
             STORE_PRCHAR((char)ch, pos);
         }
-    }
-    else if (utf_mode && ctldisp != OPT_ON && is_ubin_char(ch))
-    {
-        char *s;
+    } else if (utf_mode && ctldisp != OPT_ON && is_ubin_char(ch)) {
+        char* s;
 
         s = prutfchar(ch);
 
@@ -1005,9 +938,7 @@ static int do_append(LWCHAR ch, char *rep, POSITION pos)
 
         for (; *s != 0; s++)
             STORE_CHAR(*s, AT_BINARY, NULL, pos);
-    }
-    else
-    {
+    } else {
         STORE_CHAR(ch, a, rep, pos);
     }
     return (0);
@@ -1021,8 +952,7 @@ int pflushmbc(VOID_PARAM)
 {
     int r = 0;
 
-    if (mbc_buf_len > 0)
-    {
+    if (mbc_buf_len > 0) {
         /* Flush incomplete (truncated) sequence.  */
         r = flush_mbc_buf(mbc_pos);
         mbc_buf_len = 0;
@@ -1035,7 +965,7 @@ int pflushmbc(VOID_PARAM)
  */
 static void add_attr_normal(VOID_PARAM)
 {
-    char *p = (char *)"\033[m";
+    char* p = (char*)"\033[m";
 
     if (ctldisp != OPT_ONPLUS || !is_ansi_end('m'))
         return;
@@ -1065,22 +995,19 @@ void pdone(int endline, int chopped, int forw)
     if (cshift < hshift)
         pshift(hshift - cshift);
 
-    if (chopped && rscroll_char)
-    {
+    if (chopped && rscroll_char) {
         /*
          * Display the right scrolling char.
          * If we've already filled the rightmost screen char
          * (in the buffer), overwrite it.
          */
-        if (column >= sc_width)
-        {
+        if (column >= sc_width) {
             /* We've already written in the rightmost char. */
             column = right_column;
             curr = right_curr;
         }
         add_attr_normal();
-        while (column < sc_width - 1)
-        {
+        while (column < sc_width - 1) {
             /*
              * Space to last (rightmost) char on screen.
              * This may be necessary if the char we overwrote
@@ -1090,9 +1017,7 @@ void pdone(int endline, int chopped, int forw)
         }
         /* Print rscroll char. It must be single-width. */
         add_linebuf(rscroll_char, rscroll_attr, 1);
-    }
-    else
-    {
+    } else {
         add_attr_normal();
     }
 
@@ -1110,12 +1035,9 @@ void pdone(int endline, int chopped, int forw)
      * the next line is blank.  In that case the single newline output for
      * that blank line would be ignored!)
      */
-    if (column < sc_width || !auto_wrap || (endline && ignaw) || ctldisp == OPT_ON)
-    {
+    if (column < sc_width || !auto_wrap || (endline && ignaw) || ctldisp == OPT_ON) {
         add_linebuf('\n', AT_NORMAL, 0);
-    }
-    else if (ignaw && column >= sc_width && forw)
-    {
+    } else if (ignaw && column >= sc_width && forw) {
         /*
          * Terminals with "ignaw" don't wrap until they *really* need
          * to, i.e. when the character *after* the last one to fit on a
@@ -1151,18 +1073,15 @@ void set_status_col(int c)
  * and the character attribute in *ap.
  */
 public
-int gline(int i, int *ap)
+int gline(int i, int* ap)
 {
-    if (is_null_line)
-    {
+    if (is_null_line) {
         /*
          * If there is no current line, we pretend the line is
          * either "~" or "", depending on the "twiddle" flag.
          */
-        if (twiddle)
-        {
-            if (i == 0)
-            {
+        if (twiddle) {
+            if (i == 0) {
                 *ap = AT_BOLD;
                 return '~';
             }
@@ -1193,7 +1112,7 @@ void null_line(VOID_PARAM)
  * {{ This is supposed to be more efficient than forw_line(). }}
  */
 public
-POSITION forw_raw_line(POSITION curr_pos, char **linep, int *line_lenp)
+POSITION forw_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
 {
     int n;
     int c;
@@ -1203,17 +1122,13 @@ POSITION forw_raw_line(POSITION curr_pos, char **linep, int *line_lenp)
         return (NULL_POSITION);
 
     n = 0;
-    for (;;)
-    {
-        if (c == '\n' || c == EOI || ABORT_SIGS())
-        {
+    for (;;) {
+        if (c == '\n' || c == EOI || ABORT_SIGS()) {
             new_pos = ch_tell();
             break;
         }
-        if (n >= size_linebuf - 1)
-        {
-            if (expand_linebuf())
-            {
+        if (n >= size_linebuf - 1) {
+            if (expand_linebuf()) {
                 /*
                  * Overflowed the input buffer.
                  * Pretend the line ended here.
@@ -1238,7 +1153,7 @@ POSITION forw_raw_line(POSITION curr_pos, char **linep, int *line_lenp)
  * {{ This is supposed to be more efficient than back_line(). }}
  */
 public
-POSITION back_raw_line(POSITION curr_pos, char **linep, int *line_lenp)
+POSITION back_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
 {
     int n;
     int c;
@@ -1249,11 +1164,9 @@ POSITION back_raw_line(POSITION curr_pos, char **linep, int *line_lenp)
 
     n = size_linebuf;
     linebuf[--n] = '\0';
-    for (;;)
-    {
+    for (;;) {
         c = ch_back_get();
-        if (c == '\n' || ABORT_SIGS())
-        {
+        if (c == '\n' || ABORT_SIGS()) {
             /*
              * This is the newline ending the previous line.
              * We have hit the beginning of the line.
@@ -1261,8 +1174,7 @@ POSITION back_raw_line(POSITION curr_pos, char **linep, int *line_lenp)
             new_pos = ch_tell() + 1;
             break;
         }
-        if (c == EOI)
-        {
+        if (c == EOI) {
             /*
              * We have hit the beginning of the file.
              * This must be the first line in the file.
@@ -1271,13 +1183,11 @@ POSITION back_raw_line(POSITION curr_pos, char **linep, int *line_lenp)
             new_pos = ch_zero();
             break;
         }
-        if (n <= 0)
-        {
+        if (n <= 0) {
             int old_size_linebuf = size_linebuf;
-            char *fm;
-            char *to;
-            if (expand_linebuf())
-            {
+            char* fm;
+            char* to;
+            if (expand_linebuf()) {
                 /*
                  * Overflowed the input buffer.
                  * Pretend the line ended here.
@@ -1316,8 +1226,7 @@ int rrshift(VOID_PARAM)
     sc_width = INT_MAX;
     hshift = 0;
     pos = position(TOP);
-    for (line = 0; line < sc_height && pos != NULL_POSITION; line++)
-    {
+    for (line = 0; line < sc_height && pos != NULL_POSITION; line++) {
         pos = forw_line(pos);
         if (column > longest)
             longest = column;
