@@ -1,7 +1,7 @@
 #ifndef CVT_H
 #define CVT_H
 
-#include "less.h"
+#include "less.hpp"
 
 public int cvt_length (int len, int ops);
 public int * cvt_alloc_chpos (int len);

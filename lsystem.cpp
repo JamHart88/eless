@@ -13,13 +13,13 @@
  * Necessarily very OS dependent.
  */
 
-#include "less.h"
+#include "less.hpp"
 #include <signal.h>
-#include "position.h"
-#include "ch.h"
-#include "edit.h"
-#include "filename.h"
-#include "decode.h"
+#include "position.hpp"
+#include "ch.hpp"
+#include "edit.hpp"
+#include "filename.hpp"
+#include "decode.hpp"
 
 extern int screen_trashed;
 extern IFILE curr_ifile;

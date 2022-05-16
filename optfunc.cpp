@@ -24,14 +24,14 @@
  *    QUERY     The setting of the option is merely being queried.
  */
 
-#include "less.h"
-#include "option.h"
-#include "ch.h"
-#include "command.h"
-#include "edit.h"
-#include "filename.h"
-#include "decode.h"
-#include "jump.h"
+#include "less.hpp"
+#include "option.hpp"
+#include "ch.hpp"
+#include "command.hpp"
+#include "edit.hpp"
+#include "filename.hpp"
+#include "decode.hpp"
+#include "jump.hpp"
 
 extern int nbufs;
 extern int bufspace;

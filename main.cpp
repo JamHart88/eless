@@ -11,14 +11,14 @@
  * Entry point, initialization, miscellaneous routines.
  */
 
-#include "less.h"
-#include "cmdbuf.h"
-#include "command.h"
-#include "edit.h"
-#include "decode.h"
-#include "forback.h"
-#include "ifile.h"
-#include "line.h"
+#include "less.hpp"
+#include "cmdbuf.hpp"
+#include "command.hpp"
+#include "edit.hpp"
+#include "decode.hpp"
+#include "forback.hpp"
+#include "ifile.hpp"
+#include "line.hpp"
 
 public
 char *every_first_cmd = NULL;

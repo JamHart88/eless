@@ -13,14 +13,14 @@
  * Much of this is very OS dependent.
  */
 
-#include "less.h"
-#include "filename.h"
-#include "lglob.h"
-#include "os.h"
-#include "ch.h"
-#include "decode.h"
-#include "ifile.h"
-#include "line.h"
+#include "less.hpp"
+#include "filename.hpp"
+#include "lglob.hpp"
+#include "os.hpp"
+#include "ch.hpp"
+#include "decode.hpp"
+#include "ifile.hpp"
+#include "line.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>

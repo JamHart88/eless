@@ -56,7 +56,7 @@ extern char *__loc1;
 #endif
 
 #if HAVE_V8_REGCOMP
-#include "regexp.h"
+#include "regexp.hpp"
 extern int reg_show_error;
 #define PATTERN_TYPE          struct regexp *
 #define CLEAR_PATTERN(name)   name = NULL

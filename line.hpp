@@ -7,7 +7,7 @@
  * in preparation for output to the screen.
  */
 
-#include "less.h"
+#include "less.hpp"
 
 public
 void init_line(void);

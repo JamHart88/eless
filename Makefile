@@ -61,7 +61,7 @@ less$(EXEEXT): ${OBJ}
 
 charset.${O}: compose.uni ubin.uni wide.uni
 
-${OBJ}: ${srcdir}/less.h ${srcdir}/funcs.h defines.h 
+${OBJ}: ${srcdir}/less.hpp ${srcdir}/funcs.hpp defines.hpp 
 
 install: all ${srcdir}/less.nro installdirs
 	${INSTALL_PROGRAM} less$(EXEEXT) ${DESTDIR}${bindir}/${binprefix}less$(EXEEXT)
@@ -84,11 +84,11 @@ check:
 installcheck:
 
 TAGS:
-	cd ${srcdir} && etags *.cpp *.h
+	cd ${srcdir} && etags *.cpp *.hpp
 
-# config.status might not change defines.h
+# config.status might not change defines.hpp
 # Don't rerun config.status if we just configured (so there's no stamp-h).
-#defines.h: stamp-h
+#defines.hpp: stamp-h
 #stamp-h: defines.h.in 
 #test ! -f stamp-h || CONFIG_FILES= CONFIG_HEADERS=defines.h ./config.status
 #touch stamp-h

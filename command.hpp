@@ -6,7 +6,7 @@
 // User-level command processor.
 //
 
-#include "less.h"
+#include "less.hpp"
 
 public int in_mca (void);
 public void dispversion (void);

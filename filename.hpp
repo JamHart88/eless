@@ -6,7 +6,7 @@
 // Much of this is very OS dependent.
 //
 
-#include "less.h"
+#include "less.hpp"
 
 public char * shell_unquote (char *str);
 public char * get_meta_escape (void);

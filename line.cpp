@@ -13,14 +13,14 @@
  * in preparation for output to the screen.
  */
 
-#include "line.h"
-#include "ch.h"
-#include "charset.h"
-#include "decode.h"
-#include "input.h"
-#include "less.h"
-#include "position.h"
-#include "linenum.h"
+#include "line.hpp"
+#include "ch.hpp"
+#include "charset.hpp"
+#include "decode.hpp"
+#include "input.hpp"
+#include "less.hpp"
+#include "position.hpp"
+#include "linenum.hpp"
 
 static char *linebuf = NULL; /* Buffer which holds the current output line */
 static char *attr = NULL;    /* Extension of linebuf to hold attributes */

@@ -13,14 +13,14 @@
  * scrolling either forward or backward.
  */
 
-#include "less.h"
-#include "forback.h"
-#include "position.h"
-#include "ch.h"
-#include "edit.h"
-#include "input.h"
-#include "jump.h"
-#include "linenum.h"
+#include "less.hpp"
+#include "forback.hpp"
+#include "position.hpp"
+#include "ch.hpp"
+#include "edit.hpp"
+#include "input.hpp"
+#include "jump.hpp"
+#include "linenum.hpp"
 
 public int screen_trashed;
 public int squished;

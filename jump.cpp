@@ -12,14 +12,14 @@
  * Routines which jump to a new location in the file.
  */
 
-#include "less.h"
-#include "jump.h"
-#include "os.h"
-#include "position.h"
-#include "ch.h"
-#include "forback.h"
-#include "input.h"
-#include "linenum.h"
+#include "less.hpp"
+#include "jump.hpp"
+#include "os.hpp"
+#include "position.hpp"
+#include "ch.hpp"
+#include "forback.hpp"
+#include "input.hpp"
+#include "linenum.hpp"
 
 extern int jump_sline;
 extern int squished;

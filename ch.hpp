@@ -7,7 +7,7 @@
 // both forward and backward from the current read pointer.
 //
 
-#include "less.h"
+#include "less.hpp"
 
 public
 void ch_ungetchar(int c);

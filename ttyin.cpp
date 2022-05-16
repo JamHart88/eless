@@ -12,8 +12,8 @@
  * Routines dealing with getting input from the keyboard (i.e. from the user).
  */
 
-#include "less.h"
-#include "os.h"
+#include "less.hpp"
+#include "os.hpp"
 
 public int tty;
 extern int sigs;

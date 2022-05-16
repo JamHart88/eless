@@ -14,10 +14,10 @@
  * both forward and backward from the current read pointer.
  */
 
-#include "less.h"
-#include "os.h"
-#include "ch.h"
-#include "ifile.h"
+#include "less.hpp"
+#include "os.hpp"
+#include "ch.hpp"
+#include "ifile.hpp"
 
 #if HAVE_STAT_INO
 #include <sys/stat.h>

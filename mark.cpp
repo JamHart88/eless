@@ -8,13 +8,13 @@
  */
 
 
-#include "less.h"
-#include "position.h"
-#include "ch.h"
-#include "edit.h"
-#include "filename.h"
-#include "ifile.h"
-#include "jump.h"
+#include "less.hpp"
+#include "position.hpp"
+#include "ch.hpp"
+#include "edit.hpp"
+#include "filename.hpp"
+#include "ifile.hpp"
+#include "jump.hpp"
 
 extern IFILE curr_ifile;
 extern int sc_height;

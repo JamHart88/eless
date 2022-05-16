@@ -32,11 +32,11 @@
  * called to make sure we cache line numbers often enough.
  */
 
-#include "less.h"
-#include "linenum.h"
-#include "os.h"
-#include "ch.h"
-#include "line.h"
+#include "less.hpp"
+#include "linenum.hpp"
+#include "os.hpp"
+#include "ch.hpp"
+#include "line.hpp"
 
 /*
  * Structure to keep track of a line number and the associated file position.

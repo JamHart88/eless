@@ -11,8 +11,8 @@
  * Routines to do pattern matching.
  */
 
-#include "less.h"
-#include "cvt.h"
+#include "less.hpp"
+#include "cvt.hpp"
 
 extern int caseless;
 extern int utf_mode;

@@ -8,16 +8,16 @@
  */
 
 
-#include "less.h"
-#include "edit.h"
-#include "os.h"
-#include "position.h"
-#include "ch.h"
-#include "cmdbuf.h"
-#include "command.h"
-#include "filename.h"
-#include "ifile.h"
-#include "linenum.h"
+#include "less.hpp"
+#include "edit.hpp"
+#include "os.hpp"
+#include "position.hpp"
+#include "ch.hpp"
+#include "cmdbuf.hpp"
+#include "command.hpp"
+#include "filename.hpp"
+#include "ifile.hpp"
+#include "linenum.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>

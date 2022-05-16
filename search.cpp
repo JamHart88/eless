@@ -12,16 +12,16 @@
  * Routines to search a file for a pattern.
  */
 
-#include "less.h"
-#include "position.h"
-#include "charset.h"
-#include "ch.h"
-#include "cmdbuf.h"
-#include "cvt.h"
-#include "input.h"
-#include "jump.h"
-#include "line.h"
-#include "linenum.h"
+#include "less.hpp"
+#include "position.hpp"
+#include "charset.hpp"
+#include "ch.hpp"
+#include "cmdbuf.hpp"
+#include "cvt.hpp"
+#include "input.hpp"
+#include "jump.hpp"
+#include "line.hpp"
+#include "linenum.hpp"
 
 #define    MINPOS(a,b)    (((a) < (b)) ? (a) : (b))
 #define    MAXPOS(a,b)    (((a) > (b)) ? (a) : (b))

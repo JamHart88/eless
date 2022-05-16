@@ -23,7 +23,7 @@
 // All the tables are linked together and are searched in order.
 //
 
-#include "less.h"
+#include "less.hpp"
 
 
 public void expand_cmd_tables (void);

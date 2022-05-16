@@ -12,7 +12,7 @@
 // inserted after the current file.
 //
 
-#include "less.h"
+#include "less.hpp"
 
 
 public void del_ifile (IFILE h);

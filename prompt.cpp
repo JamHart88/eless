@@ -17,14 +17,14 @@
  * name of the file being viewed, the percentage into the file, etc.
  */
 
-#include "less.h"
-#include "os.h"
-#include "position.h"
-#include "ch.h"
-#include "filename.h"
-#include "forback.h"
-#include "ifile.h"
-#include "linenum.h"
+#include "less.hpp"
+#include "os.hpp"
+#include "position.hpp"
+#include "ch.hpp"
+#include "filename.hpp"
+#include "forback.hpp"
+#include "ifile.hpp"
+#include "linenum.hpp"
 
 extern int pr_type;
 extern int new_file;

@@ -26,7 +26,7 @@
  * called to make sure we cache line numbers often enough.
  */
 
-#include "less.h"
+#include "less.hpp"
 
 public void clr_linenum (void);
 public void add_lnum (LINENUM linenum, POSITION pos);

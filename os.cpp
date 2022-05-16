@@ -19,8 +19,8 @@
  * Unix features are present.
  */
 
-#include "less.h"
-#include "os.h"
+#include "less.hpp"
+#include "os.hpp"
 
 #include <setjmp.h>
 #include <signal.h>

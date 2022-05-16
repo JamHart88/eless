@@ -8,13 +8,13 @@
  */
 
 
-#include "less.h"
-#include "cvt.h"
-#include "edit.h"
-#include "filename.h"
-#include "decode.h"
-#include "line.h"
-#include "linenum.h"
+#include "less.hpp"
+#include "cvt.hpp"
+#include "edit.hpp"
+#include "filename.hpp"
+#include "decode.hpp"
+#include "line.hpp"
+#include "linenum.hpp"
 
 #define    WHITESP(c)    ((c)==' ' || (c)=='\t')
 

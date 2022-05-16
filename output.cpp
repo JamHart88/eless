@@ -12,10 +12,10 @@
  * High level routines dealing with the output to the screen.
  */
 
-#include "less.h"
-#include "command.h"
-#include "forback.h"
-#include "line.h"
+#include "less.hpp"
+#include "command.hpp"
+#include "forback.hpp"
+#include "line.hpp"
 
 public int errmsgs;    /* Count of messages displayed by error() */
 public int need_clr;

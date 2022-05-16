@@ -17,10 +17,10 @@
  * delimited by newlines; not processed with respect to screen width.
  */
 
-#include "less.h"
-#include "input.h"
-#include "ch.h"
-#include "line.h"
+#include "less.hpp"
+#include "input.hpp"
+#include "ch.hpp"
+#include "line.hpp"
 
 extern int squeeze;
 extern int chopline;

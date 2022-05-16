@@ -12,9 +12,9 @@
  * Uses termcap to be as terminal-independent as possible.
  */
 
-#include "cmd.h"
-#include "less.h"
-#include "decode.h"
+#include "cmd.hpp"
+#include "less.hpp"
+#include "decode.hpp"
 
 #if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>

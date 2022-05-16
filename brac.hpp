@@ -5,7 +5,7 @@
 // User-level command processor.
 //
 
-#include "less.h"
+#include "less.hpp"
 
 public
 void match_brac(int obrac, int cbrac, int forwdir, int n);

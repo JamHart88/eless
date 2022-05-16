@@ -1,7 +1,7 @@
 #ifndef OS_H
 #define OS_H
 
-#include "less.h"
+#include "less.hpp"
 
 public
 int iread(int fd, unsigned char *buf, unsigned int len);

@@ -1,7 +1,7 @@
 #ifndef FUNCS_H
 #define FUNCH_H
 
-#include "less.h"
+#include "less.hpp"
 
 public char * save (const char *s);
 public VOID_POINTER ecalloc (int count, unsigned int size);

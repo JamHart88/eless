@@ -19,9 +19,9 @@
  * inserted after the current file.
  */
 
-#include "less.h"
-#include "ifile.h"
-#include "filename.h"
+#include "less.hpp"
+#include "ifile.hpp"
+#include "filename.hpp"
 
 extern IFILE curr_ifile;
 

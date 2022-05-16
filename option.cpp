@@ -15,12 +15,12 @@
  * the command line option, toggled via the "-" command,
  * or queried via the "_" command.
  */
-#include "less.h"
+#include "less.hpp"
 
 // must come after less.h
-#include "option.h"
-#include "ch.h"
-#include "command.h"
+#include "option.hpp"
+#include "ch.hpp"
+#include "command.hpp"
 
 
 static struct loption *pendopt;

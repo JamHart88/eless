@@ -11,10 +11,10 @@
  * Routines to convert text in various ways.  Used by search.
  */
 
-#include "less.h"
-#include "charset.h"
-#include "cvt.h"
-#include "line.h"
+#include "less.hpp"
+#include "charset.hpp"
+#include "cvt.hpp"
+#include "line.hpp"
 
 extern int utf_mode;
 

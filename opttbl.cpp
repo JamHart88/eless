@@ -12,9 +12,9 @@
  * The option table.
  */
 
-#include "less.h"
-#include "option.h"
-#include "decode.h"
+#include "less.hpp"
+#include "option.hpp"
+#include "decode.hpp"
 
 /*
  * Variables controlled by command line options.

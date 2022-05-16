@@ -11,11 +11,11 @@
  * Routines to perform bracket matching functions.
  */
 
-#include "brac.h"
-#include "ch.h"
-#include "less.h"
-#include "position.h"
-#include "jump.h"
+#include "brac.hpp"
+#include "ch.hpp"
+#include "less.hpp"
+#include "position.hpp"
+#include "jump.hpp"
 
 /*
  * Try to match the n-th open bracket

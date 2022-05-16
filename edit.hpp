@@ -1,7 +1,7 @@
 #ifndef EDIT_H
 #define EDIT_H
 
-#include "less.h"
+#include "less.hpp"
 
 public void init_textlist (struct textlist *tlist, char *str);
 public char * forw_textlist (struct textlist *tlist, char *prev);

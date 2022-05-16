@@ -18,8 +18,8 @@
  * the signal is received, we call intread to interrupt the iread.
  */
 
-#include "less.h"
-#include "os.h"
+#include "less.hpp"
+#include "os.hpp"
 #include <signal.h>
 
 /*

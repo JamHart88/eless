@@ -1,7 +1,7 @@
 #ifndef JUMP_H
 #define JUMP_H
 
-#include "less.h"
+#include "less.hpp"
 
 public void jump_forw (void);
 public void jump_forw_buffered (void);

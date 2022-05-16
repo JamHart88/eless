@@ -28,12 +28,12 @@
  * All the tables are linked together and are searched in order.
  */
 
-#include "cmd.h"
-#include "less.h"
-#include "decode.h"
-#include "lesskey.h"
-#include "command.h"
-#include "filename.h"
+#include "cmd.hpp"
+#include "less.hpp"
+#include "decode.hpp"
+#include "lesskey.hpp"
+#include "command.hpp"
+#include "filename.hpp"
 
 extern int erase_char, erase2_char, kill_char;
 extern int mousecap;

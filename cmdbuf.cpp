@@ -13,14 +13,14 @@
  * Used only by command() and related functions.
  */
 
-#include "less.h"
-#include "cmdbuf.h"
-#include "cmd.h"
-#include "charset.h"
-#include "command.h"
-#include "edit.h"
-#include "filename.h"
-#include "decode.h"
+#include "less.hpp"
+#include "cmdbuf.hpp"
+#include "cmd.hpp"
+#include "charset.hpp"
+#include "command.hpp"
+#include "edit.hpp"
+#include "filename.hpp"
+#include "decode.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>

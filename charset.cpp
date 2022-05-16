@@ -13,13 +13,13 @@
  * and do things specific to the character set.
  */
 
-#include "less.h"
-#include "charset.h"
+#include "less.hpp"
+#include "charset.hpp"
 #include <locale.h>
 #include <ctype.h>
 #include <langinfo.h>
 
-#include "decode.h"
+#include "decode.hpp"
 
 extern int bs_mode;
 

@@ -7,7 +7,7 @@
 // scrolling either forward or backward.
 //
 
-#include "less.h"
+#include "less.hpp"
 
 public int eof_displayed (void);
 public int entire_file_displayed (void);

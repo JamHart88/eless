@@ -20,7 +20,7 @@
  * Include the file of compile-time options.
  * The <> make cc search for it in -I., not srcdir.
  */
-#include "defines.h"
+#include "defines.hpp"
 
 #ifdef _SEQUENT_
 /*
@@ -84,7 +84,7 @@ static inline void ignore_result(long long int unused_result) {
 #endif
 
 #if DEBUG
-#include "debug.h"
+#include "debug.hpp"
 #endif
 
 // New C++ includes
@@ -474,8 +474,8 @@ struct wchar_range_table
 struct mlist;
 struct loption;
 struct hilite_tree;
-#include "pattern.h"
-#include "funcs.h"
+#include "pattern.hpp"
+#include "funcs.hpp"
 
 /* Functions not included in funcs.h */
 

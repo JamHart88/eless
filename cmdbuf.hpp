@@ -6,7 +6,7 @@
 // Used only by command() and related functions.
 //
 
-#include "less.h"
+#include "less.hpp"
 
 public void cmd_reset (void);
 public void clear_cmd (void);

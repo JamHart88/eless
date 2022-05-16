@@ -18,8 +18,8 @@
  *    and just change a couple of pointers. }}
  */
 
-#include "less.h"
-#include "position.h"
+#include "less.hpp"
+#include "position.hpp"
 
 static POSITION *table = NULL;    /* The position table */
 static int table_size = 0;
