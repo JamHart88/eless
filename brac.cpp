@@ -13,10 +13,10 @@
 
 #include "brac.hpp"
 #include "ch.hpp"
-#include "less.hpp"
-#include "position.hpp"
 #include "jump.hpp"
+#include "less.hpp"
 #include "output.hpp"
+#include "position.hpp"
 
 /*
  * Try to match the n-th open bracket
@@ -42,26 +42,23 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
      * depending on the type of bracket.
      */
     pos = position((forwdir) ? TOP : BOTTOM);
-    if (pos == NULL_POSITION || ch_seek(pos))
-    {
+    if (pos == NULL_POSITION || ch_seek(pos)) {
         if (forwdir)
-            error((char *)"Nothing in top line", NULL_PARG);
+            error((char*)"Nothing in top line", NULL_PARG);
         else
-            error((char *)"Nothing in bottom line", NULL_PARG);
+            error((char*)"Nothing in bottom line", NULL_PARG);
         return;
     }
 
     /*
      * Look thru the line to find the open bracket to match.
      */
-    do
-    {
-        if ((c = ch_forw_get()) == '\n' || c == EOI)
-        {
+    do {
+        if ((c = ch_forw_get()) == '\n' || c == EOI) {
             if (forwdir)
-                error((char *)"No bracket in top line", NULL_PARG);
+                error((char*)"No bracket in top line", NULL_PARG);
             else
-                error((char *)"No bracket in bottom line", NULL_PARG);
+                error((char*)"No bracket in bottom line", NULL_PARG);
             return;
         }
     } while (c != obrac || --n > 0);
@@ -80,12 +77,10 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
      */
     chget = (forwdir) ? ch_forw_get : ch_back_get;
     nest = 0;
-    while ((c = (*chget)()) != EOI)
-    {
+    while ((c = (*chget)()) != EOI) {
         if (c == obrac)
             nest++;
-        else if (c == cbrac && --nest < 0)
-        {
+        else if (c == cbrac && --nest < 0) {
             /*
              * Found the matching bracket.
              * If searching backward, put it on the top line.
@@ -95,5 +90,5 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
             return;
         }
     }
-    error((char *)"No matching bracket", NULL_PARG);
+    error((char*)"No matching bracket", NULL_PARG);
 }

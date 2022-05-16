@@ -1,6 +1,6 @@
 ---
 Language:      Cpp
-BasedOnStyle:  Microsoft
+BasedOnStyle:  WebKit
 IndentWidth:     4
 
 
