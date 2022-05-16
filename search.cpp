@@ -39,8 +39,8 @@ extern int bs_mode;
 extern int ctldisp;
 extern int status_col;
 extern void* ml_search;
-extern POSITION start_attnpos;
-extern POSITION end_attnpos;
+extern position_t start_attnpos;
+extern position_t end_attnpos;
 extern int utf_mode;
 extern int screen_trashed;
 #if HILITE_SEARCH
@@ -49,8 +49,8 @@ extern int size_linebuf;
 extern int squished;
 extern int can_goto_line;
 static int hide_hilite;
-static POSITION prep_startpos;
-static POSITION prep_endpos;
+static position_t prep_startpos;
+static position_t prep_endpos;
 static int is_caseless;
 static int is_ucase_pattern;
 
@@ -72,8 +72,8 @@ static int is_ucase_pattern;
  */
 
 struct hilite {
-    POSITION hl_startpos;
-    POSITION hl_endpos;
+    position_t hl_startpos;
+    position_t hl_endpos;
 };
 
 struct hilite_node {
@@ -295,7 +295,7 @@ static int prev_pattern(struct pattern_info* info)
 void repaint_hilite(int on)
 {
     int sindex;
-    POSITION pos;
+    position_t pos;
     int save_hide_hilite;
 
     if (squished)
@@ -337,10 +337,10 @@ void repaint_hilite(int on)
 void clear_attn(void)
 {
     int sindex;
-    POSITION old_start_attnpos;
-    POSITION old_end_attnpos;
-    POSITION pos;
-    POSITION epos;
+    position_t old_start_attnpos;
+    position_t old_end_attnpos;
+    position_t pos;
+    position_t epos;
     int moved = 0;
 
     if (start_attnpos == NULL_POSITION)
@@ -470,7 +470,7 @@ struct hilite_node* hlist_prev(struct hilite_node* n)
  * to speed up subsequent searches for the same or similar positions (if
  * we return NULL, remember the last node.)
  */
-struct hilite_node* hlist_find(struct hilite_tree* anchor, POSITION pos)
+struct hilite_node* hlist_find(struct hilite_tree* anchor, position_t pos)
 {
     struct hilite_node *n, *m;
 
@@ -552,9 +552,9 @@ struct hilite_node* hlist_find(struct hilite_tree* anchor, POSITION pos)
 // Converted from C to C++ - C below
 // static int
 // is_hilited_range(pos, epos)
-//     POSITION pos;
-//     POSITION epos;
-static int is_hilited_range(POSITION pos, POSITION epos)
+//     position_t pos;
+//     position_t epos;
+static int is_hilited_range(position_t pos, position_t epos)
 {
     struct hilite_node* n = hlist_find(&hilite_anchor, pos);
     return (n != NULL && (epos == NULL_POSITION || epos > n->r.hl_startpos));
@@ -567,9 +567,9 @@ static int is_hilited_range(POSITION pos, POSITION epos)
 // Converted from C to C++ - C below
 // public int
 // is_filtered(pos)
-//     POSITION pos;
+//     position_t pos;
 
-int is_filtered(POSITION pos)
+int is_filtered(position_t pos)
 {
     struct hilite_node* n;
 
@@ -586,11 +586,11 @@ int is_filtered(POSITION pos)
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// public POSITION
+// public position_t
 // next_unfiltered(pos)
-//     POSITION pos;
+//     position_t pos;
 
-POSITION next_unfiltered(POSITION pos)
+position_t next_unfiltered(position_t pos)
 {
     struct hilite_node* n;
 
@@ -611,11 +611,11 @@ POSITION next_unfiltered(POSITION pos)
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// public POSITION
+// public position_t
 // prev_unfiltered(pos)
-//     POSITION pos;
+//     position_t pos;
 
-POSITION prev_unfiltered(POSITION pos)
+position_t prev_unfiltered(position_t pos)
 {
     struct hilite_node* n;
 
@@ -641,12 +641,12 @@ POSITION prev_unfiltered(POSITION pos)
 // Converted from C to C++ - C below
 // public int
 // is_hilited(pos, epos, nohide, p_matches)
-//     POSITION pos;
-//     POSITION epos;
+//     position_t pos;
+//     position_t epos;
 //     int nohide;
 //     int *p_matches;
 
-int is_hilited(POSITION pos, POSITION epos, int nohide, int* p_matches)
+int is_hilited(position_t pos, position_t epos, int nohide, int* p_matches)
 {
     int match;
 
@@ -975,11 +975,11 @@ static void add_hilite(struct hilite_tree* anchor, struct hilite* hl)
 // Converted from C to C++ - C below
 // static void
 // create_hilites(linepos, start_index, end_index, chpos)
-//     POSITION linepos;
+//     position_t linepos;
 //     int start_index;
 //     int end_index;
 //     int *chpos;
-static void create_hilites(POSITION linepos, int start_index, int end_index, int* chpos)
+static void create_hilites(position_t linepos, int start_index, int end_index, int* chpos)
 {
     struct hilite hl;
     int i;
@@ -1016,14 +1016,14 @@ static void create_hilites(POSITION linepos, int start_index, int end_index, int
 // Converted from C to C++ - C below
 // static void
 // hilite_line(linepos, line, line_len, chpos, sp, ep, cvt_ops)
-//     POSITION linepos;
+//     position_t linepos;
 //     char *line;
 //     int line_len;
 //     int *chpos;
 //     char *sp;
 //     char *ep;
 //     int cvt_ops;
-static void hilite_line(POSITION linepos, char* line, int line_len, int* chpos, char* sp, char* ep, int cvt_ops)
+static void hilite_line(position_t linepos, char* line, int line_len, int* chpos, char* sp, char* ep, int cvt_ops)
 {
     char* searchp;
     char* line_end = line + line_len;
@@ -1107,12 +1107,12 @@ void chg_hilite(void)
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// static POSITION
+// static position_t
 // search_pos(search_type)
 //     int search_type;
-static POSITION search_pos(int search_type)
+static position_t search_pos(int search_type)
 {
-    POSITION pos;
+    position_t pos;
     int sindex;
 
     if (empty_screen()) {
@@ -1193,25 +1193,25 @@ static POSITION search_pos(int search_type)
 // Converted from C to C++ - C below
 // static int
 // search_range(pos, endpos, search_type, matches, maxlines, plinepos, pendpos)
-//     POSITION pos;
-//     POSITION endpos;
+//     position_t pos;
+//     position_t endpos;
 //     int search_type;
 //     int matches;
 //     int maxlines;
-//     POSITION *plinepos;
-//     POSITION *pendpos;
-static int search_range(POSITION pos, POSITION endpos, int search_type, int matches, int maxlines, POSITION* plinepos, POSITION* pendpos)
+//     position_t *plinepos;
+//     position_t *pendpos;
+static int search_range(position_t pos, position_t endpos, int search_type, int matches, int maxlines, position_t* plinepos, position_t* pendpos)
 {
     char* line;
     char* cline;
     int line_len;
-    LINENUM linenum;
+    linenum_t linenum;
     char *sp, *ep;
     int line_match;
     int cvt_ops;
     int cvt_len;
     int* chpos;
-    POSITION linepos, oldpos;
+    position_t linepos, oldpos;
 
     linenum = find_linenum(pos);
     oldpos = pos;
@@ -1440,7 +1440,7 @@ void chg_caseless(void)
 
 int search(int search_type, char* pattern, int n)
 {
-    POSITION pos;
+    position_t pos;
 
     if (pattern == NULL || *pattern == '\0') {
         /*
@@ -1516,7 +1516,7 @@ int search(int search_type, char* pattern, int n)
     }
 
     n = search_range(pos, NULL_POSITION, search_type, n, -1,
-        &pos, (POSITION*)NULL);
+        &pos, (position_t*)NULL);
     if (n != 0) {
         /*
          * Search was unsuccessful.
@@ -1563,16 +1563,16 @@ int search(int search_type, char* pattern, int n)
 // Converted from C to C++ - C below
 // public void
 // prep_hilite(spos, epos, maxlines)
-//     POSITION spos;
-//     POSITION epos;
+//     position_t spos;
+//     position_t epos;
 //     int maxlines;
 
-void prep_hilite(POSITION spos, POSITION epos, int maxlines)
+void prep_hilite(position_t spos, position_t epos, int maxlines)
 {
-    POSITION nprep_startpos = prep_startpos;
-    POSITION nprep_endpos = prep_endpos;
-    POSITION new_epos;
-    POSITION max_epos;
+    position_t nprep_startpos = prep_startpos;
+    position_t nprep_endpos = prep_endpos;
+    position_t new_epos;
+    position_t max_epos;
     int result;
     int i;
 
@@ -1674,7 +1674,7 @@ void prep_hilite(POSITION spos, POSITION epos, int maxlines)
         int search_type = SRCH_FORW | SRCH_FIND_ALL;
         search_type |= (search_info.search_type & SRCH_NO_REGEX);
         for (;;) {
-            result = search_range(spos, epos, search_type, 0, maxlines, (POSITION*)NULL, &new_epos);
+            result = search_range(spos, epos, search_type, 0, maxlines, (position_t*)NULL, &new_epos);
             if (result < 0)
                 return;
             if (prep_endpos == NULL_POSITION || new_epos > prep_endpos)

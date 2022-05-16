@@ -47,9 +47,9 @@ IFILE old_ifile = NULL_IFILE;
 struct scrpos initial_scrpos;
 
 
-POSITION start_attnpos = NULL_POSITION;
+position_t start_attnpos = NULL_POSITION;
 
-POSITION end_attnpos = NULL_POSITION;
+position_t end_attnpos = NULL_POSITION;
 
 int wscroll;
 

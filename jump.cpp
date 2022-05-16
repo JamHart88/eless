@@ -37,8 +37,8 @@ extern int top_scroll;
 
 void jump_forw(void)
 {
-    POSITION pos;
-    POSITION end_pos;
+    position_t pos;
+    position_t end_pos;
 
     if (ch_end_seek()) {
         error((char*)"Cannot seek to end of file", NULL_PARG);
@@ -73,7 +73,7 @@ void jump_forw(void)
 
 void jump_forw_buffered(void)
 {
-    POSITION end;
+    position_t end;
 
     if (ch_end_buffer_seek()) {
         error((char*)"Cannot seek to end of buffers", NULL_PARG);
@@ -88,9 +88,9 @@ void jump_forw_buffered(void)
  * Jump to line n in the file.
  */
 
-void jump_back(LINENUM linenum)
+void jump_back(linenum_t linenum)
 {
-    POSITION pos;
+    position_t pos;
     PARG parg;
 
     /*
@@ -141,7 +141,7 @@ void repaint(void)
 
 void jump_percent(int percent, long fraction)
 {
-    POSITION pos, len;
+    position_t pos, len;
 
     /*
      * Determine the position in the file
@@ -175,7 +175,7 @@ void jump_percent(int percent, long fraction)
  * the first character in a line.
  */
 
-void jump_line_loc(POSITION pos, int sline)
+void jump_line_loc(position_t pos, int sline)
 {
     int c;
 
@@ -200,12 +200,12 @@ void jump_line_loc(POSITION pos, int sline)
  * Place the target line on a specified line on the screen.
  */
 
-void jump_loc(POSITION pos, int sline)
+void jump_loc(position_t pos, int sline)
 {
     int nline;
     int sindex;
-    POSITION tpos;
-    POSITION bpos;
+    position_t tpos;
+    position_t bpos;
 
     /*
      * Normalize sline.

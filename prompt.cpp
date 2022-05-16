@@ -126,29 +126,29 @@ static void ap_char(char c)
 }
 
 /*
- * Append a POSITION (as a decimal integer) to the end of the message.
+ * Append a position_t (as a decimal integer) to the end of the message.
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
 // static void
 // ap_pos(pos)
-//     POSITION pos;
-static void ap_pos(POSITION pos)
+//     position_t pos;
+static void ap_pos(position_t pos)
 {
-    char buf[strlen_bound<POSITION>() + 2];
+    char buf[strlen_bound<position_t>() + 2];
 
-    typeToStr<POSITION>(pos, buf);
+    typeToStr<position_t>(pos, buf);
     ap_str(buf);
 }
 
 /*
  * Append a line number to the end of the message.
  */
- static void ap_linenum(LINENUM linenum)
+ static void ap_linenum(linenum_t linenum)
 {
-    char buf[strlen_bound<LINENUM>() + 2];
+    char buf[strlen_bound<linenum_t>() + 2];
 
-    typeToStr<LINENUM>(linenum, buf);
+    typeToStr<linenum_t>(linenum, buf);
     ap_str(buf);
 }
 
@@ -185,12 +185,12 @@ static void ap_quest(void)
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// static POSITION
+// static position_t
 // curr_byte(where)
 //     int where;
-static POSITION curr_byte(int where)
+static position_t curr_byte(int where)
 {
-    POSITION pos;
+    position_t pos;
 
     pos = position(where);
     while (pos == NULL_POSITION && where >= 0 && where < sc_height-1)
@@ -214,7 +214,7 @@ static POSITION curr_byte(int where)
 //     int where;
 static int cond(char c, int where)
 {
-    POSITION len;
+    position_t len;
 
     switch (c)
     {
@@ -285,11 +285,11 @@ static int cond(char c, int where)
 //     int iseditproto;
 static void protochar(int c, int where, int iseditproto)
 {
-    POSITION pos;
-    POSITION len;
+    position_t pos;
+    position_t len;
     int n;
-    LINENUM linenum;
-    LINENUM last_linenum;
+    linenum_t linenum;
+    linenum_t last_linenum;
     IFILE h;
     char *s;
 

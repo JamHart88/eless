@@ -31,7 +31,7 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
 {
     int c;
     int nest;
-    POSITION pos;
+    position_t pos;
     int (*chget)();
 
     extern int ch_forw_get(), ch_back_get();

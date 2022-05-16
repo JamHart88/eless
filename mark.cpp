@@ -59,7 +59,7 @@ int marks_modified = 0;
 /*
  * Initialize a mark struct.
  */
-static void cmark(struct mark* m, IFILE ifile, POSITION pos, int ln)
+static void cmark(struct mark* m, IFILE ifile, position_t pos, int ln)
 {
     m->m_ifile = ifile;
     m->m_scrpos.pos = pos;
@@ -301,7 +301,7 @@ void gomark(int c)
  * because it's always the first non-blank line on the screen.
  */
 
-POSITION markpos(int c)
+position_t markpos(int c)
 {
     struct mark* m;
 
@@ -320,7 +320,7 @@ POSITION markpos(int c)
  * Return the mark associated with a given position, if any.
  */
 
-char posmark(POSITION pos)
+char posmark(position_t pos)
 {
     int i;
 
@@ -399,12 +399,12 @@ void save_marks(FILE* fout, char* hdr)
         debug("mark m_letter", m->m_letter);
         debug("mark filename", m->m_filename);
 
-        char pos_str[strlen_bound<POSITION>() + 2];
+        char pos_str[strlen_bound<position_t>() + 2];
 
         if (m->m_scrpos.pos == NULL_POSITION)
             continue;
 
-        typeToStr<POSITION>(m->m_scrpos.pos, pos_str);
+        typeToStr<position_t>(m->m_scrpos.pos, pos_str);
 
         debug("mark pos: ", pos_str);
 
@@ -439,7 +439,7 @@ void restore_mark(char* line)
 
     struct mark* markPtr;
     int screenpos;
-    POSITION filePos;
+    position_t filePos;
 
     if (*line++ != 'm')
         return;
@@ -464,7 +464,7 @@ void restore_mark(char* line)
     skip_whitespace(line);
 
     // get the <position> value
-    filePos = strToType<POSITION>(line, &line);
+    filePos = strToType<position_t>(line, &line);
 
     skip_whitespace(line);
 

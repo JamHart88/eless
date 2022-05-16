@@ -1295,10 +1295,10 @@ fail:
 /*
  * Return the number currently in the command buffer.
  */
- LINENUM cmd_int(long *frac)
+ linenum_t cmd_int(long *frac)
 {
     char *p;
-    LINENUM n = 0;
+    linenum_t n = 0;
     int err;
 
     for (p = cmdbuf;  *p >= '0' && *p <= '9';  p++)

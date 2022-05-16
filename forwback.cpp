@@ -74,7 +74,7 @@ static void eof_bell(void)
 
 int eof_displayed(void)
 {
-    POSITION pos;
+    position_t pos;
 
     if (ignore_eoi)
         return (0);
@@ -101,7 +101,7 @@ int eof_displayed(void)
 
 int entire_file_displayed(void)
 {
-    POSITION pos;
+    position_t pos;
 
     /* Make sure last line of file is displayed. */
     if (!eof_displayed())
@@ -137,7 +137,7 @@ void squish_check(void)
  *   The first real line after the blanks will start at ch_zero().
  */
 
-void forw(int n, POSITION pos,
+void forw(int n, position_t pos,
     int force,
     int only_last,
     int nblank)
@@ -287,7 +287,7 @@ void forw(int n, POSITION pos,
  * Display n lines, scrolling backward.
  */
 
-void back(int n, POSITION pos, int force, int only_last)
+void back(int n, position_t pos, int force, int only_last)
 {
     int nlines = 0;
     int do_repaint;
@@ -344,7 +344,7 @@ void back(int n, POSITION pos, int force, int only_last)
 
 void forward(int n, int force, int only_last)
 {
-    POSITION pos;
+    position_t pos;
 
     if (get_quit_at_eof() && eof_displayed() && !(ch_getflags() & CH_HELPFILE)) {
         /*
@@ -387,7 +387,7 @@ void forward(int n, int force, int only_last)
 
 void backward(int n, int force, int only_last)
 {
-    POSITION pos;
+    position_t pos;
 
     pos = position(TOP);
     if (pos == NULL_POSITION && (!force || position(BOTTOM) == 0)) {
@@ -422,7 +422,7 @@ int get_back_scroll(void)
 int get_one_screen(void)
 {
     int nlines;
-    POSITION pos = ch_zero();
+    position_t pos = ch_zero();
 
     for (nlines = 0; nlines < sc_height; nlines++) {
         pos = forw_line(pos);

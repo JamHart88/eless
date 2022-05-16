@@ -30,8 +30,8 @@ extern int quit_if_one_screen;
 extern int sigs;
 extern int ignore_eoi;
 extern int status_col;
-extern POSITION start_attnpos;
-extern POSITION end_attnpos;
+extern position_t start_attnpos;
+extern position_t end_attnpos;
 #if HILITE_SEARCH
 extern int hilite_search;
 extern int size_linebuf;
@@ -44,10 +44,10 @@ extern int size_linebuf;
  * a line.  The new position is the position of the first character
  * of the NEXT line.  The line obtained is the line starting at curr_pos.
  */
- POSITION forw_line(POSITION curr_pos)
+ position_t forw_line(position_t curr_pos)
 {
-    POSITION base_pos;
-    POSITION new_pos;
+    position_t base_pos;
+    position_t new_pos;
     int c;
     int blankline;
     int endline;
@@ -257,9 +257,9 @@ get_forw_line:
  * a line.  The new position is the position of the first character
  * of the PREVIOUS line.  The line obtained is the one starting at new_pos.
  */
- POSITION back_line(POSITION curr_pos)
+ position_t back_line(position_t curr_pos)
 {
-    POSITION new_pos, begin_new_pos, base_pos;
+    position_t new_pos, begin_new_pos, base_pos;
     int c;
     int endline;
     int chopped;
@@ -442,7 +442,7 @@ get_back_line:
 /*
  * Set attnpos.
  */
- void set_attnpos( POSITION pos)
+ void set_attnpos( position_t pos)
 {
     int c;
 

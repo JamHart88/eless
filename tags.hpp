@@ -10,7 +10,7 @@
  void cleantags (void);
  int gettagtype (void);
  void findtag (char *tag);
- POSITION tagsearch (void);
+ position_t tagsearch (void);
  char * nexttag (int n);
  char * prevtag (int n);
  int ntags (void);

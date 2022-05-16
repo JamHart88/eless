@@ -740,7 +740,7 @@ static int new_lesskey(char* buf, int len, int sysvar)
 int lesskey(char* filename, int sysvar)
 {
     char* buf;
-    POSITION len;
+    position_t len;
     long n;
     int f;
 

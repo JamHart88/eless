@@ -16,7 +16,7 @@
  void cmd_addhist (struct mlist *mlist, const char *cmd, int modified);
  void cmd_accept (void);
  int cmd_char (int c);
- LINENUM cmd_int (long *frac);
+ linenum_t cmd_int (long *frac);
  char * get_cmdbuf (void);
  char * cmd_lastpattern (void);
  void init_cmdhist (void);

@@ -12,8 +12,8 @@ time_type get_time(void);
 
 char *errno_message(char *filename);
 
-int percentage(POSITION num, POSITION den);
+int percentage(position_t num, position_t den);
 
-POSITION percent_pos(POSITION pos, int percent, long fraction);
+position_t percent_pos(position_t pos, int percent, long fraction);
 
 #endif

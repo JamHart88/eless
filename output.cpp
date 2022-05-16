@@ -170,7 +170,7 @@ void putstr(const char* s)
         return val;                       \
     }
 
-STR_TO_TYPE_FUNC(lstrtopos, POSITION)
+STR_TO_TYPE_FUNC(lstrtopos, position_t)
 STR_TO_TYPE_FUNC(lstrtoi, int)
 
 /*
@@ -197,12 +197,12 @@ static int iprint_int(int num)
 // Converted from C to C++ - C below
 // static int
 // iprint_linenum(num)
-//     LINENUM num;
-static int iprint_linenum(LINENUM num)
+//     linenum_t num;
+static int iprint_linenum(linenum_t num)
 {
-    char buf[strlen_bound<LINENUM>() + 2];
+    char buf[strlen_bound<linenum_t>() + 2];
 
-    typeToStr<LINENUM>(num, buf);
+    typeToStr<linenum_t>(num, buf);
     putstr(buf);
     return ((int)strlen(buf));
 }

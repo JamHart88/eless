@@ -29,7 +29,7 @@ extern dev_t curr_dev;
 extern ino_t curr_ino;
 #endif
 
-typedef POSITION BLOCKNUM;
+typedef position_t BLOCKNUM;
 
 
 int ignore_eoi;
@@ -64,11 +64,11 @@ struct filestate {
     struct bufnode hashtbl[BUFHASH_SIZE];
     int file;
     int flags;
-    POSITION fpos;
+    position_t fpos;
     int nbufs;
     BLOCKNUM block;
     unsigned int offset;
-    POSITION fsize;
+    position_t fsize;
 };
 
 #define ch_bufhead thisfile->buflist.next
@@ -152,8 +152,8 @@ int ch_get()
     int n;
     int slept;
     int h;
-    POSITION pos;
-    POSITION len;
+    position_t pos;
+    position_t len;
 
     if (thisfile == NULL)
         return (EOI);
@@ -305,7 +305,7 @@ read_more:
                  * If so, force the file to be closed and
                  * reopened. */
                 struct stat st;
-                POSITION curr_pos = ch_tell();
+                position_t curr_pos = ch_tell();
                 int r = stat(get_filename(curr_ifile), &st);
                 if (r == 0 && (st.st_ino != curr_ino || st.st_dev != curr_dev || (curr_pos != NULL_POSITION && st.st_size < curr_pos))) {
                     /* screen_trashed=2 causes
@@ -442,10 +442,10 @@ static int buffered(BLOCKNUM block)
  * Return 0 if successful, non-zero if can't seek there.
  */
 
-int ch_seek(POSITION pos)
+int ch_seek(position_t pos)
 {
     BLOCKNUM new_block;
-    POSITION len;
+    position_t len;
 
     if (thisfile == NULL)
         return (0);
@@ -480,7 +480,7 @@ int ch_seek(POSITION pos)
 
 int ch_end_seek()
 {
-    POSITION len;
+    position_t len;
 
     if (thisfile == NULL)
         return (0);
@@ -509,8 +509,8 @@ int ch_end_buffer_seek()
 {
     struct buf* bp;
     struct bufnode* bn;
-    POSITION buf_pos;
-    POSITION end_pos;
+    position_t buf_pos;
+    position_t end_pos;
 
     if (thisfile == NULL || (ch_flags & CH_CANSEEK))
         return (ch_end_seek());
@@ -565,7 +565,7 @@ int ch_beg_seek()
  * Return the length of the file, if known.
  */
 
-POSITION
+position_t
 ch_length()
 {
     if (thisfile == NULL)
@@ -583,7 +583,7 @@ ch_length()
  * Return the current position in the file.
  */
 
-POSITION
+position_t
 ch_tell()
 {
     if (thisfile == NULL)

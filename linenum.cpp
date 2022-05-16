@@ -49,9 +49,9 @@ struct linenum_info
 {
     struct linenum_info *next;    /* Link to next in the list */
     struct linenum_info *prev;    /* Line to previous in the list */
-    POSITION pos;            /* File position */
-    POSITION gap;            /* Gap between prev and next */
-    LINENUM line;            /* Line number */
+    position_t pos;            /* File position */
+    position_t gap;            /* Gap between prev and next */
+    linenum_t line;            /* Line number */
 };
 /*
  * "gap" needs some explanation: the gap of any particular line number
@@ -100,7 +100,7 @@ clr_linenum(void)
      */
     anchor.next = anchor.prev = &anchor;
     anchor.gap = 0;
-    anchor.pos = (POSITION)0;
+    anchor.pos = (position_t)0;
     anchor.line = 1;
 }
 
@@ -125,13 +125,13 @@ static void calcgap(struct linenum_info *p)
  * The specified position (pos) should be the file position of the
  * FIRST character in the specified line.
  */
- void add_lnum(LINENUM linenum, POSITION pos)
+ void add_lnum(linenum_t linenum, position_t pos)
 {
     struct linenum_info *p;
     struct linenum_info *newLineNum;
     struct linenum_info *nextp;
     struct linenum_info *prevp;
-    POSITION mingap;
+    position_t mingap;
 
     /*
      * Find the proper place in the list for the new one.
@@ -255,11 +255,11 @@ static void abort_long(void)
  * Find the line number associated with a given position.
  * Return 0 if we can't figure it out.
  */
- LINENUM find_linenum(POSITION pos)
+ linenum_t find_linenum(position_t pos)
 {
     struct linenum_info *p;
-    LINENUM linenum;
-    POSITION cpos;
+    linenum_t linenum;
+    position_t cpos;
 
     if (!linenums)
         /*
@@ -366,11 +366,11 @@ static void abort_long(void)
  * Find the position of a given line number.
  * Return NULL_POSITION if we can't figure it out.
  */
- POSITION find_pos(LINENUM linenum)
+ position_t find_pos(linenum_t linenum)
 {
     struct linenum_info *p;
-    POSITION cpos;
-    LINENUM clinenum;
+    position_t cpos;
+    linenum_t clinenum;
 
     if (linenum <= 1)
         /*
@@ -437,11 +437,11 @@ static void abort_long(void)
  * The argument "where" tells which line is to be considered
  * the "current" line (e.g. TOP, BOTTOM, MIDDLE, etc).
  */
- LINENUM currline(int where)
+ linenum_t currline(int where)
 {
-    POSITION pos;
-    POSITION len;
-    LINENUM linenum;
+    position_t pos;
+    position_t len;
+    linenum_t linenum;
 
     pos = position(where);
     len = ch_length();

@@ -14,10 +14,10 @@
 #include "less.hpp"
 
 
-POSITION forw_line(POSITION curr_pos);
+position_t forw_line(position_t curr_pos);
 
-POSITION back_line(POSITION curr_pos);
+position_t back_line(position_t curr_pos);
 
-void set_attnpos(POSITION pos);
+void set_attnpos(position_t pos);
 
 #endif

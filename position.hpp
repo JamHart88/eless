@@ -16,17 +16,17 @@
 #include "less.hpp"
 
 
-POSITION position(int sindex);
+position_t position(int sindex);
 
-void add_forw_pos(POSITION pos);
+void add_forw_pos(position_t pos);
 
-void add_back_pos(POSITION pos);
+void add_back_pos(position_t pos);
 
 void pos_clear(void);
 
 void pos_init(void);
 
-int onscreen(POSITION pos);
+int onscreen(position_t pos);
 
 int empty_screen(void);
 

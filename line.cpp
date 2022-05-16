@@ -48,7 +48,7 @@ int ntabstops = 1; /* Number of tabstops */
 int tabdefault = 8; /* Default repeated tabstops */
 
 
-POSITION highest_hilite; /* Pos of last hilite in file found so far */
+position_t highest_hilite; /* Pos of last hilite in file found so far */
 
 static int curr; /* Index into linebuf */
 
@@ -66,13 +66,13 @@ static int is_null_line; /* There is no current line */
 static int lmargin; /* Left margin */
 
 static LWCHAR pendc;
-static POSITION pendpos;
+static position_t pendpos;
 static char* end_ansi_chars;
 static char* mid_ansi_chars;
 
 static int attr_swidth (int a);
 static int attr_ewidth (int a);
-static int do_append (LWCHAR ch, char* rep, POSITION pos);
+static int do_append (LWCHAR ch, char* rep, position_t pos);
 
 extern int sigs;
 extern int bs_mode;
@@ -88,15 +88,15 @@ extern int bl_s_width, bl_e_width;
 extern int so_s_width, so_e_width;
 extern int sc_width, sc_height;
 extern int utf_mode;
-extern POSITION start_attnpos;
-extern POSITION end_attnpos;
+extern position_t start_attnpos;
+extern position_t end_attnpos;
 extern char rscroll_char;
 extern int rscroll_attr;
 
 static char mbc_buf[MAX_UTF_CHAR_LEN];
 static int mbc_buf_len = 0;
 static int mbc_buf_index = 0;
-static POSITION mbc_pos;
+static position_t mbc_pos;
 
 /*
  * Initialize from environment variables.
@@ -207,9 +207,9 @@ static void add_linebuf(char ch, char a, int w)
  * Insert the line number (of the given position) into the line buffer.
  */
 
-void plinenum(POSITION pos)
+void plinenum(position_t pos)
 {
-    LINENUM linenum = 0;
+    linenum_t linenum = 0;
     int i;
 
     if (linenums == OPT_ONPLUS) {
@@ -246,11 +246,11 @@ void plinenum(POSITION pos)
      * if the -N option is set.
      */
     if (linenums == OPT_ONPLUS) {
-        char buf[strlen_bound<LINENUM>() + 2];
+        char buf[strlen_bound<linenum_t>() + 2];
         int pad = 0;
         int n;
 
-        typeToStr<LINENUM>(linenum, buf);
+        typeToStr<linenum_t>(linenum, buf);
         n = (int)strlen(buf);
         if (n < MIN_LINENUM_WIDTH)
             pad = MIN_LINENUM_WIDTH - n;
@@ -580,7 +580,7 @@ void skip_ansi(char** pp, const char* limit)
             return (1);                          \
     } while (0)
 
-static int store_char(LWCHAR ch, int a, char* rep, POSITION pos)
+static int store_char(LWCHAR ch, int a, char* rep, position_t pos)
 {
     int w;
     int replen;
@@ -673,7 +673,7 @@ static int store_char(LWCHAR ch, int a, char* rep, POSITION pos)
             return (1);            \
     } while (0)
 
-static int store_tab(int attr, POSITION pos)
+static int store_tab(int attr, position_t pos)
 {
     int to_tab = column + cshift - lmargin;
     int i;
@@ -702,7 +702,7 @@ static int store_tab(int attr, POSITION pos)
             return 1;                 \
     } while (0)
 
-static int store_prchar(LWCHAR c, POSITION pos)
+static int store_prchar(LWCHAR c, position_t pos)
 {
     char* s;
 
@@ -724,7 +724,7 @@ static int store_prchar(LWCHAR c, POSITION pos)
     return 0;
 }
 
-static int flush_mbc_buf(POSITION pos)
+static int flush_mbc_buf(position_t pos)
 {
     int i;
 
@@ -741,7 +741,7 @@ static int flush_mbc_buf(POSITION pos)
  * Returns 0 if ok, 1 if couldn't fit in buffer.
  */
 
-int pappend(int c, POSITION pos)
+int pappend(int c, position_t pos)
 {
     int r;
 
@@ -833,7 +833,7 @@ int pappend(int c, POSITION pos)
     return (r);
 }
 
-static int do_append(LWCHAR ch, char* rep, POSITION pos)
+static int do_append(LWCHAR ch, char* rep, position_t pos)
 {
     int a;
     LWCHAR prev_ch;
@@ -1114,11 +1114,11 @@ void null_line(void)
  * {{ This is supposed to be more efficient than forw_line(). }}
  */
 
-POSITION forw_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
+position_t forw_raw_line(position_t curr_pos, char** linep, int* line_lenp)
 {
     int n;
     int c;
-    POSITION new_pos;
+    position_t new_pos;
 
     if (curr_pos == NULL_POSITION || ch_seek(curr_pos) || (c = ch_forw_get()) == EOI)
         return (NULL_POSITION);
@@ -1155,11 +1155,11 @@ POSITION forw_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
  * {{ This is supposed to be more efficient than back_line(). }}
  */
 
-POSITION back_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
+position_t back_raw_line(position_t curr_pos, char** linep, int* line_lenp)
 {
     int n;
     int c;
-    POSITION new_pos;
+    position_t new_pos;
 
     if (curr_pos == NULL_POSITION || curr_pos <= ch_zero() || ch_seek(curr_pos - 1))
         return (NULL_POSITION);
@@ -1219,7 +1219,7 @@ POSITION back_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
 
 int rrshift(void)
 {
-    POSITION pos;
+    position_t pos;
     int save_width;
     int line;
     int longest = 0;

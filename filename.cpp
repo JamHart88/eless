@@ -421,14 +421,14 @@ static char * dirfile(char *dirname, char *filename)
 /*
  * Try to determine the size of a file by seeking to the end.
  */
-static POSITION seek_filesize(int f)
+static position_t seek_filesize(int f)
 {
     off_t spos;
 
     spos = lseek(f, (off_t)0, SEEK_END);
     if (spos == BAD_LSEEK)
         return (NULL_POSITION);
-    return ((POSITION) spos);
+    return ((position_t) spos);
 }
 
 /*
@@ -950,13 +950,13 @@ static int num_pct_s(char *lessopen)
  * Return the size of a file, as cheaply as possible.
  * In Unix, we can stat the file.
  */
- POSITION filesize(int f)
+ position_t filesize(int f)
 {
 #if HAVE_STAT
     struct stat statbuf;
 
     if (fstat(f, &statbuf) >= 0)
-        return ((POSITION) statbuf.st_size);
+        return ((position_t) statbuf.st_size);
 #endif
     return (seek_filesize(f));
 }

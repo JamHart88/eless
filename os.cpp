@@ -202,60 +202,60 @@ char *errno_message(char *filename)
 
 // -------------------------------------------
 // Converted from C to C++ - C below
-// static POSITION
+// static position_t
 // muldiv(val, num, den)
-//     POSITION val, num, den;
-static POSITION muldiv(POSITION val, POSITION num, POSITION den)
+//     position_t val, num, den;
+static position_t muldiv(position_t val, position_t num, position_t den)
 {
 #if HAVE_FLOAT
     double v = (((double)val) * num) / den;
-    return ((POSITION)(v + 0.5));
+    return ((position_t)(v + 0.5));
 #else
-    POSITION v = ((POSITION)val) * num;
+    position_t v = ((position_t)val) * num;
 
     if (v / num == val)
         /* No overflow */
-        return (POSITION)(v / den);
+        return (position_t)(v / den);
     else
         /* Above calculation overflows;
          * use a method that is less precise but won't overflow. */
-        return (POSITION)(val / (den / num));
+        return (position_t)(val / (den / num));
 #endif
 }
 
 /*
  * Return the ratio of two POSITIONS, as a percentage.
- * {{ Assumes a POSITION is a long int. }}
+ * {{ Assumes a position_t is a long int. }}
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public int
 // percentage(num, den)
-//     POSITION num;
-//     POSITION den;
+//     position_t num;
+//     position_t den;
 
-int percentage(POSITION num, POSITION den)
+int percentage(position_t num, position_t den)
 {
-    return (int)muldiv(num, (POSITION)100, den);
+    return (int)muldiv(num, (position_t)100, den);
 }
 
 /*
- * Return the specified percentage of a POSITION.
+ * Return the specified percentage of a position_t.
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// public POSITION
+// public position_t
 // percent_pos(pos, percent, fraction)
-//     POSITION pos;
+//     position_t pos;
 //     int percent;
 //     long fraction;
 
-POSITION percent_pos(POSITION pos, int percent, long fraction)
+position_t percent_pos(position_t pos, int percent, long fraction)
 {
     /* Change percent (parts per 100) to perden (parts per NUM_FRAC_DENOM). */
-    POSITION perden = (percent * (NUM_FRAC_DENOM / 100)) + (fraction / 100);
+    position_t perden = (percent * (NUM_FRAC_DENOM / 100)) + (fraction / 100);
 
     if (perden == 0)
         return (0);
-    return (POSITION)muldiv(pos, perden, (POSITION)NUM_FRAC_DENOM);
+    return (position_t)muldiv(pos, perden, (position_t)NUM_FRAC_DENOM);
 }

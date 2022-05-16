@@ -58,9 +58,9 @@ extern int hshift;
 extern int bs_mode;
 extern int show_attn;
 extern int status_col;
-extern POSITION highest_hilite;
-extern POSITION start_attnpos;
-extern POSITION end_attnpos;
+extern position_t highest_hilite;
+extern position_t start_attnpos;
+extern position_t end_attnpos;
 extern char* every_first_cmd;
 extern char version[];
 extern struct scrpos initial_scrpos;
@@ -92,7 +92,7 @@ static int mca; /* The multicharacter command (action) */
 
 static int search_type; /* The previous type of search */
 
-static LINENUM number; /* The number typed by the user */
+static linenum_t number; /* The number typed by the user */
 
 static long fraction; /* The fractional part of the number */
 
@@ -100,7 +100,7 @@ static struct loption* curropt;
 static int opt_lower;
 static int optflag;
 static int optgetname;
-static POSITION bottompos;
+static position_t bottompos;
 static int save_hshift;
 static int save_bs_mode;
 
@@ -982,7 +982,7 @@ static void multi_search(char* pattern, int n, int silent)
  */
 static int forw_loop(int until_hilite)
 {
-    POSITION curr_len;
+    position_t curr_len;
 
     if (ch_getflags() & CH_HELPFILE)
         return (A_NOACTION);
@@ -1388,7 +1388,7 @@ void commands(void)
             cmd_exec();
             if (number < 0)
                 number = 0;
-            jump_line_loc((POSITION)number, jump_sline);
+            jump_line_loc((position_t)number, jump_sline);
             break;
 
         case A_STAT:
@@ -1632,7 +1632,7 @@ void commands(void)
             }
             cmd_exec();
             if (edit(tagfile) == 0) {
-                POSITION pos = tagsearch();
+                position_t pos = tagsearch();
                 if (pos != NULL_POSITION)
                     jump_loc(pos, jump_sline);
             }
@@ -1655,7 +1655,7 @@ void commands(void)
             }
             cmd_exec();
             if (edit(tagfile) == 0) {
-                POSITION pos = tagsearch();
+                position_t pos = tagsearch();
                 if (pos != NULL_POSITION)
                     jump_loc(pos, jump_sline);
             }

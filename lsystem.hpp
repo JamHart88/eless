@@ -10,6 +10,6 @@
 
  void lsystem (char *cmd, char *donemsg);
  int pipe_mark (int c, char *cmd);
- int pipe_data (char *cmd, POSITION spos, POSITION epos);
+ int pipe_data (char *cmd, position_t spos, position_t epos);
 
 #endif 

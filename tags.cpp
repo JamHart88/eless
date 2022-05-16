@@ -61,8 +61,8 @@ static enum tag_result findctag (char *tag);
 static enum tag_result findgtag (char *tag, int type);
 static char *nextgtag(void);
 static char *prevgtag(void);
-static POSITION ctagsearch(void);
-static POSITION gtagsearch(void);
+static position_t ctagsearch(void);
+static position_t gtagsearch(void);
 static int getentry (char *buf, char **tag, char **file,
     char **line);
 
@@ -81,7 +81,7 @@ struct taglist {
 struct tag {
     struct tag *next, *prev; /* List links */
     char *tag_file;             /* Source file containing the tag */
-    LINENUM tag_linenum;     /* Appropriate line number in source file */
+    linenum_t tag_linenum;     /* Appropriate line number in source file */
     char *tag_pattern;       /* Pattern used to find the tag */
     char tag_endline;        /* True if the pattern includes '$' */
 };
@@ -135,10 +135,10 @@ static struct tag *curtag;
 // maketagent(name, file, linenum, pattern, endline)
 //     char *name;
 //     char *file;
-//     LINENUM linenum;
+//     linenum_t linenum;
 //     char *pattern;
 //     int endline;
-static struct tag * maketagent(char *name, char *file, LINENUM linenum, char *pattern, int endline)
+static struct tag * maketagent(char *name, char *file, linenum_t linenum, char *pattern, int endline)
 {
     struct tag *tp;
 
@@ -230,9 +230,9 @@ static struct tag * maketagent(char *name, char *file, LINENUM linenum, char *pa
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// public POSITION
+// public position_t
 // tagsearch(void)
- POSITION tagsearch(void)
+ position_t tagsearch(void)
 {
     if (curtag == NULL)
         return (NULL_POSITION);  /* No gtags loaded! */
@@ -318,7 +318,7 @@ static enum tag_result findctag(char *tag)
     char *p;
     FILE *f;
     int taglen;
-    LINENUM taglinenum;
+    linenum_t taglinenum;
     char *tagfile;
     char *tagpattern;
     int tagendline;
@@ -434,7 +434,7 @@ static enum tag_result findctag(char *tag)
     return (edit(curtag->tag_file));
 }
 
-static int curtag_match(char const *line, POSITION linepos)
+static int curtag_match(char const *line, position_t linepos)
 {
     /*
      * Test the line to see if we have a match.
@@ -464,12 +464,12 @@ static int curtag_match(char const *line, POSITION linepos)
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// static POSITION
+// static position_t
 // ctagsearch(void)
-static POSITION ctagsearch(void)
+static position_t ctagsearch(void)
 {
-    POSITION pos, linepos;
-    LINENUM linenum;
+    position_t pos, linepos;
+    linenum_t linenum;
     int line_len;
     char *line;
     int found;
@@ -651,7 +651,7 @@ static enum tag_result findgtag(char *tag, /* tag to load */int type)
             }
 
             /* Make new entry and add to list. */
-            tp = maketagent(name, file, (LINENUM) atoi(line), NULL, 0);
+            tp = maketagent(name, file, (linenum_t) atoi(line), NULL, 0);
             TAG_INS(tp);
             total++;
         }
@@ -751,9 +751,9 @@ static char * prevgtag(void)
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// static POSITION
+// static position_t
 // gtagsearch(void)
-static POSITION gtagsearch(void)
+static position_t gtagsearch(void)
 {
     if (curtag == NULL)
         return (NULL_POSITION);  /* No gtags loaded! */

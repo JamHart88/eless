@@ -30,12 +30,12 @@
 
 void clr_linenum(void);
 
-void add_lnum(LINENUM linenum, POSITION pos);
+void add_lnum(linenum_t linenum, position_t pos);
 
-LINENUM find_linenum(POSITION pos);
+linenum_t find_linenum(position_t pos);
 
-POSITION find_pos(LINENUM linenum);
+position_t find_pos(linenum_t linenum);
 
-LINENUM currline(int where);
+linenum_t currline(int where);
 
 #endif

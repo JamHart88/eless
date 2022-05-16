@@ -15,9 +15,9 @@ int entire_file_displayed(void);
 
 void squish_check(void);
 
-void forw(int n, POSITION pos, int force, int only_last, int nblank);
+void forw(int n, position_t pos, int force, int only_last, int nblank);
 
-void back(int n, POSITION pos, int force, int only_last);
+void back(int n, position_t pos, int force, int only_last);
 
 void forward(int n, int force, int only_last);
 

@@ -16,7 +16,7 @@ void end_logfile(void);
 
 void sync_logfile(void);
 
-int ch_seek(POSITION pos);
+int ch_seek(position_t pos);
 
 int ch_end_seek(void);
 
@@ -24,9 +24,9 @@ int ch_end_buffer_seek(void);
 
 int ch_beg_seek(void);
 
-POSITION ch_length(void);
+position_t ch_length(void);
 
-POSITION ch_tell(void);
+position_t ch_tell(void);
 
 int ch_forw_get(void);
 

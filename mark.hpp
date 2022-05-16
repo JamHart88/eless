@@ -20,9 +20,9 @@ void lastmark(void);
 
 void gomark(int c);
 
-POSITION markpos(int c);
+position_t markpos(int c);
 
-char posmark(POSITION pos);
+char posmark(position_t pos);
 
 void unmark(IFILE ifile);
 

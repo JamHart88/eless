@@ -167,7 +167,7 @@ void lsystem(char* cmd, char* donemsg)
 
 int pipe_mark(int c, char* cmd)
 {
-    POSITION mpos, tpos, bpos;
+    position_t mpos, tpos, bpos;
 
     /*
      * mpos = the marked position.
@@ -197,7 +197,7 @@ int pipe_mark(int c, char* cmd)
  * Feed it the file contents between the positions spos and epos.
  */
 
-int pipe_data(char* cmd, POSITION spos, POSITION epos)
+int pipe_data(char* cmd, position_t spos, position_t epos)
 {
     FILE* f;
     int c;

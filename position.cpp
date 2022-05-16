@@ -21,7 +21,7 @@
 #include "less.hpp"
 #include "utils.hpp"
 
-static POSITION *table = NULL; /* The position table */
+static position_t *table = NULL; /* The position table */
 static int table_size = 0;
 
 extern int sc_width, sc_height;
@@ -37,11 +37,11 @@ extern int sc_width, sc_height;
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
-// public POSITION
+// public position_t
 // position(sindex)
 //     int sindex;
 
-POSITION position(int sindex)
+position_t position(int sindex)
 {
     switch (sindex)
     {
@@ -65,9 +65,9 @@ POSITION position(int sindex)
 // Converted from C to C++ - C below
 // public void
 // add_forw_pos(pos)
-//     POSITION pos;
+//     position_t pos;
 
-void add_forw_pos(POSITION pos)
+void add_forw_pos(position_t pos)
 {
     int i;
 
@@ -86,9 +86,9 @@ void add_forw_pos(POSITION pos)
 // Converted from C to C++ - C below
 // public void
 // add_back_pos(pos)
-//     POSITION pos;
+//     position_t pos;
 
-void add_back_pos(POSITION pos)
+void add_back_pos(position_t pos)
 {
     int i;
 
@@ -141,7 +141,7 @@ void pos_init(void)
     }
     else
         scrpos.pos = NULL_POSITION;
-    table = (POSITION *)utils::ecalloc(sc_height, sizeof(POSITION));
+    table = (position_t *)utils::ecalloc(sc_height, sizeof(position_t));
     table_size = sc_height;
     pos_clear();
     if (scrpos.pos != NULL_POSITION)
@@ -157,9 +157,9 @@ void pos_init(void)
 // Converted from C to C++ - C below
 // public int
 // onscreen(pos)
-//     POSITION pos;
+//     position_t pos;
 
-int onscreen(POSITION pos)
+int onscreen(position_t pos)
 {
     int i;
 

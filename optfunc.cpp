@@ -326,7 +326,7 @@ extern char ztags[];
  void opt_t(int type, char *s)
 {
     IFILE save_ifile;
-    POSITION pos;
+    position_t pos;
 
     switch (type)
     {

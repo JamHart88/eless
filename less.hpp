@@ -175,12 +175,12 @@ void free();
  * Special types and consts.
  */
 typedef unsigned long LWCHAR;
-typedef off_t POSITION;
-typedef off_t LINENUM;
+typedef off_t position_t;
+typedef off_t linenum_t;
 #define MIN_LINENUM_WIDTH 7 /* Min printing width of a line number */
 #define MAX_UTF_CHAR_LEN 6 /* Max bytes in one UTF-8 char */
 
-#define NULL_POSITION ((POSITION)(-1))
+#define NULL_POSITION ((position_t)(-1))
 
 /*
  * Flags for open()
@@ -223,14 +223,14 @@ typedef off_t LINENUM;
  * (Screen lines before ln are empty.)
  */
 struct scrpos {
-    POSITION pos;
+    position_t pos;
     int ln;
 };
 
 typedef union parg {
     char* p_string;
     int p_int;
-    LINENUM p_linenum;
+    linenum_t p_linenum;
 } PARG;
 
 #define NULL_PARG ((PARG*)NULL)
@@ -420,7 +420,7 @@ struct wchar_range_table {
 #define CH_HELPFILE 010
 #define CH_NODATA 020 /* Special case for zero length files */
 
-#define ch_zero() ((POSITION)0)
+#define ch_zero() ((position_t)0)
 
 #define FAKE_HELPFILE "@/\\less/\\help/\\file/\\@"
 #define FAKE_EMPTYFILE "@/\\less/\\empty/\\file/\\@"

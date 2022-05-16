@@ -16,7 +16,7 @@ int is_ascii_char(LWCHAR ch);
 
 void prewind(void);
 
-void plinenum(POSITION pos);
+void plinenum(position_t pos);
 
 void pshift_all(void);
 
@@ -26,7 +26,7 @@ int is_ansi_middle(LWCHAR ch);
 
 void skip_ansi(char **pp, const char *limit);
 
-int pappend(int c, POSITION pos);
+int pappend(int c, position_t pos);
 
 int pflushmbc(void);
 
@@ -38,9 +38,9 @@ int gline(int i, int *ap);
 
 void null_line(void);
 
-POSITION forw_raw_line(POSITION curr_pos, char **linep, int *line_lenp);
+position_t forw_raw_line(position_t curr_pos, char **linep, int *line_lenp);
 
-POSITION back_raw_line(POSITION curr_pos, char **linep, int *line_lenp);
+position_t back_raw_line(position_t curr_pos, char **linep, int *line_lenp);
 
 int rrshift(void);
 
