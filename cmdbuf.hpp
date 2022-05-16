@@ -8,18 +8,18 @@
 
 #include "less.hpp"
 
-public void cmd_reset (void);
-public void clear_cmd (void);
-public void cmd_putstr (const char *s);
-public int len_cmdbuf (void);
-public void set_mlist (void *mlist, int cmdflags);
-public void cmd_addhist (struct mlist *mlist, const char *cmd, int modified);
-public void cmd_accept (void);
-public int cmd_char (int c);
-public LINENUM cmd_int (long *frac);
-public char * get_cmdbuf (void);
-public char * cmd_lastpattern (void);
-public void init_cmdhist (void);
-public void save_cmdhist (void);
+ void cmd_reset (void);
+ void clear_cmd (void);
+ void cmd_putstr (const char *s);
+ int len_cmdbuf (void);
+ void set_mlist (void *mlist, int cmdflags);
+ void cmd_addhist (struct mlist *mlist, const char *cmd, int modified);
+ void cmd_accept (void);
+ int cmd_char (int c);
+ LINENUM cmd_int (long *frac);
+ char * get_cmdbuf (void);
+ char * cmd_lastpattern (void);
+ void init_cmdhist (void);
+ void save_cmdhist (void);
 
 #endif

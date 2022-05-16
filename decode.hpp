@@ -26,16 +26,16 @@
 #include "less.hpp"
 
 
-public void expand_cmd_tables (void);
-public void init_cmds (void);
-public void add_fcmd_table (char *buf, int len);
-public void add_ecmd_table (char *buf, int len);
-public int fcmd_decode (char *cmd, char **sp);
-public int ecmd_decode (char *cmd, char **sp);
-public char * lgetenv (char *var);
-public int isnullenv (char* s);
-public int lesskey (char *filename, int sysvar);
-public void add_hometable (char *envname, char *def_filename, int sysvar);
-public int editchar (int c, int flags); 
+ void expand_cmd_tables (void);
+ void init_cmds (void);
+ void add_fcmd_table (char *buf, int len);
+ void add_ecmd_table (char *buf, int len);
+ int fcmd_decode (char *cmd, char **sp);
+ int ecmd_decode (char *cmd, char **sp);
+ char * lgetenv (char *var);
+ int isnullenv (char* s);
+ int lesskey (char *filename, int sysvar);
+ void add_hometable (char *envname, char *def_filename, int sysvar);
+ int editchar (int c, int flags); 
 
 #endif

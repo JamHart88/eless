@@ -63,10 +63,10 @@ static const char w_proto[] =
 static const char more_proto[] =
   "--More--(?eEND ?x- Next\\: %x.:?pB%pB\\%:byte %bB?s/%s...%t)";
 
-public char *prproto[3];
-public char const *eqproto = e_proto;
-public char const *hproto = h_proto;
-public char const *wproto = w_proto;
+ char *prproto[3];
+ char const *eqproto = e_proto;
+ char const *hproto = h_proto;
+ char const *wproto = w_proto;
 
 static char message[PROMPT_SIZE];
 static char *mp;
@@ -78,7 +78,7 @@ static char *mp;
 // Converted from C to C++ - C below
 // public void
 // init_prompt(void)
-public void init_prompt(void)
+ void init_prompt(void)
 {
     prproto[0] = utils::save(s_proto);
     prproto[1] = utils::save(less_is_more ? more_proto : m_proto);
@@ -529,7 +529,7 @@ static const char * wherechar(char const *p, int *wp)
 // pr_expand(proto, maxwidth)
 //     const char *proto;
 //     int maxwidth;
-public char * pr_expand(const char *proto, int maxwidth)
+ char * pr_expand(const char *proto, int maxwidth)
 {
     const char *p;
     int c;
@@ -606,7 +606,7 @@ public char * pr_expand(const char *proto, int maxwidth)
 // Converted from C to C++ - C below
 // public char *
 // eq_message(void)
-public char * eq_message(void)
+ char * eq_message(void)
 {
     return (pr_expand(eqproto, 0));
 }
@@ -621,7 +621,7 @@ public char * eq_message(void)
 // Converted from C to C++ - C below
 // public char *
 // pr_string(void)
-public char * pr_string(void)
+ char * pr_string(void)
 {
     char *prompt;
     int type;
@@ -641,7 +641,7 @@ public char * pr_string(void)
 // Converted from C to C++ - C below
 // public char *
 // wait_message(void)
-public char * wait_message(void)
+ char * wait_message(void)
 {
     return (pr_expand(wproto, sc_width-so_s_width-so_e_width-2));
 }

@@ -26,7 +26,7 @@
 #include "utils.hpp"
 
 static struct loption *pendopt;
-public
+
 int plusoption = FALSE;
 
 static char *optstring (char *s, char **p_str, char *printopt,
@@ -65,7 +65,7 @@ static char *opt_desc(struct loption *o) {
 // public char *
 // propt(c)
 //     int c;
-public
+
 char *propt(int c) {
   static char buf[8];
 
@@ -82,7 +82,7 @@ char *propt(int c) {
 // public void
 // scan_option(s)
 //     char *s;
-public
+
 void scan_option(char *s) {
   struct loption *o;
   int optc;
@@ -315,7 +315,7 @@ void scan_option(char *s) {
 //     int lower;
 //     char *s;
 //     int how_toggle;
-public
+
 void toggle_option(struct loption *o, int lower, char *s, int how_toggle) {
   int num;
   int no_prompt;
@@ -504,7 +504,7 @@ static int flip_triple(int val, int lc) {
 // public int
 // opt_has_param(o)
 //     struct loption *o;
-public
+
 int opt_has_param(struct loption *o) {
   if (o == NULL)
     return (0);
@@ -522,7 +522,7 @@ int opt_has_param(struct loption *o) {
 // public char *
 // opt_prompt(o)
 //     struct loption *o;
-public
+
 char *opt_prompt(struct loption *o) {
   if (o == NULL || (o->otype & (STRING | NUMBER)) == 0)
     return ((char *)"?");
@@ -538,7 +538,7 @@ char *opt_prompt(struct loption *o) {
 // public char *
 // opt_toggle_disallowed(c)
 //     int c;
-public
+
 char *opt_toggle_disallowed(int c) {
   switch (c) {
   case 'o':
@@ -560,7 +560,7 @@ char *opt_toggle_disallowed(int c) {
 // Converted from C to C++ - C below
 // public int
 // isoptpending(void)
-public
+
 int isoptpending(void) { return (pendopt != NULL); }
 
 /*
@@ -584,7 +584,7 @@ static void nostring(char *printopt) {
 // Converted from C to C++ - C below
 // public void
 // nopendopt(void)
-public
+
 void nopendopt(void) { nostring(opt_desc(pendopt)); }
 
 /*
@@ -663,7 +663,7 @@ static int num_error(char *printopt, int *errp) {
 //     char **sp;
 //     char *printopt;
 //     int *errp;
-public
+
 int getnum(char **sp, char *printopt, int *errp) {
   char *s;
   int n;
@@ -702,7 +702,7 @@ int getnum(char **sp, char *printopt, int *errp) {
 //     char **sp;
 //     char *printopt;
 //     int *errp;
-public
+
 long getfraction(char **sp, char *printopt, int *errp) {
   char *s;
   long frac = 0;
@@ -735,7 +735,7 @@ long getfraction(char **sp, char *printopt, int *errp) {
 // Converted from C to C++ - C below
 // public int
 // get_quit_at_eof(void)
-public
+
 int get_quit_at_eof(void) {
   if (!less_is_more)
     return quit_at_eof;

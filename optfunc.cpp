@@ -74,7 +74,7 @@ extern int force_logfile;
 extern int logfile;
 #endif
 #if TAGS
-public char *tagoption = NULL;
+ char *tagoption = NULL;
 extern char *tags;
 extern char ztags[];
 #endif
@@ -89,7 +89,7 @@ extern char ztags[];
 // opt_o(type, s)
 //     int type;
 //     char *s;
-public void opt_o(int type, char *s)
+ void opt_o(int type, char *s)
 {
     PARG parg;
     char *filename;
@@ -141,7 +141,7 @@ public void opt_o(int type, char *s)
 // opt__O(type, s)
 //     int type;
 //     char *s;
-public void opt__O(int type, char *s)
+ void opt__O(int type, char *s)
 {
     force_logfile = TRUE;
     opt_o(type, s);
@@ -157,7 +157,7 @@ public void opt__O(int type, char *s)
 // opt_j(type, s)
 //     int type;
 //     char *s;
-public void opt_j(int type, char *s)
+ void opt_j(int type, char *s)
 {
     PARG parg;
     char buf[30]; // Make bigger than Long int in chars
@@ -212,7 +212,7 @@ public void opt_j(int type, char *s)
 // Converted from C to C++ - C below
 // public void
 // calc_jump_sline(void)
-public void calc_jump_sline(void)
+ void calc_jump_sline(void)
 {
     if (jump_sline_fraction < 0)
         return;
@@ -228,7 +228,7 @@ public void calc_jump_sline(void)
 // opt_shift(type, s)
 //     int type;
 //     char *s;
-public void opt_shift(int type, char *s)
+ void opt_shift(int type, char *s)
 {
     PARG parg;
     char buf[30]; // Make bigger than Long int in chars
@@ -282,7 +282,7 @@ public void opt_shift(int type, char *s)
 // Converted from C to C++ - C below
 // public void
 // calc_shift_count(void)
-public void calc_shift_count(void)
+ void calc_shift_count(void)
 {
     if (shift_count_fraction < 0)
         return;
@@ -296,7 +296,7 @@ public void calc_shift_count(void)
 // opt_k(type, s)
 //     int type;
 //     char *s;
-public void opt_k(int type, char *s)
+ void opt_k(int type, char *s)
 {
     PARG parg;
 
@@ -323,7 +323,7 @@ public void opt_k(int type, char *s)
 // opt_t(type, s)
 //     int type;
 //     char *s;
-public void opt_t(int type, char *s)
+ void opt_t(int type, char *s)
 {
     IFILE save_ifile;
     POSITION pos;
@@ -363,7 +363,7 @@ public void opt_t(int type, char *s)
 // opt__T(type, s)
 //     int type;
 //     char *s;
-public void opt__T(int type, char *s)
+ void opt__T(int type, char *s)
 {
     PARG parg;
     char *filename;
@@ -398,7 +398,7 @@ public void opt__T(int type, char *s)
 // opt_p(type, s)
 //     int type;
 //     char *s;
-public void opt_p(int type, char *s)
+ void opt_p(int type, char *s)
 {
     switch (type)
     {
@@ -437,7 +437,7 @@ public void opt_p(int type, char *s)
 // opt__P(type, s)
 //     int type;
 //     char *s;
-public void opt__P(int type, char *s)
+ void opt__P(int type, char *s)
 {
     char **proto;
     PARG parg;
@@ -479,7 +479,7 @@ public void opt__P(int type, char *s)
 // opt_b(type, s)
 //     int type;
 //     char *s;
-public void opt_b(int type, char *s)
+ void opt_b(int type, char *s)
 {
     switch (type)
     {
@@ -505,7 +505,7 @@ public void opt_b(int type, char *s)
 // opt_i(type, s)
 //     int type;
 //     char *s;
-public void opt_i(int type, char *s)
+ void opt_i(int type, char *s)
 {
     switch (type)
     {
@@ -528,7 +528,7 @@ public void opt_i(int type, char *s)
 // opt__V(type, s)
 //     int type;
 //     char *s;
-public void opt__V(int type, char *s)
+ void opt__V(int type, char *s)
 {
     switch (type)
     {
@@ -566,7 +566,7 @@ public void opt__V(int type, char *s)
 // opt_x(type, s)
 //     int type;
 //     char *s;
-public void opt_x(int type, char *s)
+ void opt_x(int type, char *s)
 {
     extern int tabstops[];
     extern int ntabstops;
@@ -627,7 +627,7 @@ public void opt_x(int type, char *s)
 // opt_quote(type, s)
 //     int type;
 //     char *s;
-public void opt_quote(int type, char *s)
+ void opt_quote(int type, char *s)
 {
     char buf[3];
     PARG parg;
@@ -672,7 +672,7 @@ public void opt_quote(int type, char *s)
 // opt_rscroll(type, s)
 //     int type;
 //     char *s;
-public void opt_rscroll(int type, char *s)
+ void opt_rscroll(int type, char *s)
 {
     PARG p;
 
@@ -710,7 +710,7 @@ public void opt_rscroll(int type, char *s)
 // opt_query(type, s)
 //     int type;
 //     char *s;
-public void opt_query(int type, char *s)
+ void opt_query(int type, char *s)
 {
     switch (type)
     {
@@ -733,7 +733,7 @@ public void opt_query(int type, char *s)
 // opt_mousecap(type, s)
 //     int type;
 //     char *s;
-public void opt_mousecap(int type, char *s)
+ void opt_mousecap(int type, char *s)
 {
     switch (type)
     {
@@ -759,7 +759,7 @@ public void opt_mousecap(int type, char *s)
 // opt_wheel_lines(type, s)
 //     int type;
 //     char *s;
-public void opt_wheel_lines(int type, char *s)
+ void opt_wheel_lines(int type, char *s)
 {
     switch (type)
     {
@@ -780,7 +780,7 @@ public void opt_wheel_lines(int type, char *s)
 // Converted from C to C++ - C below
 // public int
 // get_swindow(void)
-public int get_swindow(void)
+ int get_swindow(void)
 {
     if (swindow > 0)
         return (swindow);

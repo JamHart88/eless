@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 #endif
 
-public int fd0 = 0;
+ int fd0 = 0;
 
 extern int new_file;
 extern int errmsgs;
@@ -53,8 +53,8 @@ extern char *namelogfile;
 #endif
 
 #if HAVE_STAT_INO
-public dev_t curr_dev;
-public ino_t curr_ino;
+ dev_t curr_dev;
+ ino_t curr_ino;
 #endif
 
 
@@ -65,7 +65,7 @@ public ino_t curr_ino;
  * words, returning each one as a standard null-terminated string.
  * back_textlist does the same, but runs thru the list backwards.
  */
-public void init_textlist(struct textlist *tlist, char *str)
+ void init_textlist(struct textlist *tlist, char *str)
 {
     char *s;
 #if SPACES_IN_FILENAMES
@@ -106,7 +106,7 @@ public void init_textlist(struct textlist *tlist, char *str)
     }
 }
 
-public char * forw_textlist(struct textlist *tlist, char *prev)
+ char * forw_textlist(struct textlist *tlist, char *prev)
 {
     char *s;
     
@@ -127,7 +127,7 @@ public char * forw_textlist(struct textlist *tlist, char *prev)
     return (s);
 }
 
-public char * back_textlist( struct textlist *tlist, char *prev)
+ char * back_textlist( struct textlist *tlist, char *prev)
 {
     char *s;
     
@@ -215,7 +215,7 @@ static void close_file(void)
  * Filename == "-" means standard input.
  * Filename == NULL means just close the current file.
  */
-public int edit(char *filename)
+ int edit(char *filename)
 {
     if (filename == NULL)
         return (edit_ifile(NULL_IFILE));
@@ -226,7 +226,7 @@ public int edit(char *filename)
  * Edit a new file (given its IFILE).
  * ifile == NULL means just close the current file.
  */
-public int edit_ifile(IFILE ifile)
+ int edit_ifile(IFILE ifile)
 {
     int f;
     int answer;
@@ -493,7 +493,7 @@ public int edit_ifile(IFILE ifile)
  * For each filename in the list, enter it into the ifile list.
  * Then edit the first one.
  */
-public int edit_list(char *filelist)
+ int edit_list(char *filelist)
 {
     IFILE save_ifile;
     char *good_filename;
@@ -552,7 +552,7 @@ public int edit_list(char *filelist)
 /*
  * Edit the first file in the command line (ifile) list.
  */
-public int edit_first(void)
+ int edit_first(void)
 {
     if (nifile() == 0)
         return (edit_stdin());
@@ -563,7 +563,7 @@ public int edit_first(void)
 /*
  * Edit the last file in the command line (ifile) list.
  */
-public int edit_last(void)
+ int edit_last(void)
 {
     curr_ifile = NULL_IFILE;
     return (edit_prev(1));
@@ -616,7 +616,7 @@ static int edit_inext(IFILE h, int n)
     return (edit_istep(h, n, +1));
 }
 
-public int edit_next(int n)
+ int edit_next(int n)
 {
     return edit_istep(curr_ifile, n, +1);
 }
@@ -626,7 +626,7 @@ static int edit_iprev(IFILE h, int n)
     return (edit_istep(h, n, -1));
 }
 
-public int edit_prev(int n)
+ int edit_prev(int n)
 {
     return edit_istep(curr_ifile, n, -1);
 }
@@ -634,7 +634,7 @@ public int edit_prev(int n)
 /*
  * Edit a specific file in the command line (ifile) list.
  */
-public int edit_index(int n)
+ int edit_index(int n)
 {
     IFILE h;
 
@@ -653,14 +653,14 @@ public int edit_index(int n)
     return (edit_ifile(h));
 }
 
-public IFILE save_curr_ifile(void)
+ IFILE save_curr_ifile(void)
 {
     if (curr_ifile != NULL_IFILE)
         hold_ifile(curr_ifile, 1);
     return (curr_ifile);
 }
 
-public void unsave_ifile(IFILE save_ifile)
+ void unsave_ifile(IFILE save_ifile)
 {
     if (save_ifile != NULL_IFILE)
         hold_ifile(save_ifile, -1);
@@ -669,7 +669,7 @@ public void unsave_ifile(IFILE save_ifile)
 /*
  * Reedit the ifile which was previously open.
  */
-public void reedit_ifile(IFILE save_ifile)
+ void reedit_ifile(IFILE save_ifile)
 {
     IFILE next;
     IFILE prev;
@@ -701,7 +701,7 @@ public void reedit_ifile(IFILE save_ifile)
     utils::quit(QUIT_ERROR);
 }
 
-public void reopen_curr_ifile(void)
+ void reopen_curr_ifile(void)
 {
     IFILE save_ifile = save_curr_ifile();
     close_file();
@@ -711,7 +711,7 @@ public void reopen_curr_ifile(void)
 /*
  * Edit standard input.
  */
-public int edit_stdin(void)
+ int edit_stdin(void)
 {
     if (isatty(fd0))
     {
@@ -725,7 +725,7 @@ public int edit_stdin(void)
  * Copy a file directly to standard output.
  * Used if standard output is not a tty.
  */
-public void cat_file(void)
+ void cat_file(void)
 {
     int c;
 
@@ -741,7 +741,7 @@ public void cat_file(void)
  * is standard input, create the log file.  
  * We take care not to blindly overwrite an existing file.
  */
-public void use_logfile(char *filename)
+ void use_logfile(char *filename)
 {
     int exists;
     int answer;

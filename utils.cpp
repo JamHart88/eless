@@ -23,7 +23,7 @@ namespace utils {
  * Copy a string to a "safe" place
  * (that is, to a buffer allocated by calloc).
  */
-public
+
 char* save(const char* s)
 {
     char* p;
@@ -37,7 +37,7 @@ char* save(const char* s)
 // ecalloc: Allocate memory.
 // Like calloc(), but never returns an error (NULL).
 //
-public
+
 void * ecalloc(int count, unsigned int size)
 {
     void * p;
@@ -54,7 +54,7 @@ void * ecalloc(int count, unsigned int size)
 /*
  * Skip leading spaces in a string.
  */
-public
+
 char* skipsp(char* s)
 {
     while (*s == ' ' || *s == '\t')
@@ -67,7 +67,7 @@ char* skipsp(char* s)
  * If uppercase is true, the first string must begin with an uppercase
  * character; the remainder of the first string may be either case.
  */
-public
+
 int sprefix(char* ps, char* s, int uppercase)
 {
     int c;
@@ -95,7 +95,7 @@ int sprefix(char* ps, char* s, int uppercase)
 /*
  * Exit the program.
  */
-public
+
 void quit(int status)
 {
     static int save_status;

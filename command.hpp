@@ -8,12 +8,12 @@
 
 #include "less.hpp"
 
-public int in_mca (void);
-public void dispversion (void);
-public int getcc (void);
-public void ungetcc (LWCHAR c);
-public void ungetsc (char *s);
-public LWCHAR peekcc (void);
-public void commands (void);
+ int in_mca (void);
+ void dispversion (void);
+ int getcc (void);
+ void ungetcc (LWCHAR c);
+ void ungetsc (char *s);
+ LWCHAR peekcc (void);
+ void commands (void);
 
 #endif

@@ -49,7 +49,7 @@
 #define LONG_JUMP longjmp
 #endif
 
-public
+
 int reading;
 
 static jmp_buf read_label;
@@ -68,7 +68,7 @@ extern int sigs;
 //     int fd;
 //     unsigned char *buf;
 //     unsigned int len;
-public
+
 int iread(int fd, unsigned char *buf, unsigned int len)
 {
     int n;
@@ -148,7 +148,7 @@ start:
 // Converted from C to C++ - C below
 // public void
 // intread(void)
-public
+
 void intread(void)
 {
     LONG_JUMP(read_label, 1);
@@ -161,7 +161,7 @@ void intread(void)
 // Converted from C to C++ - C below
 // public time_type
 // get_time(void)
-public
+
 time_type get_time(void)
 {
     time_type t;
@@ -178,7 +178,7 @@ time_type get_time(void)
 // public char *
 // errno_message(filename)
 //     char *filename;
-public
+
 char *errno_message(char *filename)
 {
     char *p;
@@ -233,7 +233,7 @@ static POSITION muldiv(POSITION val, POSITION num, POSITION den)
 // percentage(num, den)
 //     POSITION num;
 //     POSITION den;
-public
+
 int percentage(POSITION num, POSITION den)
 {
     return (int)muldiv(num, (POSITION)100, den);
@@ -249,7 +249,7 @@ int percentage(POSITION num, POSITION den)
 //     POSITION pos;
 //     int percent;
 //     long fraction;
-public
+
 POSITION percent_pos(POSITION pos, int percent, long fraction)
 {
     /* Change percent (parts per 100) to perden (parts per NUM_FRAC_DENOM). */

@@ -11,11 +11,11 @@
 
 namespace utils {
 
-public char * save (const char *s);
-public void * ecalloc (int count, unsigned int size);
-public char * skipsp (char *s);
-public int sprefix (char *ps, char *s, int uppercase);
-public void quit (int status);
+ char * save (const char *s);
+ void * ecalloc (int count, unsigned int size);
+ char * skipsp (char *s);
+ int sprefix (char *ps, char *s, int uppercase);
+ void quit (int status);
 
 }
 

@@ -69,18 +69,18 @@ extern int reg_show_error;
 #define CLEAR_PATTERN(name)
 #endif
 
-public
+
 int compile_pattern(char *pattern, int search_type, PATTERN_TYPE *comp_pattern);
-public
+
 void uncompile_pattern(PATTERN_TYPE *pattern);
-public
+
 int valid_pattern(char *pattern);
-public
+
 int is_null_pattern(PATTERN_TYPE pattern);
-public
+
 int match_pattern(PATTERN_TYPE pattern, char *tpattern, char *line, int line_len, char **sp, char **ep, int notbol,
                   int search_type);
-public
+
 char *pattern_lib_name(void);
 
 #endif

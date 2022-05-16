@@ -35,8 +35,6 @@ static inline void ignore_result(long long int unused_result)
  */
 
 
-#define public /* PUBLIC FUNCTION */
-
 /* Library function declarations */
 
 #include <sys/types.h>

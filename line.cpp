@@ -30,24 +30,24 @@ static char* linebuf = NULL; /* Buffer which holds the current output line */
 
 static char* attr = NULL; /* Extension of linebuf to hold attributes */
 
-public
+
 int size_linebuf = 0; /* Size of line buffer (and attr buffer) */
 
 static int cshift; /* Current left-shift of output line buffer */
 
-public
+
 int hshift; /* Desired left-shift of output line buffer */
 
-public
+
 int tabstops[TABSTOP_MAX] = { 0 }; /* Custom tabstops */
 
-public
+
 int ntabstops = 1; /* Number of tabstops */
 
-public
+
 int tabdefault = 8; /* Default repeated tabstops */
 
-public
+
 POSITION highest_hilite; /* Pos of last hilite in file found so far */
 
 static int curr; /* Index into linebuf */
@@ -101,7 +101,7 @@ static POSITION mbc_pos;
 /*
  * Initialize from environment variables.
  */
-public
+
 void init_line(void)
 {
     end_ansi_chars = lgetenv((char*)"LESSANSIENDCHARS");
@@ -158,7 +158,7 @@ static int expand_linebuf(void)
 /*
  * Is a character ASCII?
  */
-public
+
 int is_ascii_char(LWCHAR ch)
 {
     return (ch <= 0x7F);
@@ -167,7 +167,7 @@ int is_ascii_char(LWCHAR ch)
 /*
  * Rewind the line buffer.
  */
-public
+
 void prewind(void)
 {
     curr = 0;
@@ -206,7 +206,7 @@ static void add_linebuf(char ch, char a, int w)
 /*
  * Insert the line number (of the given position) into the line buffer.
  */
-public
+
 void plinenum(POSITION pos)
 {
     LINENUM linenum = 0;
@@ -380,7 +380,7 @@ static void pshift(int shift)
 /*
  *
  */
-public
+
 void pshift_all(void)
 {
     pshift(column);
@@ -536,7 +536,7 @@ static int in_ansi_esc_seq(void)
 /*
  * Is a character the end of an ANSI escape sequence?
  */
-public
+
 int is_ansi_end(LWCHAR ch)
 {
     if (!is_ascii_char(ch))
@@ -547,7 +547,7 @@ int is_ansi_end(LWCHAR ch)
 /*
  * Can a char appear in an ANSI escape sequence, before the end char?
  */
-public
+
 int is_ansi_middle(LWCHAR ch)
 {
     if (!is_ascii_char(ch))
@@ -561,7 +561,7 @@ int is_ansi_middle(LWCHAR ch)
  * Skip past an ANSI escape sequence.
  * pp is initially positioned just after the CSI_START char.
  */
-public
+
 void skip_ansi(char** pp, const char* limit)
 {
     LWCHAR c;
@@ -740,7 +740,7 @@ static int flush_mbc_buf(POSITION pos)
  * Expand tabs into spaces, handle underlining, boldfacing, etc.
  * Returns 0 if ok, 1 if couldn't fit in buffer.
  */
-public
+
 int pappend(int c, POSITION pos)
 {
     int r;
@@ -949,7 +949,7 @@ static int do_append(LWCHAR ch, char* rep, POSITION pos)
 /*
  *
  */
-public
+
 int pflushmbc(void)
 {
     int r = 0;
@@ -978,7 +978,7 @@ static void add_attr_normal(void)
 /*
  * Terminate the line in the line buffer.
  */
-public
+
 void pdone(int endline, int chopped, int forw)
 {
     (void)pflushmbc();
@@ -1063,7 +1063,7 @@ void pdone(int endline, int chopped, int forw)
 /*
  *
  */
-public
+
 void set_status_col(int c)
 {
     set_linebuf(0, c, AT_NORMAL | AT_HILITE);
@@ -1074,7 +1074,7 @@ void set_status_col(int c)
  * Return the character as the function return value,
  * and the character attribute in *ap.
  */
-public
+
 int gline(int i, int* ap)
 {
     if (is_null_line) {
@@ -1101,7 +1101,7 @@ int gline(int i, int* ap)
 /*
  * Indicate that there is no current line.
  */
-public
+
 void null_line(void)
 {
     is_null_line = 1;
@@ -1113,7 +1113,7 @@ void null_line(void)
  * lines which are not split for screen width.
  * {{ This is supposed to be more efficient than forw_line(). }}
  */
-public
+
 POSITION forw_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
 {
     int n;
@@ -1154,7 +1154,7 @@ POSITION forw_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
  * Analogous to back_line(), but deals with "raw lines".
  * {{ This is supposed to be more efficient than back_line(). }}
  */
-public
+
 POSITION back_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
 {
     int n;
@@ -1216,7 +1216,7 @@ POSITION back_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
 /*
  * Find the shift necessary to show the end of the longest displayed line.
  */
-public
+
 int rrshift(void)
 {
     POSITION pos;

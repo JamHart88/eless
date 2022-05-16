@@ -126,7 +126,7 @@ static struct ifile * new_ifile( char *filename, struct ifile *prev)
 /*
  * Delete an existing ifile structure.
  */
-public void del_ifile(IFILE h)
+ void del_ifile(IFILE h)
 {
     struct ifile *p;
 
@@ -148,7 +148,7 @@ public void del_ifile(IFILE h)
 /*
  * Get the ifile after a given one in the list.
  */
-public IFILE next_ifile(IFILE h)
+ IFILE next_ifile(IFILE h)
 {
     struct ifile *p;
 
@@ -161,7 +161,7 @@ public IFILE next_ifile(IFILE h)
 /*
  * Get the ifile before a given one in the list.
  */
-public IFILE prev_ifile(IFILE h)
+ IFILE prev_ifile(IFILE h)
 {
     struct ifile *p;
 
@@ -174,7 +174,7 @@ public IFILE prev_ifile(IFILE h)
 /*
  * Return a different ifile from the given one.
  */
-public IFILE getoff_ifile(IFILE ifile)
+ IFILE getoff_ifile(IFILE ifile)
 {
     IFILE newifile;
     
@@ -188,7 +188,7 @@ public IFILE getoff_ifile(IFILE ifile)
 /*
  * Return the number of ifiles.
  */
-public int nifile(void)
+ int nifile(void)
 {
     return (ifiles);
 }
@@ -226,7 +226,7 @@ static struct ifile * find_ifile(char *filename)
  * If the filename has not been seen before,
  * insert the new ifile after "prev" in the list.
  */
-public IFILE get_ifile( char *filename, IFILE prev)
+ IFILE get_ifile( char *filename, IFILE prev)
 {
     struct ifile *p;
 
@@ -238,7 +238,7 @@ public IFILE get_ifile( char *filename, IFILE prev)
 /*
  * Get the filename associated with a ifile.
  */
-public char * get_filename(IFILE ifile)
+ char * get_filename(IFILE ifile)
 {
     if (ifile == NULL)
         return (NULL);
@@ -248,7 +248,7 @@ public char * get_filename(IFILE ifile)
 /*
  * Get the index of the file associated with a ifile.
  */
-public int get_index( IFILE ifile)
+ int get_index( IFILE ifile)
 {
     return (int_ifile(ifile)->h_index); 
 }
@@ -256,7 +256,7 @@ public int get_index( IFILE ifile)
 /*
  * Save the file position to be associated with a given file.
  */
-public void store_pos( IFILE ifile, struct scrpos *scrpos)
+ void store_pos( IFILE ifile, struct scrpos *scrpos)
 {
     int_ifile(ifile)->h_scrpos = *scrpos;
 }
@@ -265,7 +265,7 @@ public void store_pos( IFILE ifile, struct scrpos *scrpos)
  * Recall the file position associated with a file.
  * If no position has been associated with the file, return NULL_POSITION.
  */
-public void get_pos( IFILE ifile, struct scrpos *scrpos)
+ void get_pos( IFILE ifile, struct scrpos *scrpos)
 {
     *scrpos = int_ifile(ifile)->h_scrpos;
 }
@@ -273,7 +273,7 @@ public void get_pos( IFILE ifile, struct scrpos *scrpos)
 /*
  * Mark the ifile as "opened".
  */
-public void set_open(IFILE ifile)
+ void set_open(IFILE ifile)
 {
     int_ifile(ifile)->h_opened = 1;
 }
@@ -281,42 +281,42 @@ public void set_open(IFILE ifile)
 /*
  * Return whether the ifile has been opened previously.
  */
-public int opened(IFILE ifile)
+ int opened(IFILE ifile)
 {
     return (int_ifile(ifile)->h_opened);
 }
 
-public void hold_ifile(IFILE ifile, int incr)
+ void hold_ifile(IFILE ifile, int incr)
 {
     int_ifile(ifile)->h_hold += incr;
 }
 
-public int held_ifile(IFILE ifile)
+ int held_ifile(IFILE ifile)
 {
     return (int_ifile(ifile)->h_hold);
 }
 
-public void * get_filestate(IFILE ifile)
+ void * get_filestate(IFILE ifile)
 {
     return (int_ifile(ifile)->h_filestate);
 }
 
-public void set_filestate( IFILE ifile, void *filestate)
+ void set_filestate( IFILE ifile, void *filestate)
 {
     int_ifile(ifile)->h_filestate = filestate;
 }
 
-public void set_altpipe(IFILE ifile, void *p)
+ void set_altpipe(IFILE ifile, void *p)
 {
     int_ifile(ifile)->h_altpipe = p;
 }
 
-public void * get_altpipe(IFILE ifile)
+ void * get_altpipe(IFILE ifile)
 {
     return (int_ifile(ifile)->h_altpipe);
 }
 
-public void set_altfilename( IFILE ifile, char *altfilename)
+ void set_altfilename( IFILE ifile, char *altfilename)
 {
     struct ifile *p = int_ifile(ifile);
     if (p->h_altfilename != NULL)
@@ -324,7 +324,7 @@ public void set_altfilename( IFILE ifile, char *altfilename)
     p->h_altfilename = altfilename;
 }
 
-public char * get_altfilename( IFILE ifile)
+ char * get_altfilename( IFILE ifile)
 {
     return (int_ifile(ifile)->h_altfilename);
 }

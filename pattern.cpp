@@ -157,7 +157,7 @@ static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_p
 //     char *pattern;
 //     int search_type;
 //     PATTERN_TYPE *comp_pattern;
-public int compile_pattern(char *pattern, int search_type, PATTERN_TYPE *comp_pattern)
+ int compile_pattern(char *pattern, int search_type, PATTERN_TYPE *comp_pattern)
 {
     char *cvt_pattern;
     int result;
@@ -183,7 +183,7 @@ public int compile_pattern(char *pattern, int search_type, PATTERN_TYPE *comp_pa
 // public void
 // uncompile_pattern(pattern)
 //     PATTERN_TYPE *pattern;
-public void uncompile_pattern(PATTERN_TYPE *pattern)
+ void uncompile_pattern(PATTERN_TYPE *pattern)
 {
 #if HAVE_GNU_REGEX
     if (*pattern != NULL)
@@ -234,7 +234,7 @@ public void uncompile_pattern(PATTERN_TYPE *pattern)
 // public int
 // valid_pattern(pattern)
 //     char *pattern;
-public int valid_pattern(char *pattern)
+ int valid_pattern(char *pattern)
 {
     PATTERN_TYPE comp_pattern;
     int result;
@@ -255,7 +255,7 @@ public int valid_pattern(char *pattern)
 // public int
 // is_null_pattern(pattern)
 //     PATTERN_TYPE pattern;
-public int is_null_pattern(PATTERN_TYPE pattern)
+ int is_null_pattern(PATTERN_TYPE pattern)
 {
 #if HAVE_GNU_REGEX
     return (pattern == NULL);
@@ -343,7 +343,7 @@ static int match(char *pattern, int pattern_len, char *buf, int buf_len, char **
 //     char **ep;
 //     int notbol;
 //     int search_type;
-public int match_pattern(PATTERN_TYPE pattern, char *tpattern, char *line, int line_len, char **sp, char **ep, int notbol, int search_type)
+ int match_pattern(PATTERN_TYPE pattern, char *tpattern, char *line, int line_len, char **sp, char **ep, int notbol, int search_type)
 {
     int matched;
 
@@ -456,7 +456,7 @@ public int match_pattern(PATTERN_TYPE pattern, char *tpattern, char *line, int l
 // Converted from C to C++ - C below
 // public char *
 // pattern_lib_name(void)
-public char * pattern_lib_name(void)
+ char * pattern_lib_name(void)
 {
 #if HAVE_GNU_REGEX
     return ("GNU");

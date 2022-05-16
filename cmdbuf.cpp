@@ -63,8 +63,8 @@ static int cmd_left();
 static int cmd_right();
 
 #if SPACES_IN_FILENAMES
-public char openquote = '"';
-public char closequote = '"';
+ char openquote = '"';
+ char closequote = '"';
 #endif
 
 #if CMD_HISTORY
@@ -92,25 +92,25 @@ struct mlist
  */
 struct mlist mlist_search =  
     { &mlist_search,  &mlist_search,  &mlist_search,  NULL, 0 };
-public void *ml_search = (void *) &mlist_search;
+ void *ml_search = (void *) &mlist_search;
 
 struct mlist mlist_examine = 
     { &mlist_examine, &mlist_examine, &mlist_examine, NULL, 0 };
-public void *ml_examine = (void *) &mlist_examine;
+ void *ml_examine = (void *) &mlist_examine;
 
 #if SHELL_ESCAPE || PIPEC
 struct mlist mlist_shell =   
     { &mlist_shell,   &mlist_shell,   &mlist_shell,   NULL, 0 };
-public void *ml_shell = (void *) &mlist_shell;
+ void *ml_shell = (void *) &mlist_shell;
 #endif
 
 #else /* CMD_HISTORY */
 
 /* If CMD_HISTORY is off, these are just flags. */
-public void *ml_search = (void *)1;
-public void *ml_examine = (void *)2;
+ void *ml_search = (void *)1;
+ void *ml_examine = (void *)2;
 #if SHELL_ESCAPE || PIPEC
-public void *ml_shell = (void *)3;
+ void *ml_shell = (void *)3;
 #endif
 
 #endif /* CMD_HISTORY */
@@ -129,7 +129,7 @@ static int cmd_mbc_buf_index;
 /*
  * Reset command buffer (to empty).
  */
-public void cmd_reset(void)
+ void cmd_reset(void)
 {
     cp = cmdbuf;
     *cp = '\0';
@@ -143,7 +143,7 @@ public void cmd_reset(void)
 /*
  * Clear command line.
  */
-public void clear_cmd(void)
+ void clear_cmd(void)
 {
     cmd_col = prompt_col = 0;
     cmd_mbc_buf_len = 0;
@@ -153,7 +153,7 @@ public void clear_cmd(void)
 /*
  * Display a string, usually as a prompt for input into the command buffer.
  */
-public void cmd_putstr(const char *s)
+ void cmd_putstr(const char *s)
 {
     LWCHAR prev_ch = 0;
     LWCHAR ch;
@@ -180,7 +180,7 @@ public void cmd_putstr(const char *s)
 /*
  * How many characters are in the command buffer?
  */
-public int len_cmdbuf(void)
+ int len_cmdbuf(void)
 {
     char *s = cmdbuf;
     char *endline = s + strlen(s);
@@ -630,7 +630,7 @@ static int cmd_kill(void)
 /*
  * Select an mlist structure to be the current command history.
  */
-public void set_mlist(void *mlist, int cmdflags)
+ void set_mlist(void *mlist, int cmdflags)
 {
 #if CMD_HISTORY
     curr_mlist = (struct mlist *) mlist;
@@ -731,7 +731,7 @@ static void ml_unlink(struct mlist *ml)
 /*
  * Add a string to an mlist.
  */
-public void cmd_addhist(struct mlist *mlist,
+ void cmd_addhist(struct mlist *mlist,
     const char *cmd,
     int modified)
 {
@@ -787,7 +787,7 @@ public void cmd_addhist(struct mlist *mlist,
  * Accept the command in the command buffer.
  * Add it to the currently selected history list.
  */
-public void cmd_accept(void)
+ void cmd_accept(void)
 {
 #if CMD_HISTORY
     /*
@@ -1207,7 +1207,7 @@ fail:
  *    CC_QUIT      The char requests the command to be aborted.
  *    CC_ERROR     The char could not be accepted due to an error.
  */
-public int cmd_char(int c)
+ int cmd_char(int c)
 {
     int action;
     int len;
@@ -1295,7 +1295,7 @@ public int cmd_char(int c)
 /*
  * Return the number currently in the command buffer.
  */
-public LINENUM cmd_int(long *frac)
+ LINENUM cmd_int(long *frac)
 {
     char *p;
     LINENUM n = 0;
@@ -1315,7 +1315,7 @@ public LINENUM cmd_int(long *frac)
 /*
  * Return a pointer to the command buffer.
  */
-public char * get_cmdbuf(void)
+ char * get_cmdbuf(void)
 {
     return (cmdbuf);
 }
@@ -1324,7 +1324,7 @@ public char * get_cmdbuf(void)
 /*
  * Return the last (most recent) string in the current command history.
  */
-public char * cmd_lastpattern(void)
+ char * cmd_lastpattern(void)
 {
     if (curr_mlist == NULL)
         return (NULL);
@@ -1472,7 +1472,7 @@ static void addhist_init(void *unused, struct mlist *ml, char *string)
 /*
  * Initialize history from a .lesshist file.
  */
-public void init_cmdhist(void)
+ void init_cmdhist(void)
 {
 #if CMD_HISTORY
     read_cmdhist(&addhist_init, NULL, 0, 0);
@@ -1611,7 +1611,7 @@ static int histfile_modified(void)
 /*
  * Update the .lesshst file.
  */
-public void save_cmdhist(void)
+ void save_cmdhist(void)
 {
 #if CMD_HISTORY
     char *histname;

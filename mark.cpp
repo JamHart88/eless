@@ -53,7 +53,7 @@ struct mark {
 #define MOUSEMARK (NMARKS - 2)
 #define LASTMARK (NMARKS - 1)
 static struct mark marks[NMARKS];
-public
+
 int marks_modified = 0;
 
 /*
@@ -70,7 +70,7 @@ static void cmark(struct mark* m, IFILE ifile, POSITION pos, int ln)
 /*
  * Initialize the mark table to show no marks are set.
  */
-public
+
 void init_mark(void)
 {
     int i;
@@ -194,7 +194,7 @@ static struct mark* getmark(int c)
 /*
  * Is a mark letter invalid?
  */
-public
+
 int badmark(int c)
 {
     return (getmark(c) == NULL);
@@ -203,7 +203,7 @@ int badmark(int c)
 /*
  * Set a user-defined mark.
  */
-public
+
 void setmark(int c, int where)
 {
     struct mark* m;
@@ -224,7 +224,7 @@ void setmark(int c, int where)
 /*
  * Clear a user-defined mark.
  */
-public
+
 void clrmark(int c)
 {
     struct mark* m;
@@ -243,7 +243,7 @@ void clrmark(int c)
 /*
  * Set lmark (the mark named by the apostrophe).
  */
-public
+
 void lastmark(void)
 {
     struct scrpos scrpos;
@@ -259,7 +259,7 @@ void lastmark(void)
 /*
  * Go to a mark.
  */
-public
+
 void gomark(int c)
 {
     struct mark* m;
@@ -300,7 +300,7 @@ void gomark(int c)
  * is associated with, but this doesn't matter much,
  * because it's always the first non-blank line on the screen.
  */
-public
+
 POSITION markpos(int c)
 {
     struct mark* m;
@@ -319,7 +319,7 @@ POSITION markpos(int c)
 /*
  * Return the mark associated with a given position, if any.
  */
-public
+
 char posmark(POSITION pos)
 {
     int i;
@@ -340,7 +340,7 @@ char posmark(POSITION pos)
 /*
  * Clear the marks associated with a specified ifile.
  */
-public
+
 void unmark(IFILE ifile)
 {
     int i;
@@ -354,7 +354,7 @@ void unmark(IFILE ifile)
  * Check if any marks refer to a specified ifile vi m_filename
  * rather than m_ifile.
  */
-public
+
 void mark_check_ifile(IFILE ifile)
 {
     int i;
@@ -378,7 +378,7 @@ void mark_check_ifile(IFILE ifile)
 /*
  * Save marks to history file.
  */
-public
+
 void save_marks(FILE* fout, char* hdr)
 {
     int i;
@@ -423,7 +423,7 @@ void save_marks(FILE* fout, char* hdr)
     }
 }
 
-public
+
 void skip_whitespace(char*& line)
 {
     while (*line == ' ')
@@ -432,7 +432,7 @@ void skip_whitespace(char*& line)
 /*
  * Restore one mark from the history file.
  */
-public
+
 void restore_mark(char* line)
 {
     // Format is "m <markchar> <screenpos> <position> <file>"

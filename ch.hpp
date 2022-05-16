@@ -9,41 +9,41 @@
 
 #include "less.hpp"
 
-public
+
 void ch_ungetchar(int c);
-public
+
 void end_logfile(void);
-public
+
 void sync_logfile(void);
-public
+
 int ch_seek(POSITION pos);
-public
+
 int ch_end_seek(void);
-public
+
 int ch_end_buffer_seek(void);
-public
+
 int ch_beg_seek(void);
-public
+
 POSITION ch_length(void);
-public
+
 POSITION ch_tell(void);
-public
+
 int ch_forw_get(void);
-public
+
 int ch_back_get(void);
-public
+
 void ch_setbufspace(int bufspace);
-public
+
 void ch_flush(void);
-public
+
 int seekable(int f);
-public
+
 void ch_set_eof(void);
-public
+
 void ch_init(int f, int flags);
-public
+
 void ch_close(void);
-public
+
 int ch_getflags(void);
 
 

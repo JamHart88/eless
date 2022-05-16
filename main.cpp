@@ -33,44 +33,44 @@
 #include "ttyin.hpp"
 #include "utils.hpp"
 
-public
+
 char* every_first_cmd = NULL;
-public
+
 int new_file;
-public
+
 int is_tty;
-public
+
 IFILE curr_ifile = NULL_IFILE;
-public
+
 IFILE old_ifile = NULL_IFILE;
-public
+
 struct scrpos initial_scrpos;
 
-public
+
 POSITION start_attnpos = NULL_POSITION;
-public
+
 POSITION end_attnpos = NULL_POSITION;
-public
+
 int wscroll;
-public
+
 char* progname;
 
-public
+
 int dohelp;
 
 #if LOGFILE
-public
+
 int logfile = -1;
-public
+
 int force_logfile = FALSE;
-public
+
 char* namelogfile = NULL;
 #endif
 
 #if EDITOR
-public
+
 char* editor;
-public
+
 char* editproto;
 #endif
 
@@ -80,7 +80,7 @@ extern char* tagoption;
 extern int jump_sline;
 #endif
 
-public
+
 int one_screen;
 extern int less_is_more;
 extern int missing_cap;

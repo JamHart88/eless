@@ -36,7 +36,7 @@ extern IFILE curr_ifile;
  * Pass the specified command to a shell to be executed.
  * Like plain "system()", but handles resetting terminal modes, etc.
  */
-public
+
 void lsystem(char* cmd, char* donemsg)
 {
     int inp;
@@ -164,7 +164,7 @@ void lsystem(char* cmd, char* donemsg)
  * If the mark is on the current screen, or if the mark is ".",
  * the whole current screen is piped.
  */
-public
+
 int pipe_mark(int c, char* cmd)
 {
     POSITION mpos, tpos, bpos;
@@ -196,7 +196,7 @@ int pipe_mark(int c, char* cmd)
  * Create a pipe to the given shell command.
  * Feed it the file contents between the positions spos and epos.
  */
-public
+
 int pipe_data(char* cmd, POSITION spos, POSITION epos)
 {
     FILE* f;

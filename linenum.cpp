@@ -79,7 +79,7 @@ extern int screen_trashed;
 /*
  * Initialize the line number structures.
  */
-public void
+ void
 clr_linenum(void)
 {
     struct linenum_info *p;
@@ -125,7 +125,7 @@ static void calcgap(struct linenum_info *p)
  * The specified position (pos) should be the file position of the
  * FIRST character in the specified line.
  */
-public void add_lnum(LINENUM linenum, POSITION pos)
+ void add_lnum(LINENUM linenum, POSITION pos)
 {
     struct linenum_info *p;
     struct linenum_info *newLineNum;
@@ -255,7 +255,7 @@ static void abort_long(void)
  * Find the line number associated with a given position.
  * Return 0 if we can't figure it out.
  */
-public LINENUM find_linenum(POSITION pos)
+ LINENUM find_linenum(POSITION pos)
 {
     struct linenum_info *p;
     LINENUM linenum;
@@ -366,7 +366,7 @@ public LINENUM find_linenum(POSITION pos)
  * Find the position of a given line number.
  * Return NULL_POSITION if we can't figure it out.
  */
-public POSITION find_pos(LINENUM linenum)
+ POSITION find_pos(LINENUM linenum)
 {
     struct linenum_info *p;
     POSITION cpos;
@@ -437,7 +437,7 @@ public POSITION find_pos(LINENUM linenum)
  * The argument "where" tells which line is to be considered
  * the "current" line (e.g. TOP, BOTTOM, MIDDLE, etc).
  */
-public LINENUM currline(int where)
+ LINENUM currline(int where)
 {
     POSITION pos;
     POSITION len;

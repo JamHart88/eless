@@ -8,21 +8,21 @@
 
 #include "less.hpp"
 
-public char * shell_unquote (char *str);
-public char * get_meta_escape (void);
-public char * shell_quote (char *s);
-public char * homefile (char *filename);
-public char * fexpand (char *s);
-public char * fcomplete (char *s);
-public int bin_file (int f);
-public char * lglob (char *filename);
-public char * lrealpath (char *path);
-public char * open_altfile (char *filename, int *pf, void **pfd);
-public void close_altfile (char *altfilename, char *filename);
-public int is_dir (char *filename);
-public char * bad_file (char *filename);
-public POSITION filesize (int f);
-public char * shell_coption (void);
-public char * last_component (char *name);
+ char * shell_unquote (char *str);
+ char * get_meta_escape (void);
+ char * shell_quote (char *s);
+ char * homefile (char *filename);
+ char * fexpand (char *s);
+ char * fcomplete (char *s);
+ int bin_file (int f);
+ char * lglob (char *filename);
+ char * lrealpath (char *path);
+ char * open_altfile (char *filename, int *pf, void **pfd);
+ void close_altfile (char *altfilename, char *filename);
+ int is_dir (char *filename);
+ char * bad_file (char *filename);
+ POSITION filesize (int f);
+ char * shell_coption (void);
+ char * last_component (char *name);
 
 #endif

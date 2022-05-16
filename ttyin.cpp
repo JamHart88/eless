@@ -17,7 +17,7 @@
 #include "os.hpp"
 #include "utils.hpp"
 
-public int tty;
+ int tty;
 extern int sigs;
 extern int utf_mode;
 extern int wheel_lines;
@@ -25,7 +25,7 @@ extern int wheel_lines;
 /*
  * Open keyboard for input.
  */
-public void
+ void
 open_getchr(void)
 {
 
@@ -44,7 +44,7 @@ open_getchr(void)
 /*
  * Close the keyboard.
  */
-public void
+ void
 close_getchr(void)
 {
 }
@@ -53,7 +53,7 @@ close_getchr(void)
 /*
  * Get the number of lines to scroll when mouse wheel is moved.
  */
-public int
+ int
 default_wheel_lines(void)
 {
     int lines = 1;
@@ -63,7 +63,7 @@ default_wheel_lines(void)
 /*
  * Get a character from the keyboard.
  */
-public int
+ int
 getchr(void)
 {
     char c;

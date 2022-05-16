@@ -30,7 +30,7 @@
 /*
  * "sigs" contains bits indicating signals which need to be processed.
  */
-public
+
 int sigs;
 
 extern int sc_width, sc_height;
@@ -98,7 +98,7 @@ static RETSIGTYPE stop(int type)
 // public RETSIGTYPE
 // winch(type)
 //     int type;
-public
+
 RETSIGTYPE winch(int type)
 {
     LSIGNAL(SIG_LESSWINDOW, winch);
@@ -126,7 +126,7 @@ static RETSIGTYPE terminate(int type)
 // public void
 // init_signals(on)
 //     int on;
-public
+
 void init_signals(int on)
 {
     if (on) {
@@ -180,7 +180,7 @@ void init_signals(int on)
 // Converted from C to C++ - C below
 // public void
 // psignals(void)
-public
+
 void psignals(void)
 {
     int tsignals;

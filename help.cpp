@@ -2,7 +2,7 @@
 #include "less.hpp"
 
 // TODO: Look at how to access this correctly in C++11
-public
+
 char helpdata[] = {
     '\n', ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',  ' ',
     ' ',  'S',  '\b', 'S',  'U',  '\b', 'U',  'M',  '\b', 'M',  'M',  '\b', 'M',  'A',  '\b', 'A',  'R',  '\b', 'R',
@@ -625,5 +625,5 @@ char helpdata[] = {
     'm',  'p',  'l',  'e',  't',  'e',  ' ',  'f',  'i',  'l',  'e',  'n',  'a',  'm',  'e',  ',',  ' ',  'l',  'i',
     's',  't',  ' ',  'a',  'l',  'l',  '.',  '\n', '\n', '\n', 0};
 
-public
+
 int size_helpdata = sizeof(helpdata) - 1;

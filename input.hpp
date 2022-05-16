@@ -13,11 +13,11 @@
 
 #include "less.hpp"
 
-public
+
 POSITION forw_line(POSITION curr_pos);
-public
+
 POSITION back_line(POSITION curr_pos);
-public
+
 void set_attnpos(POSITION pos);
 
 #endif

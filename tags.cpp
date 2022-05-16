@@ -27,8 +27,8 @@
 
 #if TAGS
 
-public char ztags[] = "tags";
-public char *tags = ztags;
+ char ztags[] = "tags";
+ char *tags = ztags;
 
 static int total;
 static int curseq;
@@ -106,7 +106,7 @@ static struct tag *curtag;
 // Converted from C to C++ - C below
 // public void
 // cleantags(void)
-public void cleantags(void)
+ void cleantags(void)
 {
     struct tag *tp;
 
@@ -164,7 +164,7 @@ static struct tag * maketagent(char *name, char *file, LINENUM linenum, char *pa
 // Converted from C to C++ - C below
 // public int
 // gettagtype(void)
-public int gettagtype(void)
+ int gettagtype(void)
 {
     int f;
 
@@ -199,7 +199,7 @@ public int gettagtype(void)
 // public void
 // findtag(tag)
 //     char *tag;
-public void findtag(char *tag)
+ void findtag(char *tag)
 {
     int type = gettagtype();
     enum tag_result result;
@@ -232,7 +232,7 @@ public void findtag(char *tag)
 // Converted from C to C++ - C below
 // public POSITION
 // tagsearch(void)
-public POSITION tagsearch(void)
+ POSITION tagsearch(void)
 {
     if (curtag == NULL)
         return (NULL_POSITION);  /* No gtags loaded! */
@@ -250,7 +250,7 @@ public POSITION tagsearch(void)
 // public char *
 // nexttag(n)
 //     int n;
-public char * nexttag(int n)
+ char * nexttag(int n)
 {
     char *tagfile = (char *) NULL;
 
@@ -267,7 +267,7 @@ public char * nexttag(int n)
 // public char *
 // prevtag(n)
 //     int n;
-public char * prevtag(int n)
+ char * prevtag(int n)
 {
     char *tagfile = (char *) NULL;
 
@@ -283,7 +283,7 @@ public char * prevtag(int n)
 // Converted from C to C++ - C below
 // public int
 // ntags(void)
-public int ntags(void)
+ int ntags(void)
 {
     return total;
 }
@@ -295,7 +295,7 @@ public int ntags(void)
 // Converted from C to C++ - C below
 // public int
 // curr_tag(void)
-public int curr_tag(void)
+ int curr_tag(void)
 {
     return curseq;
 }
@@ -427,7 +427,7 @@ static enum tag_result findctag(char *tag)
 // Converted from C to C++ - C below
 // public int
 // edit_tagfile(void)
-public int edit_tagfile(void)
+ int edit_tagfile(void)
 {
     if (curtag == NULL)
         return (1);

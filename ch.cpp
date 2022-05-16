@@ -31,7 +31,7 @@ extern ino_t curr_ino;
 
 typedef POSITION BLOCKNUM;
 
-public
+
 int ignore_eoi;
 
 /*
@@ -350,7 +350,7 @@ found:
  * ch_ungetchar is a rather kludgy and limited way to push
  * a single char onto an input file descriptor.
  */
-public
+
 void ch_ungetchar(int c)
 {
     if (c != -1 && ch_ungotchar != -1)
@@ -363,7 +363,7 @@ void ch_ungetchar(int c)
  * Close the logfile.
  * If we haven't read all of standard input into it, do that now.
  */
-public
+
 void end_logfile()
 {
     static int tried = FALSE;
@@ -388,7 +388,7 @@ void end_logfile()
  * Write all the existing buffered data to the log file.
  */
 
-public
+
 void sync_logfile()
 {
     struct buf* bp;
@@ -441,7 +441,7 @@ static int buffered(BLOCKNUM block)
  * Seek to a specified position in the file.
  * Return 0 if successful, non-zero if can't seek there.
  */
-public
+
 int ch_seek(POSITION pos)
 {
     BLOCKNUM new_block;
@@ -477,7 +477,7 @@ int ch_seek(POSITION pos)
 /*
  * Seek to the end of the file.
  */
-public
+
 int ch_end_seek()
 {
     POSITION len;
@@ -504,7 +504,7 @@ int ch_end_seek()
 /*
  * Seek to the last position in the file that is currently buffered.
  */
-public
+
 int ch_end_buffer_seek()
 {
     struct buf* bp;
@@ -532,7 +532,7 @@ int ch_end_buffer_seek()
  * We may not be able to seek there if input is a pipe and the
  * beginning of the pipe is no longer buffered.
  */
-public
+
 int ch_beg_seek()
 {
     struct bufnode* bn;
@@ -564,7 +564,7 @@ int ch_beg_seek()
 /*
  * Return the length of the file, if known.
  */
-public
+
 POSITION
 ch_length()
 {
@@ -582,7 +582,7 @@ ch_length()
 /*
  * Return the current position in the file.
  */
-public
+
 POSITION
 ch_tell()
 {
@@ -594,7 +594,7 @@ ch_tell()
 /*
  * Get the current char and post-increment the read pointer.
  */
-public
+
 int ch_forw_get()
 {
     int c;
@@ -616,7 +616,7 @@ int ch_forw_get()
 /*
  * Pre-decrement the read pointer and get the new current char.
  */
-public
+
 int ch_back_get()
 {
     if (thisfile == NULL)
@@ -638,7 +638,7 @@ int ch_back_get()
  * Set max amount of buffer space.
  * bufspace is in units of 1024 bytes.  -1 mean no limit.
  */
-public
+
 void ch_setbufspace(int bufspace)
 {
     if (bufspace < 0)
@@ -653,7 +653,7 @@ void ch_setbufspace(int bufspace)
 /*
  * Flush (discard) any saved file state, including buffer contents.
  */
-public
+
 void ch_flush()
 {
     struct bufnode* bn;
@@ -770,20 +770,20 @@ static void ch_delbufs()
 /*
  * Is it possible to seek on a file descriptor?
  */
-public
+
 int seekable(int f) { return (lseek(f, (off_t)1, SEEK_SET) != BAD_LSEEK); }
 
 /*
  * Force EOF to be at the current read position.
  * This is used after an ignore_eof read, during which the EOF may change.
  */
-public
+
 void ch_set_eof() { ch_fsize = ch_fpos; }
 
 /*
  * Initialize file state for a new file.
  */
-public
+
 void ch_init(int f, int flags)
 {
     /*
@@ -820,7 +820,7 @@ void ch_init(int f, int flags)
 /*
  * Close a filestate.
  */
-public
+
 void ch_close()
 {
     int keepstate = FALSE;
@@ -860,7 +860,7 @@ void ch_close()
 /*
  * Return ch_flags for the current file.
  */
-public
+
 int ch_getflags()
 {
     if (thisfile == NULL)

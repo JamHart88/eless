@@ -26,15 +26,15 @@
 #include "search.hpp"
 #include "utils.hpp"
 
-public
+
 int screen_trashed;
-public
+
 int squished;
-public
+
 int no_back_scroll = 0;
-public
+
 int forw_prompt;
-public
+
 int same_pos_bell = 1;
 
 extern int sigs;
@@ -71,7 +71,7 @@ static void eof_bell(void)
 /*
  * Check to see if the end of file is currently displayed.
  */
-public
+
 int eof_displayed(void)
 {
     POSITION pos;
@@ -98,7 +98,7 @@ int eof_displayed(void)
 /*
  * Check to see if the entire file is currently displayed.
  */
-public
+
 int entire_file_displayed(void)
 {
     POSITION pos;
@@ -118,7 +118,7 @@ int entire_file_displayed(void)
  * of the screen; this can happen when we display a short file
  * for the first time.
  */
-public
+
 void squish_check(void)
 {
     if (!squished)
@@ -136,7 +136,7 @@ void squish_check(void)
  *   real line.  If nblank > 0, the pos must be NULL_POSITION.
  *   The first real line after the blanks will start at ch_zero().
  */
-public
+
 void forw(int n, POSITION pos,
     int force,
     int only_last,
@@ -286,7 +286,7 @@ void forw(int n, POSITION pos,
 /*
  * Display n lines, scrolling backward.
  */
-public
+
 void back(int n, POSITION pos, int force, int only_last)
 {
     int nlines = 0;
@@ -341,7 +341,7 @@ void back(int n, POSITION pos, int force, int only_last)
  * Display n more lines, forward.
  * Start just after the line currently displayed at the bottom of the screen.
  */
-public
+
 void forward(int n, int force, int only_last)
 {
     POSITION pos;
@@ -384,7 +384,7 @@ void forward(int n, int force, int only_last)
  * Display n more lines, backward.
  * Start just before the line currently displayed at the top of the screen.
  */
-public
+
 void backward(int n, int force, int only_last)
 {
     POSITION pos;
@@ -403,7 +403,7 @@ void backward(int n, int force, int only_last)
  * back_scroll, because the default case depends on sc_height and
  * top_scroll, as well as back_scroll.
  */
-public
+
 int get_back_scroll(void)
 {
     if (no_back_scroll)
@@ -418,7 +418,7 @@ int get_back_scroll(void)
 /*
  * Will the entire file fit on one screen?
  */
-public
+
 int get_one_screen(void)
 {
     int nlines;

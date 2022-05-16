@@ -22,7 +22,7 @@ extern int utf_mode;
 /*
  * Get the length of a buffer needed to convert a string.
  */
-public int cvt_length(int len, int ops)
+ int cvt_length(int len, int ops)
 {
     if (utf_mode)
         /*
@@ -37,7 +37,7 @@ public int cvt_length(int len, int ops)
 /*
  * Allocate a chpos array for use by cvt_text.
  */
-public int * cvt_alloc_chpos(int len)
+ int * cvt_alloc_chpos(int len)
 {
     int i;
     int *chpos = (int *) utils::ecalloc(sizeof(int), len);
@@ -52,7 +52,7 @@ public int * cvt_alloc_chpos(int len)
  * Returns converted text in odst.  The original offset of each
  * odst character (when it was in osrc) is returned in the chpos array.
  */
-public void cvt_text(char *odst,
+ void cvt_text(char *odst,
     char *osrc,
     int *chpos,
     int *lenp,

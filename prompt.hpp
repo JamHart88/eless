@@ -12,10 +12,10 @@
 
 #include "less.hpp"
 
-public void init_prompt (void);
-public char * pr_expand (const char *proto, int maxwidth);
-public char * eq_message (void);
-public char * pr_string (void);
-public char * wait_message (void);
+ void init_prompt (void);
+ char * pr_expand (const char *proto, int maxwidth);
+ char * eq_message (void);
+ char * pr_string (void);
+ char * wait_message (void);
 
 #endif

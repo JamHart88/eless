@@ -161,7 +161,7 @@ static void start_mca(int action, const char* prompt, void* mlist, int cmdflags)
     set_mlist(mlist, cmdflags);
 }
 
-public
+
 int in_mca(void)
 {
     return (mca != 0 && mca != A_PREFIX);
@@ -748,7 +748,7 @@ static void prompt(void)
 /*
  * Display the less version message.
  */
-public
+
 void dispversion(void)
 {
     PARG parg;
@@ -843,7 +843,7 @@ static LWCHAR getcc_repl(char const* orig, char const* repl, LWCHAR (*gr_getc)(v
 /*
  * Get command character.
  */
-public
+
 int getcc(void)
 {
     /* Replace kent (keypad Enter) with a newline. */
@@ -854,7 +854,7 @@ int getcc(void)
  * "Unget" a command character.
  * The next getcc() will return this character.
  */
-public
+
 void ungetcc(LWCHAR c)
 {
     struct ungot* ug = (struct ungot*)utils::ecalloc(1, sizeof(struct ungot));
@@ -868,7 +868,7 @@ void ungetcc(LWCHAR c)
  * Unget a whole string of command characters.
  * The next sequence of getcc()'s will return this string.
  */
-public
+
 void ungetsc(char* s)
 {
     char* p;
@@ -880,7 +880,7 @@ void ungetsc(char* s)
 /*
  * Peek the next command character, without consuming it.
  */
-public
+
 LWCHAR peekcc(void)
 {
     LWCHAR c = getcc();
@@ -1017,7 +1017,7 @@ static int forw_loop(int until_hilite)
  * Main command processor.
  * Accept and execute commands until a quit command.
  */
-public
+
 void commands(void)
 {
     int c;

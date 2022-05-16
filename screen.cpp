@@ -93,37 +93,37 @@ static char *sc_pad, /* Pad string */
 
 static int init_done = 0;
 
-public
+
 int auto_wrap; /* Terminal does \r\n when write past margin */
-public
+
 int ignaw; /* Terminal ignores \n immediately after wrap */
-public
+
 int erase_char; /* The user's erase char */
-public
+
 int erase2_char; /* The user's other erase char */
-public
+
 int kill_char; /* The user's line-kill char */
-public
+
 int werase_char; /* The user's word-erase char */
-public
+
 int sc_width, sc_height; /* Height & width of screen */
-public
+
 int bo_s_width, bo_e_width; /* Printing width of boldface seq */
-public
+
 int ul_s_width, ul_e_width; /* Printing width of underline seq */
-public
+
 int so_s_width, so_e_width; /* Printing width of standout seq */
-public
+
 int bl_s_width, bl_e_width; /* Printing width of blink seq */
-public
+
 int above_mem, below_mem; /* Memory retained above/below screen */
-public
+
 int can_goto_line; /* Can move cursor to any line */
-public
+
 int clear_bg; /* Clear fills with background color */
-public
+
 int missing_cap = 0; /* Some capability is missing */
-public
+
 char* kent = NULL; /* Keypad ENTER sequence */
 
 static int attrmode = AT_NORMAL;
@@ -176,7 +176,7 @@ extern char* tgoto();
  *       etc. are NOT disabled.
  * It doesn't matter whether an input \n is mapped to \r, or vice versa.
  */
-public
+
 void raw_mode(int on)
 {
     static int curr_on = 0;
@@ -568,7 +568,7 @@ static char* ltgetstr(char* capname, char** pp)
 /*
  * Get size of the output screen.
  */
-public
+
 void scrsize(void)
 {
     char* s;
@@ -627,7 +627,7 @@ void scrsize(void)
 /*
  * Return the characters actually input by a "special" key.
  */
-public
+
 char* special_key_str(int key)
 {
     static char tbuf[40];
@@ -683,7 +683,7 @@ char* special_key_str(int key)
 /*
  * Get terminal capabilities via termcap.
  */
-public
+
 void get_term(void)
 {
     termcap_debug = !isnullenv(lgetenv((char*)"LESS_TERMCAP_DEBUG"));
@@ -968,7 +968,7 @@ static void tmodes(char* incap, char* outcap, char** instr, char** outstr,
  * Configure the termimal so mouse clicks and wheel moves
  * produce input to less.
  */
-public
+
 void init_mouse(void)
 {
     if (!mousecap)
@@ -980,7 +980,7 @@ void init_mouse(void)
  * Configure the terminal so mouse clicks and wheel moves
  * are handled by the system (so text can be selected, etc).
  */
-public
+
 void deinit_mouse(void)
 {
     if (!mousecap)
@@ -991,7 +991,7 @@ void deinit_mouse(void)
 /*
  * Initialize terminal
  */
-public
+
 void init(void)
 {
     if (!(quit_if_one_screen && one_screen)) {
@@ -1020,7 +1020,7 @@ void init(void)
 /*
  * Deinitialize terminal
  */
-public
+
 void deinit(void)
 {
     if (!init_done)
@@ -1038,20 +1038,20 @@ void deinit(void)
 /*
  * Home cursor (move to upper left corner of screen).
  */
-public
+
 void home(void) { tputs(sc_home, 1, putchr); }
 
 /*
  * Add a blank line (called with cursor at home).
  * Should scroll the display down.
  */
-public
+
 void add_line(void) { tputs(sc_addline, sc_height, putchr); }
 
 /*
  * Move cursor to lower left corner of screen.
  */
-public
+
 void lower_left(void)
 {
     if (!init_done)
@@ -1062,26 +1062,26 @@ void lower_left(void)
 /*
  * Move cursor to left position of current line.
  */
-public
+
 void line_left(void) { tputs(sc_return, 1, putchr); }
 
 /*
  * Check if the console size has changed and reset internals
  * (in lieu of SIGWINCH for WIN32).
  */
-public
+
 void check_winch(void) { }
 
 /*
  * Goto a specific line on the screen.
  */
-public
+
 void goto_line(int sindex) { tputs(tgoto(sc_move, 0, sindex), 1, putchr); }
 
 /*
  * Output the "visual bell", if there is one.
  */
-public
+
 void vbell(void)
 {
     if (*sc_visual_bell == '\0')
@@ -1097,7 +1097,7 @@ static void beep(void) { putchr(CONTROL('G')); }
 /*
  * Ring the terminal bell.
  */
-public
+
 void bell(void)
 {
     if (quiet == VERY_QUIET)
@@ -1109,14 +1109,14 @@ void bell(void)
 /*
  * Clear the screen.
  */
-public
+
 void clear(void) { tputs(sc_clear, sc_height, putchr); }
 
 /*
  * Clear from the cursor to the end of the cursor's line.
  * {{ This must not move the cursor. }}
  */
-public
+
 void clear_eol(void) { tputs(sc_eol_clear, 1, putchr); }
 
 /*
@@ -1135,7 +1135,7 @@ static void clear_eol_bot(void)
  * Clear the bottom line of the display.
  * Leave the cursor at the beginning of the bottom line.
  */
-public
+
 void clear_bot(void)
 {
     /*
@@ -1159,7 +1159,7 @@ void clear_bot(void)
     }
 }
 
-public
+
 void at_enter(int attr)
 {
     attr = apply_at_specials(attr);
@@ -1176,7 +1176,7 @@ void at_enter(int attr)
     attrmode = attr;
 }
 
-public
+
 void at_exit(void)
 {
     /* Undo things in the reverse order we did them.  */
@@ -1191,7 +1191,7 @@ void at_exit(void)
     attrmode = AT_NORMAL;
 }
 
-public
+
 void at_switch(int attr)
 {
     int new_attrmode = apply_at_specials(attr);
@@ -1203,7 +1203,7 @@ void at_switch(int attr)
     }
 }
 
-public
+
 int is_at_equiv(int attr1, int attr2)
 {
     attr1 = apply_at_specials(attr1);
@@ -1212,7 +1212,7 @@ int is_at_equiv(int attr1, int attr2)
     return (attr1 == attr2);
 }
 
-public
+
 int apply_at_specials(int attr)
 {
     if (attr & AT_BINARY)
@@ -1227,7 +1227,7 @@ int apply_at_specials(int attr)
 /*
  * Output a plain backspace, without erasing the previous char.
  */
-public
+
 void putbs(void)
 {
     if (termcap_debug)

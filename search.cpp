@@ -231,7 +231,7 @@ static void init_pattern(struct pattern_info* info)
 // Converted from C to C++ - C below
 // public void
 // init_search(void)
-public
+
 void init_search(void)
 {
     init_pattern(&search_info);
@@ -291,7 +291,7 @@ static int prev_pattern(struct pattern_info* info)
 // public void
 // repaint_hilite(on)
 //     int on;
-public
+
 void repaint_hilite(int on)
 {
     int sindex;
@@ -333,7 +333,7 @@ void repaint_hilite(int on)
 // Converted from C to C++ - C below
 // public void
 // clear_attn(void)
-public
+
 void clear_attn(void)
 {
     int sindex;
@@ -380,7 +380,7 @@ void clear_attn(void)
 // Converted from C to C++ - C below
 // public void
 // undo_search(void)
-public
+
 void undo_search(void)
 {
     if (!prev_pattern(&search_info)) {
@@ -406,7 +406,7 @@ void undo_search(void)
 // public void
 // clr_hlist(anchor)
 //     struct hilite_tree *anchor;
-public
+
 void clr_hlist(struct hilite_tree* anchor)
 {
     struct hilite_storage* hls;
@@ -430,7 +430,7 @@ void clr_hlist(struct hilite_tree* anchor)
 // Converted from C to C++ - C below
 // public void
 // clr_hilite(void)
-public
+
 void clr_hilite(void)
 {
     clr_hlist(&hilite_anchor);
@@ -440,7 +440,7 @@ void clr_hilite(void)
 // Converted from C to C++ - C below
 // public void
 // clr_filter(void)
-public
+
 void clr_filter(void)
 {
     clr_hlist(&filter_anchor);
@@ -568,7 +568,7 @@ static int is_hilited_range(POSITION pos, POSITION epos)
 // public int
 // is_filtered(pos)
 //     POSITION pos;
-public
+
 int is_filtered(POSITION pos)
 {
     struct hilite_node* n;
@@ -589,7 +589,7 @@ int is_filtered(POSITION pos)
 // public POSITION
 // next_unfiltered(pos)
 //     POSITION pos;
-public
+
 POSITION next_unfiltered(POSITION pos)
 {
     struct hilite_node* n;
@@ -614,7 +614,7 @@ POSITION next_unfiltered(POSITION pos)
 // public POSITION
 // prev_unfiltered(pos)
 //     POSITION pos;
-public
+
 POSITION prev_unfiltered(POSITION pos)
 {
     struct hilite_node* n;
@@ -645,7 +645,7 @@ POSITION prev_unfiltered(POSITION pos)
 //     POSITION epos;
 //     int nohide;
 //     int *p_matches;
-public
+
 int is_hilited(POSITION pos, POSITION epos, int nohide, int* p_matches)
 {
     int match;
@@ -1085,7 +1085,7 @@ static void hilite_screen(void)
 // Converted from C to C++ - C below
 // public void
 // chg_hilite(void)
-public
+
 void chg_hilite(void)
 {
     /*
@@ -1402,7 +1402,7 @@ static int hist_pattern(int search_type)
 // Converted from C to C++ - C below
 // public void
 // chg_caseless(void)
-public
+
 void chg_caseless(void)
 {
     if (!is_ucase_pattern)
@@ -1437,7 +1437,7 @@ void chg_caseless(void)
 //     int search_type;
 //     char *pattern;
 //     int n;
-public
+
 int search(int search_type, char* pattern, int n)
 {
     POSITION pos;
@@ -1566,7 +1566,7 @@ int search(int search_type, char* pattern, int n)
 //     POSITION spos;
 //     POSITION epos;
 //     int maxlines;
-public
+
 void prep_hilite(POSITION spos, POSITION epos, int maxlines)
 {
     POSITION nprep_startpos = prep_startpos;
@@ -1724,7 +1724,7 @@ void prep_hilite(POSITION spos, POSITION epos, int maxlines)
 // set_filter_pattern(pattern, search_type)
 //     char *pattern;
 //     int search_type;
-public
+
 void set_filter_pattern(char* pattern, int search_type)
 {
     clr_filter();
@@ -1742,7 +1742,7 @@ void set_filter_pattern(char* pattern, int search_type)
 // Converted from C to C++ - C below
 // public int
 // is_filtering(void)
-public
+
 int is_filtering(void)
 {
     if (ch_getflags() & CH_HELPFILE)
@@ -1756,7 +1756,7 @@ int is_filtering(void)
  * This function is called by the V8 regcomp to report
  * errors in regular expressions.
  */
-public
+
 int reg_show_error = 1;
 
 void
@@ -1765,7 +1765,7 @@ void
 // Converted from C to C++ - C below
 // public int
 // is_filtering(void)
-public
+
 int is_filtering(void)
 {
     PARG parg;

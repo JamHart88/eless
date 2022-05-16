@@ -19,13 +19,13 @@
 #include "screen.hpp"
 #include "ttyin.hpp"
 
-public
+
 int errmsgs; /* Count of messages displayed by error() */
-public
+
 int need_clr;
-public
+
 int final_attr;
-public
+
 int at_prompt;
 
 extern int sigs;
@@ -43,7 +43,7 @@ extern int oldbot;
 // Converted from C to C++ - C below
 // public void
 // put_line(void)
-public
+
 void put_line(void)
 {
     int c;
@@ -95,7 +95,7 @@ static char* ob = obuf;
 // Converted from C to C++ - C below
 // public void
 // flush(void)
-public
+
 void flush(void)
 {
     int n;
@@ -119,7 +119,7 @@ void flush(void)
 // public int
 // putchr(c)
 //     int c;
-public
+
 int putchr(int c)
 {
     if (need_clr) {
@@ -145,7 +145,7 @@ int putchr(int c)
 // public void
 // putstr(s)
 //     const char *s;
-public
+
 void putstr(const char* s)
 {
     while (*s != '\0')
@@ -264,7 +264,7 @@ static int less_printf(char* fmt, PARG* parg)
 // Converted from C to C++ - C below
 // public void
 // get_return(void)
-public
+
 void get_return(void)
 {
     int c;
@@ -289,7 +289,7 @@ void get_return(void)
 // error(fmt, parg)
 //     char *fmt;
 //     PARG *parg;
-public
+
 void error(char* fmt, PARG* parg)
 {
     int col = 0;
@@ -346,7 +346,7 @@ static char intr_to_abort[] = "... (interrupt to abort)";
 // ierror(fmt, parg)
 //     char *fmt;
 //     PARG *parg;
-public
+
 void ierror(char* fmt, PARG* parg)
 {
     at_exit();
@@ -369,7 +369,7 @@ void ierror(char* fmt, PARG* parg)
 // query(fmt, parg)
 //     char *fmt;
 //     PARG *parg;
-public
+
 int query(char* fmt, PARG* parg)
 {
     int c;

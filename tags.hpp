@@ -7,14 +7,14 @@
 
 #include "less.hpp"
 
-public void cleantags (void);
-public int gettagtype (void);
-public void findtag (char *tag);
-public POSITION tagsearch (void);
-public char * nexttag (int n);
-public char * prevtag (int n);
-public int ntags (void);
-public int curr_tag (void);
-public int edit_tagfile (void);
+ void cleantags (void);
+ int gettagtype (void);
+ void findtag (char *tag);
+ POSITION tagsearch (void);
+ char * nexttag (int n);
+ char * prevtag (int n);
+ int ntags (void);
+ int curr_tag (void);
+ int edit_tagfile (void);
 
 #endif

@@ -11,27 +11,27 @@
 
 #include "less.hpp"
 
-public
+
 char *propt(int c);
-public
+
 void scan_option(char *s);
-public
+
 void toggle_option(struct loption *o, int lower, char *s, int how_toggle);
-public
+
 int opt_has_param(struct loption *o);
-public
+
 char *opt_prompt(struct loption *o);
-public
+
 char *opt_toggle_disallowed(int c);
-public
+
 int isoptpending(void);
-public
+
 void nopendopt(void);
-public
+
 int getnum(char **sp, char *printopt, int *errp);
-public
+
 long getfraction(char **sp, char *printopt, int *errp);
-public
+
 int get_quit_at_eof(void);
 
 #define END_OPTION_STRING ('$')

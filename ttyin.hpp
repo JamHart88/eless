@@ -7,9 +7,9 @@
 
 #include "less.hpp"
 
-public void open_getchr (void);
-public void close_getchr (void);
-public int default_wheel_lines (void);
-public int getchr (void);
+ void open_getchr (void);
+ void close_getchr (void);
+ int default_wheel_lines (void);
+ int getchr (void);
 
 #endif

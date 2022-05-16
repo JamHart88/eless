@@ -304,7 +304,7 @@ static void expand_cmd_table(struct tablelist* tlist)
 /*
  * Expand special key abbreviations in all command tables.
  */
-public
+
 void expand_cmd_tables(void)
 {
     expand_cmd_table(list_fcmd_tables);
@@ -316,7 +316,7 @@ void expand_cmd_tables(void)
 /*
  * Initialize the command lists.
  */
-public
+
 void init_cmds(void)
 {
     /*
@@ -369,7 +369,7 @@ static int add_cmd_table(struct tablelist** tlist, char* buf, int len)
 /*
  * Add a command table.
  */
-public
+
 void add_fcmd_table(char* buf, int len)
 {
     if (add_cmd_table(&list_fcmd_tables, buf, len) < 0)
@@ -379,7 +379,7 @@ void add_fcmd_table(char* buf, int len)
 /*
  * Add an editing command table.
  */
-public
+
 void add_ecmd_table(char* buf, int len)
 {
     if (add_cmd_table(&list_ecmd_tables, buf, len) < 0)
@@ -609,7 +609,7 @@ static int cmd_decode(struct tablelist* tlist, char* cmd, char** sp)
 /*
  * Decode a command from the cmdtables list.
  */
-public
+
 int fcmd_decode(char* cmd, char** sp)
 {
     return (cmd_decode(list_fcmd_tables, cmd, sp));
@@ -618,7 +618,7 @@ int fcmd_decode(char* cmd, char** sp)
 /*
  * Decode a command from the edittables list.
  */
-public
+
 int ecmd_decode(char* cmd, char** sp)
 {
     return (cmd_decode(list_ecmd_tables, cmd, sp));
@@ -628,7 +628,7 @@ int ecmd_decode(char* cmd, char** sp)
  * Get the value of an environment variable.
  * Looks first in the lesskey file, then in the real environment.
  */
-public
+
 char* lgetenv(char* var)
 {
     int a;
@@ -649,7 +649,7 @@ char* lgetenv(char* var)
 /*
  * Is a string null or empty?
  */
-public
+
 int isnullenv(char* s)
 {
     return (s == NULL || *s == '\0');
@@ -736,7 +736,7 @@ static int new_lesskey(char* buf, int len, int sysvar)
 /*
  * Set up a user command table, based on a "lesskey" file.
  */
-public
+
 int lesskey(char* filename, int sysvar)
 {
     char* buf;
@@ -795,7 +795,7 @@ int lesskey(char* filename, int sysvar)
 /*
  * Add the standard lesskey file "$HOME/.less"
  */
-public
+
 void add_hometable(char* envname, char* def_filename, int sysvar)
 {
     char* filename;
@@ -820,7 +820,7 @@ void add_hometable(char* envname, char* def_filename, int sysvar)
 /*
  * See if a char is a special line-editing command.
  */
-public
+
 int editchar(int c, int flags)
 {
     int action;

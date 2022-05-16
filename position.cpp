@@ -40,7 +40,7 @@ extern int sc_width, sc_height;
 // public POSITION
 // position(sindex)
 //     int sindex;
-public
+
 POSITION position(int sindex)
 {
     switch (sindex)
@@ -66,7 +66,7 @@ POSITION position(int sindex)
 // public void
 // add_forw_pos(pos)
 //     POSITION pos;
-public
+
 void add_forw_pos(POSITION pos)
 {
     int i;
@@ -87,7 +87,7 @@ void add_forw_pos(POSITION pos)
 // public void
 // add_back_pos(pos)
 //     POSITION pos;
-public
+
 void add_back_pos(POSITION pos)
 {
     int i;
@@ -107,7 +107,7 @@ void add_back_pos(POSITION pos)
 // Converted from C to C++ - C below
 // public void
 // pos_clear(void)
-public
+
 void pos_clear(void)
 {
     int i;
@@ -123,7 +123,7 @@ void pos_clear(void)
 // Converted from C to C++ - C below
 // public void
 // pos_init(void)
-public
+
 void pos_init(void)
 {
     struct scrpos scrpos;
@@ -158,7 +158,7 @@ void pos_init(void)
 // public int
 // onscreen(pos)
 //     POSITION pos;
-public
+
 int onscreen(POSITION pos)
 {
     int i;
@@ -178,7 +178,7 @@ int onscreen(POSITION pos)
 // Converted from C to C++ - C below
 // public int
 // empty_screen(void)
-public
+
 int empty_screen(void)
 {
     return (empty_lines(0, sc_height - 1));
@@ -190,7 +190,7 @@ int empty_screen(void)
 // empty_lines(s, e)
 //     int s;
 //     int e;
-public
+
 int empty_lines(int s, int e)
 {
     int i;
@@ -215,7 +215,7 @@ int empty_lines(int s, int e)
 // get_scrpos(scrpos, where)
 //     struct scrpos *scrpos;
 //     int where;
-public
+
 void get_scrpos(struct scrpos *scrpos, int where)
 {
     int i;
@@ -281,7 +281,7 @@ void get_scrpos(struct scrpos *scrpos, int where)
 // public int
 // sindex_from_sline(sline)
 //     int sline;
-public
+
 int sindex_from_sline(int sline)
 {
     /*
