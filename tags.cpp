@@ -7,7 +7,11 @@
  * For more information, see the README file.
  */
 
+/*
+ * Reading Tags files
+*/
 
+#include "tags.hpp"
 #include "less.hpp"
 #include "cvt.hpp"
 #include "edit.hpp"
@@ -17,6 +21,7 @@
 #include "linenum.hpp"
 #include "option.hpp"
 #include "output.hpp"
+#include "utils.hpp"
 
 #define    WHITESP(c)    ((c)==' ' || (c)=='\t')
 
@@ -137,8 +142,8 @@ static struct tag * maketagent(char *name, char *file, LINENUM linenum, char *pa
 {
     struct tag *tp;
 
-    tp = (struct tag *) ecalloc(sizeof(struct tag), 1);
-    tp->tag_file = (char *) ecalloc(strlen(file) + 1, sizeof(char));
+    tp = (struct tag *) utils::ecalloc(sizeof(struct tag), 1);
+    tp->tag_file = (char *) utils::ecalloc(strlen(file) + 1, sizeof(char));
     strcpy(tp->tag_file, file);
     tp->tag_linenum = linenum;
     tp->tag_endline = endline;
@@ -146,7 +151,7 @@ static struct tag * maketagent(char *name, char *file, LINENUM linenum, char *pa
         tp->tag_pattern = NULL;
     else
     {
-        tp->tag_pattern = (char *) ecalloc(strlen(pattern) + 1, sizeof(char));
+        tp->tag_pattern = (char *) utils::ecalloc(strlen(pattern) + 1, sizeof(char));
         strcpy(tp->tag_pattern, pattern);
     }
     return (tp);
@@ -356,7 +361,7 @@ static enum tag_result findctag(char *tag)
         /*
          * Skip over the whitespace after the tag name.
          */
-        p = skipsp(tline+taglen);
+        p = utils::skipsp(tline+taglen);
         if (*p == '\0')
             /* File name is missing! */
             continue;
@@ -369,7 +374,7 @@ static enum tag_result findctag(char *tag)
         while (!WHITESP(*p) && *p != '\0')
             p++;
         *p++ = '\0';
-        p = skipsp(p);
+        p = utils::skipsp(p);
         if (*p == '\0')
             /* Pattern is missing! */
             continue;
@@ -516,7 +521,7 @@ static POSITION ctagsearch(VOID_PARAM)
             int cvt_ops = CVT_ANSI;
             int cvt_len = cvt_length(line_len, cvt_ops);
             int *chpos = cvt_alloc_chpos(cvt_len);
-            char *cline = (char *) ecalloc(1, cvt_len);
+            char *cline = (char *) utils::ecalloc(1, cvt_len);
             cvt_text(cline, line, chpos, &line_len, cvt_ops);
             if (curtag_match(cline, linepos))
                 found = 1;
@@ -601,7 +606,7 @@ static enum tag_result findgtag(char *tag, /* tag to load */int type)
         qtag = shell_quote(tag);
         if (qtag == NULL)
             qtag = tag;
-        command = (char *) ecalloc(strlen(cmd) + strlen(flag) +
+        command = (char *) utils::ecalloc(strlen(cmd) + strlen(flag) +
                 strlen(qtag) + 5, sizeof(char));
         sprintf(command, "%s -x%s %s", cmd, flag, qtag);
         if (qtag != tag)

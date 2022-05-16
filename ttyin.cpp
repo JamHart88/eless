@@ -12,8 +12,10 @@
  * Routines dealing with getting input from the keyboard (i.e. from the user).
  */
 
+#include "ttyin.hpp"
 #include "less.hpp"
 #include "os.hpp"
+#include "utils.hpp"
 
 public int tty;
 extern int sigs;
@@ -82,7 +84,7 @@ getchr(VOID_PARAM)
              * Don't call error() here,
              * because error calls getchr!
              */
-            quit(QUIT_ERROR);
+            utils::quit(QUIT_ERROR);
         }
 
 

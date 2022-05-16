@@ -22,6 +22,7 @@
 #include "less.hpp"
 #include "os.hpp"
 #include "output.hpp"
+#include "utils.hpp"
 
 #include <setjmp.h>
 #include <signal.h>
@@ -112,7 +113,7 @@ start:
             else
                 consecutive_nulls = 0;
             if (consecutive_nulls > 20)
-                quit(QUIT_ERROR);
+                utils::quit(QUIT_ERROR);
         }
     }
 #endif
@@ -192,7 +193,7 @@ char *errno_message(char *filename)
     p = "cannot open";
 #endif
     len = (int)(strlen(filename) + strlen(p) + 3);
-    m = (char *)ecalloc(len, sizeof(char));
+    m = (char *)utils::ecalloc(len, sizeof(char));
     SNPRINTF2(m, len, "%s: %s", filename, p);
     return (m);
 }

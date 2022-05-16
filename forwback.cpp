@@ -14,7 +14,7 @@
 
 #include "ch.hpp"
 #include "edit.hpp"
-#include "forback.hpp"
+#include "forwback.hpp"
 #include "input.hpp"
 #include "jump.hpp"
 #include "less.hpp"
@@ -23,6 +23,8 @@
 #include "output.hpp"
 #include "position.hpp"
 #include "screen.hpp"
+#include "search.hpp"
+#include "utils.hpp"
 
 public
 int screen_trashed;
@@ -350,7 +352,7 @@ void forward(int n, int force, int only_last)
          * forward from end-of-file, go on to the next file.
          */
         if (edit_next(1))
-            quit(QUIT_OK);
+            utils::quit(QUIT_OK);
         return;
     }
 

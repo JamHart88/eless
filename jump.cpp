@@ -13,7 +13,7 @@
 
 #include "jump.hpp"
 #include "ch.hpp"
-#include "forback.hpp"
+#include "forwback.hpp"
 #include "input.hpp"
 #include "less.hpp"
 #include "linenum.hpp"
@@ -22,6 +22,7 @@
 #include "output.hpp"
 #include "position.hpp"
 #include "screen.hpp"
+#include "search.hpp"
 
 extern int jump_sline;
 extern int squished;

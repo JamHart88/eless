@@ -37,6 +37,7 @@
 #include "mark.hpp"
 #include "output.hpp"
 #include "screen.hpp"
+#include "utils.hpp"
 
 extern int erase_char, erase2_char, kill_char;
 extern int mousecap;
@@ -801,9 +802,9 @@ void add_hometable(char* envname, char* def_filename, int sysvar)
     PARG parg;
 
     if (envname != NULL && (filename = lgetenv(envname)) != NULL)
-        filename = save(filename);
+        filename = utils::save(filename);
     else if (sysvar)
-        filename = save(def_filename);
+        filename = utils::save(def_filename);
     else
         filename = homefile(def_filename);
     if (filename == NULL)

@@ -19,7 +19,7 @@
 #include "decode.hpp"
 #include "edit.hpp"
 #include "filename.hpp"
-#include "forback.hpp"
+#include "forwback.hpp"
 #include "ifile.hpp"
 #include "input.hpp"
 #include "jump.hpp"
@@ -35,6 +35,11 @@
 #include "position.hpp"
 #include "prompt.hpp"
 #include "screen.hpp"
+#include "search.hpp"
+#include "signal.hpp"
+#include "tags.hpp"
+#include "ttyin.hpp"
+#include "utils.hpp"
 
 extern int erase_char, erase2_char, kill_char;
 extern int sigs;
@@ -264,7 +269,7 @@ static void exec_mca(VOID_PARAM)
         if (*cbuf == '\0')
             every_first_cmd = NULL;
         else
-            every_first_cmd = save(cbuf);
+            every_first_cmd = utils::save(cbuf);
         break;
     case A_OPT_TOGGLE:
         toggle_option(curropt, opt_lower, cbuf, optflag);
@@ -702,13 +707,13 @@ static void prompt(VOID_PARAM)
      * If we've hit EOF on the last file and the -E flag is set, quit.
      */
     if (get_quit_at_eof() == OPT_ONPLUS && eof_displayed() && !(ch_getflags() & CH_HELPFILE) && next_ifile(curr_ifile) == NULL_IFILE)
-        quit(QUIT_OK);
+        utils::quit(QUIT_OK);
 
     /*
      * If the entire file is displayed and the -F flag is set, quit.
      */
     if (quit_if_one_screen && entire_file_displayed() && !(ch_getflags() & CH_HELPFILE) && next_ifile(curr_ifile) == NULL_IFILE)
-        quit(QUIT_OK);
+        utils::quit(QUIT_OK);
 
     /*
      * Select the proper prompt and display it.
@@ -852,7 +857,7 @@ int getcc(VOID_PARAM)
 public
 void ungetcc(LWCHAR c)
 {
-    struct ungot* ug = (struct ungot*)ecalloc(1, sizeof(struct ungot));
+    struct ungot* ug = (struct ungot*)utils::ecalloc(1, sizeof(struct ungot));
 
     ug->ug_char = c;
     ug->ug_next = ungot;
@@ -1045,7 +1050,7 @@ void commands(VOID_PARAM)
         if (sigs) {
             psignals();
             if (quitting)
-                quit(QUIT_SAVED_STATUS);
+                utils::quit(QUIT_SAVED_STATUS);
         }
 
         /*
@@ -1421,8 +1426,8 @@ void commands(VOID_PARAM)
                     break;
             }
             if (extra != NULL)
-                quit(*extra);
-            quit(QUIT_OK);
+                utils::quit(*extra);
+            utils::quit(QUIT_OK);
             break;
 
 /*
@@ -1589,7 +1594,7 @@ void commands(VOID_PARAM)
                 number = 1;
             if (edit_next((int)number)) {
                 if (get_quit_at_eof() && eof_displayed() && !(ch_getflags() & CH_HELPFILE))
-                    quit(QUIT_OK);
+                    utils::quit(QUIT_OK);
                 parg.p_string = (number > 1) ? (char*)"(N-th) " : (char*)"";
                 error((char*)"No %snext file", &parg);
             }

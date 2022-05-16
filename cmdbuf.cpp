@@ -24,6 +24,7 @@
 #include "option.hpp"
 #include "output.hpp"
 #include "screen.hpp"
+#include "utils.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>
@@ -769,8 +770,8 @@ public void cmd_addhist(struct mlist *mlist,
          * Did not find command in history.
          * Save the command and put it at the end of the history list.
          */
-        ml = (struct mlist *) ecalloc(1, sizeof(struct mlist));
-        ml->string = save(cmd);
+        ml = (struct mlist *) utils::ecalloc(1, sizeof(struct mlist));
+        ml->string = utils::save(cmd);
         ml->modified = modified;
         ml_link(mlist, ml);
     }
@@ -1062,7 +1063,7 @@ static void init_compl(void)
      */
     if (tk_original != NULL)
         free(tk_original);
-    tk_original = (char *) ecalloc(cp-word+1, sizeof(char));
+    tk_original = (char *) utils::ecalloc(cp-word+1, sizeof(char));
     strcpy(tk_original, word);
     /*
      * Get the expanded filename.
@@ -1358,7 +1359,7 @@ static char * histfile_name(void)
         if (strcmp(name, "-") == 0 || strcmp(name, "/dev/null") == 0)
             /* $LESSHISTFILE == "-" means don't use a history file. */
             return (NULL);
-        return (save(name));
+        return (utils::save(name));
     }
 
     /* See if history file is disabled in the build. */
@@ -1372,7 +1373,7 @@ static char * histfile_name(void)
             return (NULL);
     }
     len = (int) (strlen(home) + strlen(LESSHISTFILE) + 2);
-    name = (char *) ecalloc(len, sizeof(char));
+    name = (char *) utils::ecalloc(len, sizeof(char));
     SNPRINTF2(name, len, "%s/%s", home, LESSHISTFILE);
     return (name);
 }
@@ -1514,7 +1515,7 @@ static char * make_tempname(char *filename)
 {
     char lastch;
     int len = strlen(filename) + 1;
-    char *tempname = (char *) ecalloc(len, sizeof(char));
+    char *tempname = (char *) utils::ecalloc(len, sizeof(char));
     memcpy(tempname, filename, len);
     lastch = tempname[strlen(tempname)-1];
     tempname[strlen(tempname)-1] = (lastch == 'Q') ? 'Z' : 'Q';

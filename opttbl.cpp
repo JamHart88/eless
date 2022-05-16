@@ -15,6 +15,7 @@
 #include "less.hpp"
 #include "optfunc.hpp"
 #include "option.hpp"
+#include "utils.hpp"
 
 /*
  * Variables controlled by command line options.
@@ -503,7 +504,7 @@ struct loption* findopt_name(char** p_optname, char** p_oname, int* p_err)
              * try uppercase match (uppercase == 1).
              */
             for (uppercase = 0; uppercase <= 1; uppercase++) {
-                len = sprefix(optname, oname->oname, uppercase);
+                len = utils::sprefix(optname, oname->oname, uppercase);
                 if (len <= 0 || is_optchar(optname[len])) {
                     /*
                      * We didn't use all of the option name.

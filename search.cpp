@@ -11,6 +11,7 @@
  * Routines to search a file for a pattern.
  */
 
+#include "search.hpp"
 #include "ch.hpp"
 #include "charset.hpp"
 #include "cmdbuf.hpp"
@@ -23,6 +24,7 @@
 #include "output.hpp"
 #include "position.hpp"
 #include "screen.hpp"
+#include "utils.hpp"
 
 #define MINPOS(a, b) (((a) < (b)) ? (a) : (b))
 #define MAXPOS(a, b) (((a) > (b)) ? (a) : (b))
@@ -172,7 +174,7 @@ static int set_pattern(struct pattern_info* info, char* pattern, int search_type
         free(info->text);
     info->text = NULL;
     if (pattern != NULL) {
-        info->text = (char*)ecalloc(1, strlen(pattern) + 1);
+        info->text = (char*)utils::ecalloc(1, strlen(pattern) + 1);
         strcpy(info->text, pattern);
     }
     info->search_type = search_type;
@@ -709,8 +711,8 @@ static struct hilite_storage* hlist_getstorage(struct hilite_tree* anchor)
         capacity = anchor->current->capacity * 2;
     }
 
-    s = (struct hilite_storage*)ecalloc(1, sizeof(struct hilite_storage));
-    s->nodes = (struct hilite_node*)ecalloc(capacity, sizeof(struct hilite_node));
+    s = (struct hilite_storage*)utils::ecalloc(1, sizeof(struct hilite_storage));
+    s->nodes = (struct hilite_node*)utils::ecalloc(capacity, sizeof(struct hilite_node));
     s->capacity = capacity;
     s->used = 0;
     s->next = NULL;
@@ -1287,7 +1289,7 @@ static int search_range(POSITION pos, POSITION endpos, int search_type, int matc
          */
         cvt_ops = get_cvt_ops();
         cvt_len = cvt_length(line_len, cvt_ops);
-        cline = (char*)ecalloc(1, cvt_len);
+        cline = (char*)utils::ecalloc(1, cvt_len);
         chpos = cvt_alloc_chpos(cvt_len);
         cvt_text(cline, line, chpos, &line_len, cvt_ops);
 

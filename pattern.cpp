@@ -14,6 +14,7 @@
 #include "less.hpp"
 #include "cvt.hpp"
 #include "output.hpp"
+#include "utils.hpp"
 
 extern int caseless;
 extern int utf_mode;
@@ -53,7 +54,7 @@ static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_p
     *comp_pattern = comp;
 #endif
 #if HAVE_POSIX_REGCOMP
-    regex_t *comp = (regex_t *) ecalloc(1, sizeof(regex_t));
+    regex_t *comp = (regex_t *) utils::ecalloc(1, sizeof(regex_t));
     if (regcomp(comp, pattern, REGCOMP_FLAG))
     {
         free(comp);
@@ -165,7 +166,7 @@ public int compile_pattern(char *pattern, int search_type, PATTERN_TYPE *comp_pa
         cvt_pattern = pattern;
     else
     {
-        cvt_pattern = (char*) ecalloc(1, cvt_length(strlen(pattern), CVT_TO_LC));
+        cvt_pattern = (char*) utils::ecalloc(1, cvt_length(strlen(pattern), CVT_TO_LC));
         cvt_text(cvt_pattern, pattern, (int *)NULL, (int *)NULL, CVT_TO_LC);
     }
     result = compile_pattern2(cvt_pattern, search_type, comp_pattern, 1);

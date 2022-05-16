@@ -13,8 +13,9 @@ INSTALL_DATA = ${INSTALL} -m 644
 CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
-CPPFLAGS = -std=c++11 -g -O2 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal
+CPPFLAGS = -std=c++0x -g -O2 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal
 # Removed CPP flags
+# -std=c++11  - AIX XLC++ only has c++0x 
 #-finstrument-functions -Werror -Wpedantic -Wshadow 
 #CPPFLAGS = -g  -Wall 
 EXEEXT = 
@@ -52,7 +53,7 @@ OBJ = \
 	help.${O} ifile.${O} input.${O} jump.${O} line.${O} linenum.${O} \
 	lsystem.${O} mark.${O} optfunc.${O} option.${O} opttbl.${O} os.${O} \
 	output.${O} pattern.${O} position.${O} prompt.${O} search.${O} signal.${O} \
-	tags.${O} ttyin.${O} version.${O} debug.${O}
+	tags.${O} ttyin.${O} version.${O} debug.${O} utils.${O}
 
 all: less$(EXEEXT)
 

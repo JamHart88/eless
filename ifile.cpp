@@ -23,6 +23,7 @@
 #include "ifile.hpp"
 #include "filename.hpp"
 #include "mark.hpp"
+#include "utils.hpp"
 
 extern IFILE curr_ifile;
 
@@ -106,8 +107,8 @@ static struct ifile * new_ifile( char *filename, struct ifile *prev)
     /*
      * Allocate and initialize structure.
      */
-    p = (struct ifile *) ecalloc(1, sizeof(struct ifile));
-    p->h_filename = save(filename);
+    p = (struct ifile *) utils::ecalloc(1, sizeof(struct ifile));
+    p->h_filename = utils::save(filename);
     p->h_scrpos.pos = NULL_POSITION;
     p->h_opened = 0;
     p->h_hold = 0;

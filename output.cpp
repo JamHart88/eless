@@ -13,10 +13,11 @@
 
 #include "output.hpp"
 #include "command.hpp"
-#include "forback.hpp"
+#include "forwback.hpp"
 #include "less.hpp"
 #include "line.hpp"
 #include "screen.hpp"
+#include "ttyin.hpp"
 
 public
 int errmsgs; /* Count of messages displayed by error() */

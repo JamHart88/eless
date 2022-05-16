@@ -36,6 +36,10 @@
 #include "jump.hpp"
 #include "output.hpp"
 #include "screen.hpp"
+#include "search.hpp"
+#include "tags.hpp"
+#include "ttyin.hpp"
+#include "utils.hpp"
 
 extern int nbufs;
 extern int bufspace;
@@ -94,7 +98,7 @@ public void opt_o(int type, char *s)
     switch (type)
     {
     case INIT:
-        namelogfile = save(s);
+        namelogfile = utils::save(s);
         break;
     case TOGGLE:
         if (ch_getflags() & CH_CANSEEK)
@@ -107,7 +111,7 @@ public void opt_o(int type, char *s)
             error((char *)"Log file is already in use", NULL_PARG);
             return;
         }
-        s = skipsp(s);
+        s = utils::skipsp(s);
         if (namelogfile != NULL)
             free(namelogfile);
         filename = lglob(s);
@@ -327,12 +331,12 @@ public void opt_t(int type, char *s)
     switch (type)
     {
     case INIT:
-        tagoption = save(s);
+        tagoption = utils::save(s);
         /* Do the rest in main() */
         break;
     case TOGGLE:
         
-        findtag(skipsp(s));
+        findtag(utils::skipsp(s));
         save_ifile = save_curr_ifile();
         /*
          * Try to open the file containing the tag
@@ -367,10 +371,10 @@ public void opt__T(int type, char *s)
     switch (type)
     {
     case INIT:
-        tags = save(s);
+        tags = utils::save(s);
         break;
     case TOGGLE:
-        s = skipsp(s);
+        s = utils::skipsp(s);
         if (tags != NULL && tags != ztags)
             free(tags);
         filename = lglob(s);
@@ -408,7 +412,7 @@ public void opt_p(int type, char *s)
              * In "more" mode, the -p argument is a command,
              * not a search string, so we don't need a slash.
              */
-            every_first_cmd = save(s);
+            every_first_cmd = utils::save(s);
         } else
         {
             plusoption = TRUE;
@@ -456,7 +460,7 @@ public void opt__P(int type, char *s)
         default:   proto = &prproto[PR_SHORT];        break;
         }
         free(*proto);
-        *proto = save(s);
+        *proto = utils::save(s);
         break;
     case QUERY:
         parg.p_string = prproto[pr_type];
@@ -547,7 +551,7 @@ public void opt__V(int type, char *s)
         putstr("For information about the terms of redistribution,\n");
         putstr("see the file named README in the less distribution.\n");
         putstr("Home page: http://www.greenwoodsoftware.com/less\n");
-        quit(QUIT_OK);
+        utils::quit(QUIT_OK);
         break;
     }
 }
@@ -579,12 +583,12 @@ public void opt_x(int type, char *s)
         for (i = 1;  i < TABSTOP_MAX;  )
         {
             int n = 0;
-            s = skipsp(s);
+            s = utils::skipsp(s);
             while (*s >= '0' && *s <= '9')
                 n = (10 * n) + (*s++ - '0');
             if (n > tabstops[i-1])
                 tabstops[i++] = n;
-            s = skipsp(s);
+            s = utils::skipsp(s);
             if (*s++ != ',')
                 break;
         }

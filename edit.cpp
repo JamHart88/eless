@@ -20,6 +20,8 @@
 #include "linenum.hpp"
 #include "mark.hpp"
 #include "output.hpp"
+#include "search.hpp"
+#include "utils.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>
@@ -73,7 +75,7 @@ public void init_textlist(struct textlist *tlist, char *str)
     int esclen = (int) strlen(esc);
 #endif
     
-    tlist->string = skipsp(str);
+    tlist->string = utils::skipsp(str);
     tlist->endstring = tlist->string + strlen(tlist->string);
     for (s = str;  s < tlist->endstring;  s++)
     {
@@ -282,7 +284,7 @@ public int edit_ifile(IFILE ifile)
         return (0);
     }
 
-    filename = save(get_filename(ifile));
+    filename = utils::save(get_filename(ifile));
 
     /*
      * See if LESSOPEN specifies an "alternate" file to open.
@@ -368,7 +370,7 @@ public int edit_ifile(IFILE ifile)
                  * Whoops.  The "current" ifile is the one we just deleted.
                  * Just give up.
                  */
-                quit(QUIT_ERROR);
+                utils::quit(QUIT_ERROR);
             }
             reedit_ifile(was_curr_ifile);
             return (1);
@@ -696,7 +698,7 @@ public void reedit_ifile(IFILE save_ifile)
     /*
      * If can't even open that, we're stuck.  Just quit.
      */
-    quit(QUIT_ERROR);
+    utils::quit(QUIT_ERROR);
 }
 
 public void reopen_curr_ifile(void)
@@ -714,7 +716,7 @@ public int edit_stdin(void)
     if (isatty(fd0))
     {
         error((char *)"Missing filename (\"less --help\" for help)", NULL_PARG);
-        quit(QUIT_OK);
+        utils::quit(QUIT_OK);
     }
     return (edit((char *)"-"));
 }
@@ -804,7 +806,7 @@ loop:
          */
         return;
     case 'q':
-        quit(QUIT_OK);
+        utils::quit(QUIT_OK);
         /*NOTREACHED*/
     default:
         /*

@@ -23,9 +23,11 @@
 #include "position.hpp"
 #include "ch.hpp"
 #include "filename.hpp"
-#include "forback.hpp"
+#include "forwback.hpp"
 #include "ifile.hpp"
 #include "linenum.hpp"
+#include "tags.hpp"
+#include "utils.hpp"
 
 extern int pr_type;
 extern int new_file;
@@ -78,12 +80,12 @@ static char *mp;
 // init_prompt(VOID_PARAM)
 public void init_prompt(VOID_PARAM)
 {
-    prproto[0] = save(s_proto);
-    prproto[1] = save(less_is_more ? more_proto : m_proto);
-    prproto[2] = save(M_proto);
-    eqproto = save(e_proto);
-    hproto = save(h_proto);
-    wproto = save(w_proto);
+    prproto[0] = utils::save(s_proto);
+    prproto[1] = utils::save(less_is_more ? more_proto : m_proto);
+    prproto[2] = utils::save(M_proto);
+    eqproto = utils::save(e_proto);
+    hproto = utils::save(h_proto);
+    wproto = utils::save(w_proto);
 }
 
 /*

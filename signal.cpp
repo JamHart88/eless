@@ -17,11 +17,13 @@
  * the signal is received, we call intread to interrupt the iread.
  */
 
+#include "signal.hpp"
 #include "less.hpp"
 #include "optfunc.hpp"
 #include "os.hpp"
 #include "output.hpp"
 #include "screen.hpp"
+#include "utils.hpp"
 
 #include <signal.h>
 
@@ -113,7 +115,7 @@ RETSIGTYPE winch(int type)
 //     int type;
 static RETSIGTYPE terminate(int type)
 {
-    quit(15);
+    utils::quit(15);
 }
 
 /*
@@ -236,6 +238,6 @@ void psignals(VOID_PARAM)
 #endif
     if (tsignals & S_INTERRUPT) {
         if (quit_on_intr)
-            quit(QUIT_INTERRUPT);
+            utils::quit(QUIT_INTERRUPT);
     }
 }

@@ -18,6 +18,7 @@
 #include "less.hpp"
 #include "output.hpp"
 #include "position.hpp"
+#include "utils.hpp"
 
 #if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
@@ -519,9 +520,9 @@ static char* ltget_env(char* capname)
         for (p = envs; p != NULL; p = p->next)
             if (strcmp(p->name, capname) == 0)
                 return p->value;
-        p = (struct env*)ecalloc(1, sizeof(struct env));
-        p->name = save(capname);
-        p->value = (char*)ecalloc(strlen(capname) + 3, sizeof(char));
+        p = (struct env*)utils::ecalloc(1, sizeof(struct env));
+        p->name = utils::save(capname);
+        p->value = (char*)utils::ecalloc(strlen(capname) + 3, sizeof(char));
         sprintf(p->value, "<%s>", capname);
         p->next = envs;
         envs = p;

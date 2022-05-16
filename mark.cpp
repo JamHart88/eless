@@ -17,6 +17,7 @@
 #include "output.hpp"
 #include "position.hpp"
 #include "screen.hpp"
+#include "utils.hpp"
 
 extern IFILE curr_ifile;
 extern int sc_height;
@@ -470,7 +471,7 @@ void restore_mark(char* line)
     cmark(markPtr, NULL_IFILE, filePos, screenpos);
 
     // get the <filename> parameter
-    markPtr->m_filename = save(line);
+    markPtr->m_filename = utils::save(line);
 }
 
 #endif /* CMD_HISTORY */

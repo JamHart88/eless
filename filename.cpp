@@ -23,6 +23,7 @@
 #include "ifile.hpp"
 #include "line.hpp"
 #include "output.hpp"
+#include "utils.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>
@@ -53,7 +54,7 @@ public char * shell_unquote(char *str)
     char *name;
     char *p;
 
-    name = p = (char *) ecalloc(strlen(str)+1, sizeof(char));
+    name = p = (char *) utils::ecalloc(strlen(str)+1, sizeof(char));
     if (*str == openquote)
     {
         str++;
@@ -171,7 +172,7 @@ public char * shell_quote(char *s)
     /*
      * Allocate and construct the new string.
      */
-    newstr = p = (char *) ecalloc(len, sizeof(char));
+    newstr = p = (char *) utils::ecalloc(len, sizeof(char));
     if (use_quotes)
     {
         SNPRINTF3(newstr, len, "%c%s%c", openquote, s, closequote);
@@ -303,7 +304,7 @@ public char * fexpand(char *s)
         }
     }
 
-    e = (char *) ecalloc(n+1, sizeof(char));
+    e = (char *) utils::ecalloc(n+1, sizeof(char));
 
     /*
      * Now copy the string, expanding any "%" or "#".
@@ -356,7 +357,7 @@ public char * fcomplete(char *s)
      */
     {
     int len = (int) strlen(s) + 2;
-    fpat = (char *) ecalloc(len, sizeof(char));
+    fpat = (char *) utils::ecalloc(len, sizeof(char));
     SNPRINTF1(fpat, len, "%s*", s);
     }
     qs = lglob(fpat);
@@ -447,7 +448,7 @@ static char * readfd(FILE *fd)
      * and allocate a buffer to hold it.
      */
     len = 100;
-    buf = (char *) ecalloc(len, sizeof(char));
+    buf = (char *) utils::ecalloc(len, sizeof(char));
     for (p = buf;  ;  p++)
     {
         if ((ch = getc(fd)) == '\n' || ch == EOF)
@@ -461,7 +462,7 @@ static char * readfd(FILE *fd)
              */
             len *= 2;
             *p = '\0';
-            p = (char *) ecalloc(len, sizeof(char));
+            p = (char *) utils::ecalloc(len, sizeof(char));
             strcpy(p, buf);
             free(buf);
             buf = p;
@@ -504,7 +505,7 @@ static FILE * shellcmd(char *cmd)
         } else
         {
             int len = (int) (strlen(shell) + strlen(esccmd) + 5);
-            scmd = (char *) ecalloc(len, sizeof(char));
+            scmd = (char *) utils::ecalloc(len, sizeof(char));
             SNPRINTF3(scmd, len, "%s %s %s", shell, shell_coption(), esccmd);
             free(esccmd);
             fd = popen(scmd, "r");
@@ -666,7 +667,7 @@ public char * lglob(char *filename)
      * Invoke lessecho, and read its output (a globbed list of filenames).
      */
     len = (int) (strlen(lessecho) + strlen(filename) + (7*strlen(metachars())) + 24);
-    cmd = (char *) ecalloc(len, sizeof(char));
+    cmd = (char *) utils::ecalloc(len, sizeof(char));
     SNPRINTF4(cmd, len, "%s -p0x%x -d0x%x -e%s ", lessecho, openquote, closequote, esc);
     free(esc);
     for (s = metachars();  *s != '\0';  s++)
@@ -712,7 +713,7 @@ public char * lrealpath(char *path)
     if (rpath != NULL)
         return (rpath);
 #endif
-    return (save(path));
+    return (utils::save(path));
 }
 
 /*
@@ -795,7 +796,7 @@ public char * open_altfile(char *filename, int *pf, void **pfd)
 
     qfilename = shell_quote(filename);
     len = (int) (strlen(lessopen) + strlen(qfilename) + 2);
-    cmd = (char *) ecalloc(len, sizeof(char));
+    cmd = (char *) utils::ecalloc(len, sizeof(char));
     SNPRINTF1(cmd, len, lessopen, qfilename);
     free(qfilename);
     fd = shellcmd(cmd);
@@ -833,14 +834,14 @@ public char * open_altfile(char *filename, int *pf, void **pfd)
             if (returnfd > 1 && status == 0) {
                 *pfd = NULL;
                 *pf = -1;
-                return (save(FAKE_EMPTYFILE));
+                return (utils::save(FAKE_EMPTYFILE));
             }
             return (NULL);
         }
         ch_ungetchar(c);
         *pfd = (void *) fd;
         *pf = f;
-        return (save("-"));
+        return (utils::save("-"));
     }
 #endif
     cmd = readfd(fd);
@@ -874,7 +875,7 @@ public void close_altfile(char *altfilename, char *filename)
         return;
     }
     len = (int) (strlen(lessclose) + strlen(filename) + strlen(altfilename) + 2);
-    cmd = (char *) ecalloc(len, sizeof(char));
+    cmd = (char *) utils::ecalloc(len, sizeof(char));
     SNPRINTF2(cmd, len, lessclose, filename, altfilename);
     fd = shellcmd(cmd);
     free(cmd);
@@ -915,7 +916,7 @@ public char * bad_file(char *filename)
     {
         static char is_a_dir[] = " is a directory";
 
-        m = (char *) ecalloc(strlen(filename) + sizeof(is_a_dir), 
+        m = (char *) utils::ecalloc(strlen(filename) + sizeof(is_a_dir), 
             sizeof(char));
         strcpy(m, filename);
         strcat(m, is_a_dir);
@@ -935,7 +936,7 @@ public char * bad_file(char *filename)
         } else if (!S_ISREG(statbuf.st_mode))
         {
             static char not_reg[] = " is not a regular file (use -f to see it)";
-            m = (char *) ecalloc(strlen(filename) + sizeof(not_reg),
+            m = (char *) utils::ecalloc(strlen(filename) + sizeof(not_reg),
                 sizeof(char));
             strcpy(m, filename);
             strcat(m, not_reg);

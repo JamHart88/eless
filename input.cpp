@@ -21,6 +21,7 @@
 #include "input.hpp"
 #include "ch.hpp"
 #include "line.hpp"
+#include "search.hpp"
 
 extern int squeeze;
 extern int chopline;

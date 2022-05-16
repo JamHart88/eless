@@ -39,7 +39,7 @@
 #include "line.hpp"
 #include "output.hpp"
 #include "position.hpp"
-
+#include "utils.hpp"
 
 /*
  * Structure to keep track of a line number and the associated file position.
@@ -206,7 +206,7 @@ public void add_lnum(LINENUM linenum, POSITION pos)
             spare->prev->next = spare->next;
         } else {
             error ((char *)"Error spare null pointer", NULL_PARG);
-            quit (QUIT_ERROR);
+            utils::quit (QUIT_ERROR);
         }
     }
 }

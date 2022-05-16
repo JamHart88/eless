@@ -22,7 +22,8 @@
 #include "command.hpp"
 #include "opttbl.hpp"
 #include "output.hpp"
-
+#include "search.hpp"
+#include "utils.hpp"
 
 static struct loption *pendopt;
 public
@@ -161,7 +162,7 @@ void scan_option(char *s) {
       if (*str == '+') {
         if (every_first_cmd != NULL)
           free(every_first_cmd);
-        every_first_cmd = save(str + 1);
+        every_first_cmd = utils::save(str + 1);
       } else {
         ungetcc(CHAR_END_COMMAND);
         ungetsc(str);
@@ -609,7 +610,7 @@ static char *optstring(char *s, char **p_str, char *printopt,
     return (NULL);
   }
   /* Alloc could be more than needed, but not worth trimming. */
-  *p_str = (char *)ecalloc(strlen(s) + 1, sizeof(char));
+  *p_str = (char *)utils::ecalloc(strlen(s) + 1, sizeof(char));
   out = *p_str;
 
   for (p = s; *p != '\0'; p++) {
@@ -668,7 +669,7 @@ int getnum(char **sp, char *printopt, int *errp) {
   int n;
   int neg;
 
-  s = skipsp(*sp);
+  s = utils::skipsp(*sp);
   neg = FALSE;
   if (*s == '-') {
     neg = TRUE;
@@ -707,7 +708,7 @@ long getfraction(char **sp, char *printopt, int *errp) {
   long frac = 0;
   int fraclen = 0;
 
-  s = skipsp(*sp);
+  s = utils::skipsp(*sp);
   if (*s < '0' || *s > '9')
     return (num_error(printopt, errp));
 

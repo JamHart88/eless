@@ -23,6 +23,8 @@
 #include "mark.hpp"
 #include "position.hpp"
 #include "screen.hpp"
+#include "search.hpp"
+#include "utils.hpp"
 
 static char* linebuf = NULL; /* Buffer which holds the current output line */
 
@@ -110,8 +112,8 @@ void init_line(VOID_PARAM)
     if (isnullenv(mid_ansi_chars))
         mid_ansi_chars = (char*)"0123456789:;[?!\"'#%()*+ ";
 
-    linebuf = (char*)ecalloc(LINEBUF_SIZE, sizeof(char));
-    attr = (char*)ecalloc(LINEBUF_SIZE, sizeof(char));
+    linebuf = (char*)utils::ecalloc(LINEBUF_SIZE, sizeof(char));
+    attr = (char*)utils::ecalloc(LINEBUF_SIZE, sizeof(char));
     size_linebuf = LINEBUF_SIZE;
 }
 

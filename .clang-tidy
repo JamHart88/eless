@@ -6,6 +6,7 @@
 #--- readability-* ??? maybe too much info
 # --- use bugprone-[a-df-z]*,bugprone-ex* to skip the easily swapable check
 ---
+#Checks:          'clang-diagnostic-*,clang-analyzer-*,bugprone-[a-df-z]*,bugprone-ex*,cppcoreguidelines-*,modernize-*,cert-*'
 Checks:          'clang-diagnostic-*,clang-analyzer-*,bugprone-[a-df-z]*,bugprone-ex*'
 WarningsAsErrors: false
 HeaderFilterRegex: '.*\.(h|hpp|hxx)$'

@@ -15,6 +15,7 @@
 #include "charset.hpp"
 #include "cvt.hpp"
 #include "line.hpp"
+#include "utils.hpp"
 
 extern int utf_mode;
 
@@ -39,7 +40,7 @@ public int cvt_length(int len, int ops)
 public int * cvt_alloc_chpos(int len)
 {
     int i;
-    int *chpos = (int *) ecalloc(sizeof(int), len);
+    int *chpos = (int *) utils::ecalloc(sizeof(int), len);
     /* Initialize all entries to an invalid position. */
     for (i = 0;  i < len;  i++)
         chpos[i] = -1;

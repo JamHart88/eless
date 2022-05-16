@@ -22,6 +22,9 @@
 #include "output.hpp"
 #include "position.hpp"
 #include "screen.hpp"
+#include "signal.hpp"
+#include "utils.hpp"
+
 #include <signal.h>
 
 extern int screen_trashed;
@@ -90,12 +93,12 @@ void lsystem(char* cmd, char* donemsg)
     p = NULL;
     if ((shell = lgetenv((char*)"SHELL")) != NULL && *shell != '\0') {
         if (*cmd == '\0')
-            p = save(shell);
+            p = utils::save(shell);
         else {
             char* esccmd = shell_quote(cmd);
             if (esccmd != NULL) {
                 int len = (int)(strlen(shell) + strlen(esccmd) + 5);
-                p = (char*)ecalloc(len, sizeof(char));
+                p = (char*)utils::ecalloc(len, sizeof(char));
                 SNPRINTF3(p, len, "%s %s %s", shell, shell_coption(), esccmd);
                 free(esccmd);
             }
@@ -103,9 +106,9 @@ void lsystem(char* cmd, char* donemsg)
     }
     if (p == NULL) {
         if (*cmd == '\0')
-            p = save("sh");
+            p = utils::save("sh");
         else
-            p = save(cmd);
+            p = utils::save(cmd);
     }
     ignore_result(system(p));
     free(p);

@@ -15,6 +15,8 @@
 #include "charset.hpp"
 #include "less.hpp"
 #include "output.hpp"
+#include "utils.hpp"
+
 #include <ctype.h>
 #include <langinfo.h>
 #include <locale.h>
@@ -173,14 +175,14 @@ static void ichardef(char* s)
 
         default:
             error((char*)"invalid chardef", NULL_PARG);
-            quit(QUIT_ERROR);
+            utils::quit(QUIT_ERROR);
             /*NOTREACHED*/
         }
 
         do {
             if (cp >= chardef + sizeof(chardef)) {
                 error((char*)"chardef longer than 256", NULL_PARG);
-                quit(QUIT_ERROR);
+                utils::quit(QUIT_ERROR);
                 /*NOTREACHED*/
             }
             *cp++ = v;
@@ -224,7 +226,7 @@ static int icharset(char* name, int no_error)
 
     if (!no_error) {
         error((char*)"invalid charset name", NULL_PARG);
-        quit(QUIT_ERROR);
+        utils::quit(QUIT_ERROR);
     }
     return (0);
 }

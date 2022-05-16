@@ -19,6 +19,7 @@
 
 #include "position.hpp"
 #include "less.hpp"
+#include "utils.hpp"
 
 static POSITION *table = NULL; /* The position table */
 static int table_size = 0;
@@ -140,7 +141,7 @@ void pos_init(VOID_PARAM)
     }
     else
         scrpos.pos = NULL_POSITION;
-    table = (POSITION *)ecalloc(sc_height, sizeof(POSITION));
+    table = (POSITION *)utils::ecalloc(sc_height, sizeof(POSITION));
     table_size = sc_height;
     pos_clear();
     if (scrpos.pos != NULL_POSITION)
