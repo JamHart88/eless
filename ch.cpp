@@ -17,6 +17,7 @@
 
 #include "ifile.hpp"
 #include "less.hpp"
+#include "filename.hpp"
 #include "os.hpp"
 #include "output.hpp"
 #include "prompt.hpp"

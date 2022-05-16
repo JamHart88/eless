@@ -21,5 +21,8 @@ public char * open_altfile (char *filename, int *pf, void **pfd);
 public void close_altfile (char *altfilename, char *filename);
 public int is_dir (char *filename);
 public char * bad_file (char *filename);
+public POSITION filesize (int f);
+public char * shell_coption (void);
+public char * last_component (char *name);
 
 #endif

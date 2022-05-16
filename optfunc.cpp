@@ -25,6 +25,7 @@
  */
 
 #include "less.hpp"
+#include "charset.hpp"
 #include "optfunc.hpp"
 #include "option.hpp"
 #include "ch.hpp"

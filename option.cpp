@@ -16,6 +16,7 @@
  * or queried via the "_" command.
  */
 #include "less.hpp"
+#include "charset.hpp"
 #include "option.hpp"
 #include "ch.hpp"
 #include "command.hpp"

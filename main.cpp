@@ -12,10 +12,12 @@
  */
 
 #include "less.hpp"
+#include "charset.hpp"
 #include "cmdbuf.hpp"
 #include "command.hpp"
 #include "edit.hpp"
 #include "decode.hpp"
+#include "filename.hpp"
 #include "forback.hpp"
 #include "ifile.hpp"
 #include "line.hpp"

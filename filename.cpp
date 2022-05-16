@@ -14,6 +14,7 @@
  */
 
 #include "less.hpp"
+#include "charset.hpp"
 #include "filename.hpp"
 #include "lglob.hpp"
 #include "os.hpp"

@@ -1,8 +1,10 @@
 #ifndef FUNCS_H
-#define FUNCH_H
+#define FUNCS_H
 
 #include "less.hpp"
 
+// TODO: create a utils file that holds these routines
+// These are all from main.cpp
 public char * save (const char *s);
 public VOID_POINTER ecalloc (int count, unsigned int size);
 public char * skipsp (char *s);
@@ -10,39 +12,12 @@ public int sprefix (char *ps, char *s, int uppercase);
 public void quit (int status);
 
 
-public int win32_kbhit (void);
-public char WIN32getch (void);
-public void WIN32setcolors (int fg, int bg);
-public void WIN32textout (char *text, int len);
-
-public void setfmt (char *s, char **fmtvarptr, int *attrptr, char *default_fmt);
-public void init_charset (void);
-public int binary_char (LWCHAR c);
-public int control_char (LWCHAR c);
-public char * prchar (LWCHAR c);
-public char * prutfchar (LWCHAR ch);
-public int utf_len (int ch);
-public int is_utf8_well_formed (char *ss, int slen);
-public void utf_skip_to_lead (char **pp, char *limit);
-public LWCHAR get_wchar (const char *p);
-public void put_wchar (char **pp, LWCHAR ch);
-public LWCHAR step_char (char **pp, signed int dir, const char *limit);
-public int is_composing_char (LWCHAR ch);
-public int is_ubin_char (LWCHAR ch);
-public int is_wide_char (LWCHAR ch);
-public int is_combining_char (LWCHAR ch1, LWCHAR ch2);
-
 //cmd
 //command
 //cvt
 //decode.cpp
 // edit
 //filename
-
-public POSITION filesize (int f);
-public char * shell_coption (void);
-public char * last_component (char *name);
-
 //forback
 //ifile
 //jump
@@ -90,4 +65,5 @@ public void open_getchr (void);
 public void close_getchr (void);
 public int default_wheel_lines (void);
 public int getchr (void);
+
 #endif
