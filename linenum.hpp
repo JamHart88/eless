@@ -1,7 +1,6 @@
 #ifndef LINENUM_H
 #define LINENUM_H
 
-
 /*
  * Code to handle displaying line numbers.
  *
@@ -28,10 +27,15 @@
 
 #include "less.hpp"
 
-public void clr_linenum (void);
-public void add_lnum (LINENUM linenum, POSITION pos);
-public LINENUM find_linenum (POSITION pos);
-public POSITION find_pos (LINENUM linenum);
-public LINENUM currline (int where);
+public
+void clr_linenum(void);
+public
+void add_lnum(LINENUM linenum, POSITION pos);
+public
+LINENUM find_linenum(POSITION pos);
+public
+POSITION find_pos(LINENUM linenum);
+public
+LINENUM currline(int where);
 
 #endif

@@ -19,27 +19,49 @@
 
 #include "less.hpp"
 
-public void opt_o (int type, char *s);
-public void opt__O (int type, char *s);
-public void opt_j (int type, char *s);
-public void calc_jump_sline (void);
-public void opt_shift (int type, char *s);
-public void calc_shift_count (void);
-public void opt_k (int type, char *s);
-public void opt_t (int type, char *s);
-public void opt__T (int type, char *s);
-public void opt_p (int type, char *s);
-public void opt__P (int type, char *s);
-public void opt_b (int type, char *s);
-public void opt_i (int type, char *s);
-public void opt__V (int type, char *s);
-public void opt_D (int type, char *s);
-public void opt_x (int type, char *s);
-public void opt_quote (int type, char *s);
-public void opt_rscroll (int type, char *s);
-public void opt_query (int type, char *s);
-public void opt_mousecap (int type, char *s);
-public void opt_wheel_lines (int type, char *s);
-public int get_swindow (void);
+public
+void opt_o(int type, char *s);
+public
+void opt__O(int type, char *s);
+public
+void opt_j(int type, char *s);
+public
+void calc_jump_sline(void);
+public
+void opt_shift(int type, char *s);
+public
+void calc_shift_count(void);
+public
+void opt_k(int type, char *s);
+public
+void opt_t(int type, char *s);
+public
+void opt__T(int type, char *s);
+public
+void opt_p(int type, char *s);
+public
+void opt__P(int type, char *s);
+public
+void opt_b(int type, char *s);
+public
+void opt_i(int type, char *s);
+public
+void opt__V(int type, char *s);
+public
+void opt_D(int type, char *s);
+public
+void opt_x(int type, char *s);
+public
+void opt_quote(int type, char *s);
+public
+void opt_rscroll(int type, char *s);
+public
+void opt_query(int type, char *s);
+public
+void opt_mousecap(int type, char *s);
+public
+void opt_wheel_lines(int type, char *s);
+public
+int get_swindow(void);
 
 #endif

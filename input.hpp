@@ -1,9 +1,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-
 /*
- * High level routines dealing with getting lines of input 
+ * High level routines dealing with getting lines of input
  * from the file being viewed.
  *
  * When we speak of "lines" here, we mean PRINTABLE lines;
@@ -14,8 +13,11 @@
 
 #include "less.hpp"
 
-public POSITION forw_line (POSITION curr_pos);
-public POSITION back_line (POSITION curr_pos);
-public void set_attnpos (POSITION pos);
+public
+POSITION forw_line(POSITION curr_pos);
+public
+POSITION back_line(POSITION curr_pos);
+public
+void set_attnpos(POSITION pos);
 
 #endif
