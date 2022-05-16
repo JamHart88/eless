@@ -18,6 +18,7 @@
  */
 
 #include "less.hpp"
+#include "prompt.hpp"
 #include "os.hpp"
 #include "position.hpp"
 #include "ch.hpp"

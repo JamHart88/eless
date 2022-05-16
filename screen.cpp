@@ -15,6 +15,9 @@
 #include "cmd.hpp"
 #include "less.hpp"
 #include "decode.hpp"
+#include "output.hpp"
+#include "position.hpp"
+
 
 #if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>

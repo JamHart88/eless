@@ -21,6 +21,8 @@
 #include "input.hpp"
 #include "jump.hpp"
 #include "linenum.hpp"
+#include "option.hpp"
+#include "output.hpp"
 
 public int screen_trashed;
 public int squished;

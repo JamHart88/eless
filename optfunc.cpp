@@ -25,6 +25,7 @@
  */
 
 #include "less.hpp"
+#include "optfunc.hpp"
 #include "option.hpp"
 #include "ch.hpp"
 #include "command.hpp"
@@ -32,6 +33,7 @@
 #include "filename.hpp"
 #include "decode.hpp"
 #include "jump.hpp"
+#include "output.hpp"
 
 extern int nbufs;
 extern int bufspace;

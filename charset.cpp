@@ -15,6 +15,7 @@
 
 #include "less.hpp"
 #include "charset.hpp"
+#include "output.hpp"
 #include <locale.h>
 #include <ctype.h>
 #include <langinfo.h>

@@ -18,6 +18,8 @@
 #include "filename.hpp"
 #include "ifile.hpp"
 #include "linenum.hpp"
+#include "mark.hpp"
+#include "output.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>

@@ -13,6 +13,7 @@
 
 #include "less.hpp"
 #include "cvt.hpp"
+#include "output.hpp"
 
 extern int caseless;
 extern int utf_mode;

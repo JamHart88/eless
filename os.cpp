@@ -21,6 +21,7 @@
 
 #include "less.hpp"
 #include "os.hpp"
+#include "output.hpp"
 
 #include <setjmp.h>
 #include <signal.h>

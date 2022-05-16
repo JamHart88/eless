@@ -34,6 +34,8 @@
 #include "lesskey.hpp"
 #include "command.hpp"
 #include "filename.hpp"
+#include "mark.hpp"
+#include "output.hpp"
 
 extern int erase_char, erase2_char, kill_char;
 extern int mousecap;

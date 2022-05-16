@@ -4,8 +4,9 @@
 #--- cert-*
 #--- misc-* -- eg misc-unused-parameters
 #--- readability-* ??? maybe too much info
+# --- use bugprone-[a-df-z]*,bugprone-ex* to skip the easily swapable check
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,bugprone-*'
+Checks:          'clang-diagnostic-*,clang-analyzer-*,bugprone-[a-df-z]*,bugprone-ex*'
 WarningsAsErrors: false
 HeaderFilterRegex: '.*\.(h|hpp|hxx)$'
 AnalyzeTemporaryDtors: false

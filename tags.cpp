@@ -15,6 +15,8 @@
 #include "decode.hpp"
 #include "line.hpp"
 #include "linenum.hpp"
+#include "option.hpp"
+#include "output.hpp"
 
 #define    WHITESP(c)    ((c)==' ' || (c)=='\t')
 

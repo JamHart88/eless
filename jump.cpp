@@ -20,6 +20,8 @@
 #include "forback.hpp"
 #include "input.hpp"
 #include "linenum.hpp"
+#include "mark.hpp"
+#include "output.hpp"
 
 extern int jump_sline;
 extern int squished;

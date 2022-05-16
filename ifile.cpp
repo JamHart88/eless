@@ -22,6 +22,7 @@
 #include "less.hpp"
 #include "ifile.hpp"
 #include "filename.hpp"
+#include "mark.hpp"
 
 extern IFILE curr_ifile;
 

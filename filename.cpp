@@ -21,6 +21,7 @@
 #include "decode.hpp"
 #include "ifile.hpp"
 #include "line.hpp"
+#include "output.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>

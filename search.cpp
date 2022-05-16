@@ -22,6 +22,7 @@
 #include "jump.hpp"
 #include "line.hpp"
 #include "linenum.hpp"
+#include "output.hpp"
 
 #define    MINPOS(a,b)    (((a) < (b)) ? (a) : (b))
 #define    MAXPOS(a,b)    (((a) > (b)) ? (a) : (b))

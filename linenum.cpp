@@ -37,6 +37,9 @@
 #include "os.hpp"
 #include "ch.hpp"
 #include "line.hpp"
+#include "output.hpp"
+#include "position.hpp"
+
 
 /*
  * Structure to keep track of a line number and the associated file position.

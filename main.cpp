@@ -19,6 +19,11 @@
 #include "forback.hpp"
 #include "ifile.hpp"
 #include "line.hpp"
+#include "mark.hpp"
+#include "opttbl.hpp"
+#include "option.hpp"
+#include "output.hpp"
+#include "prompt.hpp"
 
 public
 char *every_first_cmd = NULL;

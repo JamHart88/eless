@@ -1,5 +1,5 @@
 #ifndef LINENUM_H
-#define LINEMNUM_H
+#define LINENUM_H
 
 
 /*

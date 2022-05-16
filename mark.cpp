@@ -7,14 +7,15 @@
  * For more information, see the README file.
  */
 
-
 #include "less.hpp"
+#include "mark.hpp"
 #include "position.hpp"
 #include "ch.hpp"
 #include "edit.hpp"
 #include "filename.hpp"
 #include "ifile.hpp"
 #include "jump.hpp"
+#include "output.hpp"
 
 extern IFILE curr_ifile;
 extern int sc_height;

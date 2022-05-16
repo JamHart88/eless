@@ -20,6 +20,9 @@
 
 #include "less.hpp"
 #include "os.hpp"
+#include "optfunc.hpp"
+#include "output.hpp"
+
 #include <signal.h>
 
 /*

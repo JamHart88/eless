@@ -9,6 +9,8 @@
  * For more information, see the README file.
  */
 
+#include "less.hpp"
+
 #if HAVE_GNU_REGEX
 #define __USE_GNU 1
 #include <regex.h>
@@ -66,5 +68,12 @@ extern int reg_show_error;
 #define PATTERN_TYPE          void *
 #define CLEAR_PATTERN(name)   
 #endif
+
+public int compile_pattern (char *pattern, int search_type, PATTERN_TYPE *comp_pattern);
+public void uncompile_pattern (PATTERN_TYPE *pattern);
+public int valid_pattern (char *pattern);
+public int is_null_pattern (PATTERN_TYPE pattern);
+public int match_pattern (PATTERN_TYPE pattern, char *tpattern, char *line, int line_len, char **sp, char **ep, int notbol, int search_type);
+public char * pattern_lib_name (void);
 
 #endif

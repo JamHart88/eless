@@ -28,6 +28,12 @@
 #include "jump.hpp"
 #include "line.hpp"
 #include "linenum.hpp"
+#include "lsystem.hpp"
+#include "mark.hpp"
+#include "optfunc.hpp"
+#include "opttbl.hpp"
+#include "output.hpp"
+#include "prompt.hpp"
 
 extern int erase_char, erase2_char, kill_char;
 extern int sigs;

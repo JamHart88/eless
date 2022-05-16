@@ -16,6 +16,7 @@
 #include "less.hpp"
 #include "position.hpp"
 #include "jump.hpp"
+#include "output.hpp"
 
 /*
  * Try to match the n-th open bracket

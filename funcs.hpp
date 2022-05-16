@@ -59,12 +59,9 @@ public int is_wide_char (LWCHAR ch);
 public int is_combining_char (LWCHAR ch1, LWCHAR ch2);
 
 //cmd
-
 //command
-
 //cvt
 //decode.cpp
-
 // edit
 //filename
 
@@ -77,89 +74,15 @@ public char * last_component (char *name);
 //jump
 //line
 //linenum
+//lsystem
+//mark
+//optfunc
+//opttbl
+//output
+//pattern
+//position
+//prompt
 
-public void lsystem (char *cmd, char *donemsg);
-public int pipe_mark (int c, char *cmd);
-public int pipe_data (char *cmd, POSITION spos, POSITION epos);
-public void init_mark (void);
-public int badmark (int c);
-public void setmark (int c, int where);
-public void clrmark (int c);
-public void lastmark (void);
-public void gomark (int c);
-public POSITION markpos (int c);
-public char posmark (POSITION pos);
-public void unmark (IFILE ifile);
-public void mark_check_ifile (IFILE ifile);
-public void save_marks (FILE *fout, char *hdr);
-public void restore_mark (char *line);
-public void opt_o (int type, char *s);
-public void opt__O (int type, char *s);
-public void opt_j (int type, char *s);
-public void calc_jump_sline (void);
-public void opt_shift (int type, char *s);
-public void calc_shift_count (void);
-public void opt_k (int type, char *s);
-public void opt_t (int type, char *s);
-public void opt__T (int type, char *s);
-public void opt_p (int type, char *s);
-public void opt__P (int type, char *s);
-public void opt_b (int type, char *s);
-public void opt_i (int type, char *s);
-public void opt__V (int type, char *s);
-public void opt_D (int type, char *s);
-public void opt_x (int type, char *s);
-public void opt_quote (int type, char *s);
-public void opt_rscroll (int type, char *s);
-public void opt_query (int type, char *s);
-public void opt_mousecap (int type, char *s);
-public void opt_wheel_lines (int type, char *s);
-public int get_swindow (void);
-public char * propt (int c);
-public void scan_option (char *s);
-public void toggle_option (struct loption *o, int lower, char *s, int how_toggle);
-public int opt_has_param (struct loption *o);
-public char * opt_prompt (struct loption *o);
-public char * opt_toggle_disallowed (int c);
-public int isoptpending (void);
-public void nopendopt (void);
-public int getnum (char **sp, char *printopt, int *errp);
-public long getfraction (char **sp, char *printopt, int *errp);
-public int get_quit_at_eof (void);
-public void init_option (void);
-public struct loption * findopt (int c);
-public struct loption * findopt_name (char **p_optname, char **p_oname, int *p_err);
-
-public int  os9_signal (int type, RETSIGTYPE (*handler)());
-public void put_line (void);
-public void flush (void);
-public int putchr (int c);
-public void putstr (const char *s);
-public void get_return (void);
-public void error (char *fmt, PARG *parg);
-public void ierror (char *fmt, PARG *parg);
-public int query (char *fmt, PARG *parg);
-public int compile_pattern (char *pattern, int search_type, PATTERN_TYPE *comp_pattern);
-public void uncompile_pattern (PATTERN_TYPE *pattern);
-public int valid_pattern (char *pattern);
-public int is_null_pattern (PATTERN_TYPE pattern);
-public int match_pattern (PATTERN_TYPE pattern, char *tpattern, char *line, int line_len, char **sp, char **ep, int notbol, int search_type);
-public char * pattern_lib_name (void);
-public POSITION position (int sindex);
-public void add_forw_pos (POSITION pos);
-public void add_back_pos (POSITION pos);
-public void pos_clear (void);
-public void pos_init (void);
-public int onscreen (POSITION pos);
-public int empty_screen (void);
-public int empty_lines (int s, int e);
-public void get_scrpos (struct scrpos *scrpos, int where);
-public int sindex_from_sline (int sline);
-public void init_prompt (void);
-public char * pr_expand (const char *proto, int maxwidth);
-public char * eq_message (void);
-public char * pr_string (void);
-public char * wait_message (void);
 public void init_search (void);
 public void repaint_hilite (int on);
 public void clear_attn (void);

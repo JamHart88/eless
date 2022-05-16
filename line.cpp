@@ -21,6 +21,7 @@
 #include "less.hpp"
 #include "position.hpp"
 #include "linenum.hpp"
+#include "mark.hpp"
 
 static char *linebuf = NULL; /* Buffer which holds the current output line */
 static char *attr = NULL;    /* Extension of linebuf to hold attributes */

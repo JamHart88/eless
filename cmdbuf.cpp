@@ -21,6 +21,9 @@
 #include "edit.hpp"
 #include "filename.hpp"
 #include "decode.hpp"
+#include "mark.hpp"
+#include "option.hpp"
+#include "output.hpp"
 
 #if HAVE_STAT
 #include <sys/stat.h>

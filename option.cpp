@@ -16,11 +16,11 @@
  * or queried via the "_" command.
  */
 #include "less.hpp"
-
-// must come after less.h
 #include "option.hpp"
 #include "ch.hpp"
 #include "command.hpp"
+#include "opttbl.hpp"
+#include "output.hpp"
 
 
 static struct loption *pendopt;

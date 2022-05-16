@@ -13,9 +13,11 @@
  */
 
 #include "less.hpp"
+#include "output.hpp"
 #include "command.hpp"
 #include "forback.hpp"
 #include "line.hpp"
+
 
 public int errmsgs;    /* Count of messages displayed by error() */
 public int need_clr;

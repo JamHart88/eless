@@ -14,12 +14,15 @@
  */
 
 #include "less.hpp"
+#include "lsystem.hpp"
 #include <signal.h>
 #include "position.hpp"
 #include "ch.hpp"
 #include "edit.hpp"
 #include "filename.hpp"
 #include "decode.hpp"
+#include "mark.hpp"
+#include "output.hpp"
 
 extern int screen_trashed;
 extern IFILE curr_ifile;

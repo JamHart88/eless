@@ -15,6 +15,7 @@
 #include "less.hpp"
 #include "option.hpp"
 #include "decode.hpp"
+#include "optfunc.hpp"
 
 /*
  * Variables controlled by command line options.
