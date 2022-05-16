@@ -455,8 +455,8 @@ public int match_pattern(PATTERN_TYPE pattern, char *tpattern, char *line, int l
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public char *
-// pattern_lib_name(VOID_PARAM)
-public char * pattern_lib_name(VOID_PARAM)
+// pattern_lib_name(void)
+public char * pattern_lib_name(void)
 {
 #if HAVE_GNU_REGEX
     return ("GNU");

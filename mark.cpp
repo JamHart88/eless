@@ -71,7 +71,7 @@ static void cmark(struct mark* m, IFILE ifile, POSITION pos, int ln)
  * Initialize the mark table to show no marks are set.
  */
 public
-void init_mark(VOID_PARAM)
+void init_mark(void)
 {
     int i;
 
@@ -244,7 +244,7 @@ void clrmark(int c)
  * Set lmark (the mark named by the apostrophe).
  */
 public
-void lastmark(VOID_PARAM)
+void lastmark(void)
 {
     struct scrpos scrpos;
 

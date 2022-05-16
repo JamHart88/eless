@@ -26,7 +26,7 @@ extern int wheel_lines;
  * Open keyboard for input.
  */
 public void
-open_getchr(VOID_PARAM)
+open_getchr(void)
 {
 
     /*
@@ -45,7 +45,7 @@ open_getchr(VOID_PARAM)
  * Close the keyboard.
  */
 public void
-close_getchr(VOID_PARAM)
+close_getchr(void)
 {
 }
 
@@ -54,7 +54,7 @@ close_getchr(VOID_PARAM)
  * Get the number of lines to scroll when mouse wheel is moved.
  */
 public int
-default_wheel_lines(VOID_PARAM)
+default_wheel_lines(void)
 {
     int lines = 1;
     return lines;
@@ -64,7 +64,7 @@ default_wheel_lines(VOID_PARAM)
  * Get a character from the keyboard.
  */
 public int
-getchr(VOID_PARAM)
+getchr(void)
 {
     char c;
     int result;

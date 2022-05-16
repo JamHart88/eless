@@ -70,9 +70,9 @@ static POSITION pendpos;
 static char* end_ansi_chars;
 static char* mid_ansi_chars;
 
-static int attr_swidth LESSPARAMS((int a));
-static int attr_ewidth LESSPARAMS((int a));
-static int do_append LESSPARAMS((LWCHAR ch, char* rep, POSITION pos));
+static int attr_swidth (int a);
+static int attr_ewidth (int a);
+static int do_append (LWCHAR ch, char* rep, POSITION pos);
 
 extern int sigs;
 extern int bs_mode;
@@ -102,7 +102,7 @@ static POSITION mbc_pos;
  * Initialize from environment variables.
  */
 public
-void init_line(VOID_PARAM)
+void init_line(void)
 {
     end_ansi_chars = lgetenv((char*)"LESSANSIENDCHARS");
     if (isnullenv(end_ansi_chars))
@@ -120,7 +120,7 @@ void init_line(VOID_PARAM)
 /*
  * Expand the line buffer.
  */
-static int expand_linebuf(VOID_PARAM)
+static int expand_linebuf(void)
 {
     /* Double the size of the line buffer. */
     int new_size = size_linebuf * 2;
@@ -168,7 +168,7 @@ int is_ascii_char(LWCHAR ch)
  * Rewind the line buffer.
  */
 public
-void prewind(VOID_PARAM)
+void prewind(void)
 {
     curr = 0;
     column = 0;
@@ -381,7 +381,7 @@ static void pshift(int shift)
  *
  */
 public
-void pshift_all(VOID_PARAM)
+void pshift_all(void)
 {
     pshift(column);
 }
@@ -491,7 +491,7 @@ static int pwidth(LWCHAR ch, int a, LWCHAR prev_ch)
  * Delete to the previous base character in the line buffer.
  * Return 1 if one is found.
  */
-static int backc(VOID_PARAM)
+static int backc(void)
 {
     LWCHAR prev_ch;
     char* p = linebuf + curr;
@@ -515,7 +515,7 @@ static int backc(VOID_PARAM)
 /*
  * Are we currently within a recognized ANSI escape sequence?
  */
-static int in_ansi_esc_seq(VOID_PARAM)
+static int in_ansi_esc_seq(void)
 {
     char* p;
 
@@ -950,7 +950,7 @@ static int do_append(LWCHAR ch, char* rep, POSITION pos)
  *
  */
 public
-int pflushmbc(VOID_PARAM)
+int pflushmbc(void)
 {
     int r = 0;
 
@@ -965,7 +965,7 @@ int pflushmbc(VOID_PARAM)
 /*
  * Switch to normal attribute at end of line.
  */
-static void add_attr_normal(VOID_PARAM)
+static void add_attr_normal(void)
 {
     char* p = (char*)"\033[m";
 
@@ -1102,7 +1102,7 @@ int gline(int i, int* ap)
  * Indicate that there is no current line.
  */
 public
-void null_line(VOID_PARAM)
+void null_line(void)
 {
     is_null_line = 1;
     cshift = 0;
@@ -1217,7 +1217,7 @@ POSITION back_raw_line(POSITION curr_pos, char** linep, int* line_lenp)
  * Find the shift necessary to show the end of the longest displayed line.
  */
 public
-int rrshift(VOID_PARAM)
+int rrshift(void)
 {
     POSITION pos;
     int save_width;

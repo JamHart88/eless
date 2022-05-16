@@ -47,7 +47,7 @@ static int updown_match = -1;    /* Prefix length in up/down movement */
 // clang-format off
 
 #if TAB_COMPLETE_FILENAME
-static int cmd_complete LESSPARAMS((int action));
+static int cmd_complete (int action);
 /*
  * These variables are statics used by cmd_complete.
  */

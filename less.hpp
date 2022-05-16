@@ -9,7 +9,6 @@
  * For more information, see the README file.
  */
 
-#define NEWBOT 1
 
 /*
  * Standard include file for "less".
@@ -20,15 +19,6 @@
  * The <> make cc search for it in -I., not srcdir.
  */
 #include "defines.hpp"
-
-#ifdef _SEQUENT_
-/*
- * Kludge for Sequent Dynix systems that have sigsetmask, but
- * it's not compatible with the way less calls it.
- * {{ Do other systems need this? }}
- */
-#undef HAVE_SIGSETMASK
-#endif
 
 /**
  * Wrapping your function call with ignore_result makes it more clear to
@@ -43,15 +33,7 @@ static inline void ignore_result(long long int unused_result)
 /*
  * Language details.
  */
-#define LESSPARAMS(a) a
-#if HAVE_VOID
-#define VOID_POINTER void*
-#define VOID_PARAM void
-#else
-#define VOID_POINTER char*
-#define VOID_PARAM
-#define void int
-#endif
+
 
 #define public /* PUBLIC FUNCTION */
 
@@ -97,7 +79,7 @@ static inline void ignore_result(long long int unused_result)
 #if !HAVE_STDLIB_H
 char* getenv();
 off_t lseek();
-VOID_POINTER calloc();
+void* calloc();
 void free();
 #endif
 
@@ -232,7 +214,7 @@ typedef off_t LINENUM;
 /*
  * An IFILE represents an input file.
  */
-#define IFILE VOID_POINTER
+#define IFILE void*
 #define NULL_IFILE ((IFILE)NULL)
 
 /*

@@ -77,8 +77,8 @@ static char *mp;
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// init_prompt(VOID_PARAM)
-public void init_prompt(VOID_PARAM)
+// init_prompt(void)
+public void init_prompt(void)
 {
     prproto[0] = utils::save(s_proto);
     prproto[1] = utils::save(less_is_more ? more_proto : m_proto);
@@ -174,8 +174,8 @@ static void ap_int(int num)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // static void
-// ap_quest(VOID_PARAM)
-static void ap_quest(VOID_PARAM)
+// ap_quest(void)
+static void ap_quest(void)
 {
     ap_str((char *)"?");
 }
@@ -605,8 +605,8 @@ public char * pr_expand(const char *proto, int maxwidth)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public char *
-// eq_message(VOID_PARAM)
-public char * eq_message(VOID_PARAM)
+// eq_message(void)
+public char * eq_message(void)
 {
     return (pr_expand(eqproto, 0));
 }
@@ -620,8 +620,8 @@ public char * eq_message(VOID_PARAM)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public char *
-// pr_string(VOID_PARAM)
-public char * pr_string(VOID_PARAM)
+// pr_string(void)
+public char * pr_string(void)
 {
     char *prompt;
     int type;
@@ -640,8 +640,8 @@ public char * pr_string(VOID_PARAM)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public char *
-// wait_message(VOID_PARAM)
-public char * wait_message(VOID_PARAM)
+// wait_message(void)
+public char * wait_message(void)
 {
     return (pr_expand(wproto, sc_width-so_s_width-so_e_width-2));
 }

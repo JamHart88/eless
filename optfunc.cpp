@@ -211,8 +211,8 @@ public void opt_j(int type, char *s)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// calc_jump_sline(VOID_PARAM)
-public void calc_jump_sline(VOID_PARAM)
+// calc_jump_sline(void)
+public void calc_jump_sline(void)
 {
     if (jump_sline_fraction < 0)
         return;
@@ -281,8 +281,8 @@ public void opt_shift(int type, char *s)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// calc_shift_count(VOID_PARAM)
-public void calc_shift_count(VOID_PARAM)
+// calc_shift_count(void)
+public void calc_shift_count(void)
 {
     if (shift_count_fraction < 0)
         return;
@@ -779,8 +779,8 @@ public void opt_wheel_lines(int type, char *s)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public int
-// get_swindow(VOID_PARAM)
-public int get_swindow(VOID_PARAM)
+// get_swindow(void)
+public int get_swindow(void)
 {
     if (swindow > 0)
         return (swindow);

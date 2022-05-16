@@ -230,9 +230,9 @@ static void init_pattern(struct pattern_info* info)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// init_search(VOID_PARAM)
+// init_search(void)
 public
-void init_search(VOID_PARAM)
+void init_search(void)
 {
     init_pattern(&search_info);
     init_pattern(&filter_info);
@@ -244,8 +244,8 @@ void init_search(VOID_PARAM)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // static int
-// get_cvt_ops(VOID_PARAM)
-static int get_cvt_ops(VOID_PARAM)
+// get_cvt_ops(void)
+static int get_cvt_ops(void)
 {
     int ops = 0;
     if (is_caseless || bs_mode == BS_SPECIAL) {
@@ -332,9 +332,9 @@ void repaint_hilite(int on)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// clear_attn(VOID_PARAM)
+// clear_attn(void)
 public
-void clear_attn(VOID_PARAM)
+void clear_attn(void)
 {
     int sindex;
     POSITION old_start_attnpos;
@@ -379,9 +379,9 @@ void clear_attn(VOID_PARAM)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// undo_search(VOID_PARAM)
+// undo_search(void)
 public
-void undo_search(VOID_PARAM)
+void undo_search(void)
 {
     if (!prev_pattern(&search_info)) {
         if (hilite_anchor.first == NULL) {
@@ -429,9 +429,9 @@ void clr_hlist(struct hilite_tree* anchor)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// clr_hilite(VOID_PARAM)
+// clr_hilite(void)
 public
-void clr_hilite(VOID_PARAM)
+void clr_hilite(void)
 {
     clr_hlist(&hilite_anchor);
 }
@@ -439,9 +439,9 @@ void clr_hilite(VOID_PARAM)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// clr_filter(VOID_PARAM)
+// clr_filter(void)
 public
-void clr_filter(VOID_PARAM)
+void clr_filter(void)
 {
     clr_hlist(&filter_anchor);
 }
@@ -1066,8 +1066,8 @@ static void hilite_line(POSITION linepos, char* line, int line_len, int* chpos, 
 // -------------------------------------------
 // Converted from C to C++ - C below
 // static void
-// hilite_screen(VOID_PARAM)
-static void hilite_screen(VOID_PARAM)
+// hilite_screen(void)
+static void hilite_screen(void)
 {
     struct scrpos scrpos;
 
@@ -1084,9 +1084,9 @@ static void hilite_screen(VOID_PARAM)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// chg_hilite(VOID_PARAM)
+// chg_hilite(void)
 public
-void chg_hilite(VOID_PARAM)
+void chg_hilite(void)
 {
     /*
      * Erase any highlights currently on screen.
@@ -1401,9 +1401,9 @@ static int hist_pattern(int search_type)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// chg_caseless(VOID_PARAM)
+// chg_caseless(void)
 public
-void chg_caseless(VOID_PARAM)
+void chg_caseless(void)
 {
     if (!is_ucase_pattern)
         /*
@@ -1741,9 +1741,9 @@ void set_filter_pattern(char* pattern, int search_type)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public int
-// is_filtering(VOID_PARAM)
+// is_filtering(void)
 public
-int is_filtering(VOID_PARAM)
+int is_filtering(void)
 {
     if (ch_getflags() & CH_HELPFILE)
         return (0);
@@ -1764,9 +1764,9 @@ void
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public int
-// is_filtering(VOID_PARAM)
+// is_filtering(void)
 public
-int is_filtering(VOID_PARAM)
+int is_filtering(void)
 {
     PARG parg;
 

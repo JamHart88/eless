@@ -1,9 +1,7 @@
 #ifndef DEFINES_H
 #define DEFINES_H
-/* defines.h.  Generated from defines.h.in by configure.  */
-/* defines.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Unix definition file for less.  -*- C -*-
+/* Unix definition file for less.  C++
  *
  * This file has 3 sections:
  * User preferences.
@@ -15,9 +13,16 @@
  * so config.status doesn't overwrite your changes.
  */
 
-/* ---------------------------------------------------- */
-/* User preferences.  */
-/* ----------------------------------------------------*/
+/* ---------------------------------------------------- 
+ * Configurational compilation options
+ * ----------------------------------------------------*/
+
+//TBD
+
+/* ---------------------------------------------------- 
+ * Optional user options
+ * ----------------------------------------------------*/
+
 
 /*
  * SHELL_ESCAPE is 1 if you wish to allow shell escapes.
@@ -311,9 +316,6 @@
 
 /* Define to 1 if you have the <values.h> header file. */
 #define HAVE_VALUES_H 1
-
-/* Define HAVE_VOID if your compiler supports the "void" type. */
-#define HAVE_VOID 1
 
 /* Define HAVE_WCTYPE if you have iswupper, iswlower, towupper, towlower. */
 #define HAVE_WCTYPE 1

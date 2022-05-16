@@ -86,7 +86,7 @@ public char * shell_unquote(char *str)
 /*
  * Get the shell's escape character.
  */
-public char * get_meta_escape(VOID_PARAM)
+public char * get_meta_escape(void)
 {
     char *s;
 
@@ -99,7 +99,7 @@ public char * get_meta_escape(VOID_PARAM)
 /*
  * Get the characters which the shell considers to be "metacharacters".
  */
-static char * metachars(VOID_PARAM)
+static char * metachars(void)
 {
     static char *mchars = NULL;
 
@@ -964,7 +964,7 @@ public POSITION filesize(int f)
 /*
  * 
  */
-public char * shell_coption(VOID_PARAM)
+public char * shell_coption(void)
 {
     return ((char *)"-c");
 }

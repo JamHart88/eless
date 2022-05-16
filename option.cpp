@@ -29,9 +29,9 @@ static struct loption *pendopt;
 public
 int plusoption = FALSE;
 
-static char *optstring LESSPARAMS((char *s, char **p_str, char *printopt,
-                                   char *validchars));
-static int flip_triple LESSPARAMS((int val, int lc));
+static char *optstring (char *s, char **p_str, char *printopt,
+                                   char *validchars);
+static int flip_triple (int val, int lc);
 
 extern int screen_trashed;
 extern int less_is_more;
@@ -559,9 +559,9 @@ char *opt_toggle_disallowed(int c) {
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public int
-// isoptpending(VOID_PARAM)
+// isoptpending(void)
 public
-int isoptpending(VOID_PARAM) { return (pendopt != NULL); }
+int isoptpending(void) { return (pendopt != NULL); }
 
 /*
  * Print error message about missing string.
@@ -583,9 +583,9 @@ static void nostring(char *printopt) {
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// nopendopt(VOID_PARAM)
+// nopendopt(void)
 public
-void nopendopt(VOID_PARAM) { nostring(opt_desc(pendopt)); }
+void nopendopt(void) { nostring(opt_desc(pendopt)); }
 
 /*
  * Scan to end of string or to an END_OPTION_STRING character.
@@ -734,9 +734,9 @@ long getfraction(char **sp, char *printopt, int *errp) {
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public int
-// get_quit_at_eof(VOID_PARAM)
+// get_quit_at_eof(void)
 public
-int get_quit_at_eof(VOID_PARAM) {
+int get_quit_at_eof(void) {
   if (!less_is_more)
     return quit_at_eof;
   /* When less_is_more is set, the -e flag semantics are different. */

@@ -106,9 +106,9 @@ void add_back_pos(POSITION pos)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// pos_clear(VOID_PARAM)
+// pos_clear(void)
 public
-void pos_clear(VOID_PARAM)
+void pos_clear(void)
 {
     int i;
 
@@ -122,9 +122,9 @@ void pos_clear(VOID_PARAM)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// pos_init(VOID_PARAM)
+// pos_init(void)
 public
-void pos_init(VOID_PARAM)
+void pos_init(void)
 {
     struct scrpos scrpos;
 
@@ -177,9 +177,9 @@ int onscreen(POSITION pos)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public int
-// empty_screen(VOID_PARAM)
+// empty_screen(void)
 public
-int empty_screen(VOID_PARAM)
+int empty_screen(void)
 {
     return (empty_lines(0, sc_height - 1));
 }

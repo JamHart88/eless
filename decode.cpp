@@ -305,7 +305,7 @@ static void expand_cmd_table(struct tablelist* tlist)
  * Expand special key abbreviations in all command tables.
  */
 public
-void expand_cmd_tables(VOID_PARAM)
+void expand_cmd_tables(void)
 {
     expand_cmd_table(list_fcmd_tables);
     expand_cmd_table(list_ecmd_tables);
@@ -317,7 +317,7 @@ void expand_cmd_tables(VOID_PARAM)
  * Initialize the command lists.
  */
 public
-void init_cmds(VOID_PARAM)
+void init_cmds(void)
 {
     /*
      * Add the default command tables.
@@ -400,7 +400,7 @@ static void add_var_table(struct tablelist** tlist, char* buf, int len)
 /*
  * Return action for a mouse wheel down event.
  */
-static int mouse_wheel_down(VOID_PARAM)
+static int mouse_wheel_down(void)
 {
     return ((mousecap == OPT_ONPLUS) ? A_B_MOUSE : A_F_MOUSE);
 }
@@ -408,7 +408,7 @@ static int mouse_wheel_down(VOID_PARAM)
 /*
  * Return action for a mouse wheel up event.
  */
-static int mouse_wheel_up(VOID_PARAM)
+static int mouse_wheel_up(void)
 {
     return ((mousecap == OPT_ONPLUS) ? A_F_MOUSE : A_B_MOUSE);
 }
@@ -455,7 +455,7 @@ static int getcc_int(char* pterm)
  * Read suffix of mouse input and return the action to take.
  * The prefix ("\e[M") has already been read.
  */
-static int x11mouse_action(VOID_PARAM)
+static int x11mouse_action(void)
 {
     int b = getcc() - X11MOUSE_OFFSET;
     int x = getcc() - X11MOUSE_OFFSET - 1;
@@ -476,7 +476,7 @@ static int x11mouse_action(VOID_PARAM)
  * Read suffix of mouse input and return the action to take.
  * The prefix ("\e[<") has already been read.
  */
-static int x116mouse_action(VOID_PARAM)
+static int x116mouse_action(void)
 {
     char ch;
     int x, y;

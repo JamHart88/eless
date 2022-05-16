@@ -60,7 +60,7 @@ sub main {
                 }
                 
                 if ($count == 2) {
-                    if ($l =~ /\(VOID_PARAM\)/) {
+                    if ($l =~ /\(void\)/) {
                         print ("$l\n");
                     } elsif ($line =~ /\(\)/) {
                         print ("$l\n");

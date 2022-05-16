@@ -147,9 +147,9 @@ start:
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// intread(VOID_PARAM)
+// intread(void)
 public
-void intread(VOID_PARAM)
+void intread(void)
 {
     LONG_JUMP(read_label, 1);
 }
@@ -160,9 +160,9 @@ void intread(VOID_PARAM)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public time_type
-// get_time(VOID_PARAM)
+// get_time(void)
 public
-time_type get_time(VOID_PARAM)
+time_type get_time(void)
 {
     time_type t;
 

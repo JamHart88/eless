@@ -80,7 +80,7 @@ extern int screen_trashed;
  * Initialize the line number structures.
  */
 public void
-clr_linenum(VOID_PARAM)
+clr_linenum(void)
 {
     struct linenum_info *p;
 
@@ -215,7 +215,7 @@ public void add_lnum(LINENUM linenum, POSITION pos)
  * If we get stuck in a long loop trying to figure out the
  * line number, print a message to tell the user what we're doing.
  */
-static void longloopmessage(VOID_PARAM)
+static void longloopmessage(void)
 {
     ierror((char *)"Calculating line numbers", NULL_PARG);
 }
@@ -223,7 +223,7 @@ static void longloopmessage(VOID_PARAM)
 static int loopcount;
 static time_type startime;
 
-static void longish(VOID_PARAM)
+static void longish(void)
 {
     if (loopcount >= 0 && ++loopcount > 100)
     {
@@ -240,7 +240,7 @@ static void longish(VOID_PARAM)
  * Turn off line numbers because the user has interrupted
  * a lengthy line number calculation.
  */
-static void abort_long(VOID_PARAM)
+static void abort_long(void)
 {
     if (linenums == OPT_ONPLUS)
         /*

@@ -131,10 +131,10 @@ static int termcap_debug = -1;
 extern int binattr;
 extern int one_screen;
 
-static char* cheaper LESSPARAMS((char* t1, char* t2, char* def));
-static void tmodes LESSPARAMS((char* incap, char* outcap, char** instr,
+static char* cheaper (char* t1, char* t2, char* def);
+static void tmodes (char* incap, char* outcap, char** instr,
     char** outstr, char* def_instr, char* def_outstr,
-    char** spp));
+    char** spp);
 
 /*
  * These two variables are sometimes defined in,
@@ -569,7 +569,7 @@ static char* ltgetstr(char* capname, char** pp)
  * Get size of the output screen.
  */
 public
-void scrsize(VOID_PARAM)
+void scrsize(void)
 {
     char* s;
     int sys_height;
@@ -684,7 +684,7 @@ char* special_key_str(int key)
  * Get terminal capabilities via termcap.
  */
 public
-void get_term(VOID_PARAM)
+void get_term(void)
 {
     termcap_debug = !isnullenv(lgetenv((char*)"LESS_TERMCAP_DEBUG"));
 
@@ -969,7 +969,7 @@ static void tmodes(char* incap, char* outcap, char** instr, char** outstr,
  * produce input to less.
  */
 public
-void init_mouse(VOID_PARAM)
+void init_mouse(void)
 {
     if (!mousecap)
         return;
@@ -981,7 +981,7 @@ void init_mouse(VOID_PARAM)
  * are handled by the system (so text can be selected, etc).
  */
 public
-void deinit_mouse(VOID_PARAM)
+void deinit_mouse(void)
 {
     if (!mousecap)
         return;
@@ -992,7 +992,7 @@ void deinit_mouse(VOID_PARAM)
  * Initialize terminal
  */
 public
-void init(VOID_PARAM)
+void init(void)
 {
     if (!(quit_if_one_screen && one_screen)) {
         if (!no_init)
@@ -1021,7 +1021,7 @@ void init(VOID_PARAM)
  * Deinitialize terminal
  */
 public
-void deinit(VOID_PARAM)
+void deinit(void)
 {
     if (!init_done)
         return;
@@ -1039,20 +1039,20 @@ void deinit(VOID_PARAM)
  * Home cursor (move to upper left corner of screen).
  */
 public
-void home(VOID_PARAM) { tputs(sc_home, 1, putchr); }
+void home(void) { tputs(sc_home, 1, putchr); }
 
 /*
  * Add a blank line (called with cursor at home).
  * Should scroll the display down.
  */
 public
-void add_line(VOID_PARAM) { tputs(sc_addline, sc_height, putchr); }
+void add_line(void) { tputs(sc_addline, sc_height, putchr); }
 
 /*
  * Move cursor to lower left corner of screen.
  */
 public
-void lower_left(VOID_PARAM)
+void lower_left(void)
 {
     if (!init_done)
         return;
@@ -1063,14 +1063,14 @@ void lower_left(VOID_PARAM)
  * Move cursor to left position of current line.
  */
 public
-void line_left(VOID_PARAM) { tputs(sc_return, 1, putchr); }
+void line_left(void) { tputs(sc_return, 1, putchr); }
 
 /*
  * Check if the console size has changed and reset internals
  * (in lieu of SIGWINCH for WIN32).
  */
 public
-void check_winch(VOID_PARAM) { }
+void check_winch(void) { }
 
 /*
  * Goto a specific line on the screen.
@@ -1082,7 +1082,7 @@ void goto_line(int sindex) { tputs(tgoto(sc_move, 0, sindex), 1, putchr); }
  * Output the "visual bell", if there is one.
  */
 public
-void vbell(VOID_PARAM)
+void vbell(void)
 {
     if (*sc_visual_bell == '\0')
         return;
@@ -1092,13 +1092,13 @@ void vbell(VOID_PARAM)
 /*
  * Make a noise.
  */
-static void beep(VOID_PARAM) { putchr(CONTROL('G')); }
+static void beep(void) { putchr(CONTROL('G')); }
 
 /*
  * Ring the terminal bell.
  */
 public
-void bell(VOID_PARAM)
+void bell(void)
 {
     if (quiet == VERY_QUIET)
         vbell();
@@ -1110,20 +1110,20 @@ void bell(VOID_PARAM)
  * Clear the screen.
  */
 public
-void clear(VOID_PARAM) { tputs(sc_clear, sc_height, putchr); }
+void clear(void) { tputs(sc_clear, sc_height, putchr); }
 
 /*
  * Clear from the cursor to the end of the cursor's line.
  * {{ This must not move the cursor. }}
  */
 public
-void clear_eol(VOID_PARAM) { tputs(sc_eol_clear, 1, putchr); }
+void clear_eol(void) { tputs(sc_eol_clear, 1, putchr); }
 
 /*
  * Clear the current line.
  * Clear the screen if there's off-screen memory below the display.
  */
-static void clear_eol_bot(VOID_PARAM)
+static void clear_eol_bot(void)
 {
     if (below_mem)
         tputs(sc_eos_clear, 1, putchr);
@@ -1136,7 +1136,7 @@ static void clear_eol_bot(VOID_PARAM)
  * Leave the cursor at the beginning of the bottom line.
  */
 public
-void clear_bot(VOID_PARAM)
+void clear_bot(void)
 {
     /*
      * If we're in a non-normal attribute mode, temporarily exit
@@ -1177,7 +1177,7 @@ void at_enter(int attr)
 }
 
 public
-void at_exit(VOID_PARAM)
+void at_exit(void)
 {
     /* Undo things in the reverse order we did them.  */
     if (attrmode & AT_STANDOUT)
@@ -1228,7 +1228,7 @@ int apply_at_specials(int attr)
  * Output a plain backspace, without erasing the previous char.
  */
 public
-void putbs(VOID_PARAM)
+void putbs(void)
 {
     if (termcap_debug)
         putstr((char*)"<bs>");

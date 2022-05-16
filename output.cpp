@@ -42,9 +42,9 @@ extern int oldbot;
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// put_line(VOID_PARAM)
+// put_line(void)
 public
-void put_line(VOID_PARAM)
+void put_line(void)
 {
     int c;
     int i;
@@ -94,9 +94,9 @@ static char* ob = obuf;
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// flush(VOID_PARAM)
+// flush(void)
 public
-void flush(VOID_PARAM)
+void flush(void)
 {
     int n;
     int fd;
@@ -263,9 +263,9 @@ static int less_printf(char* fmt, PARG* parg)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// get_return(VOID_PARAM)
+// get_return(void)
 public
-void get_return(VOID_PARAM)
+void get_return(void)
 {
     int c;
 

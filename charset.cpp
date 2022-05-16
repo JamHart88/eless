@@ -235,7 +235,7 @@ static int icharset(char* name, int no_error)
 /*
  * Define a charset, given a locale name.
  */
-static void ilocale(VOID_PARAM)
+static void ilocale(void)
 {
     int c;
 
@@ -302,7 +302,7 @@ attr:
 /*
  *
  */
-static void set_charset(VOID_PARAM)
+static void set_charset(void)
 {
     char* s;
 
@@ -358,7 +358,7 @@ static void set_charset(VOID_PARAM)
  * Initialize charset data structures.
  */
 public
-void init_charset(VOID_PARAM)
+void init_charset(void)
 {
     char* s;
 

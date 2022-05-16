@@ -400,9 +400,9 @@ static struct loption option[] = {
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// init_option(VOID_PARAM)
+// init_option(void)
 public
-void init_option(VOID_PARAM)
+void init_option(void)
 {
     struct loption* o;
     char* p;

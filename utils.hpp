@@ -12,7 +12,7 @@
 namespace utils {
 
 public char * save (const char *s);
-public VOID_POINTER ecalloc (int count, unsigned int size);
+public void * ecalloc (int count, unsigned int size);
 public char * skipsp (char *s);
 public int sprefix (char *ps, char *s, int uppercase);
 public void quit (int status);

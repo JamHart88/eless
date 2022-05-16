@@ -188,7 +188,7 @@ public IFILE getoff_ifile(IFILE ifile)
 /*
  * Return the number of ifiles.
  */
-public int nifile(VOID_PARAM)
+public int nifile(void)
 {
     return (ifiles);
 }

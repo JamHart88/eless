@@ -179,9 +179,9 @@ void init_signals(int on)
 // -------------------------------------------
 // Converted from C to C++ - C below
 // public void
-// psignals(VOID_PARAM)
+// psignals(void)
 public
-void psignals(VOID_PARAM)
+void psignals(void)
 {
     int tsignals;
 

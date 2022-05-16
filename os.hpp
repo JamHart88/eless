@@ -6,9 +6,9 @@
 public
 int iread(int fd, unsigned char *buf, unsigned int len);
 public
-void intread(VOID_PARAM);
+void intread(void);
 public
-time_type get_time(VOID_PARAM);
+time_type get_time(void);
 public
 char *errno_message(char *filename);
 public
