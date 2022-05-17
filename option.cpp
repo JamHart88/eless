@@ -200,11 +200,11 @@ void scan_option(char *s) {
     err = 0;
     if (optname == NULL) {
       printopt = propt(optc);
-      lc = ASCII_IS_LOWER(optc);
+      lc = islower(optc);
       o = findopt(optc);
     } else {
       printopt = optname;
-      lc = ASCII_IS_LOWER(optname[0]);
+      lc = islower(optname[0]);
       o = findopt_name(&optname, NULL, &err);
       s = optname;
       optname = NULL;

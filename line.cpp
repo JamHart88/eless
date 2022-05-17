@@ -65,14 +65,14 @@ static int is_null_line; /* There is no current line */
 
 static int lmargin; /* Left margin */
 
-static LWCHAR pendc;
+static lwchar_t pendc;
 static position_t pendpos;
 static char* end_ansi_chars;
 static char* mid_ansi_chars;
 
 static int attr_swidth (int a);
 static int attr_ewidth (int a);
-static int do_append (LWCHAR ch, char* rep, position_t pos);
+static int do_append (lwchar_t ch, char* rep, position_t pos);
 
 extern int sigs;
 extern int bs_mode;
@@ -159,7 +159,7 @@ static int expand_linebuf(void)
  * Is a character ASCII?
  */
 
-int is_ascii_char(LWCHAR ch)
+int is_ascii_char(lwchar_t ch)
 {
     return (ch <= 0x7F);
 }
@@ -275,7 +275,7 @@ void plinenum(position_t pos)
  */
 static void pshift(int shift)
 {
-    LWCHAR prev_ch = 0;
+    lwchar_t prev_ch = 0;
     unsigned char c;
     int shifted = 0;
     int to;
@@ -314,7 +314,7 @@ static void pshift(int shift)
 
         if (!IS_ASCII_OCTET(c) && utf_mode) {
             /* Assumes well-formedness validation already done.  */
-            LWCHAR ch;
+            lwchar_t ch;
 
             len = utf_len(c);
             if (from + len > curr)
@@ -436,7 +436,7 @@ static int attr_ewidth(int a)
  * Adding a character with a given attribute may cause an enter or exit
  * attribute sequence to be inserted, so this must be taken into account.
  */
-static int pwidth(LWCHAR ch, int a, LWCHAR prev_ch)
+static int pwidth(lwchar_t ch, int a, lwchar_t prev_ch)
 {
     int w;
 
@@ -493,9 +493,9 @@ static int pwidth(LWCHAR ch, int a, LWCHAR prev_ch)
  */
 static int backc(void)
 {
-    LWCHAR prev_ch;
+    lwchar_t prev_ch;
     char* p = linebuf + curr;
-    LWCHAR ch = step_char(&p, -1, linebuf + lmargin);
+    lwchar_t ch = step_char(&p, -1, linebuf + lmargin);
     int width;
 
     /* This assumes that there is no '\b' in linebuf.  */
@@ -524,7 +524,7 @@ static int in_ansi_esc_seq(void)
      * or an end char (which means we're NOT in a seq).
      */
     for (p = &linebuf[curr]; p > linebuf;) {
-        LWCHAR ch = step_char(&p, -1, linebuf);
+        lwchar_t ch = step_char(&p, -1, linebuf);
         if (IS_CSI_START(ch))
             return (1);
         if (!is_ansi_middle(ch))
@@ -537,7 +537,7 @@ static int in_ansi_esc_seq(void)
  * Is a character the end of an ANSI escape sequence?
  */
 
-int is_ansi_end(LWCHAR ch)
+int is_ansi_end(lwchar_t ch)
 {
     if (!is_ascii_char(ch))
         return (0);
@@ -548,7 +548,7 @@ int is_ansi_end(LWCHAR ch)
  * Can a char appear in an ANSI escape sequence, before the end char?
  */
 
-int is_ansi_middle(LWCHAR ch)
+int is_ansi_middle(lwchar_t ch)
 {
     if (!is_ascii_char(ch))
         return (0);
@@ -564,7 +564,7 @@ int is_ansi_middle(LWCHAR ch)
 
 void skip_ansi(char** pp, const char* limit)
 {
-    LWCHAR c;
+    lwchar_t c;
     do {
         c = step_char(pp, +1, limit);
     } while (*pp < limit && is_ansi_middle(c));
@@ -580,7 +580,7 @@ void skip_ansi(char** pp, const char* limit)
             return (1);                          \
     } while (0)
 
-static int store_char(LWCHAR ch, int a, char* rep, position_t pos)
+static int store_char(lwchar_t ch, int a, char* rep, position_t pos)
 {
     int w;
     int replen;
@@ -611,7 +611,7 @@ static int store_char(LWCHAR ch, int a, char* rep, position_t pos)
         if (!is_ansi_end(ch) && !is_ansi_middle(ch)) {
             /* Remove whole unrecognized sequence.  */
             char* p = &linebuf[curr];
-            LWCHAR bch;
+            lwchar_t bch;
             do {
                 bch = step_char(&p, -1, linebuf);
             } while (p > linebuf && !IS_CSI_START(bch));
@@ -625,7 +625,7 @@ static int store_char(LWCHAR ch, int a, char* rep, position_t pos)
         w = 0;
     } else {
         char* p = &linebuf[curr];
-        LWCHAR prev_ch = step_char(&p, -1, linebuf);
+        lwchar_t prev_ch = step_char(&p, -1, linebuf);
         w = pwidth(ch, a, prev_ch);
     }
 
@@ -702,7 +702,7 @@ static int store_tab(int attr, position_t pos)
             return 1;                 \
     } while (0)
 
-static int store_prchar(LWCHAR c, position_t pos)
+static int store_prchar(lwchar_t c, position_t pos)
 {
     char* s;
 
@@ -833,10 +833,10 @@ int pappend(int c, position_t pos)
     return (r);
 }
 
-static int do_append(LWCHAR ch, char* rep, position_t pos)
+static int do_append(lwchar_t ch, char* rep, position_t pos)
 {
     int a;
-    LWCHAR prev_ch;
+    lwchar_t prev_ch;
 
     a = AT_NORMAL;
 

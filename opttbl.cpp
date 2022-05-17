@@ -438,7 +438,7 @@ struct loption* findopt(int c)
     for (o = option; o->oletter != '\0'; o++) {
         if (o->oletter == c)
             return (o);
-        if ((o->otype & TRIPLE) && ASCII_TO_UPPER(o->oletter) == c)
+        if ((o->otype & TRIPLE) && toupper(o->oletter) == c)
             return (o);
     }
     return (NULL);
@@ -448,19 +448,17 @@ struct loption* findopt(int c)
  *
  */
 // -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// is_optchar(c)
-//     char c;
 static int is_optchar(char c)
 {
-    if (ASCII_IS_UPPER(c))
-        return 1;
-    if (ASCII_IS_LOWER(c))
-        return 1;
+    int retval = 0;
+
+    if (iswupper(c))
+        retval = 1;
+    if (iswlower(c))
+        retval = 1;
     if (c == '-')
-        return 1;
-    return 0;
+        retval = 1;
+    return retval;
 }
 
 /*

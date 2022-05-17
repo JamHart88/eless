@@ -27,17 +27,13 @@
  * Added regexec2 with notbol parameter. -- 4/19/99 Mark Nudelman
  */
 
-#include "less.hpp"
-#if HAVE_STDIO_H
-#include <stdio.h>
-#endif
-#if HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#if HAVE_STRING_H
-#include <string.h>
-#endif
 #include "regexp.hpp"
+#include "less.hpp"
+
+#include <stdlib.h>
+#include <cstring>
+#include <cstdio>
+
 
 /*
  * The "internal use only" fields in regexp.h are present to pass info from

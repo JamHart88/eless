@@ -141,11 +141,11 @@ static struct pattern_info filter_info;
 static int is_ucase(char* str)
 {
     char* str_end = str + strlen(str);
-    LWCHAR ch;
+    lwchar_t ch;
 
     while (str < str_end) {
         ch = step_char(&str, +1, str_end);
-        if (IS_UPPER(ch))
+        if (iswupper(ch))
             return (1);
     }
     return (0);

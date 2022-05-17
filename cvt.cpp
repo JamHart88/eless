@@ -62,7 +62,7 @@ extern int utf_mode;
     char *edst = odst;
     char *src;
     char *src_end;
-    LWCHAR ch;
+    lwchar_t ch;
 
     if (lenp != NULL)
         src_end = osrc + *lenp;
@@ -91,8 +91,8 @@ extern int utf_mode;
         } else
         {
             /* Just copy the char to the destination buffer. */
-            if ((ops & CVT_TO_LC) && IS_UPPER(ch))
-                ch = TO_LOWER(ch);
+            if ((ops & CVT_TO_LC) && isupper(ch))
+                ch = tolower(ch);
             put_wchar(&dst, ch);
             /* Record the original position of the char. */
             if (chpos != NULL)

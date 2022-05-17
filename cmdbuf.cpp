@@ -155,8 +155,8 @@ static int cmd_mbc_buf_index;
  */
  void cmd_putstr(const char *s)
 {
-    LWCHAR prev_ch = 0;
-    LWCHAR ch;
+    lwchar_t prev_ch = 0;
+    lwchar_t ch;
     const char *endline = s + strlen(s);
     while (*s != '\0')
     {
@@ -200,7 +200,7 @@ static int cmd_mbc_buf_index;
  *    since they're always the same. Maybe clean this up someday. }}
  */
 static char * cmd_step_common(char *p,
-    LWCHAR ch,
+    lwchar_t ch,
     int len,
     int *pwidth,
     int *bswidth)
@@ -221,7 +221,7 @@ static char * cmd_step_common(char *p,
             width = (int) strlen(pr);
         else
         {
-            LWCHAR prev_ch = step_char(&p, -1, cmdbuf);
+            lwchar_t prev_ch = step_char(&p, -1, cmdbuf);
             if (is_combining_char(prev_ch, ch))
                 width = 0;
             else
@@ -243,7 +243,7 @@ static char * cmd_step_right(char **pp,
     int *bswidth)
 {
     char *p = *pp;
-    LWCHAR ch = step_char(pp, +1, p + strlen(p));
+    lwchar_t ch = step_char(pp, +1, p + strlen(p));
 
     return cmd_step_common(p, ch, *pp - p, pwidth, bswidth);
 }
@@ -256,7 +256,7 @@ static char * cmd_step_left(char **pp,
     int *bswidth)
 {
     char *p = *pp;
-    LWCHAR ch = step_char(pp, -1, cmdbuf);
+    lwchar_t ch = step_char(pp, -1, cmdbuf);
 
     return cmd_step_common(*pp, ch, p - *pp, pwidth, bswidth);
 }

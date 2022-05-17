@@ -11,9 +11,9 @@
  int in_mca (void);
  void dispversion (void);
  int getcc (void);
- void ungetcc (LWCHAR c);
+ void ungetcc (lwchar_t c);
  void ungetsc (char *s);
- LWCHAR peekcc (void);
+ lwchar_t peekcc (void);
  void commands (void);
 
 #endif

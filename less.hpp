@@ -20,7 +20,7 @@
  */
 #include "defines.hpp"
 
-/**
+/*
  * Wrapping your function call with ignore_result makes it more clear to
  * readers, compilers and linters that you are, in fact, ignoring the
  * function's return value on purpose.
@@ -38,30 +38,28 @@ static inline void ignore_result(long long int unused_result)
 /* Library function declarations */
 
 #include <sys/types.h>
-#if HAVE_STDIO_H
-#include <stdio.h>
-#endif
+#include <cstdio>
+
 #if HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
 #if HAVE_CTYPE_H
 #include <ctype.h>
 #endif
 #if HAVE_WCTYPE_H
-#include <wctype.h>
+#include <cwctype>
 #endif
+
 #if HAVE_LIMITS_H
-#include <limits.h>
+#include <climits>
 #endif
-#if HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#if HAVE_STRING_H
-#include <string.h>
-#endif
+
+#include <cstdlib>
+#include <cstring>
 
 #if DEBUG
 #include "debug.hpp"
@@ -70,65 +68,14 @@ static inline void ignore_result(long long int unused_result)
 // New C++ includes
 #include <cstring>
 
-#ifdef __TANDEM
-#include <floss.h>
-#endif
-
-#if !HAVE_STDLIB_H
-char* getenv();
-off_t lseek();
-void* calloc();
-void free();
-#endif
 
 /*
  * Simple lowercase test which can be used during option processing
  * (before options are parsed which might tell us what charset to use).
  */
-#define ASCII_IS_UPPER(c) ((c) >= 'A' && (c) <= 'Z')
-#define ASCII_IS_LOWER(c) ((c) >= 'a' && (c) <= 'z')
-#define ASCII_TO_UPPER(c) ((c) - 'a' + 'A')
-#define ASCII_TO_LOWER(c) ((c) - 'A' + 'a')
 
-#undef IS_UPPER
-#undef IS_LOWER
-#undef TO_UPPER
-#undef TO_LOWER
-#undef IS_SPACE
-#undef IS_DIGIT
 
-#if HAVE_WCTYPE
-#define IS_UPPER(c) iswupper(c)
-#define IS_LOWER(c) iswlower(c)
-#define TO_UPPER(c) towupper(c)
-#define TO_LOWER(c) towlower(c)
-#else
-#if HAVE_UPPER_LOWER
-#define IS_UPPER(c) isupper((unsigned char)(c))
-#define IS_LOWER(c) islower((unsigned char)(c))
-#define TO_UPPER(c) toupper((unsigned char)(c))
-#define TO_LOWER(c) tolower((unsigned char)(c))
-#else
-#define IS_UPPER(c) ASCII_IS_UPPER(c)
-#define IS_LOWER(c) ASCII_IS_LOWER(c)
-#define TO_UPPER(c) ASCII_TO_UPPER(c)
-#define TO_LOWER(c) ASCII_TO_LOWER(c)
-#endif
-#endif
-
-#ifdef isspace
-#define IS_SPACE(c) isspace((unsigned char)(c))
-#else
-#define IS_SPACE(c) ((c) == ' ' || (c) == '\t' || (c) == '\n' || (c) == '\r' || (c) == '\f')
-#endif
-
-#ifdef isdigit
-#define IS_DIGIT(c) isdigit((unsigned char)(c))
-#else
-#define IS_DIGIT(c) ((c) >= '0' && (c) <= '9')
-#endif
-
-#define IS_CSI_START(c) (((LWCHAR)(c)) == ESC || (((LWCHAR)(c)) == CSI))
+#define IS_CSI_START(c) (((lwchar_t)(c)) == ESC || (((lwchar_t)(c)) == CSI))
 
 #ifndef NULL
 #define NULL 0
@@ -174,7 +121,7 @@ void free();
 /*
  * Special types and consts.
  */
-typedef unsigned long LWCHAR;
+typedef unsigned long lwchar_t;
 typedef off_t position_t;
 typedef off_t linenum_t;
 #define MIN_LINENUM_WIDTH 7 /* Min printing width of a line number */
@@ -241,7 +188,7 @@ struct textlist {
 };
 
 struct wchar_range {
-    LWCHAR first, last;
+    lwchar_t first, last;
 };
 
 struct wchar_range_table {

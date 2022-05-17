@@ -111,7 +111,7 @@ static char pipec;
 /* Stack of ungotten chars (via ungetcc) */
 struct ungot {
     struct ungot* ug_next;
-    LWCHAR ug_char;
+    lwchar_t ug_char;
 };
 static struct ungot* ungot = NULL;
 
@@ -404,7 +404,7 @@ static int mca_opt_nonfirst_char(int c)
     if (cmd_char(c) == CC_QUIT)
         return (MCA_DONE);
     p = get_cmdbuf();
-    opt_lower = ASCII_IS_LOWER(p[0]);
+    opt_lower = islower(static_cast<int>(p[0]));
     err = 0;
     curropt = findopt_name(&p, &oname, &err);
     if (curropt != NULL) {
@@ -417,8 +417,8 @@ static int mca_opt_nonfirst_char(int c)
         mca_opt_toggle();
         for (p = oname; *p != '\0'; p++) {
             c = *p;
-            if (!opt_lower && ASCII_IS_LOWER(c))
-                c = ASCII_TO_UPPER(c);
+            if (!opt_lower && islower(c))
+                c = isupper(c);
             if (cmd_char(c) != CC_OK)
                 return (MCA_DONE);
         }
@@ -468,7 +468,7 @@ static int mca_opt_char(int c)
             error((char*)"There is no %s option", &parg);
             return (MCA_DONE);
         }
-        opt_lower = ASCII_IS_LOWER(c);
+        opt_lower = islower(c);
     }
     /*
      * If the option which was entered does not take a
@@ -760,7 +760,7 @@ void dispversion(void)
 /*
  * Return a character to complete a partial command, if possible.
  */
-static LWCHAR getcc_end_command(void)
+static lwchar_t getcc_end_command(void)
 {
     switch (mca) {
     case A_DIGIT:
@@ -782,9 +782,9 @@ static LWCHAR getcc_end_command(void)
  * but may come from ungotten characters
  * (characters previously given to ungetcc or ungetsc).
  */
-static LWCHAR getccu(void)
+static lwchar_t getccu(void)
 {
-    LWCHAR c;
+    lwchar_t c;
     if (ungot == NULL) {
         /* Normal case: no ungotten chars.
          * Get char from the user. */
@@ -807,10 +807,10 @@ static LWCHAR getccu(void)
  * Get a command character, but if we receive the orig sequence,
  * convert it to the repl sequence.
  */
-static LWCHAR getcc_repl(char const* orig, char const* repl, LWCHAR (*gr_getc)(void), void (*gr_ungetc)(LWCHAR))
+static lwchar_t getcc_repl(char const* orig, char const* repl, lwchar_t (*gr_getc)(void), void (*gr_ungetc)(lwchar_t))
 {
-    LWCHAR c;
-    LWCHAR keys[16];
+    lwchar_t c;
+    lwchar_t keys[16];
     int ki = 0;
 
     c = (*gr_getc)();
@@ -818,7 +818,7 @@ static LWCHAR getcc_repl(char const* orig, char const* repl, LWCHAR (*gr_getc)(v
         return c;
     for (;;) {
         keys[ki] = c;
-        if (c != (LWCHAR)orig[ki] || ki >= (int)sizeof(keys) - 1) {
+        if (c != (lwchar_t)orig[ki] || ki >= (int)sizeof(keys) - 1) {
             /* This is not orig we have been receiving.
              * If we have stashed chars in keys[],
              * unget them and return the first one. */
@@ -855,7 +855,7 @@ int getcc(void)
  * The next getcc() will return this character.
  */
 
-void ungetcc(LWCHAR c)
+void ungetcc(lwchar_t c)
 {
     struct ungot* ug = (struct ungot*)utils::ecalloc(1, sizeof(struct ungot));
 
@@ -881,9 +881,9 @@ void ungetsc(char* s)
  * Peek the next command character, without consuming it.
  */
 
-LWCHAR peekcc(void)
+lwchar_t peekcc(void)
 {
-    LWCHAR c = getcc();
+    lwchar_t c = getcc();
     ungetcc(c);
     return c;
 }

@@ -118,10 +118,9 @@
 
 #define DEBUG 1
 
-/* ---------------------------------------------------- */
-/* Settings always true on Unix.  */
-/* ---------------------------------------------------- */
-
+/* ---------------------------------------------------- 
+ * Settings always true on Unix.  
+ * ----------------------------------------------------  */
 
 /*
  * Pathname separator character.
@@ -159,9 +158,9 @@
 #define    TAGLINE_SIZE    1024    /* Max size of line in tags file */
 #define    TABSTOP_MAX     128     /* Max number of custom tab stops */
 
-/* ----------------------------------------------------*/
-/* Settings automatically determined by configure.  */
-/* ----------------------------------------------------*/
+/* ----------------------------------------------------
+ * Settings automatically determined by configure.  
+ * ----------------------------------------------------*/
 
 
 /* Define EDIT_PGM to your editor. */
@@ -260,12 +259,6 @@
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
 
-/* Define to 1 if you have the <stdio.h> header file. */
-#define HAVE_STDIO_H 1
-
-/* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H 1
-
 /* Define HAVE_STRERROR if you have the strerror() function. */
 #define HAVE_STRERROR 1
 
@@ -307,9 +300,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
-
-/* Define HAVE_UPPER_LOWER if you have isupper, islower, toupper, tolower. */
-#define HAVE_UPPER_LOWER 1
 
 /* Henry Spencer V8 regcomp() and regexp.h */
 /* #undef HAVE_V8_REGCOMP */

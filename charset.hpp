@@ -30,19 +30,19 @@
 
  void setfmt (char *s, char **fmtvarptr, int *attrptr, char *default_fmt);
  void init_charset (void);
- int binary_char (LWCHAR c);
- int control_char (LWCHAR c);
- char * prchar (LWCHAR c);
- char * prutfchar (LWCHAR ch);
+ int binary_char (lwchar_t c);
+ int control_char (lwchar_t c);
+ char * prchar (lwchar_t c);
+ char * prutfchar (lwchar_t ch);
  int utf_len (int ch);
  int is_utf8_well_formed (char *ss, int slen);
  void utf_skip_to_lead (char **pp, char *limit);
- LWCHAR get_wchar (const char *p);
- void put_wchar (char **pp, LWCHAR ch);
- LWCHAR step_char (char **pp, signed int dir, const char *limit);
- int is_composing_char (LWCHAR ch);
- int is_ubin_char (LWCHAR ch);
- int is_wide_char (LWCHAR ch);
- int is_combining_char (LWCHAR ch1, LWCHAR ch2);
+ lwchar_t get_wchar (const char *p);
+ void put_wchar (char **pp, lwchar_t ch);
+ lwchar_t step_char (char **pp, signed int dir, const char *limit);
+ int is_composing_char (lwchar_t ch);
+ int is_ubin_char (lwchar_t ch);
+ int is_wide_char (lwchar_t ch);
+ int is_combining_char (lwchar_t ch1, lwchar_t ch2);
 
 #endif

@@ -800,12 +800,12 @@ static int getentry(char *buf, /* standard or extended ctags -x format data */ch
 /* line number of file where this tag is found */{
     char *p = buf;
 
-    for (*tag = p;  *p && !IS_SPACE(*p);  p++)    /* tag name */
+    for (*tag = p;  *p && !isspace(*p);  p++)    /* tag name */
         ;
     if (*p == 0)
         return (-1);
     *p++ = 0;
-    for ( ;  *p && IS_SPACE(*p);  p++)        /* (skip blanks) */
+    for ( ;  *p && isspace(*p);  p++)        /* (skip blanks) */
         ;
     if (*p == 0)
         return (-1);
@@ -813,27 +813,27 @@ static int getentry(char *buf, /* standard or extended ctags -x format data */ch
      * If the second part begin with other than digit,
      * it is assumed tag type. Skip it.
      */
-    if (!IS_DIGIT(*p))
+    if (!isdigit(*p))
     {
-        for ( ;  *p && !IS_SPACE(*p);  p++)    /* (skip tag type) */
+        for ( ;  *p && !isspace(*p);  p++)    /* (skip tag type) */
             ;
-        for (;  *p && IS_SPACE(*p);  p++)    /* (skip blanks) */
+        for (;  *p && isspace(*p);  p++)    /* (skip blanks) */
             ;
     }
-    if (!IS_DIGIT(*p))
+    if (!isdigit(*p))
         return (-1);
     *line = p;                    /* line number */
-    for (*line = p;  *p && !IS_SPACE(*p);  p++)
+    for (*line = p;  *p && !isspace(*p);  p++)
         ;
     if (*p == 0)
         return (-1);
     *p++ = 0;
-    for ( ; *p && IS_SPACE(*p);  p++)        /* (skip blanks) */
+    for ( ; *p && isspace(*p);  p++)        /* (skip blanks) */
         ;
     if (*p == 0)
         return (-1);
     *file = p;                    /* file name */
-    for (*file = p;  *p && !IS_SPACE(*p);  p++)
+    for (*file = p;  *p && !isspace(*p);  p++)
         ;
     if (*p == 0)
         return (-1);

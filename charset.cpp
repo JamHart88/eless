@@ -379,7 +379,7 @@ void init_charset(void)
  * Is a given character a "binary" character?
  */
 
-int binary_char(LWCHAR c)
+int binary_char(lwchar_t c)
 {
     if (utf_mode)
         return (is_ubin_char(c));
@@ -391,7 +391,7 @@ int binary_char(LWCHAR c)
  * Is a given character a "control" character?
  */
 
-int control_char(LWCHAR c)
+int control_char(lwchar_t c)
 {
     c &= 0377;
     return (chardef[c] & IS_CONTROL_CHAR);
@@ -402,7 +402,7 @@ int control_char(LWCHAR c)
  * For example, in the "ascii" charset '\3' is printed as "^C".
  */
 
-char* prchar(LWCHAR c)
+char* prchar(lwchar_t c)
 {
     /* {{ This buffer can be overrun if LESSBINFMT is a long string. }} */
     static char buf[32];
@@ -437,7 +437,7 @@ char* prchar(LWCHAR c)
  * Return the printable form of a UTF-8 character.
  */
 
-char* prutfchar(LWCHAR ch)
+char* prutfchar(lwchar_t ch)
 {
     static char buf[32];
 
@@ -531,28 +531,28 @@ void utf_skip_to_lead(char** pp, char* limit)
  * Get the value of a UTF-8 character.
  */
 
-LWCHAR get_wchar(const char* p)
+lwchar_t get_wchar(const char* p)
 {
     switch (utf_len(p[0])) {
     case 1:
     default:
         /* 0xxxxxxx */
-        return (LWCHAR)(p[0] & 0xFF);
+        return (lwchar_t)(p[0] & 0xFF);
     case 2:
         /* 110xxxxx 10xxxxxx */
-        return (LWCHAR)(((p[0] & 0x1F) << 6) | (p[1] & 0x3F));
+        return (lwchar_t)(((p[0] & 0x1F) << 6) | (p[1] & 0x3F));
     case 3:
         /* 1110xxxx 10xxxxxx 10xxxxxx */
-        return (LWCHAR)(((p[0] & 0x0F) << 12) | ((p[1] & 0x3F) << 6) | (p[2] & 0x3F));
+        return (lwchar_t)(((p[0] & 0x0F) << 12) | ((p[1] & 0x3F) << 6) | (p[2] & 0x3F));
     case 4:
         /* 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx */
-        return (LWCHAR)(((p[0] & 0x07) << 18) | ((p[1] & 0x3F) << 12) | ((p[2] & 0x3F) << 6) | (p[3] & 0x3F));
+        return (lwchar_t)(((p[0] & 0x07) << 18) | ((p[1] & 0x3F) << 12) | ((p[2] & 0x3F) << 6) | (p[3] & 0x3F));
     case 5:
         /* 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx */
-        return (LWCHAR)(((p[0] & 0x03) << 24) | ((p[1] & 0x3F) << 18) | ((p[2] & 0x3F) << 12) | ((p[3] & 0x3F) << 6) | (p[4] & 0x3F));
+        return (lwchar_t)(((p[0] & 0x03) << 24) | ((p[1] & 0x3F) << 18) | ((p[2] & 0x3F) << 12) | ((p[3] & 0x3F) << 6) | (p[4] & 0x3F));
     case 6:
         /* 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx */
-        return (LWCHAR)(((p[0] & 0x01) << 30) | ((p[1] & 0x3F) << 24) | ((p[2] & 0x3F) << 18) | ((p[3] & 0x3F) << 12) | ((p[4] & 0x3F) << 6) | (p[5] & 0x3F));
+        return (lwchar_t)(((p[0] & 0x01) << 30) | ((p[1] & 0x3F) << 24) | ((p[2] & 0x3F) << 18) | ((p[3] & 0x3F) << 12) | ((p[4] & 0x3F) << 6) | (p[5] & 0x3F));
     }
 }
 
@@ -560,7 +560,7 @@ LWCHAR get_wchar(const char* p)
  * Store a character into a UTF-8 string.
  */
 
-void put_wchar(char** pp, LWCHAR ch)
+void put_wchar(char** pp, lwchar_t ch)
 {
     if (!utf_mode || ch < 0x80) {
         /* 0xxxxxxx */
@@ -602,21 +602,21 @@ void put_wchar(char** pp, LWCHAR ch)
  * Step forward or backward one character in a string.
  */
 
-LWCHAR step_char(
+lwchar_t step_char(
     char** pp,
     signed int dir,
     const char* limit)
 {
-    LWCHAR ch;
+    lwchar_t ch;
     int len;
     char* p = *pp;
 
     if (!utf_mode) {
         /* It's easy if chars are one byte. */
         if (dir > 0)
-            ch = (LWCHAR)(unsigned char)((p < limit) ? *p++ : 0);
+            ch = (lwchar_t)(unsigned char)((p < limit) ? *p++ : 0);
         else
-            ch = (LWCHAR)(unsigned char)((p > limit) ? *--p : 0);
+            ch = (lwchar_t)(unsigned char)((p > limit) ? *--p : 0);
     } else if (dir > 0) {
         len = utf_len(*p);
         if (p + len > limit) {
@@ -674,7 +674,7 @@ static struct wchar_range comb_table[] = {
     { 0x0644, 0x0627 },
 };
 
-static int is_in_table(LWCHAR ch,
+static int is_in_table(lwchar_t ch,
     struct wchar_range_table* table)
 {
     int hi;
@@ -702,7 +702,7 @@ static int is_in_table(LWCHAR ch,
  * If a composing character follows any char, the two combine into one glyph.
  */
 
-int is_composing_char(LWCHAR ch)
+int is_composing_char(lwchar_t ch)
 {
     return is_in_table(ch, &compose_table) || (bs_mode != BS_CONTROL && is_in_table(ch, &fmt_table));
 }
@@ -711,7 +711,7 @@ int is_composing_char(LWCHAR ch)
  * Should this UTF-8 character be treated as binary?
  */
 
-int is_ubin_char(LWCHAR ch)
+int is_ubin_char(lwchar_t ch)
 {
     int ubin = is_in_table(ch, &ubin_table) || (bs_mode == BS_CONTROL && is_in_table(ch, &fmt_table));
     return ubin;
@@ -721,7 +721,7 @@ int is_ubin_char(LWCHAR ch)
  * Is this a double width UTF-8 character?
  */
 
-int is_wide_char(LWCHAR ch)
+int is_wide_char(lwchar_t ch)
 {
     return is_in_table(ch, &wide_table);
 }
@@ -732,7 +732,7 @@ int is_wide_char(LWCHAR ch)
  * a specific char (not any char), the two combine into one glyph.
  */
 
-int is_combining_char(LWCHAR ch1, LWCHAR ch2)
+int is_combining_char(lwchar_t ch1, lwchar_t ch2)
 {
     /* The table is small; use linear search. */
 

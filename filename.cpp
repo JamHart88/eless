@@ -404,7 +404,7 @@ static char * dirfile(char *dirname, char *filename)
             utf_skip_to_lead(&p, edata);
         } else 
         {
-            LWCHAR c = step_char(&p, +1, edata);
+            lwchar_t c = step_char(&p, +1, edata);
             if (ctldisp == OPT_ONPLUS && IS_CSI_START(c))
                 skip_ansi(&p, edata);
             else if (binary_char(c))
