@@ -361,7 +361,7 @@ static int mca_opt_first_char(int c)
             optflag = (flag == OPT_SET) ? OPT_TOGGLE : OPT_SET;
             mca_opt_toggle();
             return (MCA_MORE);
-        case CONTROL('P'):
+        case control<int>('P'):
             optflag ^= OPT_NO_PROMPT;
             mca_opt_toggle();
             return (MCA_MORE);
@@ -504,24 +504,24 @@ static int mca_search_char(int c)
         return (NO_MCA);
 
     switch (c) {
-    case CONTROL('E'): /* ignore END of file */
+    case control<int>('E'): /* ignore END of file */
     case '*':
         if (mca != A_FILTER)
             flag = SRCH_PAST_EOF;
         break;
-    case CONTROL('F'): /* FIRST file */
+    case control<int>('F'): /* FIRST file */
     case '@':
         if (mca != A_FILTER)
             flag = SRCH_FIRST_FILE;
         break;
-    case CONTROL('K'): /* KEEP position */
+    case control<int>('K'): /* KEEP position */
         if (mca != A_FILTER)
             flag = SRCH_NO_MOVE;
         break;
-    case CONTROL('R'): /* Don't use REGULAR EXPRESSIONS */
+    case control<int>('R'): /* Don't use REGULAR EXPRESSIONS */
         flag = SRCH_NO_REGEX;
         break;
-    case CONTROL('N'): /* NOT match */
+    case control<int>('N'): /* NOT match */
     case '!':
         flag = SRCH_NO_MATCH;
         break;

@@ -306,7 +306,7 @@ void raw_mode(int on)
 #ifdef VWERASE
             werase_char = s.c_cc[VWERASE];
 #else
-            werase_char = CONTROL('W');
+            werase_char = control<int>('W');
 #endif
 
             /*
@@ -429,7 +429,7 @@ void raw_mode(int on)
 #ifdef VWERASE
             werase_char = s.c_cc[VWERASE];
 #else
-            werase_char = CONTROL('W');
+            werase_char = control<int>('W');
 #endif
 
             /*
@@ -473,7 +473,7 @@ void raw_mode(int on)
 #endif
             erase_char = s.sg_erase;
             kill_char = s.sg_kill;
-            werase_char = CONTROL('W');
+            werase_char = control<int>('W');
 
             /*
              * Set the modes to the way we want them.
@@ -492,8 +492,8 @@ void raw_mode(int on)
 
     /* MS-DOS, Windows, or OS2 */
     erase_char = '\b';
-    kill_char = ESC;
-    werase_char = CONTROL('W');
+    kill_char = esc;
+    werase_char = control<int>('W');
 #endif
 #endif
 #endif
@@ -670,7 +670,7 @@ char* special_key_str(int key)
         }
         break;
     case SK_CONTROL_K:
-        tbuf[0] = CONTROL('K');
+        tbuf[0] = control<int>('K');
         tbuf[1] = '\0';
         s = tbuf;
         break;
@@ -770,10 +770,10 @@ void get_term(void)
 
         sc_s_mousecap = ltgetstr((char*)"MOUSE_START", &sp);
         if (sc_s_mousecap == NULL)
-            sc_s_mousecap = (char*)ESCS "[?1000h" ESCS "[?1006h";
+            sc_s_mousecap = (char*)"\33" "[?1000h" "\33" "[?1006h";
         sc_e_mousecap = ltgetstr((char*)"MOUSE_END", &sp);
         if (sc_e_mousecap == NULL)
-            sc_e_mousecap = (char*)ESCS "[?1006l" ESCS "[?1000l";
+            sc_e_mousecap = (char*)"\33" "[?1006l" "\33" "[?1000l";
 
         sc_init = ltgetstr((char*)"ti", &sp);
         if (sc_init == NULL)
@@ -1092,7 +1092,7 @@ void vbell(void)
 /*
  * Make a noise.
  */
-static void beep(void) { putchr(CONTROL('G')); }
+static void beep(void) { putchr(control<int>('G')); }
 
 /*
  * Ring the terminal bell.

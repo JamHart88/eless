@@ -127,7 +127,7 @@
 #define EV_OK                  01
 
 /* Special keys (keys which output different strings on different terminals) */
-#define SK_SPECIAL_KEY         CONTROL('K')
+#define SK_SPECIAL_KEY         control<int>('K')
 #define SK_RIGHT_ARROW         1
 #define SK_LEFT_ARROW          2
 #define SK_UP_ARROW            3

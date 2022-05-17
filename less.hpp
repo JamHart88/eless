@@ -75,7 +75,9 @@ static inline void ignore_result(long long int unused_result)
  */
 
 
-#define IS_CSI_START(c) (((lwchar_t)(c)) == ESC || (((lwchar_t)(c)) == CSI))
+#define IS_CSI_START(c) (((lwchar_t)(c)) == esc || (((lwchar_t)(c)) == csi_char))
+
+
 
 #ifndef NULL
 #define NULL 0
@@ -243,80 +245,20 @@ struct wchar_range_table {
 #define AT_BINARY (1 << 5) /* LESS*BINFMT representation */
 #define AT_HILITE (1 << 6) /* Internal highlights (e.g., for search) */
 
-#if '0' == 240
-#define IS_EBCDIC_HOST 1
-#endif
+// JPH Replaced the following macro with template
+//#define CONTROL(c) ((c)&037)
+constexpr unsigned char unitSepChar = 31;
+template <typename T>
+constexpr inline unsigned char control(T inputChar) {
+  return (inputChar & unitSepChar);
+} 
 
-#if IS_EBCDIC_HOST
-/*
- * Long definition for EBCDIC.
- * Since the argument is usually a const, this macro normally compiles
- * into a const.
- */
-#define CONTROL(c) (                          \
-    (c) == '[' ? '\047' : (c) == 'a' ? '\001' \
-        : (c) == 'b'                 ? '\002' \
-        : (c) == 'c'                 ? '\003' \
-        : (c) == 'd'                 ? '\067' \
-        : (c) == 'e'                 ? '\055' \
-        : (c) == 'f'                 ? '\056' \
-        : (c) == 'g'                 ? '\057' \
-        : (c) == 'h'                 ? '\026' \
-        : (c) == 'i'                 ? '\005' \
-        : (c) == 'j'                 ? '\025' \
-        : (c) == 'k'                 ? '\013' \
-        : (c) == 'l'                 ? '\014' \
-        : (c) == 'm'                 ? '\015' \
-        : (c) == 'n'                 ? '\016' \
-        : (c) == 'o'                 ? '\017' \
-        : (c) == 'p'                 ? '\020' \
-        : (c) == 'q'                 ? '\021' \
-        : (c) == 'r'                 ? '\022' \
-        : (c) == 's'                 ? '\023' \
-        : (c) == 't'                 ? '\074' \
-        : (c) == 'u'                 ? '\075' \
-        : (c) == 'v'                 ? '\062' \
-        : (c) == 'w'                 ? '\046' \
-        : (c) == 'x'                 ? '\030' \
-        : (c) == 'y'                 ? '\031' \
-        : (c) == 'z'                 ? '\077' \
-        : (c) == 'A'                 ? '\001' \
-        : (c) == 'B'                 ? '\002' \
-        : (c) == 'C'                 ? '\003' \
-        : (c) == 'D'                 ? '\067' \
-        : (c) == 'E'                 ? '\055' \
-        : (c) == 'F'                 ? '\056' \
-        : (c) == 'G'                 ? '\057' \
-        : (c) == 'H'                 ? '\026' \
-        : (c) == 'I'                 ? '\005' \
-        : (c) == 'J'                 ? '\025' \
-        : (c) == 'K'                 ? '\013' \
-        : (c) == 'L'                 ? '\014' \
-        : (c) == 'M'                 ? '\015' \
-        : (c) == 'N'                 ? '\016' \
-        : (c) == 'O'                 ? '\017' \
-        : (c) == 'P'                 ? '\020' \
-        : (c) == 'Q'                 ? '\021' \
-        : (c) == 'R'                 ? '\022' \
-        : (c) == 'S'                 ? '\023' \
-        : (c) == 'T'                 ? '\074' \
-        : (c) == 'U'                 ? '\075' \
-        : (c) == 'V'                 ? '\062' \
-        : (c) == 'W'                 ? '\046' \
-        : (c) == 'X'                 ? '\030' \
-        : (c) == 'Y'                 ? '\031' \
-        : (c) == 'Z'                 ? '\077' \
-        : (c) == '|'                 ? '\031' \
-        : (c) == '\\'                ? '\034' \
-        : (c) == '^'                 ? '\036' \
-                                     : (c)&077)
-#else
-#define CONTROL(c) ((c)&037)
-#endif /* IS_EBCDIC_HOST */
+//#define ESC control<int>('[')
+constexpr unsigned char esc = control<int>('[');
 
-#define ESC CONTROL('[')
-#define ESCS "\33"
-#define CSI ((unsigned char)'\233')
+//#define CSI ((unsigned char)'\233')
+constexpr unsigned char csi_char = '\233';
+
 #define CHAR_END_COMMAND 0x40000000
 
 #define LSIGNAL(sig, func) signal(sig, func)

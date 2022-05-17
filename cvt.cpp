@@ -84,7 +84,7 @@ extern int utf_mode;
         } else if ((ops & CVT_ANSI) && IS_CSI_START(ch))
         {
             /* Skip to end of ANSI escape sequence. */
-            src++;  /* skip the CSI start char */
+            src++;  /* skip the csi_char start char */
             while (src < src_end)
                 if (!is_ansi_middle(*src++))
                     break;

@@ -410,24 +410,12 @@ char* prchar(lwchar_t c)
     c &= 0377;
     if ((c < 128 || !utf_mode) && !control_char(c))
         snprintf(buf, sizeof(buf), "%c", (int)c);
-    else if (c == ESC)
+    else if (c == esc)
         strcpy(buf, "ESC");
-#if IS_EBCDIC_HOST
-    else if (!binary_char(c) && c < 64)
-        snprintf(buf, sizeof(buf), "^%c",
-            /*
-             * This array roughly inverts CONTROL() #defined in less.h,
-             * and should be kept in sync with CONTROL() and IBM-1047.
-             */
-            "@ABC.I.?...KLMNO"
-            "PQRS.JH.XY.."
-            "\\]^_"
-            "......W[.....EFG"
-            "..V....D....TU.Z"[c]);
-#else
+
     else if (c < 128 && !control_char(c ^ 0100))
         snprintf(buf, sizeof(buf), "^%c", (int)(c ^ 0100));
-#endif
+
     else
         snprintf(buf, sizeof(buf), binfmt, c);
     return (buf);
@@ -441,7 +429,7 @@ char* prutfchar(lwchar_t ch)
 {
     static char buf[32];
 
-    if (ch == ESC)
+    if (ch == esc)
         strcpy(buf, "ESC");
     else if (ch < 128 && control_char(ch)) {
         if (!control_char(ch ^ 0100))
