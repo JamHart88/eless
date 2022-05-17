@@ -92,18 +92,6 @@ static inline void ignore_result(long long int unused_result)
 #define OPT_ON 1
 #define OPT_ONPLUS 2
 
-#if HAVE_SNPRINTF
-#define SNPRINTF1(str, size, fmt, v1) snprintf((str), (size), (fmt), (v1))
-#define SNPRINTF2(str, size, fmt, v1, v2) snprintf((str), (size), (fmt), (v1), (v2))
-#define SNPRINTF3(str, size, fmt, v1, v2, v3) snprintf((str), (size), (fmt), (v1), (v2), (v3))
-#define SNPRINTF4(str, size, fmt, v1, v2, v3, v4) snprintf((str), (size), (fmt), (v1), (v2), (v3), (v4))
-#else
-/* Use unsafe sprintf if we don't have snprintf. */
-#define SNPRINTF1(str, size, fmt, v1) sprintf((str), (fmt), (v1))
-#define SNPRINTF2(str, size, fmt, v1, v2) sprintf((str), (fmt), (v1), (v2))
-#define SNPRINTF3(str, size, fmt, v1, v2, v3) sprintf((str), (fmt), (v1), (v2), (v3))
-#define SNPRINTF4(str, size, fmt, v1, v2, v3, v4) sprintf((str), (fmt), (v1), (v2), (v3), (v4))
-#endif
 
 #define BAD_LSEEK ((off_t)-1)
 

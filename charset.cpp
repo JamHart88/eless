@@ -409,12 +409,12 @@ char* prchar(lwchar_t c)
 
     c &= 0377;
     if ((c < 128 || !utf_mode) && !control_char(c))
-        SNPRINTF1(buf, sizeof(buf), "%c", (int)c);
+        snprintf(buf, sizeof(buf), "%c", (int)c);
     else if (c == ESC)
         strcpy(buf, "ESC");
 #if IS_EBCDIC_HOST
     else if (!binary_char(c) && c < 64)
-        SNPRINTF1(buf, sizeof(buf), "^%c",
+        snprintf(buf, sizeof(buf), "^%c",
             /*
              * This array roughly inverts CONTROL() #defined in less.h,
              * and should be kept in sync with CONTROL() and IBM-1047.
@@ -426,10 +426,10 @@ char* prchar(lwchar_t c)
             "..V....D....TU.Z"[c]);
 #else
     else if (c < 128 && !control_char(c ^ 0100))
-        SNPRINTF1(buf, sizeof(buf), "^%c", (int)(c ^ 0100));
+        snprintf(buf, sizeof(buf), "^%c", (int)(c ^ 0100));
 #endif
     else
-        SNPRINTF1(buf, sizeof(buf), binfmt, c);
+        snprintf(buf, sizeof(buf), binfmt, c);
     return (buf);
 }
 
@@ -445,11 +445,11 @@ char* prutfchar(lwchar_t ch)
         strcpy(buf, "ESC");
     else if (ch < 128 && control_char(ch)) {
         if (!control_char(ch ^ 0100))
-            SNPRINTF1(buf, sizeof(buf), "^%c", ((char)ch) ^ 0100);
+            snprintf(buf, sizeof(buf), "^%c", ((char)ch) ^ 0100);
         else
-            SNPRINTF1(buf, sizeof(buf), binfmt, (char)ch);
+            snprintf(buf, sizeof(buf), binfmt, (char)ch);
     } else if (is_ubin_char(ch)) {
-        SNPRINTF1(buf, sizeof(buf), utfbinfmt, ch);
+        snprintf(buf, sizeof(buf), utfbinfmt, ch);
     } else {
         char* p = buf;
         if (ch >= 0x80000000)

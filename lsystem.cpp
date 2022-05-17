@@ -99,7 +99,7 @@ void lsystem(char* cmd, char* donemsg)
             if (esccmd != NULL) {
                 int len = (int)(strlen(shell) + strlen(esccmd) + 5);
                 p = (char*)utils::ecalloc(len, sizeof(char));
-                SNPRINTF3(p, len, "%s %s %s", shell, shell_coption(), esccmd);
+                snprintf(p, len, "%s %s %s", shell, shell_coption(), esccmd);
                 free(esccmd);
             }
         }

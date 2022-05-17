@@ -50,9 +50,9 @@ extern int opt_use_backslash;
 static char *opt_desc(struct loption *o) {
   static char buf[OPTNAME_MAX + 10];
   if (o->oletter == OLETTER_NONE)
-    SNPRINTF1(buf, sizeof(buf), "--%s", o->onames->oname);
+    snprintf(buf, sizeof(buf), "--%s", o->onames->oname);
   else
-    SNPRINTF2(buf, sizeof(buf), "-%c (--%s)", o->oletter, o->onames->oname);
+    snprintf(buf, sizeof(buf), "-%c (--%s)", o->oletter, o->onames->oname);
   return (buf);
 }
 

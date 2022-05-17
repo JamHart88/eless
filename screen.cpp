@@ -528,7 +528,7 @@ static char* ltget_env(char* capname)
         envs = p;
         return p->value;
     }
-    SNPRINTF1(name, sizeof(name), "LESS_TERMCAP_%s", capname);
+    snprintf(name, sizeof(name), "LESS_TERMCAP_%s", capname);
     return (lgetenv(name));
 }
 

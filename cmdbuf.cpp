@@ -1374,7 +1374,7 @@ static char * histfile_name(void)
     }
     len = (int) (strlen(home) + strlen(LESSHISTFILE) + 2);
     name = (char *) utils::ecalloc(len, sizeof(char));
-    SNPRINTF2(name, len, "%s/%s", home, LESSHISTFILE);
+    snprintf(name, len, "%s/%s", home, LESSHISTFILE);
     return (name);
 }
 

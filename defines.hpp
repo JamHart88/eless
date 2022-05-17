@@ -248,7 +248,7 @@
 #define HAVE_SIGSET_T 1
 
 /* Define to 1 if you have the `snprintf' function. */
-#define HAVE_SNPRINTF 1
+#define HAVE_snprintf1
 
 /* Define to 1 if you have the `stat' function. */
 #define HAVE_STAT 1
