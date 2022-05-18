@@ -323,8 +323,8 @@ enum filestate_t {
 
 const position_t ch_zero = 0;
 
-const char * const FAKE_HELPFILE = "@/\\less/\\help/\\file/\\@";
-const char * const FAKE_EMPTYFILE = "@/\\less/\\empty/\\file/\\@";
+const char* const FAKE_HELPFILE = "@/\\less/\\help/\\file/\\@";
+const char* const FAKE_EMPTYFILE = "@/\\less/\\empty/\\file/\\@";
 
 /* Flags for cvt_text */
 enum cvt_t {
@@ -349,7 +349,6 @@ struct mlist;
 struct loption;
 struct hilite_tree;
 
-
 /* Functions not included in funcs.h */
 
 // ---------------------------------------------------------
@@ -367,17 +366,16 @@ const char CH_9 = '9';
 // processed
 // TODO: Move to utils. Follow C++ guidance - see clang-tidy
 template <typename T>
-T strToType(char* buf, char** ebuf)
+T strToType(char* buf)
 {
     T val = 0;
-    for (;;) {
-        char c = *buf++;
+    for (int i = 0;; i++) {
+        char c = buf[i];
         if (c < CH_0 || c > CH_9)
             break;
         val = TEN * val + c - CH_0;
     }
-    if (ebuf != NULL)
-        *ebuf = buf;
+
     return val;
 }
 
@@ -391,6 +389,11 @@ void typeToStr(const T num, char* buf)
 {
     T tempNum = num;
     int neg = (tempNum < 0);
+
+    // Upper bound on the string length of an integer converted to string.
+    // 302 / 1000 is ceil (log10 (2.0)).  Subtract 1 for the sign bit;
+    // add 1 for integer division truncation; add 1 more for a minus sign.
+
     char tbuf[((sizeof(tempNum) * 8 - 1) * 302 / 1000 + 1 + 1) + 2];
     char* s = tbuf + sizeof(tbuf);
     if (neg)

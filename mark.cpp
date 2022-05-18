@@ -436,42 +436,75 @@ void skip_whitespace(char*& line)
 void restore_mark(char* line)
 {
     // Format is "m <markchar> <screenpos> <position> <file>"
-
-    struct mark* markPtr;
-    int screenpos;
-    position_t filePos;
-
-    if (*line++ != 'm')
+    
+    char *token = strtok(line, " ");
+  
+    if (token == NULL)
         return;
-
-    skip_whitespace(line);
+    if (token[0] != 'm')
+        return;      
 
     // Get mark type from <markchar>
-    markPtr = getumark(*line++);
+    char * markChar = strtok(NULL, " ");
+    struct mark* markPtr = getumark(markChar[0]);
     if (markPtr == NULL)
         return;
-
-    skip_whitespace(line);
-
+  
     // get the <screenpos> parameter
-    screenpos = strToType<int>(line, &line);
+    int screenpos = strToType<int>(strtok(NULL, " "));
 
     if (screenpos < 1)
         screenpos = 1;
     if (screenpos > sc_height)
         screenpos = sc_height;
 
-    skip_whitespace(line);
-
     // get the <position> value
-    filePos = strToType<position_t>(line, &line);
-
-    skip_whitespace(line);
+    position_t filePos = strToType<position_t>(strtok(NULL, " "));
 
     cmark(markPtr, NULL_IFILE, filePos, screenpos);
 
     // get the <filename> parameter
-    markPtr->m_filename = utils::save(line);
+    markPtr->m_filename = utils::save(strtok(NULL, " "));
+
+
+
+    // JPH: old code
+    
+    //struct mark* markPtr;
+    //int screenpos;
+    //position_t filePos;
+
+    //if (*line++ != 'm')
+    //    return;
+
+    //skip_whitespace(line);
+
+    // Get mark type from <markchar>
+    //markPtr = getumark(*line++);
+    //if (markPtr == NULL)
+    //    return;
+
+    //skip_whitespace(line);
+
+    // get the <screenpos> parameter
+    //screenpos = strToType<int>(line, &line);
+
+    //if (screenpos < 1)
+    //    screenpos = 1;
+    //if (screenpos > sc_height)
+    //    screenpos = sc_height;
+
+    //skip_whitespace(line);
+
+    // get the <position> value
+    //filePos = strToType<position_t>(line, &line);
+
+    //skip_whitespace(line);
+
+    //cmark(markPtr, NULL_IFILE, filePos, screenpos);
+
+    // get the <filename> parameter
+    //markPtr->m_filename = utils::save(line);
 }
 
 #endif /* CMD_HISTORY */
