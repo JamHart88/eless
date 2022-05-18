@@ -17,6 +17,7 @@
 #include "decode.hpp"
 #include "edit.hpp"
 #include "filename.hpp"
+#include "forwback.hpp"
 #include "less.hpp"
 #include "mark.hpp"
 #include "output.hpp"
@@ -27,7 +28,6 @@
 
 #include <signal.h>
 
-extern int screen_trashed;
 extern IFILE curr_ifile;
 
 #if HAVE_SYSTEM
@@ -130,7 +130,7 @@ void lsystem(char* cmd, char* donemsg)
         flush();
     }
     init();
-    screen_trashed = 1;
+    screen_trashed = TRASHED;
 
     /*
      * Reopen the current input file.
@@ -179,7 +179,7 @@ int pipe_mark(int c, char* cmd)
         return (-1);
     tpos = position(TOP);
     if (tpos == NULL_POSITION)
-        tpos = ch_zero();
+        tpos = ch_zero;
     bpos = position(BOTTOM);
 
     if (c == '.')
@@ -227,7 +227,7 @@ int pipe_data(char* cmd, position_t spos, position_t epos)
     raw_mode(0);
     init_signals(0);
 #ifdef SIGPIPE
-    LSIGNAL(SIGPIPE, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN);
 #endif
 
     c = EOI;
@@ -256,12 +256,12 @@ int pipe_data(char* cmd, position_t spos, position_t epos)
     pclose(f);
 
 #ifdef SIGPIPE
-    LSIGNAL(SIGPIPE, SIG_DFL);
+    signal(SIGPIPE, SIG_DFL);
 #endif
     init_signals(1);
     raw_mode(1);
     init();
-    screen_trashed = 1;
+    screen_trashed = TRASHED;
 #if defined(SIGWINCH) || defined(SIGWIND)
     /* {{ Probably don't need this here. }} */
     winch(0);

@@ -235,17 +235,10 @@
 /* BSD re_comp() */
 /* #undef HAVE_RE_COMP */
 
-/* Define HAVE_SIGEMPTYSET if you have the sigemptyset macro. */
-#define HAVE_SIGEMPTYSET 1
-
-/* Define to 1 if you have the `sigprocmask' function. */
-#define HAVE_SIGPROCMASK 1
 
 /* Define to 1 if you have the `sigsetmask' function. */
 #define HAVE_SIGSETMASK 1
 
-/* Define to 1 if the system has the type `sigset_t'. */
-#define HAVE_SIGSET_T 1
 
 /* Define to 1 if you have the `snprintf' function. */
 #define HAVE_snprintf1
@@ -313,8 +306,6 @@
 /* Define to 1 if you have the <wctype.h> header file. */
 #define HAVE_WCTYPE_H 1
 
-/* Define to 1 if you have the `_setjmp' function. */
-#define HAVE__SETJMP 1
 
 /* Define MUST_DEFINE_ERRNO if you have errno but it is not define in errno.h.
    */

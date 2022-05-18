@@ -72,7 +72,7 @@ static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_p
 #if HAVE_PCRE
     const char *errstring;
     int erroffset;
-    PARG parg;
+    parg_t parg;
     pcre *comp = pcre_compile(pattern,
             (utf_mode) ? PCRE_UTF8 | PCRE_NO_UTF8_CHECK : 0,
             &errstring, &erroffset, NULL);
@@ -88,7 +88,7 @@ static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_p
 #if HAVE_PCRE2
     int errcode;
     PCRE2_SIZE erroffset;
-    PARG parg;
+    parg_t parg;
     pcre2_code *comp = pcre2_compile((PCRE2_SPTR)pattern, strlen(pattern),
             0, &errcode, &erroffset, NULL);
     if (comp == NULL)
@@ -105,7 +105,7 @@ static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_p
     *comp_pattern = comp;
 #endif
 #if HAVE_RE_COMP
-    PARG parg;
+    parg_t parg;
     if ((parg.p_string = re_comp(pattern)) != NULL)
     {
         if (show_error)

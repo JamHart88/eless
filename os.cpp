@@ -41,13 +41,8 @@
  * On other systems, setjmp() doesn't affect the signal mask and so
  * _setjmp() does not exist; we just use setjmp().
  */
-#if HAVE__SETJMP && HAVE_SIGSETMASK
 #define SET_JUMP _setjmp
 #define LONG_JUMP _longjmp
-#else
-#define SET_JUMP setjmp
-#define LONG_JUMP longjmp
-#endif
 
 
 int reading;
@@ -80,17 +75,17 @@ start:
          * We jumped here from intread.
          */
         reading = 0;
-#if HAVE_SIGPROCMASK
+//#if HAVE_SIGPROCMASK
         {
             sigset_t mask;
             sigemptyset(&mask);
             sigprocmask(SIG_SETMASK, &mask, NULL);
         }
-#else
-#if HAVE_SIGSETMASK
-        sigsetmask(0);
-#endif
-#endif
+//#else
+//#if HAVE_SIGSETMASK
+//        sigsetmask(0);
+//#endif
+//#endif
         return (READ_INTR);
     }
 
@@ -162,12 +157,9 @@ void intread(void)
 // public time_type
 // get_time(void)
 
-time_type get_time(void)
+time_t get_time(void)
 {
-    time_type t;
-
-    time(&t);
-    return (t);
+    return time(NULL);
 }
 
 /*

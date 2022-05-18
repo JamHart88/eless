@@ -474,7 +474,7 @@ static position_t ctagsearch(void)
     char *line;
     int found;
 
-    pos = ch_zero();
+    pos = ch_zero;
     linenum = find_linenum(pos);
 
     for (found = 0; !found;)
@@ -483,7 +483,7 @@ static position_t ctagsearch(void)
          * Get lines until we find a matching one or 
          * until we hit end-of-file.
          */
-        if (ABORT_SIGS())
+        if (is_abort_signal(sigs))
             return (NULL_POSITION);
 
         /*

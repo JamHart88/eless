@@ -62,10 +62,8 @@ static struct textlist tk_tlist;
 static int cmd_left();
 static int cmd_right();
 
-#if SPACES_IN_FILENAMES
- char openquote = '"';
- char closequote = '"';
-#endif
+char openquote = '"';
+char closequote = '"';
 
 #if CMD_HISTORY
 
@@ -951,13 +949,11 @@ static int cmd_istr(char *str)
 static char * delimit_word(void)
 {
     char *word;
-#if SPACES_IN_FILENAMES
     char *p;
     int delim_quoted = 0;
     int meta_quoted = 0;
     const char *esc = get_meta_escape();
     int esclen = (int) strlen(esc);
-#endif
     
     /*
      * Move cursor to end of word.
@@ -992,7 +988,6 @@ static char * delimit_word(void)
      */
     if (cp == cmdbuf)
         return (NULL);
-#if SPACES_IN_FILENAMES
     /*
      * If we have an unbalanced quote (that is, an open quote
      * without a corresponding close quote), we return everything
@@ -1025,7 +1020,6 @@ static char * delimit_word(void)
                 word = p+1;
         }
     }
-#endif
     return (word);
 }
 

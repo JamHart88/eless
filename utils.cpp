@@ -11,7 +11,7 @@
 #include "screen.hpp"
 #include "ttyin.hpp"
 
-int any_display = FALSE;
+bool any_display = false;
 int quitting = 0;
 
 extern int is_tty;

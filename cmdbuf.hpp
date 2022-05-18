@@ -8,6 +8,9 @@
 
 #include "less.hpp"
 
+extern char openquote;
+extern char closequote;
+
  void cmd_reset (void);
  void clear_cmd (void);
  void cmd_putstr (const char *s);

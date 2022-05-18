@@ -18,6 +18,7 @@
 #include "ifile.hpp"
 #include "less.hpp"
 #include "filename.hpp"
+#include "forwback.hpp"
 #include "os.hpp"
 #include "output.hpp"
 #include "prompt.hpp"
@@ -130,7 +131,6 @@ static int maxbufs = -1;
 
 extern int autobuf;
 extern int sigs;
-extern int screen_trashed;
 extern int follow_mode;
 extern char helpdata[];
 extern int size_helpdata;
@@ -150,7 +150,7 @@ int ch_get()
     struct buf* bp;
     struct bufnode* bn;
     int n;
-    int slept;
+    bool slept = false;
     int h;
     position_t pos;
     position_t len;
@@ -167,8 +167,6 @@ int ch_get()
         if (ch_block == bp->block && ch_offset < bp->datasize)
             return bp->data[ch_offset];
     }
-
-    slept = FALSE;
 
     /*
      * Look for a buffer holding the desired block.
@@ -290,13 +288,13 @@ read_more:
              * Wait a while, then try again.
              */
             if (!slept) {
-                PARG parg;
+                parg_t parg;
                 parg.p_string = wait_message();
-                ierror((char*)"%s", &parg);
+                ierror((char*)"%s", parg);
             }
 
             sleep(1);
-            slept = TRUE;
+            slept = true;
 
 #if HAVE_STAT_INO
             if (follow_mode == FOLLOW_NAME) {
@@ -308,9 +306,8 @@ read_more:
                 position_t curr_pos = ch_tell();
                 int r = stat(get_filename(curr_ifile), &st);
                 if (r == 0 && (st.st_ino != curr_ino || st.st_dev != curr_dev || (curr_pos != NULL_POSITION && st.st_size < curr_pos))) {
-                    /* screen_trashed=2 causes
-                     * make_display to reopen the file. */
-                    screen_trashed = 2;
+                    /* remake_display and reopen the file. */
+                    screen_trashed = TRASHED_AND_REOPEN_FILE;
                     return (EOI);
                 }
             }
@@ -366,15 +363,15 @@ void ch_ungetchar(int c)
 
 void end_logfile()
 {
-    static int tried = FALSE;
+    static bool tried = false;
 
     if (logfile < 0)
         return;
     if (!tried && ch_fsize == NULL_POSITION) {
-        tried = TRUE;
+        tried = true;
         ierror((char*)"Finishing logfile", NULL_PARG);
         while (ch_forw_get() != EOI)
-            if (ABORT_SIGS())
+            if (is_abort_signal(sigs))
                 break;
     }
     close(logfile);
@@ -393,25 +390,25 @@ void sync_logfile()
 {
     struct buf* bp;
     struct bufnode* bn;
-    int warned = FALSE;
+    bool warned = false;
     BLOCKNUM block;
     BLOCKNUM nblocks;
 
     nblocks = (ch_fpos + LBUFSIZE - 1) / LBUFSIZE;
     for (block = 0; block < nblocks; block++) {
-        int wrote = FALSE;
+        bool wrote = false;
         FOR_BUFS(bn)
         {
             bp = bufnode_buf(bn);
             if (bp->block == block) {
                 ignore_result(write(logfile, (char*)bp->data, bp->datasize));
-                wrote = TRUE;
+                wrote = true;
                 break;
             }
         }
         if (!wrote && !warned) {
             error((char*)"Warning: log file is incomplete", NULL_PARG);
-            warned = TRUE;
+            warned = true;
         }
     }
 }
@@ -421,7 +418,7 @@ void sync_logfile()
 /*
  * Determine if a specific block is currently in one of the buffers.
  */
-static int buffered(BLOCKNUM block)
+static bool buffered(BLOCKNUM block)
 {
     struct buf* bp;
     struct bufnode* bn;
@@ -432,9 +429,9 @@ static int buffered(BLOCKNUM block)
     {
         bp = bufnode_buf(bn);
         if (bp->block == block)
-            return (TRUE);
+            return (true);
     }
-    return (FALSE);
+    return (false);
 }
 
 /*
@@ -451,7 +448,7 @@ int ch_seek(position_t pos)
         return (0);
 
     len = ch_length();
-    if (pos < ch_zero() || (len != NULL_POSITION && pos > len))
+    if (pos < ch_zero || (len != NULL_POSITION && pos > len))
         return (1);
 
     new_block = pos / LBUFSIZE;
@@ -461,7 +458,7 @@ int ch_seek(position_t pos)
         while (ch_fpos < pos) {
             if (ch_forw_get() == EOI)
                 return (1);
-            if (ABORT_SIGS())
+            if (is_abort_signal(sigs))
                 return (1);
         }
         return (0);
@@ -496,7 +493,7 @@ int ch_end_seek()
      * Do it the slow way: read till end of data.
      */
     while (ch_forw_get() != EOI)
-        if (ABORT_SIGS())
+        if (is_abort_signal(sigs))
             return (1);
     return (0);
 }
@@ -541,7 +538,7 @@ int ch_beg_seek()
     /*
      * Try a plain ch_seek first.
      */
-    if (ch_seek(ch_zero()) == 0)
+    if (ch_seek(ch_zero) == 0)
         return (0);
 
     /*
@@ -823,7 +820,7 @@ void ch_init(int f, int flags)
 
 void ch_close()
 {
-    int keepstate = FALSE;
+    bool keepstate = false;
 
     if (thisfile == NULL)
         return;
@@ -834,7 +831,7 @@ void ch_close()
          */
         ch_delbufs();
     } else
-        keepstate = TRUE;
+        keepstate = true;
     if (!(ch_flags & CH_KEEPOPEN)) {
         /*
          * We don't need to keep the file descriptor open
@@ -846,7 +843,7 @@ void ch_close()
             close(ch_file);
         ch_file = -1;
     } else
-        keepstate = TRUE;
+        keepstate = true;
     if (!keepstate) {
         /*
          * We don't even need to keep the filestate structure.

@@ -44,12 +44,12 @@
 extern int nbufs;
 extern int bufspace;
 extern int pr_type;
-extern int plusoption;
+extern bool plusoption;
 extern int swindow;
 extern int sc_width;
 extern int sc_height;
 extern int dohelp;
-extern int any_display;
+extern bool any_display;
 extern char openquote;
 extern char closequote;
 extern char *prproto[];
@@ -70,7 +70,7 @@ extern int wheel_lines;
 extern int less_is_more;
 #if LOGFILE
 extern char *namelogfile;
-extern int force_logfile;
+extern bool force_logfile;
 extern int logfile;
 #endif
 #if TAGS
@@ -91,7 +91,7 @@ extern char ztags[];
 //     char *s;
  void opt_o(int type, char *s)
 {
-    PARG parg;
+    parg_t parg;
     char *filename;
 
     
@@ -126,7 +126,7 @@ extern char ztags[];
         else
         {
             parg.p_string = namelogfile;
-            error((char *)"Log file \"%s\"", &parg);
+            error((char *)"Log file \"%s\"", parg);
         }
         break;
     }
@@ -143,7 +143,7 @@ extern char ztags[];
 //     char *s;
  void opt__O(int type, char *s)
 {
-    force_logfile = TRUE;
+    force_logfile = true;
     opt_o(type, s);
 }
 #endif
@@ -159,7 +159,7 @@ extern char ztags[];
 //     char *s;
  void opt_j(int type, char *s)
 {
-    PARG parg;
+    parg_t parg;
     char buf[30]; // Make bigger than Long int in chars
     int len;
     int err;
@@ -192,7 +192,7 @@ extern char ztags[];
         if (jump_sline_fraction < 0)
         {
             parg.p_int =  jump_sline;
-            error((char *)"Position target at screen line %d", &parg);
+            error((char *)"Position target at screen line %d", parg);
         } else
         {
 
@@ -202,7 +202,7 @@ extern char ztags[];
                 len--;
             buf[len] = '\0';
             parg.p_string = buf;
-            error((char *)"Position target at screen position %s", &parg);
+            error((char *)"Position target at screen position %s", parg);
         }
         break;
     }
@@ -230,7 +230,7 @@ extern char ztags[];
 //     char *s;
  void opt_shift(int type, char *s)
 {
-    PARG parg;
+    parg_t parg;
     char buf[30]; // Make bigger than Long int in chars
     int len;
     int err;
@@ -263,7 +263,7 @@ extern char ztags[];
         if (shift_count_fraction < 0)
         {
             parg.p_int = shift_count;
-            error((char *)"Horizontal shift %d columns", &parg);
+            error((char *)"Horizontal shift %d columns", parg);
         } else
         {
 
@@ -273,7 +273,7 @@ extern char ztags[];
                 len--;
             buf[len] = '\0';
             parg.p_string = buf;
-            error((char *)"Horizontal shift %s of screen width", &parg);
+            error((char *)"Horizontal shift %s of screen width", parg);
         }
         break;
     }
@@ -298,7 +298,7 @@ extern char ztags[];
 //     char *s;
  void opt_k(int type, char *s)
 {
-    PARG parg;
+    parg_t parg;
 
     switch (type)
     {
@@ -306,7 +306,7 @@ extern char ztags[];
         if (lesskey(s, 0))
         {
             parg.p_string = s;
-            error((char *)"Cannot use lesskey file \"%s\"", &parg);
+            error((char *)"Cannot use lesskey file \"%s\"", parg);
         }
         break;
     }
@@ -365,7 +365,7 @@ extern char ztags[];
 //     char *s;
  void opt__T(int type, char *s)
 {
-    PARG parg;
+    parg_t parg;
     char *filename;
 
     switch (type)
@@ -383,7 +383,7 @@ extern char ztags[];
         break;
     case QUERY:
         parg.p_string = tags;
-        error((char *)"Tags file \"%s\"", &parg);
+        error((char *)"Tags file \"%s\"", parg);
         break;
     }
 }
@@ -415,7 +415,7 @@ extern char ztags[];
             every_first_cmd = utils::save(s);
         } else
         {
-            plusoption = TRUE;
+            plusoption = true;
             ungetcc(CHAR_END_COMMAND);
             ungetsc(s);
              /*
@@ -440,7 +440,7 @@ extern char ztags[];
  void opt__P(int type, char *s)
 {
     char **proto;
-    PARG parg;
+    parg_t parg;
 
     switch (type)
     {
@@ -464,7 +464,7 @@ extern char ztags[];
         break;
     case QUERY:
         parg.p_string = prproto[pr_type];
-        error((char *)"%s", &parg);
+        error((char *)"%s", parg);
         break;
     }
 }
@@ -540,7 +540,7 @@ extern char ztags[];
         /*
          * Force output to stdout per GNU standard for --version output.
          */
-        any_display = 1;
+        any_display = true;
         putstr("less ");
         putstr(version);
         putstr(" (");
@@ -573,7 +573,7 @@ extern char ztags[];
     extern int tabdefault;
     char msg[60+(4*TABSTOP_MAX)];
     int i;
-    PARG p;
+    parg_t p;
 
     switch (type)
     {
@@ -612,7 +612,7 @@ extern char ztags[];
         sprintf(msg+strlen(msg), "every %d spaces",
             tabdefault);
         p.p_string = msg;
-        error((char *)"%s", &p);
+        error((char *)"%s", p);
         break;
     }
 }
@@ -630,7 +630,7 @@ extern char ztags[];
  void opt_quote(int type, char *s)
 {
     char buf[3];
-    PARG parg;
+    parg_t parg;
 
     switch (type)
     {
@@ -657,7 +657,7 @@ extern char ztags[];
         buf[1] = closequote;
         buf[2] = '\0';
         parg.p_string = buf;
-        error((char *)"quotes %s", &parg);
+        error((char *)"quotes %s", parg);
         break;
     }
 }
@@ -674,7 +674,7 @@ extern char ztags[];
 //     char *s;
  void opt_rscroll(int type, char *s)
 {
-    PARG p;
+    parg_t p;
 
     switch (type)
     {
@@ -694,7 +694,7 @@ extern char ztags[];
         break; }
     case QUERY: {
         p.p_string = rscroll_char ? (char *) prchar(rscroll_char) : (char *) "-";
-        error((char *)"rscroll char is %s", &p);
+        error((char *)"rscroll char is %s", p);
         break; }
     }
 }

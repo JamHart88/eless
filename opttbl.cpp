@@ -20,6 +20,9 @@
 /*
  * Variables controlled by command line options.
  */
+// TODO: Look at moving these to a globals/settings package. Also there are 
+// bools here that need to be type defined correctly
+
 // clang-format off
  int quiet;             /* Should we suppress the audible bell? */
  int how_search;        /* Where should forward searches start? */
@@ -146,44 +149,56 @@ static struct optname perma_marks_optname = {(char *) "save-marks",     NULL };
 static struct loption option[] = {
     { 'a', &a_optname,
         TRIPLE, OPT_ONPLUS, &how_search, NULL,
-        { (char*)"Search includes displayed screen",
+        { 
+            (char*)"Search includes displayed screen",
             (char*)"Search skips displayed screen",
-            (char*)"Search includes all of displayed screen" } },
+            (char*)"Search includes all of displayed screen"
+        } },
     { 'b', &b_optname,
         NUMBER | INIT_HANDLER, 64, &bufspace, opt_b,
-        { (char*)"Max buffer space per file (K): ",
+        { 
+            (char*)"Max buffer space per file (K): ",
             (char*)"Max buffer space per file: %dK",
-            NULL } },
+            NULL 
+        } },
     { 'B', &B__optname,
         BOOL, OPT_ON, &autobuf, NULL,
-        { (char*)"Don't automatically allocate buffers",
+        { 
+            (char*)"Don't automatically allocate buffers",
             (char*)"Automatically allocate buffers when needed",
             NULL } },
     { 'c', &c_optname,
         TRIPLE, OPT_OFF, &top_scroll, NULL,
-        { (char*)"Repaint by scrolling from bottom of screen",
+        { 
+            (char*)"Repaint by scrolling from bottom of screen",
             (char*)"Repaint by painting from top of screen",
             (char*)"Repaint by painting from top of screen" } },
     { 'd', &d_optname,
         BOOL | NO_TOGGLE, OPT_OFF, &know_dumb, NULL,
-        { (char*)"Assume intelligent terminal",
+        { 
+            (char*)"Assume intelligent terminal",
             (char*)"Assume dumb terminal",
             NULL } },
     { 'e', &e_optname,
         TRIPLE, OPT_OFF, &quit_at_eof, NULL,
-        { (char*)"Don't quit at end-of-file",
+        { 
+            (char*)"Don't quit at end-of-file",
             (char*)"Quit at end-of-file",
             (char*)"Quit immediately at end-of-file" } },
     { 'f', &f_optname,
         BOOL, OPT_OFF, &force_open, NULL,
-        { (char*)"Open only regular files",
+        {   
+            (char*)"Open only regular files",
             (char*)"Open even non-regular files",
-            NULL } },
+            NULL 
+        } },
     { 'F', &F__optname,
         BOOL, OPT_OFF, &quit_if_one_screen, NULL,
-        { (char*)"Don't quit if end-of-file on first screen",
+        {   
+            (char*)"Don't quit if end-of-file on first screen",
             (char*)"Quit if end-of-file on first screen",
-            NULL } },
+            NULL 
+        } },
 #if HILITE_SEARCH
     { 'g', &g_optname,
         TRIPLE | HL_REPAINT, OPT_ONPLUS, &hilite_search, NULL,
@@ -317,17 +332,25 @@ static struct loption option[] = {
             NULL } },
     { 'y', &y_optname,
         NUMBER, -1, &forw_scroll, NULL,
-        { (char*)"Forward scroll limit: ",
+        { 
+            (char*)"Forward scroll limit: ",
             (char*)"Forward scroll limit is %d lines",
-            NULL } },
+            NULL 
+        } },
     { 'z', &z_optname,
         NUMBER, -1, &swindow, NULL,
-        { (char*)"Scroll window size: ",
+        { 
+            (char*)"Scroll window size: ",
             (char*)"Scroll window size is %d lines",
-            NULL } },
+            NULL 
+        } },
     { '"', &quote_optname,
         STRING, 0, NULL, opt_quote,
-        { (char*)"quotes: ", NULL, NULL } },
+        { 
+            (char*)"quotes: ", 
+            NULL, 
+            NULL 
+        } },
     { '~', &tilde_optname,
         BOOL | REPAINT, OPT_ON, &twiddle, NULL,
         { (char*)"Don't show tildes after end of file",

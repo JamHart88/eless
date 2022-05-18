@@ -25,7 +25,7 @@ IFILE getoff_ifile(IFILE ifile);
 
 int nifile(void);
 
-IFILE get_ifile(char *filename, IFILE prev);
+IFILE get_ifile(const char *filename, IFILE prev);
 
 char *get_filename(IFILE ifile);
 

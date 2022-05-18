@@ -41,11 +41,8 @@ extern int ctldisp;
 extern int utf_mode;
 extern IFILE curr_ifile;
 extern IFILE old_ifile;
-#if SPACES_IN_FILENAMES
 extern char openquote;
 extern char closequote;
-#endif
-
 /*
  * Remove quotes around a filename.
  */
@@ -405,7 +402,7 @@ static char * dirfile(char *dirname, char *filename)
         } else 
         {
             lwchar_t c = step_char(&p, +1, edata);
-            if (ctldisp == OPT_ONPLUS && IS_CSI_START(c))
+            if (ctldisp == OPT_ONPLUS && is_csi_start(c))
                 skip_ansi(&p, edata);
             else if (binary_char(c))
                 bin_count++;
@@ -519,7 +516,7 @@ static FILE * shellcmd(char *cmd)
      * Redirection in `popen' might have messed with the
      * standard devices.  Restore binary input mode.
      */
-    SET_BINARY(0);
+    //SET_BINARY(0);// no longer needed?
     return (fd);
 }
 
@@ -706,7 +703,7 @@ static FILE * shellcmd(char *cmd)
 /*
  * @@@
  */
- char * lrealpath(char *path)
+ char * lrealpath(const char *path)
 {
 #if HAVE_REALPATH
     char *rpath = realpath(path, NULL);
@@ -820,7 +817,7 @@ static int num_pct_s(char *lessopen)
          * If it does, push the char back on the pipe.
          */
         f = fileno(fd);
-        SET_BINARY(f);
+        //SET_BINARY(f);// no longer needed?
         if (read(f, &c, 1) != 1)
         {
             /*

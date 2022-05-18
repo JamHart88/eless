@@ -81,7 +81,7 @@ extern int utf_mode;
                 dst--;
             } while (dst > odst && utf_mode &&
                 !IS_ASCII_OCTET(*dst) && !IS_UTF8_LEAD(*dst));
-        } else if ((ops & CVT_ANSI) && IS_CSI_START(ch))
+        } else if ((ops & CVT_ANSI) && is_csi_start(ch))
         {
             /* Skip to end of ANSI escape sequence. */
             src++;  /* skip the csi_char start char */

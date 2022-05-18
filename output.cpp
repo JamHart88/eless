@@ -31,8 +31,7 @@ int at_prompt;
 extern int sigs;
 extern int sc_width;
 extern int so_s_width, so_e_width;
-extern int screen_trashed;
-extern int any_display;
+extern bool any_display;
 extern int is_tty;
 extern int oldbot;
 
@@ -50,11 +49,11 @@ void put_line(void)
     int i;
     int a;
 
-    if (ABORT_SIGS()) {
+    if (is_abort_signal(sigs)) {
         /*
          * Don't output if a signal is pending.
          */
-        screen_trashed = 1;
+        screen_trashed = TRASHED;
         return;
     }
 
@@ -107,7 +106,7 @@ void flush(void)
 
     fd = (any_display) ? 1 : 2;
     if (write(fd, obuf, n) != n)
-        screen_trashed = 1;
+        screen_trashed = TRASHED;
     ob = obuf;
 }
 
@@ -216,8 +215,8 @@ static int iprint_linenum(linenum_t num)
 // static int
 // less_printf(fmt, parg)
 //     char *fmt;
-//     PARG *parg;
-static int less_printf(char* fmt, PARG* parg)
+//     parg_t *parg;
+static int less_printf(char* fmt, parg_t parg)
 {
     char* s;
     int col;
@@ -231,20 +230,20 @@ static int less_printf(char* fmt, PARG* parg)
             ++fmt;
             switch (*fmt++) {
             case 's':
-                s = parg->p_string;
-                parg++;
+                s = parg.p_string;
+                //parg++; //JPH TODO: check this
                 while (*s != '\0') {
                     putchr(*s++);
                     col++;
                 }
                 break;
             case 'd':
-                col += iprint_int(parg->p_int);
-                parg++;
+                col += iprint_int(parg.p_int);
+                //parg++; //JPH TODO: check this
                 break;
             case 'n':
-                col += iprint_linenum(parg->p_linenum);
-                parg++;
+                col += iprint_linenum(parg.p_linenum);
+                //parg++; //JPH TODO: check this
                 break;
             case '%':
                 putchr('%');
@@ -288,9 +287,9 @@ void get_return(void)
 // public void
 // error(fmt, parg)
 //     char *fmt;
-//     PARG *parg;
+//     parg_t *parg;
 
-void error(char* fmt, PARG* parg)
+void error(char* fmt, parg_t parg)
 {
     int col = 0;
     static char return_to_continue[] = "  (press RETURN)";
@@ -327,7 +326,7 @@ void error(char* fmt, PARG* parg)
          * {{ Unless the terminal doesn't have auto margins,
          *    in which case we just hammered on the right margin. }}
          */
-        screen_trashed = 1;
+        screen_trashed = TRASHED;
 
     flush();
 }
@@ -345,9 +344,9 @@ static char intr_to_abort[] = "... (interrupt to abort)";
 // public void
 // ierror(fmt, parg)
 //     char *fmt;
-//     PARG *parg;
+//     parg_t *parg;
 
-void ierror(char* fmt, PARG* parg)
+void ierror(char* fmt, parg_t parg)
 {
     at_exit();
     clear_bot();
@@ -368,9 +367,9 @@ void ierror(char* fmt, PARG* parg)
 // public int
 // query(fmt, parg)
 //     char *fmt;
-//     PARG *parg;
+//     parg_t *parg;
 
-int query(char* fmt, PARG* parg)
+int query(char* fmt, parg_t parg)
 {
     int c;
     int col = 0;
@@ -388,7 +387,7 @@ int query(char* fmt, PARG* parg)
 
     lower_left();
     if (col >= sc_width)
-        screen_trashed = 1;
+        screen_trashed = TRASHED;
     flush();
 
     return (c);

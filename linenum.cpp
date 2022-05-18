@@ -34,6 +34,7 @@
 
 #include "less.hpp"
 #include "linenum.hpp"
+#include "forwback.hpp"
 #include "os.hpp"
 #include "ch.hpp"
 #include "line.hpp"
@@ -74,7 +75,6 @@ static struct linenum_info *spare;        /* We always keep one spare entry */
 extern int linenums;
 extern int sigs;
 extern int sc_height;
-extern int screen_trashed;
 
 /*
  * Initialize the line number structures.
@@ -221,7 +221,7 @@ static void longloopmessage(void)
 }
 
 static int loopcount;
-static time_type startime;
+static time_t startime;
 
 static void longish(void)
 {
@@ -246,7 +246,7 @@ static void abort_long(void)
         /*
          * We were displaying line numbers, so need to repaint.
          */
-        screen_trashed = 1;
+        screen_trashed = TRASHED;
     linenums = 0;
     error((char *)"Line numbers turned off", NULL_PARG);
 }
@@ -271,7 +271,7 @@ static void abort_long(void)
          * Caller doesn't know what he's talking about.
          */
         return (0);
-    if (pos <= ch_zero())
+    if (pos <= ch_zero)
         /*
          * Beginning of file is always line number 1.
          */
@@ -313,7 +313,7 @@ static void abort_long(void)
              * Allow a signal to abort this loop.
              */
             cpos = forw_raw_line(cpos, (char **)NULL, (int *)NULL);
-            if (ABORT_SIGS()) {
+            if (is_abort_signal(sigs)) {
                 abort_long();
                 return (0);
             }
@@ -345,7 +345,7 @@ static void abort_long(void)
              * Allow a signal to abort this loop.
              */
             cpos = back_raw_line(cpos, (char **)NULL, (int *)NULL);
-            if (ABORT_SIGS()) {
+            if (is_abort_signal(sigs)) {
                 abort_long();
                 return (0);
             }
@@ -376,7 +376,7 @@ static void abort_long(void)
         /*
          * Line number 1 is beginning of file.
          */
-        return (ch_zero());
+        return (ch_zero);
 
     /*
      * Find the entry nearest to the line number we want.
@@ -401,7 +401,7 @@ static void abort_long(void)
              * Allow a signal to abort this loop.
              */
             cpos = forw_raw_line(cpos, (char **)NULL, (int *)NULL);
-            if (ABORT_SIGS())
+            if (is_abort_signal(sigs))
                 return (NULL_POSITION);
             if (cpos == NULL_POSITION)
                 return (NULL_POSITION);
@@ -419,7 +419,7 @@ static void abort_long(void)
              * Allow a signal to abort this loop.
              */
             cpos = back_raw_line(cpos, (char **)NULL, (int *)NULL);
-            if (ABORT_SIGS())
+            if (is_abort_signal(sigs))
                 return (NULL_POSITION);
             if (cpos == NULL_POSITION)
                 return (NULL_POSITION);

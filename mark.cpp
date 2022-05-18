@@ -148,7 +148,7 @@ static struct mark* getmark(int c)
          * Beginning of the current file.
          */
         m = &sm;
-        cmark(m, curr_ifile, ch_zero(), 0);
+        cmark(m, curr_ifile, ch_zero, 0);
         break;
     case '$':
         /*
@@ -276,7 +276,7 @@ void gomark(int c)
      * {{ Couldn't we instead set marks[LASTMARK] in edit()? }}
      */
     if (m == &marks[LASTMARK] && m->m_scrpos.pos == NULL_POSITION)
-        cmark(m, curr_ifile, ch_zero(), jump_sline);
+        cmark(m, curr_ifile, ch_zero, jump_sline);
 
     mark_get_ifile(m);
 

@@ -84,7 +84,7 @@ struct loption
     char oletter;                           /* The controlling letter (a-z) */
     struct optname *onames;                 /* Long (GNU-style) option name */
     int otype;                              /* Type of the option */
-    int odefault;                           /* Default value */
+    int odefault;                      /* Default value */
     int *ovar;                              /* Pointer to the associated variable */
     void(*ofunc) (int, char *);             /* Pointer to special handling function */
     char *odesc[3];                         /* Description of each value */

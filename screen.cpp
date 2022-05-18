@@ -15,6 +15,7 @@
 #include "screen.hpp"
 #include "cmd.hpp"
 #include "decode.hpp"
+#include "forwback.hpp"
 #include "less.hpp"
 #include "output.hpp"
 #include "position.hpp"
@@ -152,7 +153,6 @@ extern int no_init;
 extern int no_keypad;
 extern int sigs;
 extern int wscroll;
-extern int screen_trashed;
 extern int top_scroll;
 extern int quit_if_one_screen;
 extern int oldbot;

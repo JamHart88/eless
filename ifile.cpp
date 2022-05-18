@@ -100,7 +100,7 @@ static void unlink_ifile(struct ifile *p)
  * (or at the beginning of the list if "prev" is NULL).
  * Return a pointer to the new ifile structure.
  */
-static struct ifile * new_ifile( char *filename, struct ifile *prev)
+static struct ifile * new_ifile(const char *filename, struct ifile *prev)
 {
     struct ifile *p;
 
@@ -196,7 +196,7 @@ static struct ifile * new_ifile( char *filename, struct ifile *prev)
 /*
  * Find an ifile structure, given a filename.
  */
-static struct ifile * find_ifile(char *filename)
+static struct ifile * find_ifile(const char *filename)
 {
     struct ifile *p;
     char *rfilename = lrealpath(filename);
@@ -226,7 +226,7 @@ static struct ifile * find_ifile(char *filename)
  * If the filename has not been seen before,
  * insert the new ifile after "prev" in the list.
  */
- IFILE get_ifile( char *filename, IFILE prev)
+ IFILE get_ifile(const char *filename, IFILE prev)
 {
     struct ifile *p;
 

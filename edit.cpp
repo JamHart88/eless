@@ -29,11 +29,11 @@
 
  int fd0 = 0;
 
-extern int new_file;
+extern bool new_file;
 extern int errmsgs;
 extern int cbufs;
 extern char *every_first_cmd;
-extern int any_display;
+extern bool any_display;
 extern int force_open;
 extern int is_tty;
 extern int sigs;
@@ -41,14 +41,13 @@ extern IFILE curr_ifile;
 extern IFILE old_ifile;
 extern struct scrpos initial_scrpos;
 extern void *ml_examine;
-#if SPACES_IN_FILENAMES
+
 extern char openquote;
 extern char closequote;
-#endif
 
 #if LOGFILE
 extern int logfile;
-extern int force_logfile;
+extern bool force_logfile;
 extern char *namelogfile;
 #endif
 
@@ -68,18 +67,15 @@ extern char *namelogfile;
  void init_textlist(struct textlist *tlist, char *str)
 {
     char *s;
-#if SPACES_IN_FILENAMES
     int meta_quoted = 0;
     int delim_quoted = 0;
     char *esc = get_meta_escape();
     int esclen = (int) strlen(esc);
-#endif
     
     tlist->string = utils::skipsp(str);
     tlist->endstring = tlist->string + strlen(tlist->string);
     for (s = str;  s < tlist->endstring;  s++)
     {
-#if SPACES_IN_FILENAMES
         if (meta_quoted)
         {
             meta_quoted = 0;
@@ -99,10 +95,6 @@ extern char *namelogfile;
             else if (*s == ' ')
                 *s = '\0';
         }
-#else
-        if (*s == ' ')
-            *s = '\0';
-#endif
     }
 }
 
@@ -215,7 +207,7 @@ static void close_file(void)
  * Filename == "-" means standard input.
  * Filename == NULL means just close the current file.
  */
- int edit(char *filename)
+ int edit(const char *filename)
 {
     if (filename == NULL)
         return (edit_ifile(NULL_IFILE));
@@ -237,7 +229,7 @@ static void close_file(void)
     char *alt_filename;
     void *altpipe;
     IFILE was_curr_ifile;
-    PARG parg;
+    parg_t parg;
 
     if (ifile == curr_ifile)
     {
@@ -336,7 +328,7 @@ static void close_file(void)
             /*
              * Must switch stdin to BINARY mode.
              */
-            SET_BINARY(f);
+            //SET_BINARY(f); //No longer needed?
         } else if (strcmp(open_filename, FAKE_EMPTYFILE) == 0)
         {
             f = -1;
@@ -350,7 +342,7 @@ static void close_file(void)
             /*
              * It looks like a bad file.  Don't try to open it.
              */
-            error((char *)"%s", &parg);
+            error((char *)"%s", parg);
             free(parg.p_string);
             err1:
             if (alt_filename != NULL)
@@ -380,7 +372,7 @@ static void close_file(void)
              * Got an error trying to open it.
              */
             parg.p_string = errno_message(filename);
-            error((char *)"%s", &parg);
+            error((char *)"%s", parg);
             free(parg.p_string);
                 goto err1;
         } else 
@@ -394,7 +386,7 @@ static void close_file(void)
                  */
                 parg.p_string = filename;
                 answer = query((char *)"\"%s\" may be a binary file.  See it anyway? ",
-                    &parg);
+                    parg);
                 if (answer != 'y' && answer != 'Y')
                 {
                     close(f);
@@ -418,7 +410,7 @@ static void close_file(void)
     set_altpipe(curr_ifile, altpipe);
     set_open(curr_ifile); /* File has been opened */
     get_pos(curr_ifile, &initial_scrpos);
-    new_file = TRUE;
+    new_file = true;
     ch_init(f, chflags);
 
     if (!(chflags & CH_HELPFILE))
@@ -449,7 +441,7 @@ static void close_file(void)
 
     no_display = !any_display;
     flush();
-    any_display = TRUE;
+    any_display = true;
 
     if (is_tty)
     {
@@ -481,7 +473,7 @@ static void close_file(void)
              * display the file name and wait for a keystroke.
              */
             parg.p_string = filename;
-            error((char *)"%s", &parg);
+            error((char *)"%s", parg);
         }
     }
     free(filename);
@@ -595,7 +587,7 @@ static int edit_istep(IFILE h, int n, int dir)
              */
             return (1);
         }
-        if (ABORT_SIGS())
+        if (is_abort_signal(sigs))
         {
             /*
              * Interrupt breaks out, if we're in a long
@@ -745,7 +737,7 @@ static int edit_iprev(IFILE h, int n)
 {
     int exists;
     int answer;
-    PARG parg;
+    parg_t parg;
 
     if (ch_getflags() & CH_CANSEEK)
         /*
@@ -777,7 +769,7 @@ static int edit_iprev(IFILE h, int n)
          * Ask user what to do.
          */
         parg.p_string = filename;
-        answer = query((char *)"Warning: \"%s\" exists; Overwrite, Append or Don't log? ", &parg);
+        answer = query((char *)"Warning: \"%s\" exists; Overwrite, Append or Don't log? ", parg);
     }
 
 loop:
@@ -822,10 +814,10 @@ loop:
          * Error in opening logfile.
          */
         parg.p_string = filename;
-        error((char *)"Cannot write to \"%s\"", &parg);
+        error((char *)"Cannot write to \"%s\"", parg);
         return;
     }
-    SET_BINARY(logfile);
+    //SET_BINARY(logfile); // no longer needed?
 }
 
 #endif

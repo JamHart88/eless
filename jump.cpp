@@ -26,7 +26,6 @@
 
 extern int jump_sline;
 extern int squished;
-extern int screen_trashed;
 extern int sc_width, sc_height;
 extern int show_attn;
 extern int top_scroll;
@@ -59,7 +58,7 @@ void jump_forw(void)
     end_pos = ch_tell();
     pos = back_line(end_pos);
     if (pos == NULL_POSITION)
-        jump_loc(ch_zero(), sc_height - 1);
+        jump_loc(ch_zero, sc_height - 1);
     else {
         jump_loc(pos, sc_height - 1);
         if (position(sc_height - 1) != end_pos)
@@ -91,7 +90,7 @@ void jump_forw_buffered(void)
 void jump_back(linenum_t linenum)
 {
     position_t pos;
-    PARG parg;
+    parg_t parg;
 
     /*
      * Find the position of the specified line.
@@ -109,7 +108,7 @@ void jump_back(linenum_t linenum)
         error((char*)"Cannot seek to beginning of file", NULL_PARG);
     } else {
         parg.p_linenum = linenum;
-        error((char*)"Cannot seek to line number %n", &parg);
+        error((char*)"Cannot seek to line number %n", parg);
     }
 }
 
@@ -130,7 +129,7 @@ void repaint(void)
     pos_clear();
     if (scrpos.pos == NULL_POSITION)
         /* Screen hasn't been drawn yet. */
-        jump_loc(ch_zero(), 1);
+        jump_loc(ch_zero, 1);
     else
         jump_loc(scrpos.pos, scrpos.ln);
 }
@@ -278,7 +277,7 @@ void jump_loc(position_t pos, int sline)
         }
         lastmark();
         squished = 0;
-        screen_trashed = 0;
+        screen_trashed = NOT_TRASHED;
         forw(sc_height - 1, pos, 1, 0, sindex - nline);
     } else {
         /*
@@ -319,7 +318,7 @@ void jump_loc(position_t pos, int sline)
             clear();
         else
             home();
-        screen_trashed = 0;
+        screen_trashed = NOT_TRASHED;
         add_back_pos(pos);
         back(sc_height - 1, pos, 1, 0);
     }

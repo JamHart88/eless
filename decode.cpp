@@ -32,6 +32,7 @@
 #include "cmd.hpp"
 #include "command.hpp"
 #include "filename.hpp"
+#include "forwback.hpp"
 #include "less.hpp"
 #include "lesskey.hpp"
 #include "mark.hpp"
@@ -41,7 +42,6 @@
 
 extern int erase_char, erase2_char, kill_char;
 extern int mousecap;
-extern int screen_trashed;
 extern int sc_height;
 
 #define SK(k) SK_SPECIAL_KEY, (k), 6, 1, 1, 1
@@ -424,7 +424,7 @@ static int mouse_button_rel(int x, int y)
      */
     if (y < sc_height - 1) {
         setmark('#', y);
-        screen_trashed = 1;
+        screen_trashed = TRASHED;
     }
     return (A_NOACTION);
 }
@@ -799,7 +799,7 @@ int lesskey(char* filename, int sysvar)
 void add_hometable(char* envname, char* def_filename, int sysvar)
 {
     char* filename;
-    PARG parg;
+    parg_t parg;
 
     if (envname != NULL && (filename = lgetenv(envname)) != NULL)
         filename = utils::save(filename);
@@ -811,7 +811,7 @@ void add_hometable(char* envname, char* def_filename, int sysvar)
         return;
     if (lesskey(filename, sysvar) < 0) {
         parg.p_string = filename;
-        error((char*)"Cannot use lesskey file \"%s\"", &parg);
+        error((char*)"Cannot use lesskey file \"%s\"", parg);
     }
     free(filename);
 }

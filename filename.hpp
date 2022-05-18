@@ -16,7 +16,7 @@ char* fexpand(char* s);
 char* fcomplete(char* s);
 int bin_file(int f);
 char* lglob(char* filename);
-char* lrealpath(char* path);
+char* lrealpath(const char* path);
 char* open_altfile(char* filename, int* pf, void** pfd);
 void close_altfile(char* altfilename, char* filename);
 int is_dir(char* filename);

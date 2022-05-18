@@ -36,7 +36,7 @@
 
 char* every_first_cmd = NULL;
 
-int new_file;
+bool new_file;
 
 int is_tty;
 
@@ -62,7 +62,7 @@ int dohelp;
 
 int logfile = -1;
 
-int force_logfile = FALSE;
+bool force_logfile = false;
 
 char* namelogfile = NULL;
 #endif
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
      */
     ifile = NULL_IFILE;
     if (dohelp)
-        ifile = get_ifile((char*)FAKE_HELPFILE, ifile);
+        ifile = get_ifile(FAKE_HELPFILE, ifile);
     while (argc-- > 0) {
         (void)get_ifile(*argv++, ifile);
         ifile = prev_ifile(NULL_IFILE);
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
          * Output is not a tty.
          * Just copy the input file(s) to output.
          */
-        SET_BINARY(1);
+        //SET_BINARY(1);// no longer needed?
         if (edit_first() == 0) {
             do {
                 cat_file();
@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
         if (quit_if_one_screen) {
             if (nifile()
                 > 1) /* If more than one file, -F cannot be used */
-                quit_if_one_screen = FALSE;
+                quit_if_one_screen = false;
             else if (!no_init)
                 one_screen = get_one_screen();
         }

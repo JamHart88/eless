@@ -5,8 +5,9 @@
 #--- misc-* -- eg misc-unused-parameters
 #--- readability-* ??? maybe too much info
 # --- use bugprone-[a-df-z]*,bugprone-ex* to skip the easily swapable check
+# --- cant include cppcoreguidelines-pro-bounds-pointer-arithmetic util a later version of C++
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,bugprone-[a-df-z]*,bugprone-ex*,cppcoreguidelines-*,modernize-[a-tv-z],cert-*'
+Checks:          'clang-diagnostic-*,clang-analyzer-*,bugprone-[a-df-z]*,bugprone-ex*,cppcoreguidelines-[a-oq-z]*,cppcoreguidelines-pro-[c-z]* ,modernize-[a-tv-z],cert-*'
 #Checks:          'clang-diagnostic-*,clang-analyzer-*,bugprone-[a-df-z]*,bugprone-ex*'
 WarningsAsErrors: false
 HeaderFilterRegex: '.*\.(h|hpp|hxx)$'

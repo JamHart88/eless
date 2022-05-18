@@ -6,7 +6,7 @@
  void init_textlist (struct textlist *tlist, char *str);
  char * forw_textlist (struct textlist *tlist, char *prev);
  char * back_textlist (struct textlist *tlist, char *prev);
- int edit (char *filename);
+ int edit (const char *filename);
  int edit_ifile (IFILE ifile);
  int edit_list (char *filelist);
  int edit_first (void);

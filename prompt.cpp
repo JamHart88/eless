@@ -30,7 +30,7 @@
 #include "utils.hpp"
 
 extern int pr_type;
-extern int new_file;
+extern bool new_file;
 extern int sc_width;
 extern int so_s_width, so_e_width;
 extern int linenums;
@@ -245,7 +245,7 @@ static int cond(char c, int where)
 #endif
     case 'n':    /* First prompt in a new file? */
 #if TAGS
-        return (ntags() ? 1 : new_file);
+        return (ntags() ? 1 : static_cast<int>(new_file));
 #else
         return (new_file);
 #endif
@@ -365,7 +365,7 @@ static void protochar(int c, int where, int iseditproto)
         break;
     case 'L':    /* Final line number */
         len = ch_length();
-        if (len == NULL_POSITION || len == ch_zero() ||
+        if (len == NULL_POSITION || len == ch_zero ||
             (linenum = find_linenum(len)) <= 0)
             ap_quest();
         else
@@ -391,7 +391,7 @@ static void protochar(int c, int where, int iseditproto)
     case 'P':    /* Percent into file (lines) */
         linenum = currline(where);
         if (linenum == 0 ||
-            (len = ch_length()) == NULL_POSITION || len == ch_zero() ||
+            (len = ch_length()) == NULL_POSITION || len == ch_zero ||
             (last_linenum = find_linenum(len)) <= 0)
             ap_quest();
         else
@@ -630,7 +630,7 @@ static const char * wherechar(char const *p, int *wp)
     prompt = pr_expand((ch_getflags() & CH_HELPFILE) ?
                 hproto : prproto[type],
             sc_width-so_s_width-so_e_width-2);
-    new_file = 0;
+    new_file = false;
     return (prompt);
 }
 

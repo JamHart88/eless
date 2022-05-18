@@ -19,6 +19,7 @@
 
 #include "signal.hpp"
 #include "less.hpp"
+#include "forwback.hpp"
 #include "optfunc.hpp"
 #include "os.hpp"
 #include "output.hpp"
@@ -34,7 +35,6 @@
 int sigs;
 
 extern int sc_width, sc_height;
-extern int screen_trashed;
 extern int lnloop;
 extern int linenums;
 extern int wscroll;
@@ -54,7 +54,7 @@ extern long jump_sline_fraction;
 static RETSIGTYPE u_interrupt(int type)
 {
     bell();
-    LSIGNAL(SIGINT, u_interrupt);
+    signal(SIGINT, u_interrupt);
     sigs |= S_INTERRUPT;
     if (reading)
         intread(); /* May longjmp */
@@ -72,7 +72,7 @@ static RETSIGTYPE u_interrupt(int type)
 //     int type;
 static RETSIGTYPE stop(int type)
 {
-    LSIGNAL(SIGTSTP, stop);
+    signal(SIGTSTP, stop);
     sigs |= S_STOP;
     if (reading)
         intread();
@@ -101,7 +101,7 @@ static RETSIGTYPE stop(int type)
 
 RETSIGTYPE winch(int type)
 {
-    LSIGNAL(SIG_LESSWINDOW, winch);
+    signal(SIG_LESSWINDOW, winch);
     sigs |= S_WINCH;
     if (reading)
         intread();
@@ -133,41 +133,41 @@ void init_signals(int on)
         /*
          * Set signal handlers.
          */
-        (void)LSIGNAL(SIGINT, u_interrupt);
+        (void)signal(SIGINT, u_interrupt);
 #ifdef SIGTSTP
-        (void)LSIGNAL(SIGTSTP, stop);
+        (void)signal(SIGTSTP, stop);
 #endif
 #ifdef SIGWINCH
-        (void)LSIGNAL(SIGWINCH, winch);
+        (void)signal(SIGWINCH, winch);
 #endif
 #ifdef SIGWIND
-        (void)LSIGNAL(SIGWIND, winch);
+        (void)signal(SIGWIND, winch);
 #endif
 #ifdef SIGQUIT
-        (void)LSIGNAL(SIGQUIT, SIG_IGN);
+        (void)signal(SIGQUIT, SIG_IGN);
 #endif
 #ifdef SIGTERM
-        (void)LSIGNAL(SIGTERM, terminate);
+        (void)signal(SIGTERM, terminate);
 #endif
     } else {
         /*
          * Restore signals to defaults.
          */
-        (void)LSIGNAL(SIGINT, SIG_DFL);
+        (void)signal(SIGINT, SIG_DFL);
 #ifdef SIGTSTP
-        (void)LSIGNAL(SIGTSTP, SIG_DFL);
+        (void)signal(SIGTSTP, SIG_DFL);
 #endif
 #ifdef SIGWINCH
-        (void)LSIGNAL(SIGWINCH, SIG_IGN);
+        (void)signal(SIGWINCH, SIG_IGN);
 #endif
 #ifdef SIGWIND
-        (void)LSIGNAL(SIGWIND, SIG_IGN);
+        (void)signal(SIGWIND, SIG_IGN);
 #endif
 #ifdef SIGQUIT
-        (void)LSIGNAL(SIGQUIT, SIG_DFL);
+        (void)signal(SIGQUIT, SIG_DFL);
 #endif
 #ifdef SIGTERM
-        (void)LSIGNAL(SIGTERM, SIG_DFL);
+        (void)signal(SIGTERM, SIG_DFL);
 #endif
     }
 }
@@ -195,16 +195,16 @@ void psignals(void)
          * Clean up the terminal.
          */
 #ifdef SIGTTOU
-        LSIGNAL(SIGTTOU, SIG_IGN);
+        signal(SIGTTOU, SIG_IGN);
 #endif
         clear_bot();
         deinit();
         flush();
         raw_mode(0);
 #ifdef SIGTTOU
-        LSIGNAL(SIGTTOU, SIG_DFL);
+        signal(SIGTTOU, SIG_DFL);
 #endif
-        LSIGNAL(SIGTSTP, SIG_DFL);
+        signal(SIGTSTP, SIG_DFL);
         kill(getpid(), SIGTSTP);
         /*
          * ... Bye bye. ...
@@ -212,10 +212,10 @@ void psignals(void)
          * Reset the terminal and arrange to repaint the
          * screen when we get back to the main command loop.
          */
-        LSIGNAL(SIGTSTP, stop);
+        signal(SIGTSTP, stop);
         raw_mode(1);
         init();
-        screen_trashed = 1;
+        screen_trashed = TRASHED;
         tsignals |= S_WINCH;
     }
 #endif
@@ -233,7 +233,7 @@ void psignals(void)
             calc_jump_sline();
             calc_shift_count();
         }
-        screen_trashed = 1;
+        screen_trashed = TRASHED;
     }
 #endif
     if (tsignals & S_INTERRUPT) {

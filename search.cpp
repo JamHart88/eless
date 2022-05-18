@@ -16,6 +16,7 @@
 #include "charset.hpp"
 #include "cmdbuf.hpp"
 #include "cvt.hpp"
+#include "forwback.hpp"
 #include "input.hpp"
 #include "jump.hpp"
 #include "less.hpp"
@@ -42,7 +43,7 @@ extern void* ml_search;
 extern position_t start_attnpos;
 extern position_t end_attnpos;
 extern int utf_mode;
-extern int screen_trashed;
+extern screen_trashed_t screen_trashed;
 #if HILITE_SEARCH
 extern int hilite_search;
 extern int size_linebuf;
@@ -1124,7 +1125,7 @@ static position_t search_pos(int search_type)
          * Also for multi-file (SRCH_PAST_EOF) searches.
          */
         if (search_type & SRCH_FORW) {
-            pos = ch_zero();
+            pos = ch_zero;
         } else {
             pos = ch_length();
             if (pos == NULL_POSITION) {
@@ -1221,7 +1222,7 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
          * we hit end-of-file (or beginning-of-file if we're
          * going backwards), or until we hit the end position.
          */
-        if (ABORT_SIGS()) {
+        if (is_abort_signal(sigs)) {
             /*
              * A signal aborts the search.
              */
@@ -1732,7 +1733,7 @@ void set_filter_pattern(char* pattern, int search_type)
         clear_pattern(&filter_info);
     else
         set_pattern(&filter_info, pattern, search_type);
-    screen_trashed = 1;
+    screen_trashed = TRASHED;
 }
 
 /*
@@ -1768,7 +1769,7 @@ void
 
 int is_filtering(void)
 {
-    PARG parg;
+    parg_t parg;
 
     if (!reg_show_error)
         return;

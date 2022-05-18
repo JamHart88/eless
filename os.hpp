@@ -8,7 +8,7 @@ int iread(int fd, unsigned char *buf, unsigned int len);
 
 void intread(void);
 
-time_type get_time(void);
+time_t get_time(void);
 
 char *errno_message(char *filename);
 

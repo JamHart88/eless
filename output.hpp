@@ -18,10 +18,10 @@ void putstr(const char *s);
 
 void get_return(void);
 
-void error(char *fmt, PARG *parg);
+void error(char *fmt, parg_t parg);
 
-void ierror(char *fmt, PARG *parg);
+void ierror(char *fmt, parg_t parg);
 
-int query(char *fmt, PARG *parg);
+int query(char *fmt, parg_t parg);
 
 #endif

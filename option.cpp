@@ -17,6 +17,7 @@
  */
 #include "less.hpp"
 #include "charset.hpp"
+#include "forwback.hpp"
 #include "option.hpp"
 #include "ch.hpp"
 #include "command.hpp"
@@ -27,13 +28,12 @@
 
 static struct loption *pendopt;
 
-int plusoption = FALSE;
+bool plusoption = false;
 
 static char *optstring (char *s, char **p_str, char *printopt,
                                    char *validchars);
 static int flip_triple (int val, int lc);
 
-extern int screen_trashed;
 extern int less_is_more;
 extern int quit_at_eof;
 extern char *every_first_cmd;
@@ -89,10 +89,9 @@ void scan_option(char *s) {
   char *optname;
   char *printopt;
   char *str;
-  int set_default;
   int lc;
   int err;
-  PARG parg;
+  parg_t parg;
 
   if (s == NULL)
     return;
@@ -118,7 +117,7 @@ void scan_option(char *s) {
     return;
   }
 
-  set_default = FALSE;
+  bool set_default = false;
   optname = NULL;
 
   while (*s != '\0') {
@@ -155,7 +154,7 @@ void scan_option(char *s) {
        * "++" means process the commands at the start of
        * EVERY input file.
        */
-      plusoption = TRUE;
+      plusoption = true;
       s = optstring(s, &str, propt('+'), NULL);
       if (s == NULL)
         return;
@@ -220,7 +219,7 @@ void scan_option(char *s) {
         if (o != NULL && (o->otype & OTYPE) != STRING &&
             (o->otype & OTYPE) != NUMBER) {
           parg.p_string = printopt;
-          error((char *)"The %s option should not be followed by =", &parg);
+          error((char *)"The %s option should not be followed by =", parg);
           return;
         }
         s++;
@@ -238,10 +237,10 @@ void scan_option(char *s) {
         error(
             (char
                  *)"%s is an ambiguous abbreviation (\"less --help\" for help)",
-            &parg);
+            parg);
       else
         error((char *)"There is no %s option (\"less --help\" for help)",
-              &parg);
+              parg);
       return;
     }
 
@@ -320,7 +319,7 @@ void toggle_option(struct loption *o, int lower, char *s, int how_toggle) {
   int num;
   int no_prompt;
   int err;
-  PARG parg;
+  parg_t parg;
 
   no_prompt = (how_toggle & OPT_NO_PROMPT);
   how_toggle &= ~OPT_NO_PROMPT;
@@ -332,13 +331,13 @@ void toggle_option(struct loption *o, int lower, char *s, int how_toggle) {
 
   if (how_toggle == OPT_TOGGLE && (o->otype & NO_TOGGLE)) {
     parg.p_string = opt_desc(o);
-    error((char *)"Cannot change the %s option", &parg);
+    error((char *)"Cannot change the %s option", parg);
     return;
   }
 
   if (how_toggle == OPT_NO_TOGGLE && (o->otype & NO_QUERY)) {
     parg.p_string = opt_desc(o);
-    error((char *)"Cannot query the %s option", &parg);
+    error((char *)"Cannot query the %s option", parg);
     return;
   }
 
@@ -466,7 +465,7 @@ void toggle_option(struct loption *o, int lower, char *s, int how_toggle) {
        * the value of the variable.
        */
       parg.p_int = *(o->ovar);
-      error(o->odesc[1], &parg);
+      error(o->odesc[1], parg);
       break;
     case STRING:
       /*
@@ -477,7 +476,7 @@ void toggle_option(struct loption *o, int lower, char *s, int how_toggle) {
   }
 
   if (how_toggle != OPT_NO_TOGGLE && (o->otype & REPAINT))
-    screen_trashed = TRUE;
+    screen_trashed = TRASHED;
 }
 
 /*
@@ -572,9 +571,9 @@ int isoptpending(void) { return (pendopt != NULL); }
 // nostring(printopt)
 //     char *printopt;
 static void nostring(char *printopt) {
-  PARG parg;
+  parg_t parg;
   parg.p_string = printopt;
-  error((char *)"Value is required after %s", &parg);
+  error((char *)"Value is required after %s", parg);
 }
 
 /*
@@ -637,16 +636,17 @@ static char *optstring(char *s, char **p_str, char *printopt,
 // num_error(printopt, errp)
 //     char *printopt;
 //     int *errp;
+//TODO: look at what errp should be - bool or could it be removed
 static int num_error(char *printopt, int *errp) {
-  PARG parg;
+  parg_t parg;
 
   if (errp != NULL) {
-    *errp = TRUE;
+    *errp = 1;
     return (-1);
   }
   if (printopt != NULL) {
     parg.p_string = printopt;
-    error((char *)"Number is required after %s", &parg);
+    error((char *)"Number is required after %s", parg);
   }
   return (-1);
 }
@@ -663,16 +663,15 @@ static int num_error(char *printopt, int *errp) {
 //     char **sp;
 //     char *printopt;
 //     int *errp;
-
+//TODO: look at what errp should be - bool or could it be removed
 int getnum(char **sp, char *printopt, int *errp) {
   char *s;
   int n;
-  int neg;
+  int is_negative = false;
 
   s = utils::skipsp(*sp);
-  neg = FALSE;
   if (*s == '-') {
-    neg = TRUE;
+    is_negative = true;
     s++;
   }
   if (*s < '0' || *s > '9')
@@ -683,8 +682,8 @@ int getnum(char **sp, char *printopt, int *errp) {
     n = 10 * n + *s++ - '0';
   *sp = s;
   if (errp != NULL)
-    *errp = FALSE;
-  if (neg)
+    *errp = 0;
+  if (is_negative)
     n = -n;
   return (n);
 }
@@ -702,7 +701,7 @@ int getnum(char **sp, char *printopt, int *errp) {
 //     char **sp;
 //     char *printopt;
 //     int *errp;
-
+//TODO: look at what errp should be - bool or could it be removed
 long getfraction(char **sp, char *printopt, int *errp) {
   char *s;
   long frac = 0;
@@ -724,7 +723,7 @@ long getfraction(char **sp, char *printopt, int *errp) {
       frac *= 10;
   *sp = s;
   if (errp != NULL)
-    *errp = FALSE;
+    *errp = 0;
   return (frac);
 }
 

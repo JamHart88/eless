@@ -297,7 +297,7 @@ static void pshift(int shift)
      */
     while (shifted <= shift && from < curr) {
         c = linebuf[from];
-        if (ctldisp == OPT_ONPLUS && IS_CSI_START(c)) {
+        if (ctldisp == OPT_ONPLUS && is_csi_start(c)) {
             /* Keep cumulative effect.  */
             linebuf[to] = c;
             attr[to++] = attr[from++];
@@ -525,7 +525,7 @@ static int in_ansi_esc_seq(void)
      */
     for (p = &linebuf[curr]; p > linebuf;) {
         lwchar_t ch = step_char(&p, -1, linebuf);
-        if (IS_CSI_START(ch))
+        if (is_csi_start(ch))
             return (1);
         if (!is_ansi_middle(ch))
             return (0);
@@ -614,13 +614,13 @@ static int store_char(lwchar_t ch, int a, char* rep, position_t pos)
             lwchar_t bch;
             do {
                 bch = step_char(&p, -1, linebuf);
-            } while (p > linebuf && !IS_CSI_START(bch));
+            } while (p > linebuf && !is_csi_start(bch));
             curr = (int)(p - linebuf);
             return 0;
         }
         a = AT_ANSI; /* Will force re-AT_'ing around it.  */
         w = 0;
-    } else if (ctldisp == OPT_ONPLUS && IS_CSI_START(ch)) {
+    } else if (ctldisp == OPT_ONPLUS && is_csi_start(ch)) {
         a = AT_ANSI; /* Will force re-AT_'ing around it.  */
         w = 0;
     } else {
@@ -922,7 +922,7 @@ static int do_append(lwchar_t ch, char* rep, position_t pos)
         }
     } else if ((!utf_mode || is_ascii_char(ch)) && control_char((char)ch)) {
     do_control_char:
-        if (ctldisp == OPT_ON || (ctldisp == OPT_ONPLUS && IS_CSI_START(ch))) {
+        if (ctldisp == OPT_ON || (ctldisp == OPT_ONPLUS && is_csi_start(ch))) {
             /*
              * Output as a normal character.
              */
@@ -979,7 +979,7 @@ static void add_attr_normal(void)
  * Terminate the line in the line buffer.
  */
 
-void pdone(int endline, int chopped, int forw)
+void pdone(bool endline, bool chopped, int forw)
 {
     (void)pflushmbc();
 
@@ -1125,7 +1125,7 @@ position_t forw_raw_line(position_t curr_pos, char** linep, int* line_lenp)
 
     n = 0;
     for (;;) {
-        if (c == '\n' || c == EOI || ABORT_SIGS()) {
+        if (c == '\n' || c == EOI || is_abort_signal(sigs)) {
             new_pos = ch_tell();
             break;
         }
@@ -1161,14 +1161,14 @@ position_t back_raw_line(position_t curr_pos, char** linep, int* line_lenp)
     int c;
     position_t new_pos;
 
-    if (curr_pos == NULL_POSITION || curr_pos <= ch_zero() || ch_seek(curr_pos - 1))
+    if (curr_pos == NULL_POSITION || curr_pos <= ch_zero || ch_seek(curr_pos - 1))
         return (NULL_POSITION);
 
     n = size_linebuf;
     linebuf[--n] = '\0';
     for (;;) {
         c = ch_back_get();
-        if (c == '\n' || ABORT_SIGS()) {
+        if (c == '\n' || is_abort_signal(sigs)) {
             /*
              * This is the newline ending the previous line.
              * We have hit the beginning of the line.
@@ -1182,7 +1182,7 @@ position_t back_raw_line(position_t curr_pos, char** linep, int* line_lenp)
              * This must be the first line in the file.
              * This must, of course, be the beginning of the line.
              */
-            new_pos = ch_zero();
+            new_pos = ch_zero;
             break;
         }
         if (n <= 0) {

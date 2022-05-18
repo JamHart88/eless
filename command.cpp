@@ -78,8 +78,6 @@ extern char* editor;
 extern char* editproto;
 #endif
 
-extern int screen_trashed; /* The screen has been overwritten */
-
 extern int shift_count;
 extern int oldbot;
 extern int forw_prompt;
@@ -99,7 +97,7 @@ static long fraction; /* The fractional part of the number */
 static struct loption* curropt;
 static int opt_lower;
 static int optflag;
-static int optgetname;
+static bool optgetname = false;
 static position_t bottompos;
 static int save_hshift;
 static int save_bs_mode;
@@ -115,7 +113,7 @@ struct ungot {
 };
 static struct ungot* ungot = NULL;
 
-static void multi_search (char* pattern, int n, int silent);
+static void multi_search(char* pattern, int n, int silent);
 
 /*
  * Move the cursor to start of prompt line before executing a command.
@@ -160,7 +158,6 @@ static void start_mca(int action, const char* prompt, void* mlist, int cmdflags)
     cmd_putstr(prompt);
     set_mlist(mlist, cmdflags);
 }
-
 
 int in_mca(void)
 {
@@ -345,7 +342,7 @@ static int mca_opt_first_char(int c)
         switch (c) {
         case '_':
             /* "__" = long option name. */
-            optgetname = TRUE;
+            optgetname = true;
             mca_opt_toggle();
             return (MCA_MORE);
         }
@@ -367,7 +364,7 @@ static int mca_opt_first_char(int c)
             return (MCA_MORE);
         case '-':
             /* "--" = long option name. */
-            optgetname = TRUE;
+            optgetname = true;
             mca_opt_toggle();
             return (MCA_MORE);
         }
@@ -433,7 +430,7 @@ static int mca_opt_nonfirst_char(int c)
  */
 static int mca_opt_char(int c)
 {
-    PARG parg;
+    parg_t parg;
 
     /*
      * This may be a short option (single char),
@@ -451,10 +448,10 @@ static int mca_opt_char(int c)
             return (mca_opt_nonfirst_char(c));
         if (curropt == NULL) {
             parg.p_string = get_cmdbuf();
-            error((char*)"There is no --%s option", &parg);
+            error((char*)"There is no --%s option", parg);
             return (MCA_DONE);
         }
-        optgetname = FALSE;
+        optgetname = false;
         cmd_reset();
     } else {
         if (is_erase_char(c))
@@ -465,7 +462,7 @@ static int mca_opt_char(int c)
         curropt = findopt(c);
         if (curropt == NULL) {
             parg.p_string = propt(c);
-            error((char*)"There is no %s option", &parg);
+            error((char*)"There is no %s option", parg);
             return (MCA_DONE);
         }
         opt_lower = islower(c);
@@ -657,22 +654,21 @@ static void make_display(void)
         if (initial_scrpos.pos == NULL_POSITION)
             /*
              * {{ Maybe this should be:
-             *    jump_loc(ch_zero(), jump_sline);
+             *    jump_loc(ch_zero, jump_sline);
              *    but this behavior seems rather unexpected
              *    on the first screen. }}
              */
-            jump_loc(ch_zero(), 1);
+            jump_loc(ch_zero, 1);
         else
             jump_loc(initial_scrpos.pos, initial_scrpos.ln);
-    } else if (screen_trashed) {
+    } else if (screen_trashed != NOT_TRASHED) {
         debug("Screen trashed");
         int save_top_scroll = top_scroll;
         int save_ignore_eoi = ignore_eoi;
         top_scroll = 1;
         ignore_eoi = 0;
-        if (screen_trashed == 2) {
-            /* Special case used by ignore_eoi: re-open the input file
-             * and jump to the end of the file. */
+        if (screen_trashed == TRASHED_AND_REOPEN_FILE) {
+
             reopen_curr_ifile();
             jump_forw();
         }
@@ -706,13 +702,15 @@ static void prompt(void)
     /*
      * If we've hit EOF on the last file and the -E flag is set, quit.
      */
-    if (get_quit_at_eof() == OPT_ONPLUS && eof_displayed() && !(ch_getflags() & CH_HELPFILE) && next_ifile(curr_ifile) == NULL_IFILE)
+    if (get_quit_at_eof() == OPT_ONPLUS && eof_displayed() && !(ch_getflags() & CH_HELPFILE) && 
+        next_ifile(curr_ifile) == NULL_IFILE)
         utils::quit(QUIT_OK);
 
     /*
      * If the entire file is displayed and the -F flag is set, quit.
      */
-    if (quit_if_one_screen && entire_file_displayed() && !(ch_getflags() & CH_HELPFILE) && next_ifile(curr_ifile) == NULL_IFILE)
+    if (quit_if_one_screen && entire_file_displayed() && 
+        !(ch_getflags() & CH_HELPFILE) && next_ifile(curr_ifile) == NULL_IFILE)
         utils::quit(QUIT_OK);
 
     /*
@@ -751,10 +749,10 @@ static void prompt(void)
 
 void dispversion(void)
 {
-    PARG parg;
+    parg_t parg;
 
     parg.p_string = version;
-    error((char*)"less %s", &parg);
+    error((char*)"less %s", parg);
 }
 
 /*
@@ -1007,7 +1005,7 @@ static int forw_loop(int until_hilite)
      * This gets us back in "F mode" after processing
      * a non-abort signal (e.g. window-change).
      */
-    if (sigs && !ABORT_SIGS())
+    if (sigs && !is_abort_signal(sigs))
         return (until_hilite ? A_F_UNTIL_HILITE : A_F_FOREVER);
 
     return (A_NOACTION);
@@ -1027,7 +1025,7 @@ void commands(void)
     int save_search_type;
     char* extra;
     char tbuf[2];
-    PARG parg;
+    parg_t parg;
     IFILE old_ifile;
     IFILE new_ifile;
     char* tagfile;
@@ -1399,7 +1397,7 @@ void commands(void)
                 break;
             cmd_exec();
             parg.p_string = eq_message();
-            error((char*)"%s", &parg);
+            error((char*)"%s", parg);
             break;
 
         case A_VERSION:
@@ -1533,7 +1531,7 @@ void commands(void)
             hshift = 0;
             save_bs_mode = bs_mode;
             bs_mode = BS_SPECIAL;
-            (void)edit((char*)FAKE_HELPFILE);
+            (void)edit(FAKE_HELPFILE);
             break;
 
         case A_EXAMINE:
@@ -1596,7 +1594,7 @@ void commands(void)
                 if (get_quit_at_eof() && eof_displayed() && !(ch_getflags() & CH_HELPFILE))
                     utils::quit(QUIT_OK);
                 parg.p_string = (number > 1) ? (char*)"(N-th) " : (char*)"";
-                error((char*)"No %snext file", &parg);
+                error((char*)"No %snext file", parg);
             }
             break;
 
@@ -1614,7 +1612,7 @@ void commands(void)
                 number = 1;
             if (edit_prev((int)number)) {
                 parg.p_string = (number > 1) ? (char*)"(N-th) " : (char*)"";
-                error((char*)"No %sprevious file", &parg);
+                error((char*)"No %sprevious file", parg);
             }
             break;
 
@@ -1698,7 +1696,7 @@ void commands(void)
              * Change the setting of an  option.
              */
             optflag = OPT_TOGGLE;
-            optgetname = FALSE;
+            optgetname = false;
             mca_opt_toggle();
             c = getcc();
             debug("getcc 1736");
@@ -1716,7 +1714,7 @@ void commands(void)
              * Report the setting of an option.
              */
             optflag = OPT_NO_TOGGLE;
-            optgetname = FALSE;
+            optgetname = false;
             mca_opt_toggle();
             c = getcc();
             debug("getcc 1754");
@@ -1828,7 +1826,7 @@ void commands(void)
             if (number > hshift)
                 number = hshift;
             hshift -= number;
-            screen_trashed = 1;
+            screen_trashed = TRASHED;
             break;
 
         case A_RSHIFT:
@@ -1840,7 +1838,7 @@ void commands(void)
             else
                 number = (shift_count > 0) ? shift_count : sc_width / 2;
             hshift += number;
-            screen_trashed = 1;
+            screen_trashed = TRASHED;
             break;
 
         case A_LLSHIFT:
@@ -1848,7 +1846,7 @@ void commands(void)
              * Shift view left to margin.
              */
             hshift = 0;
-            screen_trashed = 1;
+            screen_trashed = TRASHED;
             break;
 
         case A_RRSHIFT:
@@ -1856,7 +1854,7 @@ void commands(void)
              * Shift view right to view rightmost char on screen.
              */
             hshift = rrshift();
-            screen_trashed = 1;
+            screen_trashed = TRASHED;
             break;
 
         case A_PREFIX:

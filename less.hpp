@@ -9,7 +9,6 @@
  * For more information, see the README file.
  */
 
-
 /*
  * Standard include file for "less".
  */
@@ -34,11 +33,10 @@ static inline void ignore_result(long long int unused_result)
  * Language details.
  */
 
-
 /* Library function declarations */
 
-#include <sys/types.h>
 #include <cstdio>
+#include <sys/types.h>
 
 #if HAVE_FCNTL_H
 #include <fcntl.h>
@@ -60,6 +58,8 @@ static inline void ignore_result(long long int unused_result)
 
 #include <cstdlib>
 #include <cstring>
+#include <string>
+#include <string_view>
 
 #if DEBUG
 #include "debug.hpp"
@@ -68,45 +68,17 @@ static inline void ignore_result(long long int unused_result)
 // New C++ includes
 #include <cstring>
 
+#include "funcs.hpp"
+#include "pattern.hpp"
 
-/*
- * Simple lowercase test which can be used during option processing
- * (before options are parsed which might tell us what charset to use).
- */
+enum option_t {
+    OPT_OFF = 0,
+    OPT_ON = 1,
+    OPT_ONPLUS = 2
+};
 
-
-#define IS_CSI_START(c) (((lwchar_t)(c)) == esc || (((lwchar_t)(c)) == csi_char))
-
-
-
-#ifndef NULL
-#define NULL 0
-#endif
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-#ifndef FALSE
-#define FALSE 0
-#endif
-
-#define OPT_OFF 0
-#define OPT_ON 1
-#define OPT_ONPLUS 2
-
-
-#define BAD_LSEEK ((off_t)-1)
-
-#ifndef SEEK_SET
-#define SEEK_SET 0
-#endif
-#ifndef SEEK_END
-#define SEEK_END 2
-#endif
-
-#ifndef CHAR_BIT
-#define CHAR_BIT 8
-#endif
+/* Bad Seek return value */
+constexpr const off_t BAD_LSEEK = -1;
 
 /*
  * Special types and consts.
@@ -114,41 +86,32 @@ static inline void ignore_result(long long int unused_result)
 typedef unsigned long lwchar_t;
 typedef off_t position_t;
 typedef off_t linenum_t;
-#define MIN_LINENUM_WIDTH 7 /* Min printing width of a line number */
-#define MAX_UTF_CHAR_LEN 6 /* Max bytes in one UTF-8 char */
 
-#define NULL_POSITION ((position_t)(-1))
+/* Min printing width of a line number */
+const int MIN_LINENUM_WIDTH = 7;
+
+/* Max bytes in one UTF-8 char */
+const int MAX_UTF_CHAR_LEN = 6;
+
+const position_t NULL_POSITION = -1;
 
 /*
  * Flags for open()
  */
-#ifdef O_RDONLY
-#define OPEN_READ (O_RDONLY)
-#else
-#define OPEN_READ (0)
-#endif
+const int OPEN_READ = O_RDONLY;
 
-#if defined(O_WRONLY) && defined(O_APPEND)
-#define OPEN_APPEND (O_APPEND | O_WRONLY)
-#else
-#define OPEN_APPEND (1)
-#endif
+const int OPEN_APPEND = O_APPEND | O_WRONLY;
 
 /*
- * Set a file descriptor to binary mode.
+ * Misc settings
  */
-#define SET_BINARY(f)
 
-/*
- * Does the shell treat "?" as a metacharacter?
- */
-#define SHELL_META_QUEST 1
-
-#define SPACES_IN_FILENAMES 1
+const int SPACES_IN_FILENAMES = 1;
 
 /*
  * An IFILE represents an input file.
  */
+// TODO: This should be converted to a Class with private fields
 #define IFILE void*
 #define NULL_IFILE ((IFILE)NULL)
 
@@ -164,13 +127,13 @@ struct scrpos {
     int ln;
 };
 
-typedef union parg {
+union parg_t {
     char* p_string;
     int p_int;
     linenum_t p_linenum;
-} PARG;
+};
 
-#define NULL_PARG ((PARG*)NULL)
+constexpr const parg_t NULL_PARG = { 0 };
 
 struct textlist {
     char* string;
@@ -186,155 +149,222 @@ struct wchar_range_table {
     int count;
 };
 
-#define EOI (-1)
-
-#define READ_INTR (-2)
+const int EOI = -1;
+const int READ_INTR = -2;
 
 /* A fraction is represented by an int n; the fraction is n/NUM_FRAC_DENOM */
-#define NUM_FRAC_DENOM 1000000
-#define NUM_LOG_FRAC_DENOM 6
+const long NUM_FRAC_DENOM = 1000000;
+const int NUM_LOG_FRAC_DENOM = 6;
 
-/* How quiet should we be? */
-#define NOT_QUIET 0 /* Ring bell at eof and for errors */
-#define LITTLE_QUIET 1 /* Ring bell only for errors */
-#define VERY_QUIET 2 /* Never ring bell */
+/* How quiet should we be?
+   NOT_QUIET     : Ring bell at eof and for errors
+   LITTLE_QUIET  : Ring bell only for errors
+   VERY_QUIET    : Never ring bell
+*/
+enum quiet_t {
+    NOT_QUIET = 0,
+    LITTLE_QUIET = 1,
+    VERY_QUIET = 2
+};
 
-/* How should we prompt? */
-#define PR_SHORT 0 /* Prompt with colon */
-#define PR_MEDIUM 1 /* Prompt with message */
-#define PR_LONG 2 /* Prompt with longer message */
+/* How should we prompt?
+    PR_SHORT  : Prompt with colon
+    PR_MEDIUM : Prompt with message
+    PR_LONG   :  Prompt with longer message
+*/
+enum prompt_t {
+    PR_SHORT = 0,
+    PR_MEDIUM = 1,
+    PR_LONG = 2
+};
 
-/* How should we handle backspaces? */
-#define BS_SPECIAL 0 /* Do special things for underlining and bold */
-#define BS_NORMAL 1 /* \b treated as normal char; actually output */
-#define BS_CONTROL 2 /* \b treated as control char; prints as ^H */
+/* How should we handle backspaces?
+    BS_SPECIAL  : Do special things for underlining and bold
+    BS_NORMAL   : \b treated as normal char; actually output
+    BS_CONTROL  : \b treated as control char; prints as ^H
+*/
+enum handle_backspace_t {
+    BS_SPECIAL = 0,
+    BS_NORMAL = 1,
+    BS_CONTROL = 2
+};
 
-/* How should we search? */
-#define SRCH_FORW (1 << 0) /* Search forward from current position */
-#define SRCH_BACK (1 << 1) /* Search backward from current position */
-#define SRCH_NO_MOVE (1 << 2) /* Highlight, but don't move */
-#define SRCH_FIND_ALL (1 << 4) /* Find and highlight all matches */
-#define SRCH_NO_MATCH (1 << 8) /* Search for non-matching lines */
-#define SRCH_PAST_EOF (1 << 9) /* Search past end-of-file, into next file */
-#define SRCH_FIRST_FILE (1 << 10) /* Search starting at the first file */
-#define SRCH_NO_REGEX (1 << 12) /* Don't use regular expressions */
-#define SRCH_FILTER (1 << 13) /* Search is for '&' (filter) command */
-#define SRCH_AFTER_TARGET (1 << 14) /* Start search after the target line */
+/* How should we search?
+    SRCH_FORW        : Search forward from current position
+    SRCH_BACK        : Search backward from current position
+    SRCH_NO_MOVE     : Highlight, but don't move
+    SRCH_FIND_ALL    : Find and highlight all matches
+    SRCH_NO_MATCH    : Search for non-matching lines
+    SRCH_PAST_EOF    : Search past end-of-file, into next file
+    SRCH_FIRST_FILE  : Search starting at the first file
+    SRCH_NO_REGEX    : Don't use regular expressions
+    SRCH_FILTER      : Search is for '&' (filter) command
+    SRCH_AFTER_TARGET: Start search after the target line
+*/
+enum search_t {
+    SRCH_FORW = (1 << 0),
+    SRCH_BACK = (1 << 1),
+    SRCH_NO_MOVE = (1 << 2),
+    SRCH_FIND_ALL = (1 << 4),
+    SRCH_NO_MATCH = (1 << 8),
+    SRCH_PAST_EOF = (1 << 9),
+    SRCH_FIRST_FILE = (1 << 10),
+    SRCH_NO_REGEX = (1 << 12),
+    SRCH_FILTER = (1 << 13),
+    SRCH_AFTER_TARGET = (1 << 14)
+};
 
-#define SRCH_REVERSE(t) (((t)&SRCH_FORW) ? (((t) & ~SRCH_FORW) | SRCH_BACK) : (((t) & ~SRCH_BACK) | SRCH_FORW))
+//#define SRCH_REVERSE(t) (((t)&SRCH_FORW) ? (((t) & ~SRCH_FORW) | SRCH_BACK) : (((t) & ~SRCH_BACK) | SRCH_FORW))
+inline int SRCH_REVERSE(int search)
+{
+    return (search & SRCH_FORW ? ((search & ~SRCH_FORW) | SRCH_BACK) : ((search & ~SRCH_BACK) | SRCH_FORW));
+};
 
 /* */
-#define NO_MCA 0
-#define MCA_DONE 1
-#define MCA_MORE 2
+enum mca_t {
+    NO_MCA = 0,
+    MCA_DONE = 1,
+    MCA_MORE = 2
+};
 
-#define CC_OK 0 /* Char was accepted & processed */
-#define CC_QUIT 1 /* Char was a request to abort current cmd */
-#define CC_ERROR 2 /* Char could not be accepted due to error */
-#define CC_PASS 3 /* Char was rejected (internal) */
+/* cc_type:
+    CC_OK    Char was accepted & processed
+    CC_QUIT  Char was a request to abort current cmd
+    CC_ERROR Char could not be accepted due to error
+    CC_PASS  Char was rejected (internal)
+*/
 
-#define CF_QUIT_ON_ERASE 0001 /* Abort cmd if its entirely erased */
+enum cc_type_t {
+    CC_OK = 0,
+    CC_QUIT = 1,
+    CC_ERROR = 2,
+    CC_PASS = 3
+};
 
-/* Special char bit-flags used to tell put_line() to do something special */
-#define AT_NORMAL (0)
-#define AT_UNDERLINE (1 << 0)
-#define AT_BOLD (1 << 1)
-#define AT_BLINK (1 << 2)
-#define AT_STANDOUT (1 << 3)
-#define AT_ANSI (1 << 4) /* Content-supplied "ANSI" escape sequence */
-#define AT_BINARY (1 << 5) /* LESS*BINFMT representation */
-#define AT_HILITE (1 << 6) /* Internal highlights (e.g., for search) */
+const int CF_QUIT_ON_ERASE = 0001; /* Abort cmd if its entirely erased */
+
+/* Special char bit-flags used to tell put_line() to do something special
+    AT_NORMAL
+    AT_UNDERLINE
+    AT_BOLD
+    AT_BLINK
+    AT_STANDOUT
+    AT_ANSI  Content-supplied "ANSI" escape sequence
+    AT_BINARY  LESS*BINFMT representation
+    AT_HILITE  Internal highlights (e.g., for search)
+*/
+enum put_line_flags_t {
+    AT_NORMAL = (0),
+    AT_UNDERLINE = (1 << 0),
+    AT_BOLD = (1 << 1),
+    AT_BLINK = (1 << 2),
+    AT_STANDOUT = (1 << 3),
+    AT_ANSI = (1 << 4),
+    AT_BINARY = (1 << 5),
+    AT_HILITE = (1 << 6)
+};
 
 // JPH Replaced the following macro with template
 //#define CONTROL(c) ((c)&037)
 constexpr unsigned char unitSepChar = 31;
 template <typename T>
-constexpr inline unsigned char control(T inputChar) {
-  return (inputChar & unitSepChar);
-} 
+constexpr inline unsigned char control(T inputChar)
+{
+    return (inputChar & unitSepChar);
+}
 
-//#define ESC control<int>('[')
-constexpr unsigned char esc = control<int>('[');
+/* Define ESC char */
+constexpr const unsigned char esc = control<int>('[');
 
-//#define CSI ((unsigned char)'\233')
-constexpr unsigned char csi_char = '\233';
+/* Define CSI character */
+constexpr const unsigned char csi_char = '\233';
 
-#define CHAR_END_COMMAND 0x40000000
+/* is_csi_start: helper functon to detect if chat is ESC or CSI char */
+inline bool is_csi_start(lwchar_t c)
+{
+    return (c == esc || c == csi_char);
+}
 
-#define LSIGNAL(sig, func) signal(sig, func)
+const lwchar_t CHAR_END_COMMAND = 0x40000000;
 
-#if HAVE_SIGPROCMASK
-#if HAVE_SIGSET_T
-#else
-#undef HAVE_SIGPROCMASK
-#endif
-#endif
-#if HAVE_SIGPROCMASK
-#if HAVE_SIGEMPTYSET
-#else
-#undef sigemptyset
-#define sigemptyset(mp) *(mp) = 0
-#endif
-#endif
+/*
+ * Signals
+ */
 
-#define S_INTERRUPT 01
-#define S_STOP 02
-#define S_WINCH 04
-#define ABORT_SIGS() (sigs & (S_INTERRUPT | S_STOP))
+const int S_INTERRUPT = 01;
+const int S_STOP = 02;
+const int S_WINCH = 04;
 
-#define QUIT_OK 0
-#define QUIT_ERROR 1
-#define QUIT_INTERRUPT 2
-#define QUIT_SAVED_STATUS (-1)
+inline bool is_abort_signal(int sigVal)
+{
+    return sigVal & (S_INTERRUPT | S_STOP);
+}
 
-#define FOLLOW_DESC 0
-#define FOLLOW_NAME 1
+enum quit_t {
+    QUIT_OK = 0,
+    QUIT_ERROR = 1,
+    QUIT_INTERRUPT = 2,
+    QUIT_SAVED_STATUS = (-1),
+};
+
+enum follow_t {
+    FOLLOW_DESC = 0,
+    FOLLOW_NAME = 1
+};
 
 /* filestate flags */
-#define CH_CANSEEK 001
-#define CH_KEEPOPEN 002
-#define CH_POPENED 004
-#define CH_HELPFILE 010
-#define CH_NODATA 020 /* Special case for zero length files */
+enum filestate_t {
+    CH_CANSEEK = 001,
+    CH_KEEPOPEN = 002,
+    CH_POPENED = 004,
+    CH_HELPFILE = 010,
+    CH_NODATA = 020 /* Special case for zero length files */
+};
 
-#define ch_zero() ((position_t)0)
+const position_t ch_zero = 0;
 
-#define FAKE_HELPFILE "@/\\less/\\help/\\file/\\@"
-#define FAKE_EMPTYFILE "@/\\less/\\empty/\\file/\\@"
+const char * const FAKE_HELPFILE = "@/\\less/\\help/\\file/\\@";
+const char * const FAKE_EMPTYFILE = "@/\\less/\\empty/\\file/\\@";
 
 /* Flags for cvt_text */
-#define CVT_TO_LC 01 /* Convert upper-case to lower-case */
-#define CVT_BS 02 /* Do backspace processing */
-#define CVT_CRLF 04 /* Remove CR after LF */
-#define CVT_ANSI 010 /* Remove ANSI escape sequences */
-
-#define time_type time_t
+enum cvt_t {
+    CVT_TO_LC = 01, /* Convert upper-case to lower-case */
+    CVT_BS = 02, /* Do backspace processing */
+    CVT_CRLF = 04, /* Remove CR after LF */
+    CVT_ANSI = 010 /* Remove ANSI escape sequences */
+};
 
 /* X11 mouse reporting definitions */
-#define X11MOUSE_BUTTON1 0 /* Left button press */
-#define X11MOUSE_BUTTON2 1 /* Middle button press */
-#define X11MOUSE_BUTTON3 2 /* Right button press */
-#define X11MOUSE_BUTTON_REL 3 /* Button release */
-#define X11MOUSE_WHEEL_UP 0x40 /* Wheel scroll up */
-#define X11MOUSE_WHEEL_DOWN 0x41 /* Wheel scroll down */
-#define X11MOUSE_OFFSET 0x20 /* Added to button & pos bytes to create a char */
+enum x11_mouse_t {
+    X11MOUSE_BUTTON1 = 0, /* Left button press */
+    X11MOUSE_BUTTON2 = 1, /* Middle button press */
+    X11MOUSE_BUTTON3 = 2, /* Right button press */
+    X11MOUSE_BUTTON_REL = 3, /* Button release */
+    X11MOUSE_WHEEL_UP = 0x40, /* Wheel scroll up */
+    X11MOUSE_WHEEL_DOWN = 0x41, /* Wheel scroll down */
+    X11MOUSE_OFFSET = 0x20 /* Added to button & pos bytes to create a char */
+};
 
 struct mlist;
 struct loption;
 struct hilite_tree;
-#include "funcs.hpp"
-#include "pattern.hpp"
+
 
 /* Functions not included in funcs.h */
 
 // ---------------------------------------------------------
 // Template functions
 // ---------------------------------------------------------
+const int TEN = 10;
+const char CH_0 = '0';
+const char CH_9 = '9';
 
 // ---------------------------------------------------------
 // strToType : Convert a string with a number in to its numeric value
 // Caller must ensure that type is appropriate for the expected
 // number in the string
+// ebuf is set to the next character after the number that was
+// processed
 // TODO: Move to utils. Follow C++ guidance - see clang-tidy
 template <typename T>
 T strToType(char* buf, char** ebuf)
@@ -342,9 +372,9 @@ T strToType(char* buf, char** ebuf)
     T val = 0;
     for (;;) {
         char c = *buf++;
-        if (c < '0' || c > '9')
+        if (c < CH_0 || c > CH_9)
             break;
-        val = 10 * val + c - '0';
+        val = TEN * val + c - CH_0;
     }
     if (ebuf != NULL)
         *ebuf = buf;

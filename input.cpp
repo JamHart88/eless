@@ -50,8 +50,6 @@ extern int size_linebuf;
     position_t new_pos;
     int c;
     int blankline;
-    int endline;
-    int chopped;
     int backchars;
 
 get_forw_line:
@@ -88,7 +86,7 @@ get_forw_line:
     base_pos = curr_pos;
     for (;;)
     {
-        if (ABORT_SIGS())
+        if (is_abort_signal(sigs))
         {
             null_line();
             return (NULL_POSITION);
@@ -113,7 +111,7 @@ get_forw_line:
     new_pos = base_pos;
     while (new_pos < curr_pos)
     {
-        if (ABORT_SIGS())
+        if (is_abort_signal(sigs))
         {
             null_line();
             return (NULL_POSITION);
@@ -148,10 +146,13 @@ get_forw_line:
     /*
      * Read each character in the line and append to the line buffer.
      */
-    chopped = FALSE;
+    
+    int chopped = false;
+    bool endline = false;
+    
     for (;;)
     {
-        if (ABORT_SIGS())
+        if (is_abort_signal(sigs))
         {
             null_line();
             return (NULL_POSITION);
@@ -166,9 +167,9 @@ get_forw_line:
             if (backchars > 0 && !chopline && hshift == 0)
             {
                 new_pos -= backchars + 1;
-                endline = FALSE;
+                endline = false;
             } else
-                endline = TRUE;
+                endline = true;
             break;
         }
         if (c != '\r')
@@ -189,7 +190,7 @@ get_forw_line:
             {
                 do
                 {
-                    if (ABORT_SIGS())
+                    if (is_abort_signal(sigs))
                     {
                         null_line();
                         return (NULL_POSITION);
@@ -197,13 +198,13 @@ get_forw_line:
                     c = ch_forw_get();
                 } while (c != '\n' && c != EOI);
                 new_pos = ch_tell();
-                endline = TRUE;
-                quit_if_one_screen = FALSE;
-                chopped = TRUE;
+                endline = true;
+                quit_if_one_screen = false;
+                chopped = true;
             } else
             {
                 new_pos = ch_tell() - backchars;
-                endline = FALSE;
+                endline = false;
             }
             break;
         }
@@ -237,7 +238,7 @@ get_forw_line:
          * and pretend it is the one which we are returning.
          */
         while ((c = ch_forw_get()) == '\n' || c == '\r')
-            if (ABORT_SIGS())
+            if (is_abort_signal(sigs))
             {
                 null_line();
                 return (NULL_POSITION);
@@ -261,12 +262,11 @@ get_forw_line:
 {
     position_t new_pos, begin_new_pos, base_pos;
     int c;
-    int endline;
-    int chopped;
+    
     int backchars;
 
 get_back_line:
-    if (curr_pos == NULL_POSITION || curr_pos <= ch_zero())
+    if (curr_pos == NULL_POSITION || curr_pos <= ch_zero)
     {
         null_line();
         return (NULL_POSITION);
@@ -302,7 +302,7 @@ get_back_line:
              * since we skipped them in forw_line().
              */
             while ((c = ch_back_get()) == '\n' || c == '\r')
-                if (ABORT_SIGS())
+                if (is_abort_signal(sigs))
                 {
                     null_line();
                     return (NULL_POSITION);
@@ -321,7 +321,7 @@ get_back_line:
      */
     for (;;)
     {
-        if (ABORT_SIGS())
+        if (is_abort_signal(sigs))
         {
             null_line();
             return (NULL_POSITION);
@@ -363,18 +363,18 @@ get_back_line:
         null_line();
         return (NULL_POSITION);
     }
-    endline = FALSE;
+    bool endline = false;
+    bool chopped = false;
     prewind();
     plinenum(new_pos);
     loop:
     begin_new_pos = new_pos;
     (void) ch_seek(new_pos);
-    chopped = FALSE;
 
     do
     {
         c = ch_forw_get();
-        if (c == EOI || ABORT_SIGS())
+        if (c == EOI || is_abort_signal(sigs))
         {
             null_line();
             return (NULL_POSITION);
@@ -388,7 +388,7 @@ get_back_line:
                 backchars++;
                 goto shift;
             }
-            endline = TRUE;
+            endline = true;
             break;
         }
         backchars = pappend(c, ch_tell()-1);
@@ -401,9 +401,9 @@ get_back_line:
              */
             if (chopline || hshift > 0)
             {
-                endline = TRUE;
-                chopped = TRUE;
-                quit_if_one_screen = FALSE;
+                endline = true;
+                chopped = true;
+                quit_if_one_screen = false;
                 break;
             }
         shift:

@@ -27,8 +27,6 @@
 #include "utils.hpp"
 
 
-int screen_trashed;
-
 int squished;
 
 int no_back_scroll = 0;
@@ -56,6 +54,9 @@ extern int status_col;
 #if TAGS
 extern char* tagoption;
 #endif
+
+
+screen_trashed_t screen_trashed = TRASHED;
 
 /*
  * Sound the bell to indicate user is trying to move past end of file.
@@ -134,7 +135,7 @@ void squish_check(void)
  * "only_last" means display only the last screenful if n > screen size.
  * "nblank" is the number of blank lines to draw before the first
  *   real line.  If nblank > 0, the pos must be NULL_POSITION.
- *   The first real line after the blanks will start at ch_zero().
+ *   The first real line after the blanks will start at ch_zero.
  */
 
 void forw(int n, position_t pos,
@@ -212,10 +213,10 @@ void forw(int n, position_t pos,
              * Still drawing blanks; don't get a line
              * from the file yet.
              * If this is the last blank line, get ready to
-             * read a line starting at ch_zero() next time.
+             * read a line starting at ch_zero next time.
              */
             if (--nblank == 0)
-                pos = ch_zero();
+                pos = ch_zero;
         } else {
             debug("Get next line from the file");
             /*
@@ -365,7 +366,7 @@ void forward(int n, int force, int only_last)
              * of the screen.
              */
             if (empty_screen())
-                pos = ch_zero();
+                pos = ch_zero;
             else {
                 do {
                     back(1, position(TOP), 1, 0);
@@ -422,7 +423,7 @@ int get_back_scroll(void)
 int get_one_screen(void)
 {
     int nlines;
-    position_t pos = ch_zero();
+    position_t pos = ch_zero;
 
     for (nlines = 0; nlines < sc_height; nlines++) {
         pos = forw_line(pos);
