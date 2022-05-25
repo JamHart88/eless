@@ -58,7 +58,7 @@ ${OBJ}: less.hpp ifile_unittest.cpp ifile.cpp ../mocks.cpp
 
 
 clean:
-	rm -rf *.${O} core test_ifile *.gcda *.gcno ./results my.info lcov.out; ./clean.sh
+	rm -rf *.${O} core test_ifile *.gcda *.gcno ./results my.info lcov.out; ./clean.sh 
 
 mostlyclean: clean
 
