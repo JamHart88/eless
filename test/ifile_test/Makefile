@@ -43,24 +43,24 @@ SHELL = /bin/sh
 .cpp.o:
 	${CC} -I. ${CFLAGS_COMPILE_ONLY} -DBINDIR=\"${bindir}\" -DSYSDIR=\"${sysconfdir}\" ${CPPFLAGS} ${CFLAGS} $<
 
+OBJ= ifile_mocks.${O} ../mocks.o
 
-OBJ= ifile_mocks.${O} ../mocks.${O}
+all: test_ifile$(EXEEXT) ../mocks.o
 
-all: test_ifile$(EXEEXT)
-
-test_ifile: ${OBJ} ifile.hpp ifile.cpp ../mocks.hpp ../mocks.cpp
+test_ifile: ${OBJ} ifile.hpp ifile.cpp ../mocks.hpp ../mocks.cpp ../mocks.o
 	${CC} ${LDFLAGS} ifile_unittest.cpp -o $@ ${OBJ} ${LIBS}
 
-mocks.o:
-	../make
+../mocks.o:
+	make -C ../
 
 ${OBJ}: less.hpp ifile_unittest.cpp ifile.cpp ../mocks.cpp
 
 
 clean:
-	rm -rf *.${O} core test_ifile *.gcda *.gcno ./results my.info lcov.out; ./clean.sh 
+	rm -rf *.${O} core test_ifile *.gcda *.gcno ./results my.info lcov.out
 
-mostlyclean: clean
+moreclean:
+	./clean.sh
 
 run: test_ifile
 	./test_ifile; lcov -c -d . -o my.info > lcov.out; genhtml -o results/ my.info >> lcov.out; egrep "lines|functions" lcov.out
