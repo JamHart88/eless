@@ -16,6 +16,9 @@
 /* ---------------------------------------------------- 
  * Configurational compilation options
  * ----------------------------------------------------*/
+#ifdef NOT_CXX11
+#define nullptr NULL
+#endif
 
 //TBD
 
