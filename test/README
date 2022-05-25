@@ -1,0 +1,21 @@
+Testing is using google test
+https://github.com/google/googletest/tree/main/googletest
+Assumes this is installed on your system
+
+Also need to install "lcov" (sudo apt install lcov) and 
+helpful to run with valgrind (sudo apt install valgrind).
+ 
+
+Run make to compile mocks.cpp in the main test folder.
+
+To compile and run, go to the unit test folder, e.g. ifile_test
+and type the following:
+	./setup.sh
+	make run
+
+"make run" will compile and run the test with coverage.
+
+To run the test and check for memory leaks, run it separately
+with
+	valgrind --leak-check=full test_ifile
+
