@@ -38,7 +38,6 @@ extern int hshift;
 extern int sc_height;
 extern int jump_sline;
 extern int less_is_more;
-//extern IFILE curr_ifile;
 #if EDITOR
 extern char *editor;
 extern char *editproto;
