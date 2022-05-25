@@ -7,7 +7,6 @@
  * For more information, see the README file.
  */
 
-
 /*
  * Handling functions for command line options.
  *
@@ -24,16 +23,16 @@
  *    QUERY     The setting of the option is merely being queried.
  */
 
-#include "less.hpp"
-#include "charset.hpp"
 #include "optfunc.hpp"
-#include "option.hpp"
 #include "ch.hpp"
+#include "charset.hpp"
 #include "command.hpp"
+#include "decode.hpp"
 #include "edit.hpp"
 #include "filename.hpp"
-#include "decode.hpp"
 #include "jump.hpp"
+#include "less.hpp"
+#include "option.hpp"
 #include "output.hpp"
 #include "screen.hpp"
 #include "search.hpp"
@@ -52,11 +51,11 @@ extern int dohelp;
 extern bool any_display;
 extern char openquote;
 extern char closequote;
-extern char *prproto[];
-extern char *eqproto;
-extern char *hproto;
-extern char *wproto;
-extern char *every_first_cmd;
+extern char* prproto[];
+extern char* eqproto;
+extern char* hproto;
+extern char* wproto;
+extern char* every_first_cmd;
 extern char version[];
 extern int jump_sline;
 extern long jump_sline_fraction;
@@ -68,13 +67,13 @@ extern int mousecap;
 extern int wheel_lines;
 extern int less_is_more;
 #if LOGFILE
-extern char *namelogfile;
+extern char* namelogfile;
 extern bool force_logfile;
 extern int logfile;
 #endif
 #if TAGS
- char *tagoption = NULL;
-extern char *tags;
+char* tagoption = NULL;
+extern char* tags;
 extern char ztags[];
 #endif
 
@@ -82,26 +81,22 @@ extern char ztags[];
 /*
  * Handler for -o option.
  */
- void opt_o(int type, char *s)
+void opt_o(int type, char* s)
 {
     parg_t parg;
-    char *filename;
+    char* filename;
 
-    
-    switch (type)
-    {
+    switch (type) {
     case INIT:
         namelogfile = utils::save(s);
         break;
     case TOGGLE:
-        if (ch_getflags() & CH_CANSEEK)
-        {
-            error((char *)"Input is not a pipe", NULL_PARG);
+        if (ch_getflags() & CH_CANSEEK) {
+            error((char*)"Input is not a pipe", NULL_PARG);
             return;
         }
-        if (logfile >= 0)
-        {
-            error((char *)"Log file is already in use", NULL_PARG);
+        if (logfile >= 0) {
+            error((char*)"Log file is already in use", NULL_PARG);
             return;
         }
         s = utils::skipsp(s);
@@ -115,11 +110,10 @@ extern char ztags[];
         break;
     case QUERY:
         if (logfile < 0)
-            error((char *)"No log file", NULL_PARG);
-        else
-        {
+            error((char*)"No log file", NULL_PARG);
+        else {
             parg.p_string = namelogfile;
-            error((char *)"Log file \"%s\"", parg);
+            error((char*)"Log file \"%s\"", parg);
         }
         break;
     }
@@ -128,7 +122,7 @@ extern char ztags[];
 /*
  * Handler for -O option.
  */
- void opt__O(int type, char *s)
+void opt__O(int type, char* s)
 {
     force_logfile = true;
     opt_o(type, s);
@@ -138,58 +132,52 @@ extern char ztags[];
 /*
  * Handlers for -j option.
  */
- void opt_j(int type, char *s)
+void opt_j(int type, char* s)
 {
     parg_t parg;
     char buf[30]; // Make bigger than Long int in chars
     int len;
     int err;
 
-    switch (type)
-    {
+    switch (type) {
     case INIT:
     case TOGGLE:
-        if (*s == '.')
-        {
+        if (*s == '.') {
             s++;
-            jump_sline_fraction = getfraction(&s, (char *)"j", &err);
+            jump_sline_fraction = getfraction(&s, (char*)"j", &err);
             if (err)
-                error((char *)"Invalid line fraction", NULL_PARG);
+                error((char*)"Invalid line fraction", NULL_PARG);
             else
                 calc_jump_sline();
-        } else
-        {
-            int sline = getnum(&s, (char *)"j", &err);
+        } else {
+            int sline = getnum(&s, (char*)"j", &err);
             if (err)
-                error((char *)"Invalid line number", NULL_PARG);
-            else
-            {
+                error((char*)"Invalid line number", NULL_PARG);
+            else {
                 jump_sline = sline;
                 jump_sline_fraction = -1;
             }
         }
         break;
     case QUERY:
-        if (jump_sline_fraction < 0)
-        {
-            parg.p_int =  jump_sline;
-            error((char *)"Position target at screen line %d", parg);
-        } else
-        {
+        if (jump_sline_fraction < 0) {
+            parg.p_int = jump_sline;
+            error((char*)"Position target at screen line %d", parg);
+        } else {
 
             sprintf(buf, ".%06ld", jump_sline_fraction);
-            len = (int) strlen(buf);
-            while (len > 2 && buf[len-1] == '0')
+            len = (int)strlen(buf);
+            while (len > 2 && buf[len - 1] == '0')
                 len--;
             buf[len] = '\0';
             parg.p_string = buf;
-            error((char *)"Position target at screen position %s", parg);
+            error((char*)"Position target at screen position %s", parg);
         }
         break;
     }
 }
 
- void calc_jump_sline(void)
+void calc_jump_sline(void)
 {
     if (jump_sline_fraction < 0)
         return;
@@ -199,52 +187,46 @@ extern char ztags[];
 /*
  * Handlers for -# option.
  */
- void opt_shift(int type, char *s)
+void opt_shift(int type, char* s)
 {
     parg_t parg;
     char buf[30]; // Make bigger than Long int in chars
     int len;
     int err;
 
-    switch (type)
-    {
+    switch (type) {
     case INIT:
     case TOGGLE:
-        if (*s == '.')
-        {
+        if (*s == '.') {
             s++;
-            shift_count_fraction = getfraction(&s, (char *)"#", &err);
+            shift_count_fraction = getfraction(&s, (char*)"#", &err);
             if (err)
-                error((char *)"Invalid column fraction", NULL_PARG);
+                error((char*)"Invalid column fraction", NULL_PARG);
             else
                 calc_shift_count();
-        } else
-        {
-            int hs = getnum(&s, (char *)"#", &err);
+        } else {
+            int hs = getnum(&s, (char*)"#", &err);
             if (err)
-                error((char *)"Invalid column number", NULL_PARG);
-            else
-            {
+                error((char*)"Invalid column number", NULL_PARG);
+            else {
                 shift_count = hs;
                 shift_count_fraction = -1;
             }
         }
         break;
     case QUERY:
-        if (shift_count_fraction < 0)
-        {
+        if (shift_count_fraction < 0) {
             parg.p_int = shift_count;
-            error((char *)"Horizontal shift %d columns", parg);
-        } else
-        {
+            error((char*)"Horizontal shift %d columns", parg);
+        } else {
 
             sprintf(buf, ".%06ld", shift_count_fraction);
-            len = (int) strlen(buf);
-            while (len > 2 && buf[len-1] == '0')
+            len = (int)strlen(buf);
+            while (len > 2 && buf[len - 1] == '0')
                 len--;
             buf[len] = '\0';
             parg.p_string = buf;
-            error((char *)"Horizontal shift %s of screen width", parg);
+            error((char*)"Horizontal shift %s of screen width", parg);
         }
         break;
     }
@@ -258,17 +240,15 @@ void calc_shift_count(void)
 }
 
 #if USERFILE
- void opt_k(int type, char *s)
+void opt_k(int type, char* s)
 {
     parg_t parg;
 
-    switch (type)
-    {
+    switch (type) {
     case INIT:
-        if (lesskey(s, 0))
-        {
+        if (lesskey(s, 0)) {
             parg.p_string = s;
-            error((char *)"Cannot use lesskey file \"%s\"", parg);
+            error((char*)"Cannot use lesskey file \"%s\"", parg);
         }
         break;
     }
@@ -279,27 +259,25 @@ void calc_shift_count(void)
 /*
  * Handler for -t option.
  */
- void opt_t(int type, char *s)
+void opt_t(int type, char* s)
 {
     ifile::Ifile* save_ifile;
     position_t pos;
 
-    switch (type)
-    {
+    switch (type) {
     case INIT:
         tagoption = utils::save(s);
         /* Do the rest in main() */
         break;
     case TOGGLE:
-        
+
         findtag(utils::skipsp(s));
         save_ifile = save_curr_ifile();
         /*
          * Try to open the file containing the tag
          * and search for the tag in that file.
          */
-        if (edit_tagfile() || (pos = tagsearch()) == NULL_POSITION)
-        {
+        if (edit_tagfile() || (pos = tagsearch()) == NULL_POSITION) {
             /* Failed: reopen the old file. */
             reedit_ifile(save_ifile);
             break;
@@ -313,13 +291,12 @@ void calc_shift_count(void)
 /*
  * Handler for -T option.
  */
- void opt__T(int type, char *s)
+void opt__T(int type, char* s)
 {
     parg_t parg;
-    char *filename;
+    char* filename;
 
-    switch (type)
-    {
+    switch (type) {
     case INIT:
         tags = utils::save(s);
         break;
@@ -333,7 +310,7 @@ void calc_shift_count(void)
         break;
     case QUERY:
         parg.p_string = tags;
-        error((char *)"Tags file \"%s\"", parg);
+        error((char*)"Tags file \"%s\"", parg);
         break;
     }
 }
@@ -342,31 +319,28 @@ void calc_shift_count(void)
 /*
  * Handler for -p option.
  */
- void opt_p(int type, char *s)
+void opt_p(int type, char* s)
 {
-    switch (type)
-    {
+    switch (type) {
     case INIT:
         /*
          * Unget a command for the specified string.
          */
-        if (less_is_more)
-        {
+        if (less_is_more) {
             /*
              * In "more" mode, the -p argument is a command,
              * not a search string, so we don't need a slash.
              */
             every_first_cmd = utils::save(s);
-        } else
-        {
+        } else {
             plusoption = true;
             ungetcc(CHAR_END_COMMAND);
             ungetsc(s);
-             /*
-              * {{ This won't work if the "/" command is
-              *    changed or invalidated by a .lesskey file. }}
-              */
-            ungetsc((char *)"/");
+            /*
+             * {{ This won't work if the "/" command is
+             *    changed or invalidated by a .lesskey file. }}
+             */
+            ungetsc((char*)"/");
         }
         break;
     }
@@ -375,34 +349,52 @@ void calc_shift_count(void)
 /*
  * Handler for -P option.
  */
- void opt__P(int type, char *s)
+void opt__P(int type, char* s)
 {
-    char **proto;
+    char** proto;
     parg_t parg;
 
-    switch (type)
-    {
+    switch (type) {
     case INIT:
     case TOGGLE:
         /*
          * Figure out which prototype string should be changed.
          */
-        switch (*s)
-        {
-        case 's':  proto = &prproto[PR_SHORT];    s++;    break;
-        case 'm':  proto = &prproto[PR_MEDIUM];    s++;    break;
-        case 'M':  proto = &prproto[PR_LONG];    s++;    break;
-        case '=':  proto = &eqproto;        s++;    break;
-        case 'h':  proto = &hproto;        s++;    break;
-        case 'w':  proto = &wproto;        s++;    break;
-        default:   proto = &prproto[PR_SHORT];        break;
+        switch (*s) {
+        case 's':
+            proto = &prproto[PR_SHORT];
+            s++;
+            break;
+        case 'm':
+            proto = &prproto[PR_MEDIUM];
+            s++;
+            break;
+        case 'M':
+            proto = &prproto[PR_LONG];
+            s++;
+            break;
+        case '=':
+            proto = &eqproto;
+            s++;
+            break;
+        case 'h':
+            proto = &hproto;
+            s++;
+            break;
+        case 'w':
+            proto = &wproto;
+            s++;
+            break;
+        default:
+            proto = &prproto[PR_SHORT];
+            break;
         }
         free(*proto);
         *proto = utils::save(s);
         break;
     case QUERY:
         parg.p_string = prproto[pr_type];
-        error((char *)"%s", parg);
+        error((char*)"%s", parg);
         break;
     }
 }
@@ -410,11 +402,10 @@ void calc_shift_count(void)
 /*
  * Handler for the -b option.
  */
-    /*ARGSUSED*/
- void opt_b(int type, char *s)
+/*ARGSUSED*/
+void opt_b(int type, char* s)
 {
-    switch (type)
-    {
+    switch (type) {
     case INIT:
     case TOGGLE:
         /*
@@ -430,11 +421,10 @@ void calc_shift_count(void)
 /*
  * Handler for the -i option.
  */
-    /*ARGSUSED*/
- void opt_i(int type, char *s)
+/*ARGSUSED*/
+void opt_i(int type, char* s)
 {
-    switch (type)
-    {
+    switch (type) {
     case TOGGLE:
         chg_caseless();
         break;
@@ -447,11 +437,10 @@ void calc_shift_count(void)
 /*
  * Handler for the -V option.
  */
-    /*ARGSUSED*/
- void opt__V(int type, char *s)
+/*ARGSUSED*/
+void opt__V(int type, char* s)
 {
-    switch (type)
-    {
+    switch (type) {
     case TOGGLE:
     case QUERY:
         dispversion();
@@ -476,31 +465,29 @@ void calc_shift_count(void)
     }
 }
 
-
 /*
  * Handler for the -x option.
  */
- void opt_x(int type, char *s)
+void opt_x(int type, char* s)
 {
     extern int tabstops[];
     extern int ntabstops;
     extern int tabdefault;
-    char msg[60+(4*TABSTOP_MAX)];
+    constexpr const int MSG_SIZE = 60 + (4 * TABSTOP_MAX);
+    char msg[MSG_SIZE];
     int i;
     parg_t p;
 
-    switch (type)
-    {
+    switch (type) {
     case INIT:
     case TOGGLE:
         /* Start at 1 because tabstops[0] is always zero. */
-        for (i = 1;  i < TABSTOP_MAX;  )
-        {
+        for (i = 1; i < TABSTOP_MAX;) {
             int n = 0;
             s = utils::skipsp(s);
             while (*s >= '0' && *s <= '9')
                 n = (10 * n) + (*s++ - '0');
-            if (n > tabstops[i-1])
+            if (n > tabstops[i - 1])
                 tabstops[i++] = n;
             s = utils::skipsp(s);
             if (*s++ != ',')
@@ -509,49 +496,43 @@ void calc_shift_count(void)
         if (i < 2)
             return;
         ntabstops = i;
-        tabdefault = tabstops[ntabstops-1] - tabstops[ntabstops-2];
+        tabdefault = tabstops[ntabstops - 1] - tabstops[ntabstops - 2];
         break;
     case QUERY:
-        strcpy(msg, "Tab stops ");
-        if (ntabstops > 2)
-        {
-            for (i = 1;  i < ntabstops;  i++)
-            {
+        strncpy(msg, "Tab stops ", MSG_SIZE - 1);
+        if (ntabstops > 2) {
+            for (i = 1; i < ntabstops; i++) {
                 if (i > 1)
-                    strncat(msg, ",", 1);
-                sprintf(msg+strlen(msg), "%d", tabstops[i]);
+                    strncat(msg, ",", MSG_SIZE - strlen(msg) - 1);
+                ignore_result(sprintf(msg + strlen(msg), "%d", tabstops[i]));
             }
-            sprintf(msg+strlen(msg), " and then ");
+            ignore_result(sprintf(msg + strlen(msg), " and then "));
         }
-        sprintf(msg+strlen(msg), "every %d spaces",
-            tabdefault);
+        ignore_result(sprintf(msg + strlen(msg), "every %d spaces",
+            tabdefault));
         p.p_string = msg;
-        error((char *)"%s", p);
+        error((char*)"%s", p);
         break;
     }
 }
 
-
 /*
  * Handler for the -" option.
  */
- void opt_quote(int type, char *s)
+void opt_quote(int type, char* s)
 {
     char buf[3];
     parg_t parg;
 
-    switch (type)
-    {
+    switch (type) {
     case INIT:
     case TOGGLE:
-        if (s[0] == '\0')
-        {
+        if (s[0] == '\0') {
             openquote = closequote = '\0';
             break;
         }
-        if (s[1] != '\0' && s[2] != '\0')
-        {
-            error((char *)"-\" must be followed by 1 or 2 chars", NULL_PARG);
+        if (s[1] != '\0' && s[2] != '\0') {
+            error((char*)"-\" must be followed by 1 or 2 chars", NULL_PARG);
             return;
         }
         openquote = s[0];
@@ -565,7 +546,7 @@ void calc_shift_count(void)
         buf[1] = closequote;
         buf[2] = '\0';
         parg.p_string = buf;
-        error((char *)"quotes %s", parg);
+        error((char*)"quotes %s", parg);
         break;
     }
 }
@@ -573,31 +554,30 @@ void calc_shift_count(void)
 /*
  * Handler for the --rscroll option.
  */
-    /*ARGSUSED*/
- void opt_rscroll(int type, char *s)
+/*ARGSUSED*/
+void opt_rscroll(int type, char* s)
 {
     parg_t p;
 
-    switch (type)
-    {
+    switch (type) {
     case INIT:
     case TOGGLE: {
-        char *fmt;
+        char* fmt;
         int attr = AT_STANDOUT;
-        setfmt(s, &fmt, &attr, (char *) "*s>");
-        if (strcmp(fmt, "-") == 0)
-        {
+        setfmt(s, &fmt, &attr, (char*)"*s>");
+        if (strcmp(fmt, "-") == 0) {
             rscroll_char = 0;
-        } else
-        {
+        } else {
             rscroll_char = *fmt ? *fmt : '>';
             rscroll_attr = attr;
         }
-        break; }
+        break;
+    }
     case QUERY: {
-        p.p_string = rscroll_char ? (char *) prchar(rscroll_char) : (char *) "-";
-        error((char *)"rscroll char is %s", p);
-        break; }
+        p.p_string = rscroll_char ? (char*)prchar(rscroll_char) : (char*)"-";
+        error((char*)"rscroll char is %s", p);
+        break;
+    }
     }
 }
 
@@ -605,14 +585,13 @@ void calc_shift_count(void)
  * "-?" means display a help message.
  * If from the command line, exit immediately.
  */
-    /*ARGSUSED*/
- void opt_query(int type, char *s)
+/*ARGSUSED*/
+void opt_query(int type, char* s)
 {
-    switch (type)
-    {
+    switch (type) {
     case QUERY:
     case TOGGLE:
-        error((char *)"Use \"h\" for help", NULL_PARG);
+        error((char*)"Use \"h\" for help", NULL_PARG);
         break;
     case INIT:
         dohelp = 1;
@@ -622,11 +601,10 @@ void calc_shift_count(void)
 /*
  * Handler for the --mouse option.
  */
-    /*ARGSUSED*/
- void opt_mousecap(int type, char *s)
+/*ARGSUSED*/
+void opt_mousecap(int type, char* s)
 {
-    switch (type)
-    {
+    switch (type) {
     case TOGGLE:
         if (mousecap == OPT_OFF)
             deinit_mouse();
@@ -642,11 +620,10 @@ void calc_shift_count(void)
 /*
  * Handler for the --wheel-lines option.
  */
-    /*ARGSUSED*/
- void opt_wheel_lines(int type, char *s)
+/*ARGSUSED*/
+void opt_wheel_lines(int type, char* s)
 {
-    switch (type)
-    {
+    switch (type) {
     case INIT:
     case TOGGLE:
         if (wheel_lines <= 0)
@@ -660,10 +637,9 @@ void calc_shift_count(void)
 /*
  * Get the "screen window" size.
  */
- int get_swindow(void)
+int get_swindow(void)
 {
     if (swindow > 0)
         return (swindow);
     return (sc_height + swindow);
 }
-
