@@ -18,7 +18,7 @@
 #include "line.hpp"
 #include "screen.hpp"
 #include "ttyin.hpp"
-
+#include "utils.hpp"
 
 int errmsgs; /* Count of messages displayed by error() */
 
@@ -90,11 +90,6 @@ static char* ob = obuf;
  * sure these messages can be seen before they are
  * overwritten or scrolled away.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// flush(void)
-
 void flush(void)
 {
     int n;
@@ -113,12 +108,6 @@ void flush(void)
 /*
  * Output a character.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// putchr(c)
-//     int c;
-
 int putchr(int c)
 {
     if (need_clr) {
@@ -139,12 +128,6 @@ int putchr(int c)
 /*
  * Output a string.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// putstr(s)
-//     const char *s;
-
 void putstr(const char* s)
 {
     while (*s != '\0')
@@ -154,6 +137,7 @@ void putstr(const char* s)
 /*
  * Convert an string to an integral type.
  */
+// TODO: Convert to a template
 #define STR_TO_TYPE_FUNC(funcname, type)  \
     type funcname(char* buf, char** ebuf) \
     {                                     \
@@ -175,47 +159,40 @@ STR_TO_TYPE_FUNC(lstrtoi, int)
 /*
  * Output an integer in a given radix.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// iprint_int(num)
-//     int num;
 static int iprint_int(int num)
 {
-    char buf[strlen_bound<int>() + 2];
 
-    typeToStr<int>(num, buf);
-    putstr(buf);
-    return ((int)strlen(buf));
+    int bufLength = utils::strlen_bound<int>();
+
+    char *bufPtr = new char[bufLength];
+
+    utils::typeToStr<int>(num, bufPtr, bufLength);
+    putstr(bufPtr);
+    int val = strlen(bufPtr);
+    delete[] bufPtr;
+    return (val);
+    
 }
 
 /*
  * Output a line number in a given radix.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// iprint_linenum(num)
-//     linenum_t num;
 static int iprint_linenum(linenum_t num)
 {
-    char buf[strlen_bound<linenum_t>() + 2];
+    int bufLength = utils::strlen_bound<linenum_t>();
+    char * bufPtr =  new char[bufLength];
 
-    typeToStr<linenum_t>(num, buf);
-    putstr(buf);
-    return ((int)strlen(buf));
+    utils::typeToStr<linenum_t>(num, bufPtr, bufLength);
+    putstr(bufPtr);
+    int val = strlen(bufPtr);
+    delete [] bufPtr;
+    return val;
 }
 
 /*
  * This function implements printf-like functionality
  * using a more portable argument list mechanism than printf's.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// less_printf(fmt, parg)
-//     char *fmt;
-//     parg_t *parg;
 static int less_printf(char* fmt, parg_t parg)
 {
     char* s;
@@ -231,7 +208,7 @@ static int less_printf(char* fmt, parg_t parg)
             switch (*fmt++) {
             case 's':
                 s = parg.p_string;
-                //parg++; //JPH TODO: check this
+                // parg++; //JPH TODO: check this
                 while (*s != '\0') {
                     putchr(*s++);
                     col++;
@@ -239,11 +216,11 @@ static int less_printf(char* fmt, parg_t parg)
                 break;
             case 'd':
                 col += iprint_int(parg.p_int);
-                //parg++; //JPH TODO: check this
+                // parg++; //JPH TODO: check this
                 break;
             case 'n':
                 col += iprint_linenum(parg.p_linenum);
-                //parg++; //JPH TODO: check this
+                // parg++; //JPH TODO: check this
                 break;
             case '%':
                 putchr('%');
@@ -259,11 +236,6 @@ static int less_printf(char* fmt, parg_t parg)
  * If some other non-trivial char is pressed, unget it, so it will
  * become the next command.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// get_return(void)
-
 void get_return(void)
 {
     int c;
@@ -282,13 +254,6 @@ void get_return(void)
  * Output a message in the lower left corner of the screen
  * and wait for carriage return.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// error(fmt, parg)
-//     char *fmt;
-//     parg_t *parg;
-
 void error(char* fmt, parg_t parg)
 {
     int col = 0;
@@ -339,13 +304,6 @@ static char intr_to_abort[] = "... (interrupt to abort)";
  * Usually used to warn that we are beginning a potentially
  * time-consuming operation.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// ierror(fmt, parg)
-//     char *fmt;
-//     parg_t *parg;
-
 void ierror(char* fmt, parg_t parg)
 {
     at_exit();
@@ -362,13 +320,6 @@ void ierror(char* fmt, parg_t parg)
  * Output a message in the lower left corner of the screen
  * and return a single-character response.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// query(fmt, parg)
-//     char *fmt;
-//     parg_t *parg;
-
 int query(char* fmt, parg_t parg)
 {
     int c;

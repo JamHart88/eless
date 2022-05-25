@@ -14,45 +14,99 @@
 
 #include "less.hpp"
 
+/*
+ * An IFILE represents an input file.
+ */
 
-void del_ifile(IFILE h);
+namespace ifile {
 
-IFILE next_ifile(IFILE h);
+class Ifile {
 
-IFILE prev_ifile(IFILE h);
+public:
 
-IFILE getoff_ifile(IFILE ifile);
+    Ifile(const char* filename);
+    Ifile(const Ifile& src);
+    Ifile& operator=(const Ifile& src);
+    ~Ifile();
+    friend bool operator==(const Ifile& lhs, const Ifile& rhs);
 
-int nifile(void);
+    //const char* filename();
+  
 
-IFILE get_ifile(const char *filename, IFILE prev);
+    /* 
+     * Accessor functions
+     */
 
-char *get_filename(IFILE ifile);
+    // Name of the file
+    char* getFilename() { return this->h_filename; };
+    void setFilename(const char* newFilename);
 
-int get_index(IFILE ifile);
+    // Saved Position within the file
+    scrpos getPos() { return this->h_scrpos; };
+    void setPos(scrpos pos);
 
-void store_pos(IFILE ifile, struct scrpos *scrpos);
+    // Has the file been opened?
+    bool getOpened() { return this->h_opened; };
+    void setOpened(bool opened);
 
-void get_pos(IFILE ifile, struct scrpos *scrpos);
+    // Hold Count
+    int getHoldCount() { return this->h_hold; };
+    void setHold(int incr);
 
-void set_open(IFILE ifile);
+    // File state - used in ch.cpp
+    void* getFilestate() { return this->h_filestate; };
+    void setFilestate(void* filestate);
 
-int opened(IFILE ifile);
+    // Alt Pipe
+    void* getAltpipe() { return this->h_altpipe; };
+    void setAltpipe(void* altpipePtr);
 
-void hold_ifile(IFILE ifile, int incr);
+    // Alt filename
+    char* getAltfilename() { return this->h_altfilename; };
+    void setAltfilename(char* altfilename);
 
-int held_ifile(IFILE ifile);
+private:
+    char* h_filename; /* Name of the file */
+    void* h_filestate; /* File state (used in ch.c) */ // TODO: Change this
+    int h_hold; /* Hold count */
+    bool h_opened; /* Has this ifile been opened? */
+    scrpos h_scrpos; /* Saved position within the file */
+    void* h_altpipe; /* Alt pipe */
+    char* h_altfilename; /* Alt filename */
+};
 
-void *get_filestate(IFILE ifile);
+//
+Ifile* getCurrentIfile();
+void setCurrentIfile(Ifile* newCurrentIfile);
+Ifile* getOldIfile();
+void setOldIfile(Ifile* newOldIfile);
 
-void set_filestate(IFILE ifile, void *filestate);
+// Get Ifile from a filename
+Ifile* getIfile(const char* filename);
 
-void set_altpipe(IFILE ifile, void *p);
+// Create an Ifile from a filename
+void createIfile(const char* filename);
 
-void *get_altpipe(IFILE ifile);
+// Delete the ifile
+void deleteIfile(Ifile* ifilePtr);
 
-void set_altfilename(IFILE ifile, char *altfilename);
+Ifile* nextIfile(Ifile* current);
+Ifile* prevIfile(Ifile* current);
+Ifile* getOffIfile(Ifile* thisIfile);
 
-char *get_altfilename(IFILE ifile);
+// -----------------------------
+// Ifile list specific operations
+// -----------------------------
+
+// Get what the index is of the current ifile in the currently held list of files
+int getIndex(const Ifile* ifile);
+
+// Get next Ifile in the list
+Ifile* nextIfile();
+
+// Get number of Ifiles in the list
+int numIfiles();
+
+} // namespace ifile
 
 #endif

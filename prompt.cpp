@@ -38,7 +38,7 @@ extern int hshift;
 extern int sc_height;
 extern int jump_sline;
 extern int less_is_more;
-extern IFILE curr_ifile;
+//extern IFILE curr_ifile;
 #if EDITOR
 extern char *editor;
 extern char *editproto;
@@ -74,10 +74,6 @@ static char *mp;
 /*
  * Initialize the prompt prototype strings.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// init_prompt(void)
  void init_prompt(void)
 {
     prproto[0] = utils::save(s_proto);
@@ -91,11 +87,6 @@ static char *mp;
 /*
  * Append a string to the end of the message.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// ap_str(s)
-//     char *s;
 static void ap_str(char *s)
 {
     int len;
@@ -111,11 +102,6 @@ static void ap_str(char *s)
 /*
  * Append a character to the end of the message.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// ap_char(c)
-//     char c;
 static void ap_char(char c)
 {
     char buf[2];
@@ -128,17 +114,15 @@ static void ap_char(char c)
 /*
  * Append a position_t (as a decimal integer) to the end of the message.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// ap_pos(pos)
-//     position_t pos;
 static void ap_pos(position_t pos)
 {
-    char buf[strlen_bound<position_t>() + 2];
+    const int bufLength = utils::strlen_bound<position_t>();
+    char *bufPtr = new char[bufLength];
 
-    typeToStr<position_t>(pos, buf);
-    ap_str(buf);
+    utils::typeToStr<position_t>(pos, bufPtr, bufLength);
+    ap_str(bufPtr);
+
+    delete[] bufPtr;
 }
 
 /*
@@ -146,35 +130,32 @@ static void ap_pos(position_t pos)
  */
  static void ap_linenum(linenum_t linenum)
 {
-    char buf[strlen_bound<linenum_t>() + 2];
+    const int bufLength = utils::strlen_bound<linenum_t>();
+    char *bufPtr = new char[bufLength];
 
-    typeToStr<linenum_t>(linenum, buf);
-    ap_str(buf);
+    utils::typeToStr<linenum_t>(linenum, bufPtr, bufLength);
+    ap_str(bufPtr);
+    delete[] bufPtr;
 }
 
 /*
  * Append an integer to the end of the message.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// ap_int(num)
-//     int num;
 static void ap_int(int num)
 {
-    char buf[strlen_bound<int>() + 2];
+    const int bufLength = utils::strlen_bound<int>();
 
-    typeToStr<int>(num, buf);
-    ap_str(buf);
+    char *bufPtr = new char[bufLength];
+
+    utils::typeToStr<int>(num, bufPtr, bufLength);
+    ap_str(bufPtr);
+
+    delete[] bufPtr;
 }
 
 /*
  * Append a question mark to the end of the message.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// ap_quest(void)
 static void ap_quest(void)
 {
     ap_str((char *)"?");
@@ -183,11 +164,6 @@ static void ap_quest(void)
 /*
  * Return the "current" byte offset in the file.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static position_t
-// curr_byte(where)
-//     int where;
 static position_t curr_byte(int where)
 {
     position_t pos;
@@ -206,12 +182,6 @@ static position_t curr_byte(int where)
  * question mark followed by a single letter.
  * Here we decode that letter and return the appropriate boolean value.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// cond(c, where)
-//     char c;
-//     int where;
 static int cond(char c, int where)
 {
     position_t len;
@@ -228,7 +198,7 @@ static int cond(char c, int where)
         return (eof_displayed());
     case 'f':    /* Filename known? */
     case 'g':
-        return (strcmp(get_filename(curr_ifile), "-") != 0);
+        return (strcmp(ifile::getCurrentIfile()->getFilename(), "-") != 0);
     case 'l':    /* Line number known? */
     case 'd':    /* Same as l */
         if (!linenums)
@@ -239,7 +209,7 @@ static int cond(char c, int where)
         return (linenums && ch_length() != NULL_POSITION);
     case 'm':    /* More than one file? */
 #if TAGS
-        return (ntags() ? (ntags() > 1) : (nifile() > 1));
+        return (ntags() ? (ntags() > 1) : (ifile::numIfiles() > 1));
 #else
         return (nifile() > 1);
 #endif
@@ -264,7 +234,7 @@ static int cond(char c, int where)
         if (ntags())
             return (0);
 #endif
-        return (next_ifile(curr_ifile) != NULL_IFILE);
+        return (ifile::nextIfile(ifile::getCurrentIfile()) != nullptr);
     }
     return (0);
 }
@@ -276,13 +246,6 @@ static int cond(char c, int where)
  * Here we decode that letter and take the appropriate action,
  * usually by appending something to the message being built.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// protochar(c, where, iseditproto)
-//     int c;
-//     int where;
-//     int iseditproto;
 static void protochar(int c, int where, int iseditproto)
 {
     position_t pos;
@@ -290,7 +253,7 @@ static void protochar(int c, int where, int iseditproto)
     int n;
     linenum_t linenum;
     linenum_t last_linenum;
-    IFILE h;
+    ifile::Ifile* h;
     char *s;
 
 #undef  PAGE_NUM
@@ -338,13 +301,13 @@ static void protochar(int c, int where, int iseditproto)
         break;
 #endif
     case 'f':    /* File name */
-        ap_str(get_filename(curr_ifile));
+        ap_str(ifile::getCurrentIfile()->getFilename());
         break;
     case 'F':    /* Last component of file name */
-        ap_str(last_component(get_filename(curr_ifile)));
+        ap_str(last_component(ifile::getCurrentIfile()->getFilename()));
         break;
     case 'g':    /* Shell-escaped file name */
-        s = shell_quote(get_filename(curr_ifile));
+        s = shell_quote(ifile::getCurrentIfile()->getFilename());
         ap_str(s);
         free(s);
         break;
@@ -354,7 +317,7 @@ static void protochar(int c, int where, int iseditproto)
             ap_int(curr_tag());
         else
 #endif
-            ap_int(get_index(curr_ifile));
+            ap_int(ifile::getIndex(ifile::getCurrentIfile()));
         break;
     case 'l':    /* Current line number */
         linenum = currline(where);
@@ -378,7 +341,7 @@ static void protochar(int c, int where, int iseditproto)
             ap_int(n);
         else
 #endif
-            ap_int(nifile());
+            ap_int(ifile::numIfiles());
         break;
     case 'p':    /* Percent into file (bytes) */
         pos = curr_byte(where);
@@ -419,9 +382,9 @@ static void protochar(int c, int where, int iseditproto)
             ap_str((char *)"file");
         break;
     case 'x':    /* Name of next file */
-        h = next_ifile(curr_ifile);
-        if (h != NULL_IFILE)
-            ap_str(get_filename(h));
+        h = ifile::nextIfile(ifile::getCurrentIfile());
+        if (h != nullptr)
+            ap_str(h->getFilename());
         else
             ap_quest();
         break;
@@ -435,11 +398,6 @@ static void protochar(int c, int where, int iseditproto)
  * where to resume parsing the string.
  * We must keep track of nested IFs and skip them properly.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static const char *
-// skipcond(p)
-//     const char *p;
 static const char * skipcond(const char *p)
 {
     int iflevel;
@@ -496,12 +454,6 @@ static const char * skipcond(const char *p)
 /*
  * Decode a char that represents a position on the screen.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static const char *
-// wherechar(p, wp)
-//     char const *p;
-//     int *wp;
 static const char * wherechar(char const *p, int *wp)
 {
     switch (*p)
@@ -523,12 +475,6 @@ static const char * wherechar(char const *p, int *wp)
 /*
  * Construct a message based on a prototype string.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public char *
-// pr_expand(proto, maxwidth)
-//     const char *proto;
-//     int maxwidth;
  char * pr_expand(const char *proto, int maxwidth)
 {
     const char *p;
@@ -602,10 +548,6 @@ static const char * wherechar(char const *p, int *wp)
 /*
  * Return a message suitable for printing by the "=" command.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public char *
-// eq_message(void)
  char * eq_message(void)
 {
     return (pr_expand(eqproto, 0));
@@ -617,10 +559,6 @@ static const char * wherechar(char const *p, int *wp)
  * If we can't come up with an appropriate prompt, return NULL
  * and the caller will prompt with a colon.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public char *
-// pr_string(void)
  char * pr_string(void)
 {
     char *prompt;
@@ -637,10 +575,6 @@ static const char * wherechar(char const *p, int *wp)
 /*
  * Return a message suitable for printing while waiting in the F command.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public char *
-// wait_message(void)
  char * wait_message(void)
 {
     return (pr_expand(wproto, sc_width-so_s_width-so_e_width-2));

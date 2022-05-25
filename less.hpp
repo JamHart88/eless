@@ -109,13 +109,6 @@ const int OPEN_APPEND = O_APPEND | O_WRONLY;
 const int SPACES_IN_FILENAMES = 1;
 
 /*
- * An IFILE represents an input file.
- */
-// TODO: This should be converted to a Class with private fields
-#define IFILE void*
-#define NULL_IFILE ((IFILE)NULL)
-
-/*
  * The structure used to represent a "screen position".
  * This consists of a file position, and a screen line number.
  * The meaning is that the line starting at the given file
@@ -348,76 +341,5 @@ enum x11_mouse_t {
 struct mlist;
 struct loption;
 struct hilite_tree;
-
-/* Functions not included in funcs.h */
-
-// ---------------------------------------------------------
-// Template functions
-// ---------------------------------------------------------
-const int TEN = 10;
-const char CH_0 = '0';
-const char CH_9 = '9';
-
-// ---------------------------------------------------------
-// strToType : Convert a string with a number in to its numeric value
-// Caller must ensure that type is appropriate for the expected
-// number in the string
-// ebuf is set to the next character after the number that was
-// processed
-// TODO: Move to utils. Follow C++ guidance - see clang-tidy
-template <typename T>
-T strToType(char* buf)
-{
-    T val = 0;
-    for (int i = 0;; i++) {
-        char c = buf[i];
-        if (c < CH_0 || c > CH_9)
-            break;
-        val = TEN * val + c - CH_0;
-    }
-
-    return val;
-}
-
-// ---------------------------------------------------------
-// TypetoStr : Convert a numeric type T to its string representation
-// Caller must ensure that buf is sized to support max possible
-// string length based on the type
-// TODO: Move to utils. Follow C++ guidance - see clang-tidy
-template <typename T>
-void typeToStr(const T num, char* buf)
-{
-    T tempNum = num;
-    int neg = (tempNum < 0);
-
-    // Upper bound on the string length of an integer converted to string.
-    // 302 / 1000 is ceil (log10 (2.0)).  Subtract 1 for the sign bit;
-    // add 1 for integer division truncation; add 1 more for a minus sign.
-
-    char tbuf[((sizeof(tempNum) * 8 - 1) * 302 / 1000 + 1 + 1) + 2];
-    char* s = tbuf + sizeof(tbuf);
-    if (neg)
-        tempNum = -tempNum;
-    *--s = '\0';
-    do {
-        *--s = (tempNum % 10) + '0';
-    } while ((tempNum /= 10) != 0);
-    if (neg)
-        *--s = '-';
-    strcpy(buf, s);
-}
-
-// ----------------------------------------------------------------
-/*
- * Upper bound on the string length of an integer converted to string.
- * 302 / 1000 is ceil (log10 (2.0)).  Subtract 1 for the sign bit;
- * add 1 for integer division truncation; add 1 more for a minus sign.
- */
-// TODO: Move to utils. Follow C++ guidance - see clang-tidy
-template <typename T>
-int strlen_bound(void)
-{
-    return ((sizeof(T) * CHAR_BIT - 1) * 302 / 1000 + 1 + 1);
-}
 
 #endif

@@ -39,8 +39,6 @@ extern int force_open;
 extern int use_lessopen;
 extern int ctldisp;
 extern int utf_mode;
-extern IFILE curr_ifile;
-extern IFILE old_ifile;
 extern char openquote;
 extern char closequote;
 /*
@@ -88,7 +86,7 @@ extern char closequote;
     char *s;
 
     s = lgetenv((char *)"LESSMETAESCAPE");
-    if (s == NULL)
+    if (s == nullptr)
         s = (char *)DEF_METAESCAPE;
     return (s);
 }
@@ -98,12 +96,12 @@ extern char closequote;
  */
 static char * metachars(void)
 {
-    static char *mchars = NULL;
+    static char *mchars = nullptr;
 
-    if (mchars == NULL)
+    if (mchars == nullptr)
     {
         mchars = lgetenv((char *)"LESSMETACHARS");
-        if (mchars == NULL)
+        if (mchars == nullptr)
             mchars =(char *) DEF_METACHARS;
     }
     return (mchars);
@@ -114,7 +112,7 @@ static char * metachars(void)
  */
 static int metachar(char c)
 {
-    return (strchr(metachars(), c) != NULL);
+    return (strchr(metachars(), c) != nullptr);
 }
 
 /*
@@ -163,7 +161,7 @@ static int metachar(char c)
             /*
              * We can't quote a string that contains quotes.
              */
-            return (NULL);
+            return (nullptr);
         len = (int) strlen(s) + 3;
     }
     /*
@@ -172,7 +170,7 @@ static int metachar(char c)
     newstr = p = (char *) utils::ecalloc(len, sizeof(char));
     if (use_quotes)
     {
-        snprintf(newstr, len, "%c%s%c", openquote, s, closequote);
+        ignore_result(snprintf(newstr, len, "%c%s%c", openquote, s, closequote));
     } else
     {
         while (*s != '\0')
@@ -194,7 +192,7 @@ static int metachar(char c)
 
 /*
  * Return a pathname that points to a specified file in a specified directory.
- * Return NULL if the file does not exist in the directory.
+ * Return nullptr if the file does not exist in the directory.
  */
 static char * dirfile(char *dirname, char *filename)
 {
@@ -202,16 +200,16 @@ static char * dirfile(char *dirname, char *filename)
     int len;
     int f;
 
-    if (dirname == NULL || *dirname == '\0')
-        return (NULL);
+    if (dirname == nullptr || *dirname == '\0')
+        return (nullptr);
     /*
      * Construct the full pathname.
      */
     len = (int) (strlen(dirname) + strlen(filename) + 2);
     pathname = (char *) calloc(len, sizeof(char));
-    if (pathname == NULL)
-        return (NULL);
-    snprintf(pathname, len, "%s%s%s", dirname, PATHNAME_SEP, filename);
+    if (pathname == nullptr)
+        return (nullptr);
+    ignore_result(snprintf(pathname, len, "%s%s%s", dirname, PATHNAME_SEP, filename));
     /*
      * Make sure the file exists.
      */
@@ -219,7 +217,7 @@ static char * dirfile(char *dirname, char *filename)
     if (f < 0)
     {
         free(pathname);
-        pathname = NULL;
+        pathname = nullptr;
     } else
     {
         close(f);
@@ -238,9 +236,9 @@ static char * dirfile(char *dirname, char *filename)
      * Try $HOME/filename.
      */
     pathname = dirfile(lgetenv((char *)"HOME"), filename);
-    if (pathname != NULL)
+    if (pathname != nullptr)
         return (pathname);
-    return (NULL);
+    return (nullptr);
 }
 
 /*
@@ -255,11 +253,11 @@ static char * dirfile(char *dirname, char *filename)
     char *fr, *to;
     int n;
     char *e;
-    IFILE ifile;
+    ifile::Ifile* lclIfile;
 
 #define fchar_ifile(c)         \
-    ((c) == '%' ? curr_ifile : \
-     (c) == '#' ? old_ifile : NULL_IFILE)
+    ((c) == '%' ? ifile::getCurrentIfile() : \
+     (c) == '#' ? ifile::getOldIfile() : nullptr)
 
     /*
      * Make one pass to see how big a buffer we 
@@ -284,11 +282,11 @@ static char * dirfile(char *dirname, char *filename)
                 /*
                  * Single char (not repeated).  Treat specially.
                  */
-                ifile = fchar_ifile(*fr);
-                if (ifile == NULL_IFILE)
+                lclIfile = fchar_ifile(*fr);
+                if (lclIfile == nullptr)
                     n++;
                 else
-                    n += (int) strlen(get_filename(ifile));
+                    n += (int) strlen(lclIfile->getFilename());
             }
             /*
              * Else it is the first char in a string of
@@ -318,12 +316,12 @@ static char * dirfile(char *dirname, char *filename)
                 *to++ = *fr;
             } else if (fr[1] != *fr)
             {
-                ifile = fchar_ifile(*fr);
-                if (ifile == NULL_IFILE)
+                lclIfile = fchar_ifile(*fr);
+                if (lclIfile == nullptr)
                     *to++ = *fr;
                 else
                 {
-                    strcpy(to, get_filename(ifile));
+                    strcpy(to, lclIfile->getFilename());
                     to += strlen(to);
                 }
             }
@@ -365,7 +363,7 @@ static char * dirfile(char *dirname, char *filename)
          * The filename didn't expand.
          */
         free(qs);
-        qs = NULL;
+        qs = nullptr;
     }
     free(s);
     free(fpat);
@@ -496,7 +494,7 @@ static FILE * shellcmd(char *cmd)
          * Escape any metacharacters in the command.
          */
         esccmd = shell_quote(cmd);
-        if (esccmd == NULL)
+        if (esccmd == nullptr)
         {
             fd = popen(cmd, "r");
         } else
@@ -552,7 +550,7 @@ static FILE * shellcmd(char *cmd)
     {
         INIT_GLOB_LIST(list, p);
         qfilename = shell_quote(p);
-        if (qfilename != NULL)
+        if (qfilename != nullptr)
         {
               length += strlen(qfilename) + 1;
             free(qfilename);
@@ -563,7 +561,7 @@ static FILE * shellcmd(char *cmd)
     {
         INIT_GLOB_LIST(list, p);
         qfilename = shell_quote(p);
-        if (qfilename != NULL)
+        if (qfilename != nullptr)
         {
             sprintf(gfilename + strlen(gfilename), "%s ", qfilename);
             free(qfilename);
@@ -605,7 +603,7 @@ static FILE * shellcmd(char *cmd)
         snprintf(pfilename, n, "%s%s%s", drive, dir, fnd.GLOB_NAME);
         qfilename = shell_quote(pfilename);
         free(pfilename);
-        if (qfilename != NULL)
+        if (qfilename != nullptr)
         {
             n = (int) strlen(qfilename);
             while (p - gfilename + n + 2 >= len)
@@ -653,7 +651,7 @@ static FILE * shellcmd(char *cmd)
     if (strlen(esc) == 0)
         esc = (char *)"-";
     esc = shell_quote(esc);
-    if (esc == NULL)
+    if (esc == nullptr)
     {
         return (filename);
     }
@@ -672,7 +670,7 @@ static FILE * shellcmd(char *cmd)
     sprintf(cmd + strlen(cmd), "-- %s", filename);
     fd = shellcmd(cmd);
     free(cmd);
-    if (fd == NULL)
+    if (fd == nullptr)
     {
         /*
          * Cannot create the pipe.
@@ -706,8 +704,8 @@ static FILE * shellcmd(char *cmd)
  char * lrealpath(const char *path)
 {
 #if HAVE_REALPATH
-    char *rpath = realpath(path, NULL);
-    if (rpath != NULL)
+    char *rpath = realpath(path, nullptr);
+    if (rpath != nullptr)
         return (rpath);
 #endif
     return (utils::save(path));
@@ -744,7 +742,7 @@ static int num_pct_s(char *lessopen)
  char * open_altfile(char *filename, int *pf, void **pfd)
 {
 #if !HAVE_POPEN
-    return (NULL);
+    return (nullptr);
 #else
     char *lessopen;
     char *qfilename;
@@ -756,10 +754,10 @@ static int num_pct_s(char *lessopen)
 #endif
     
     if (!use_lessopen)
-        return (NULL);
+        return (nullptr);
     ch_ungetchar(-1);
-    if ((lessopen = lgetenv((char *)"LESSOPEN")) == NULL)
-        return (NULL);
+    if ((lessopen = lgetenv((char *)"LESSOPEN")) == nullptr)
+        return (nullptr);
     while (*lessopen == '|')
     {
         /*
@@ -768,7 +766,7 @@ static int num_pct_s(char *lessopen)
          */
 #if !HAVE_FILENO
         error((char *)"LESSOPEN pipe is not supported", NULL_PARG);
-        return (NULL);
+        return (nullptr);
 #else
         lessopen++;
         returnfd++;
@@ -783,12 +781,12 @@ static int num_pct_s(char *lessopen)
     } else
     {
         if (strcmp(filename, "-") == 0)
-            return (NULL);
+            return (nullptr);
     }
     if (num_pct_s(lessopen) != 1)
     {
         error((char *)"LESSOPEN ignored: must contain exactly one %%s", NULL_PARG);
-        return (NULL);
+        return (nullptr);
     }
 
     qfilename = shell_quote(filename);
@@ -798,12 +796,12 @@ static int num_pct_s(char *lessopen)
     free(qfilename);
     fd = shellcmd(cmd);
     free(cmd);
-    if (fd == NULL)
+    if (fd == nullptr)
     {
         /*
          * Cannot create the pipe.
          */
-        return (NULL);
+        return (nullptr);
     }
 #if HAVE_FILENO
     if (returnfd)
@@ -829,11 +827,11 @@ static int num_pct_s(char *lessopen)
              */
             int status = pclose(fd);
             if (returnfd > 1 && status == 0) {
-                *pfd = NULL;
+                *pfd = nullptr;
                 *pf = -1;
                 return (utils::save(FAKE_EMPTYFILE));
             }
-            return (NULL);
+            return (nullptr);
         }
         ch_ungetchar(c);
         *pfd = (void *) fd;
@@ -847,7 +845,7 @@ static int num_pct_s(char *lessopen)
         /*
          * Pipe is empty.  This means there is no alt file.
          */
-        return (NULL);
+        return (nullptr);
     return (cmd);
 #endif /* HAVE_POPEN */
 }
@@ -864,7 +862,7 @@ static int num_pct_s(char *lessopen)
     int len;
     
     ch_ungetchar(-1);
-    if ((lessclose = lgetenv((char *)"LESSCLOSE")) == NULL)
+    if ((lessclose = lgetenv((char *)"LESSCLOSE")) == nullptr)
              return;
     if (num_pct_s(lessclose) > 2) 
     {
@@ -876,7 +874,7 @@ static int num_pct_s(char *lessopen)
     snprintf(cmd, len, lessclose, filename, altfilename);
     fd = shellcmd(cmd);
     free(cmd);
-    if (fd != NULL)
+    if (fd != nullptr)
         pclose(fd);
 #endif
 }
@@ -901,13 +899,13 @@ static int num_pct_s(char *lessopen)
 }
 
 /*
- * Returns NULL if the file can be opened and
+ * Returns nullptr if the file can be opened and
  * is an ordinary file, otherwise an error message
  * (if it cannot be opened or is a directory, etc.)
  */
  char * bad_file(char *filename)
 {
-    char *m = NULL;
+    char *m = nullptr;
 
     if (!force_open && is_dir(filename))
     {
@@ -929,7 +927,7 @@ static int num_pct_s(char *lessopen)
             m = errno_message(filename);
         } else if (force_open)
         {
-            m = NULL;
+            m = nullptr;
         } else if (!S_ISREG(statbuf.st_mode))
         {
             static char not_reg[] = " is not a regular file (use -f to see it)";

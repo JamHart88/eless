@@ -30,6 +30,7 @@ extern dev_t curr_dev;
 extern ino_t curr_ino;
 #endif
 
+
 typedef position_t BLOCKNUM;
 
 
@@ -59,7 +60,8 @@ struct buf {
  * The file state is maintained in a filestate structure.
  * A pointer to the filestate is kept in the ifile structure.
  */
-#define BUFHASH_SIZE 1024
+const int BUFHASH_SIZE = 1024;
+
 struct filestate {
     struct bufnode buflist;
     struct bufnode hashtbl[BUFHASH_SIZE];
@@ -71,6 +73,7 @@ struct filestate {
     unsigned int offset;
     position_t fsize;
 };
+
 
 #define ch_bufhead thisfile->buflist.next
 #define ch_buftail thisfile->buflist.prev
@@ -134,7 +137,6 @@ extern int sigs;
 extern int follow_mode;
 extern char helpdata[];
 extern int size_helpdata;
-extern IFILE curr_ifile;
 #if LOGFILE
 extern int logfile;
 extern char* namelogfile;
@@ -155,7 +157,7 @@ int ch_get()
     position_t pos;
     position_t len;
 
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return (EOI);
 
     /*
@@ -304,7 +306,7 @@ read_more:
                  * reopened. */
                 struct stat st;
                 position_t curr_pos = ch_tell();
-                int r = stat(get_filename(curr_ifile), &st);
+                int r = stat(ifile::getCurrentIfile()->getFilename(), &st);
                 if (r == 0 && (st.st_ino != curr_ino || st.st_dev != curr_dev || (curr_pos != NULL_POSITION && st.st_size < curr_pos))) {
                     /* remake_display and reopen the file. */
                     screen_trashed = TRASHED_AND_REOPEN_FILE;
@@ -376,7 +378,7 @@ void end_logfile()
     }
     close(logfile);
     logfile = -1;
-    namelogfile = NULL;
+    namelogfile = nullptr;
 }
 
 /*
@@ -444,7 +446,7 @@ int ch_seek(position_t pos)
     BLOCKNUM new_block;
     position_t len;
 
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return (0);
 
     len = ch_length();
@@ -479,7 +481,7 @@ int ch_end_seek()
 {
     position_t len;
 
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return (0);
 
     if (ch_flags & CH_CANSEEK)
@@ -509,7 +511,7 @@ int ch_end_buffer_seek()
     position_t buf_pos;
     position_t end_pos;
 
-    if (thisfile == NULL || (ch_flags & CH_CANSEEK))
+    if (thisfile == nullptr || (ch_flags & CH_CANSEEK))
         return (ch_end_seek());
 
     end_pos = 0;
@@ -565,7 +567,7 @@ int ch_beg_seek()
 position_t
 ch_length()
 {
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return (NULL_POSITION);
     if (ignore_eoi)
         return (NULL_POSITION);
@@ -583,7 +585,7 @@ ch_length()
 position_t
 ch_tell()
 {
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return (NULL_POSITION);
     return (ch_block * LBUFSIZE) + ch_offset;
 }
@@ -596,7 +598,7 @@ int ch_forw_get()
 {
     int c;
 
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return (EOI);
     c = ch_get();
     if (c == EOI)
@@ -616,7 +618,7 @@ int ch_forw_get()
 
 int ch_back_get()
 {
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return (EOI);
     if (ch_offset > 0)
         ch_offset--;
@@ -655,7 +657,7 @@ void ch_flush()
 {
     struct bufnode* bn;
 
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return;
 
     if (!(ch_flags & CH_CANSEEK)) {
@@ -721,7 +723,7 @@ static int ch_addbuf()
      * onto the tail of the buffer list.
      */
     bp = (struct buf*)calloc(1, sizeof(struct buf));
-    if (bp == NULL)
+    if (bp == nullptr)
         return (1);
     ch_nbufs++;
     bp->block = -1;
@@ -786,8 +788,8 @@ void ch_init(int f, int flags)
     /*
      * See if we already have a filestate for this file.
      */
-    thisfile = (struct filestate*)get_filestate(curr_ifile);
-    if (thisfile == NULL) {
+    thisfile = (struct filestate*)ifile::getCurrentIfile()->getFilestate();
+    if (thisfile == nullptr) {
         /*
          * Allocate and initialize a new filestate.
          */
@@ -807,7 +809,7 @@ void ch_init(int f, int flags)
          */
         if ((flags & CH_CANSEEK) && !seekable(f))
             ch_flags &= ~CH_CANSEEK;
-        set_filestate(curr_ifile, (void*)thisfile);
+        ifile::getCurrentIfile()->setFilestate((void*)thisfile);
     }
     if (thisfile->file == -1)
         thisfile->file = f;
@@ -822,7 +824,7 @@ void ch_close()
 {
     bool keepstate = false;
 
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return;
 
     if (ch_flags & (CH_CANSEEK | CH_POPENED | CH_HELPFILE)) {
@@ -849,8 +851,8 @@ void ch_close()
          * We don't even need to keep the filestate structure.
          */
         free(thisfile);
-        thisfile = NULL;
-        set_filestate(curr_ifile, (void*)NULL);
+        thisfile = nullptr;
+        ifile::getCurrentIfile()->setFilestate((void*)nullptr);
     }
 }
 
@@ -860,7 +862,7 @@ void ch_close()
 
 int ch_getflags()
 {
-    if (thisfile == NULL)
+    if (thisfile == nullptr)
         return (0);
     return (ch_flags);
 }

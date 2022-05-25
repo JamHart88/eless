@@ -57,7 +57,6 @@ extern char *eqproto;
 extern char *hproto;
 extern char *wproto;
 extern char *every_first_cmd;
-extern IFILE curr_ifile;
 extern char version[];
 extern int jump_sline;
 extern long jump_sline_fraction;
@@ -83,12 +82,6 @@ extern char ztags[];
 /*
  * Handler for -o option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_o(type, s)
-//     int type;
-//     char *s;
  void opt_o(int type, char *s)
 {
     parg_t parg;
@@ -135,12 +128,6 @@ extern char ztags[];
 /*
  * Handler for -O option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt__O(type, s)
-//     int type;
-//     char *s;
  void opt__O(int type, char *s)
 {
     force_logfile = true;
@@ -151,12 +138,6 @@ extern char ztags[];
 /*
  * Handlers for -j option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_j(type, s)
-//     int type;
-//     char *s;
  void opt_j(int type, char *s)
 {
     parg_t parg;
@@ -208,10 +189,6 @@ extern char ztags[];
     }
 }
 
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// calc_jump_sline(void)
  void calc_jump_sline(void)
 {
     if (jump_sline_fraction < 0)
@@ -222,12 +199,6 @@ extern char ztags[];
 /*
  * Handlers for -# option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_shift(type, s)
-//     int type;
-//     char *s;
  void opt_shift(int type, char *s)
 {
     parg_t parg;
@@ -278,11 +249,8 @@ extern char ztags[];
         break;
     }
 }
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// calc_shift_count(void)
- void calc_shift_count(void)
+
+void calc_shift_count(void)
 {
     if (shift_count_fraction < 0)
         return;
@@ -290,12 +258,6 @@ extern char ztags[];
 }
 
 #if USERFILE
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_k(type, s)
-//     int type;
-//     char *s;
  void opt_k(int type, char *s)
 {
     parg_t parg;
@@ -317,15 +279,9 @@ extern char ztags[];
 /*
  * Handler for -t option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_t(type, s)
-//     int type;
-//     char *s;
  void opt_t(int type, char *s)
 {
-    IFILE save_ifile;
+    ifile::Ifile* save_ifile;
     position_t pos;
 
     switch (type)
@@ -357,12 +313,6 @@ extern char ztags[];
 /*
  * Handler for -T option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt__T(type, s)
-//     int type;
-//     char *s;
  void opt__T(int type, char *s)
 {
     parg_t parg;
@@ -392,12 +342,6 @@ extern char ztags[];
 /*
  * Handler for -p option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_p(type, s)
-//     int type;
-//     char *s;
  void opt_p(int type, char *s)
 {
     switch (type)
@@ -431,12 +375,6 @@ extern char ztags[];
 /*
  * Handler for -P option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt__P(type, s)
-//     int type;
-//     char *s;
  void opt__P(int type, char *s)
 {
     char **proto;
@@ -473,12 +411,6 @@ extern char ztags[];
  * Handler for the -b option.
  */
     /*ARGSUSED*/
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_b(type, s)
-//     int type;
-//     char *s;
  void opt_b(int type, char *s)
 {
     switch (type)
@@ -499,12 +431,6 @@ extern char ztags[];
  * Handler for the -i option.
  */
     /*ARGSUSED*/
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_i(type, s)
-//     int type;
-//     char *s;
  void opt_i(int type, char *s)
 {
     switch (type)
@@ -522,12 +448,6 @@ extern char ztags[];
  * Handler for the -V option.
  */
     /*ARGSUSED*/
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt__V(type, s)
-//     int type;
-//     char *s;
  void opt__V(int type, char *s)
 {
     switch (type)
@@ -560,12 +480,6 @@ extern char ztags[];
 /*
  * Handler for the -x option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_x(type, s)
-//     int type;
-//     char *s;
  void opt_x(int type, char *s)
 {
     extern int tabstops[];
@@ -621,12 +535,6 @@ extern char ztags[];
 /*
  * Handler for the -" option.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_quote(type, s)
-//     int type;
-//     char *s;
  void opt_quote(int type, char *s)
 {
     char buf[3];
@@ -666,12 +574,6 @@ extern char ztags[];
  * Handler for the --rscroll option.
  */
     /*ARGSUSED*/
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_rscroll(type, s)
-//     int type;
-//     char *s;
  void opt_rscroll(int type, char *s)
 {
     parg_t p;
@@ -704,12 +606,6 @@ extern char ztags[];
  * If from the command line, exit immediately.
  */
     /*ARGSUSED*/
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_query(type, s)
-//     int type;
-//     char *s;
  void opt_query(int type, char *s)
 {
     switch (type)
@@ -727,12 +623,6 @@ extern char ztags[];
  * Handler for the --mouse option.
  */
     /*ARGSUSED*/
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_mousecap(type, s)
-//     int type;
-//     char *s;
  void opt_mousecap(int type, char *s)
 {
     switch (type)
@@ -753,12 +643,6 @@ extern char ztags[];
  * Handler for the --wheel-lines option.
  */
     /*ARGSUSED*/
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// opt_wheel_lines(type, s)
-//     int type;
-//     char *s;
  void opt_wheel_lines(int type, char *s)
 {
     switch (type)
@@ -776,10 +660,6 @@ extern char ztags[];
 /*
  * Get the "screen window" size.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// get_swindow(void)
  int get_swindow(void)
 {
     if (swindow > 0)

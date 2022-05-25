@@ -13,7 +13,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
-CPPFLAGS = -std=c++0x -g -O2 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal
+CPPFLAGS = -std=c++0x -g -O2 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal -Wpedantic
 # Removed CPP flags
 # -std=c++11  - AIX XLC++ only has c++0x 
 #-finstrument-functions -Werror -Wpedantic -Wshadow 

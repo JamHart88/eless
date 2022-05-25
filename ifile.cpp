@@ -7,91 +7,91 @@
  * For more information, see the README file.
  */
 
-
 /*
  * An IFILE represents an input file.
  *
  * It is actually a pointer to an ifile structure,
  * but is opaque outside this module.
- * Ifile structures are kept in a linked list in the order they 
+ * Ifile structures are kept in a linked list in the order they
  * appear on the command line.
  * Any new file which does not already appear in the list is
  * inserted after the current file.
  */
 
-#include "less.hpp"
 #include "ifile.hpp"
 #include "filename.hpp"
+#include "less.hpp"
 #include "mark.hpp"
 #include "utils.hpp"
 
-extern IFILE curr_ifile;
+#include <iostream>
 
-struct ifile {
-    struct ifile *h_next;           /* Links for command line list */
-    struct ifile *h_prev;
-    char *h_filename;               /* Name of the file */
-    void *h_filestate;              /* File state (used in ch.c) */
-    int h_index;                    /* Index within command line list */
-    int h_hold;                     /* Hold count */
-    char h_opened;                  /* Has this ifile been opened? */
-    struct scrpos h_scrpos;         /* Saved position within the file */
-    void *h_altpipe;                /* Alt pipe */
-    char *h_altfilename;            /* Alt filename */
-};
+#include <vector>
 
 /*
  * Convert an IFILE (external representation)
  * to a struct file (internal representation), and vice versa.
  */
-#define int_ifile(h) ((struct ifile *)(h))
+#define int_ifile(h) ((struct ifile*)(h))
 #define ext_ifile(h) ((IFILE)(h))
 
-/*
- * Anchor for linked list.
- */
-static struct ifile anchor = { &anchor, &anchor, NULL, NULL, 0, 0, '\0',
-                { NULL_POSITION, 0 } };
-static int ifiles = 0;
+namespace ifile {
 
-static void incr_index(struct ifile *p, int incr)
-{
-    for (;  p != &anchor;  p = p->h_next)
-        p->h_index += incr;
+// ifile list
+std::vector<Ifile*> fileList;
+
+namespace {
+    Ifile* currentIfile = nullptr; // TODO: need to ensure this is updated in all cases
+    Ifile* previousIfile = nullptr; // TODO: need to ensure this is updated in all cases.
 }
 
 /*
- * Link an ifile into the ifile list.
+ * Get pointer to the current ifile
  */
-static void link_ifile(struct ifile *p, struct ifile *prev)
+Ifile* getCurrentIfile()
 {
-    /*
-     * Link into list.
-     */
-    if (prev == NULL)
-        prev = &anchor;
-    p->h_next = prev->h_next;
-    p->h_prev = prev;
-    prev->h_next->h_prev = p;
-    prev->h_next = p;
-    /*
-     * Calculate index for the new one,
-     * and adjust the indexes for subsequent ifiles in the list.
-     */
-    p->h_index = prev->h_index + 1;
-    incr_index(p->h_next, 1);
-    ifiles++;
+    return currentIfile;
 }
-    
-/*
- * Unlink an ifile from the ifile list.
- */
-static void unlink_ifile(struct ifile *p)
+
+void setCurrentIfile(Ifile* newCurrentIfile)
 {
-    p->h_next->h_prev = p->h_prev;
-    p->h_prev->h_next = p->h_next;
-    incr_index(p->h_next, -1);
-    ifiles--;
+    currentIfile = newCurrentIfile;
+}
+
+/*
+ * Get pointer to the old ifile
+ */
+Ifile* getOldIfile()
+{
+    return previousIfile;
+}
+
+void setOldIfile(Ifile* newOldIfile)
+{
+    previousIfile = newOldIfile;
+}
+
+/*
+ * Return the number of ifiles.
+ */
+int numIfiles(void)
+{
+    return (fileList.size());
+}
+
+/*
+ * Find Ifile and return its index. Index starts at 1
+ */
+int find(Ifile* current)
+{
+    int idx = 0;
+    for (Ifile* f : fileList) {
+        idx++;
+        if (f == current) {
+            return idx;
+        }
+    }
+    return -1;
 }
 
 /*
@@ -100,231 +100,327 @@ static void unlink_ifile(struct ifile *p)
  * (or at the beginning of the list if "prev" is NULL).
  * Return a pointer to the new ifile structure.
  */
-static struct ifile * new_ifile(const char *filename, struct ifile *prev)
+Ifile* newIfile(const char* filename)
 {
-    struct ifile *p;
+    Ifile* ret = new Ifile(filename);
 
-    /*
-     * Allocate and initialize structure.
-     */
-    p = (struct ifile *) utils::ecalloc(1, sizeof(struct ifile));
-    p->h_filename = utils::save(filename);
-    p->h_scrpos.pos = NULL_POSITION;
-    p->h_opened = 0;
-    p->h_hold = 0;
-    p->h_filestate = NULL;
-    link_ifile(p, prev);
-    /*
-     * {{ It's dodgy to call mark.c functions from here;
+    fileList.push_back(ret);
+    currentIfile = fileList.back();
+
+    /* {{ It's dodgy to call mark.c functions from here;
      *    there is potentially dangerous recursion.
      *    Probably need to revisit this design. }}
      */
-    mark_check_ifile(ext_ifile(p));
-    return (p);
+    mark_check_ifile(currentIfile);
+
+    return currentIfile;
 }
 
 /*
  * Delete an existing ifile structure.
  */
- void del_ifile(IFILE h)
+void deleteIfile(Ifile* ifilePtr)
 {
-    struct ifile *p;
 
-    if (h == NULL_IFILE)
-        return;
-    /*
-     * If the ifile we're deleting is the currently open ifile,
-     * move off it.
-     */
-    unmark(h);
-    if (h == curr_ifile)
-        curr_ifile = getoff_ifile(curr_ifile);
-    p = int_ifile(h);
-    unlink_ifile(p);
-    free(p->h_filename);
-    free(p);
+    // std::cout << "deleteIfile 1\n";
+    if (ifilePtr != nullptr) {
+
+        std::vector<Ifile*>::iterator it = fileList.begin();
+
+        // find pos in list first
+        for (Ifile const* lclIfile : fileList) {
+            if (lclIfile == ifilePtr) {
+                // std::cout << "Found entry in list index \n";
+                break;
+            }
+            it++; // increment at the end - list starts at 1
+        }
+
+        /*
+         * If the ifile we're deleting is the currently open ifile,
+         * move off it.
+         */
+        unmark(ifilePtr);
+
+        if (ifilePtr == getCurrentIfile()) {
+
+            setCurrentIfile(getOffIfile(ifilePtr));
+        }
+        fileList.erase(it);
+        delete (ifilePtr);
+    }
 }
 
 /*
  * Get the ifile after a given one in the list.
  */
- IFILE next_ifile(IFILE h)
+Ifile* nextIfile(Ifile* current)
 {
-    struct ifile *p;
+    Ifile* ret = nullptr;
 
-    p = (h == NULL_IFILE) ? &anchor : int_ifile(h);
-    if (p->h_next == &anchor)
-        return (NULL_IFILE);
-    return (ext_ifile(p->h_next));
+    if (fileList.size() == 0)
+        ret = nullptr;
+    else if (current == nullptr)
+        ret = fileList.front();
+    else {
+        int idx = find(current)-1; // Turn index to 0 index
+        // std::cout << "nextifile idx = " << idx << " size = " << fileList.size() << "\n";
+
+        if (idx > -1 && idx + 1 < static_cast<int>(fileList.size()))
+            ret = fileList.at(idx + 1);
+    }
+
+    return ret;
 }
 
 /*
  * Get the ifile before a given one in the list.
  */
- IFILE prev_ifile(IFILE h)
+Ifile* prevIfile(Ifile* current)
 {
-    struct ifile *p;
+    Ifile* ret = nullptr;
 
-    p = (h == NULL_IFILE) ? &anchor : int_ifile(h);
-    if (p->h_prev == &anchor)
-        return (NULL_IFILE);
-    return (ext_ifile(p->h_prev));
+    if (fileList.size() == 0)
+        ret = nullptr;
+    else if (current == nullptr)
+        ret = fileList.back();
+    else {
+        int idx = find(current) - 1; // -1 to make index start at 0
+
+        // std::cout << "previfile idx = " << idx << " size = " << fileList.size() << "\n";
+        if (idx > -1 && idx > 0)
+            return fileList.at(idx - 1);
+    }
+    return ret;
 }
 
 /*
  * Return a different ifile from the given one.
+ * The previous one (if there is one) or the next one (if there is one),
+ * otherwise NULL
  */
- IFILE getoff_ifile(IFILE ifile)
+Ifile* getOffIfile(Ifile* thisIfile)
 {
-    IFILE newifile;
-    
-    if ((newifile = prev_ifile(ifile)) != NULL_IFILE)
-        return (newifile);
-    if ((newifile = next_ifile(ifile)) != NULL_IFILE)
-        return (newifile);
-    return (NULL_IFILE);
-}
 
-/*
- * Return the number of ifiles.
- */
- int nifile(void)
-{
-    return (ifiles);
+    Ifile* newIfile;
+
+    if ((newIfile = prevIfile(thisIfile)) != nullptr)
+        return newIfile;
+    if ((newIfile = nextIfile(thisIfile)) != nullptr)
+        return newIfile;
+    return nullptr;
 }
 
 /*
  * Find an ifile structure, given a filename.
  */
-static struct ifile * find_ifile(const char *filename)
-{
-    struct ifile *p;
-    char *rfilename = lrealpath(filename);
 
-    for (p = anchor.h_next;  p != &anchor;  p = p->h_next)
-    {
-        if (strcmp(filename, p->h_filename) == 0 ||
-            strcmp(rfilename, p->h_filename) == 0)
-        {
+Ifile* findIfile(const char* searchFilename)
+{
+    Ifile* ret = nullptr;
+
+    char* realSearchFilename = lrealpath(searchFilename);
+
+    for (Ifile* current : fileList) {
+
+        if (strcmp(searchFilename, current->getFilename()) == 0 || strcmp(realSearchFilename, current->getFilename()) == 0) {
+
+            ret = current;
             /*
              * If given name is shorter than the name we were
              * previously using for this file, adopt shorter name.
              */
-            if (strlen(filename) < strlen(p->h_filename))
-                strcpy(p->h_filename, filename);
+            if (strlen(searchFilename) < strlen(current->getFilename())) {
+                current->setFilename(searchFilename);
+            }
             break;
         }
     }
-    free(rfilename);
-    if (p == &anchor)
-        p = NULL;
-    return (p);
+
+    free(realSearchFilename);
+
+    return ret;
 }
 
 /*
  * Get the ifile associated with a filename.
  * If the filename has not been seen before,
- * insert the new ifile after "prev" in the list.
+ * will create a new Ifile
  */
- IFILE get_ifile(const char *filename, IFILE prev)
+Ifile* getIfile(const char* filename)
 {
-    struct ifile *p;
-
-    if ((p = find_ifile(filename)) == NULL)
-        p = new_ifile(filename, int_ifile(prev));
-    return (ext_ifile(p));
+    Ifile* ifile = findIfile(filename);
+    if (ifile == nullptr) {
+        ifile = newIfile(filename);
+        // std::cout << "getIfile ifile =" << ifile << "\n";
+    }
+    return ifile;
 }
 
-/*
- * Get the filename associated with a ifile.
- */
- char * get_filename(IFILE ifile)
+void createIfile(const char* filename)
 {
-    if (ifile == NULL)
-        return (NULL);
-    return (int_ifile(ifile)->h_filename);
+    (void)getIfile(filename);
 }
 
 /*
  * Get the index of the file associated with a ifile.
+ * Index start at 1
  */
- int get_index( IFILE ifile)
+int getIndex(const Ifile* ifile)
 {
-    return (int_ifile(ifile)->h_index); 
+
+    int index = 1;
+    bool found = false;
+
+    for (Ifile* current : fileList) {
+
+        if (current == ifile) {
+            found = true;
+            break;
+        }
+        index++;
+    }
+    if (!found)
+        index = -1;
+
+    return index;
+}
+
+//==========================================================
+// Ifile class functions
+//==========================================================
+
+/*
+ * Ifile constructor
+ */
+Ifile::Ifile(const char* filename)
+{
+    h_filename = utils::save(filename);
+    h_filestate = NULL;
+    h_hold = 0;
+    h_opened = false;
+    h_scrpos.pos = NULL_POSITION;
+    h_scrpos.ln = 0;
+    h_altpipe = NULL;
+    h_altfilename = NULL;
+};
+
+/*
+ * Ifile copy constructor
+ */
+Ifile::Ifile(const Ifile& src)
+{
+    this->h_filename = utils::save(src.h_filename);
+    this->h_filestate = src.h_filestate;
+    this->h_hold = src.h_hold;
+    this->h_opened = src.h_opened;
+    this->h_scrpos = src.h_scrpos;
+    this->h_altpipe = NULL;
+    this->h_altfilename = src.h_altfilename;
+};
+
+/*
+ * Operator=
+ */
+Ifile& Ifile::operator=(const Ifile& src)
+{
+    if (this != &src) {
+
+        free(this->h_filename);
+        this->h_filename = utils::save(src.h_filename);
+        this->h_filestate = src.h_filestate;
+        this->h_hold = src.h_hold;
+        this->h_opened = src.h_opened;
+        this->h_scrpos = src.h_scrpos;
+        this->h_altpipe = NULL;
+        this->h_altfilename = src.h_altfilename;
+    }
+    return *this;
+}
+/*
+ * Destructor
+ */
+Ifile::~Ifile()
+{
+
+    // free incase it was not done by caller
+    if (h_filestate != NULL)
+        free(this->h_filestate);
+
+    free(this->h_altfilename);
+    free(this->h_filename);
 }
 
 /*
- * Save the file position to be associated with a given file.
+ * Set the filename
  */
- void store_pos( IFILE ifile, struct scrpos *scrpos)
+void Ifile::setFilename(const char* newFilename)
 {
-    int_ifile(ifile)->h_scrpos = *scrpos;
+    free(this->h_filename);
+    h_filename = utils::save(newFilename);
 }
 
 /*
- * Recall the file position associated with a file.
- * If no position has been associated with the file, return NULL_POSITION.
+ * Set the Pos field
  */
- void get_pos( IFILE ifile, struct scrpos *scrpos)
+void Ifile::setPos(scrpos pos)
 {
-    *scrpos = int_ifile(ifile)->h_scrpos;
+    this->h_scrpos.pos = pos.pos;
+    this->h_scrpos.ln = pos.ln;
 }
 
 /*
- * Mark the ifile as "opened".
+ * Set if the file is opened
  */
- void set_open(IFILE ifile)
+void Ifile::setOpened(bool opened)
 {
-    int_ifile(ifile)->h_opened = 1;
+    this->h_opened = opened;
 }
 
 /*
- * Return whether the ifile has been opened previously.
+ * Increment the Hold count by incr amount
  */
- int opened(IFILE ifile)
+void Ifile::setHold(int incr)
 {
-    return (int_ifile(ifile)->h_opened);
+    this->h_hold += incr;
 }
 
- void hold_ifile(IFILE ifile, int incr)
+/*
+ * Set File State
+ * Assumes caller does any deallocation of the filestate
+ */
+void Ifile::setFilestate(void* filestate)
 {
-    int_ifile(ifile)->h_hold += incr;
+    // No need to free filestate - assume caller does any free
+    this->h_filestate = filestate;
 }
 
- int held_ifile(IFILE ifile)
+/*
+ * Set the altpipe Ptr
+ * Assumes caller does any deallocation
+ */
+
+void Ifile::setAltpipe(void* altpipePtr)
 {
-    return (int_ifile(ifile)->h_hold);
+    this->h_altpipe = altpipePtr;
 }
 
- void * get_filestate(IFILE ifile)
+/*
+ * Set the AltFilename
+ */
+void Ifile::setAltfilename(char* altfilename)
 {
-    return (int_ifile(ifile)->h_filestate);
+    if (this->h_altfilename != NULL)
+        free(this->h_altfilename);
+    this->h_altfilename = altfilename;
 }
 
- void set_filestate( IFILE ifile, void *filestate)
+/*
+ * Test equality between 2 Ifiles - done on filename only
+ */
+bool operator==(const Ifile& lhs, const Ifile& rhs)
 {
-    int_ifile(ifile)->h_filestate = filestate;
+    return (strcmp(lhs.h_filename, rhs.h_filename) == 0);
 }
 
- void set_altpipe(IFILE ifile, void *p)
-{
-    int_ifile(ifile)->h_altpipe = p;
-}
-
- void * get_altpipe(IFILE ifile)
-{
-    return (int_ifile(ifile)->h_altpipe);
-}
-
- void set_altfilename( IFILE ifile, char *altfilename)
-{
-    struct ifile *p = int_ifile(ifile);
-    if (p->h_altfilename != NULL)
-        free(p->h_altfilename);
-    p->h_altfilename = altfilename;
-}
-
- char * get_altfilename( IFILE ifile)
-{
-    return (int_ifile(ifile)->h_altfilename);
-}
+} // ifile namespace

@@ -40,10 +40,6 @@ bool new_file;
 
 int is_tty;
 
-IFILE curr_ifile = NULL_IFILE;
-
-IFILE old_ifile = NULL_IFILE;
-
 struct scrpos initial_scrpos;
 
 
@@ -96,7 +92,7 @@ int main(int argc, char* argv[])
 {
     // int argc;
     // char *argv[];
-    IFILE ifile;
+    
     char* s;
 
     progname = *argv++;
@@ -130,6 +126,7 @@ int main(int argc, char* argv[])
     if (s != NULL)
         scan_option(utils::save(s));
 
+    // TODO: convert to template
 #define isoptstring(s) (((s)[0] == '-' || (s)[0] == '+') && (s)[1] != '\0')
     while (argc > 0 && (isoptstring(*argv) || isoptpending())) {
         s = *argv++;
@@ -167,12 +164,10 @@ int main(int argc, char* argv[])
      * Call get_ifile with all the command line filenames
      * to "register" them with the ifile system.
      */
-    ifile = NULL_IFILE;
     if (dohelp)
-        ifile = get_ifile(FAKE_HELPFILE, ifile);
+        ifile::createIfile(FAKE_HELPFILE);
     while (argc-- > 0) {
-        (void)get_ifile(*argv++, ifile);
-        ifile = prev_ifile(NULL_IFILE);
+        ifile::createIfile(*argv++);
     }
     /*
      * Set up terminal, etc.
@@ -208,7 +203,7 @@ int main(int argc, char* argv[])
          * Edit the file selected by the "tags" search,
          * and search for the proper line in the file.
          */
-        if (nifile() > 0) {
+        if (ifile::numIfiles() > 0) {
             error((char*)"No filenames allowed with -t option",
                 NULL_PARG);
             utils::quit(QUIT_ERROR);
@@ -235,7 +230,7 @@ int main(int argc, char* argv[])
          * if -X (no_init) overrides this (see init()).
          */
         if (quit_if_one_screen) {
-            if (nifile()
+            if (ifile::numIfiles()
                 > 1) /* If more than one file, -F cannot be used */
                 quit_if_one_screen = false;
             else if (!no_init)

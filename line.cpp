@@ -30,23 +30,17 @@ static char* linebuf = NULL; /* Buffer which holds the current output line */
 
 static char* attr = NULL; /* Extension of linebuf to hold attributes */
 
-
 int size_linebuf = 0; /* Size of line buffer (and attr buffer) */
 
 static int cshift; /* Current left-shift of output line buffer */
 
-
 int hshift; /* Desired left-shift of output line buffer */
-
 
 int tabstops[TABSTOP_MAX] = { 0 }; /* Custom tabstops */
 
-
 int ntabstops = 1; /* Number of tabstops */
 
-
 int tabdefault = 8; /* Default repeated tabstops */
-
 
 position_t highest_hilite; /* Pos of last hilite in file found so far */
 
@@ -246,20 +240,28 @@ void plinenum(position_t pos)
      * if the -N option is set.
      */
     if (linenums == OPT_ONPLUS) {
-        char buf[strlen_bound<linenum_t>() + 2];
-        int pad = 0;
-        int n;
+        
+        int bufLength = utils::strlen_bound<linenum_t>();
+        char *bufPtr = new char [bufLength];
 
-        typeToStr<linenum_t>(linenum, buf);
-        n = (int)strlen(buf);
-        if (n < MIN_LINENUM_WIDTH)
-            pad = MIN_LINENUM_WIDTH - n;
+        utils::typeToStr<linenum_t>(linenum, bufPtr, bufLength);
+        
+        int numDigits = (int)strlen(bufPtr);
+        int pad = 0;
+
+        if (numDigits < MIN_LINENUM_WIDTH)
+            pad = MIN_LINENUM_WIDTH - numDigits;
+        
         for (i = 0; i < pad; i++)
-            add_linebuf(' ', AT_NORMAL, 1);
-        for (i = 0; i < n; i++)
-            add_linebuf(buf[i], AT_BOLD, 1);
-        add_linebuf(' ', AT_NORMAL, 1);
-        lmargin += n + pad + 1;
+            add_linebuf(utils::CH_SPACE, AT_NORMAL, 1);
+        
+        for (i = 0; i < numDigits; i++)
+            add_linebuf(bufPtr[i], AT_BOLD, 1);
+        
+        add_linebuf(utils::CH_SPACE, AT_NORMAL, 1);
+        lmargin += numDigits + pad + 1;
+
+        delete[] bufPtr;
     }
     /*
      * Append enough spaces to bring us to the lmargin.
