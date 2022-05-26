@@ -1,17 +1,17 @@
 #ifndef IFILE_H
 #define IFILE_H
 
-//
-// An IFILE represents an input file.
-//
-// It is actually a pointer to an ifile structure,
-// but is opaque outside this module.
-// Ifile structures are kept in a linked list in the order they
-// appear on the command line.
-// Any new file which does not already appear in the list is
-// inserted after the current file.
-//
-// test
+/*
+ * An IFILE represents an input file.
+ *
+ * It is actually a pointer to an ifile structure,
+ * but is opaque outside this module.
+ * Ifile structures are kept in a linked list in the order they
+ * appear on the command line.
+ * Any new file which does not already appear in the list is
+ * inserted after the current file.
+ */
+
 #include "less.hpp"
 
 /*
