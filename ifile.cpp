@@ -163,7 +163,7 @@ Ifile* nextIfile(Ifile* current)
     else if (current == nullptr)
         ret = fileList.front();
     else {
-        int idx = find(current)-1; // Turn index to 0 index
+        int idx = find(current) - 1; // Turn index to 0 index
         // std::cout << "nextifile idx = " << idx << " size = " << fileList.size() << "\n";
 
         if (idx > -1 && idx + 1 < static_cast<int>(fileList.size()))
