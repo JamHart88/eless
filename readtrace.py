@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+# Script to process trace debug output
 import string, os, sys, stat, subprocess
 
 TRACEFILE="trace.out"

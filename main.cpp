@@ -33,7 +33,6 @@
 #include "ttyin.hpp"
 #include "utils.hpp"
 
-
 char* every_first_cmd = NULL;
 
 bool new_file;
@@ -42,7 +41,6 @@ int is_tty;
 
 struct scrpos initial_scrpos;
 
-
 position_t start_attnpos = NULL_POSITION;
 
 position_t end_attnpos = NULL_POSITION;
@@ -50,7 +48,6 @@ position_t end_attnpos = NULL_POSITION;
 int wscroll;
 
 char* progname;
-
 
 int dohelp;
 
@@ -76,7 +73,6 @@ extern char* tagoption;
 extern int jump_sline;
 #endif
 
-
 int one_screen;
 extern int less_is_more;
 extern int missing_cap;
@@ -92,7 +88,7 @@ int main(int argc, char* argv[])
 {
     // int argc;
     // char *argv[];
-    
+
     char* s;
 
     progname = *argv++;
@@ -126,7 +122,7 @@ int main(int argc, char* argv[])
     if (s != NULL)
         scan_option(utils::save(s));
 
-    // TODO: convert to template
+        // TODO: convert to template
 #define isoptstring(s) (((s)[0] == '-' || (s)[0] == '+') && (s)[1] != '\0')
     while (argc > 0 && (isoptstring(*argv) || isoptpending())) {
         s = *argv++;
@@ -177,7 +173,7 @@ int main(int argc, char* argv[])
          * Output is not a tty.
          * Just copy the input file(s) to output.
          */
-        //SET_BINARY(1);// no longer needed?
+        // SET_BINARY(1);// no longer needed?
         if (edit_first() == 0) {
             do {
                 cat_file();

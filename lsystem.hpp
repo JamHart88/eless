@@ -8,8 +8,8 @@
 
 #include "less.hpp"
 
- void lsystem (char *cmd, char *donemsg);
- int pipe_mark (int c, char *cmd);
- int pipe_data (char *cmd, position_t spos, position_t epos);
+void lsystem(char* cmd, char* donemsg);
+int pipe_mark(int c, char* cmd);
+int pipe_data(char* cmd, position_t spos, position_t epos);
 
-#endif 
+#endif

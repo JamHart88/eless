@@ -11,9 +11,9 @@
  * Routines to convert text in various ways.  Used by search.
  */
 
-#include "less.hpp"
-#include "charset.hpp"
 #include "cvt.hpp"
+#include "charset.hpp"
+#include "less.hpp"
 #include "line.hpp"
 #include "utils.hpp"
 
@@ -22,11 +22,11 @@ extern int utf_mode;
 /*
  * Get the length of a buffer needed to convert a string.
  */
- int cvt_length(int len, int ops)
+int cvt_length(int len, int ops)
 {
     if (utf_mode)
         /*
-         * Just copying a string in UTF-8 mode can cause it to grow 
+         * Just copying a string in UTF-8 mode can cause it to grow
          * in length.
          * Four output bytes for one input byte is the worst case.
          */
@@ -37,12 +37,12 @@ extern int utf_mode;
 /*
  * Allocate a chpos array for use by cvt_text.
  */
- int * cvt_alloc_chpos(int len)
+int* cvt_alloc_chpos(int len)
 {
     int i;
-    int *chpos = (int *) utils::ecalloc(sizeof(int), len);
+    int* chpos = (int*)utils::ecalloc(sizeof(int), len);
     /* Initialize all entries to an invalid position. */
-    for (i = 0;  i < len;  i++)
+    for (i = 0; i < len; i++)
         chpos[i] = -1;
     return (chpos);
 }
@@ -52,16 +52,16 @@ extern int utf_mode;
  * Returns converted text in odst.  The original offset of each
  * odst character (when it was in osrc) is returned in the chpos array.
  */
- void cvt_text(char *odst,
-    char *osrc,
-    int *chpos,
-    int *lenp,
+void cvt_text(char* odst,
+    char* osrc,
+    int* chpos,
+    int* lenp,
     int ops)
 {
-    char *dst;
-    char *edst = odst;
-    char *src;
-    char *src_end;
+    char* dst;
+    char* edst = odst;
+    char* src;
+    char* src_end;
     lwchar_t ch;
 
     if (lenp != NULL)
@@ -69,27 +69,22 @@ extern int utf_mode;
     else
         src_end = osrc + strlen(osrc);
 
-    for (src = osrc, dst = odst;  src < src_end;  )
-    {
-        int src_pos = (int) (src - osrc);
-        int dst_pos = (int) (dst - odst);
+    for (src = osrc, dst = odst; src < src_end;) {
+        int src_pos = (int)(src - osrc);
+        int dst_pos = (int)(dst - odst);
         ch = step_char(&src, +1, src_end);
-        if ((ops & CVT_BS) && ch == '\b' && dst > odst)
-        {
+        if ((ops & CVT_BS) && ch == '\b' && dst > odst) {
             /* Delete backspace and preceding char. */
             do {
                 dst--;
-            } while (dst > odst && utf_mode &&
-                !IS_ASCII_OCTET(*dst) && !IS_UTF8_LEAD(*dst));
-        } else if ((ops & CVT_ANSI) && is_csi_start(ch))
-        {
+            } while (dst > odst && utf_mode && !IS_ASCII_OCTET(*dst) && !IS_UTF8_LEAD(*dst));
+        } else if ((ops & CVT_ANSI) && is_csi_start(ch)) {
             /* Skip to end of ANSI escape sequence. */
-            src++;  /* skip the csi_char start char */
+            src++; /* skip the csi_char start char */
             while (src < src_end)
                 if (!is_ansi_middle(*src++))
                     break;
-        } else
-        {
+        } else {
             /* Just copy the char to the destination buffer. */
             if ((ops & CVT_TO_LC) && isupper(ch))
                 ch = tolower(ch);
@@ -105,6 +100,6 @@ extern int utf_mode;
         edst--;
     *edst = '\0';
     if (lenp != NULL)
-        *lenp = (int) (edst - odst);
+        *lenp = (int)(edst - odst);
     /* FIXME: why was this here?  if (chpos != NULL) chpos[dst - odst] = src - osrc; */
 }

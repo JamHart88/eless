@@ -7,11 +7,8 @@
 
 #include "less.hpp"
 
-
 void init_option(void);
-
-struct loption *findopt(int c);
-
-struct loption *findopt_name(char **p_optname, char **p_oname, int *p_err);
+struct loption* findopt(int c);
+struct loption* findopt_name(char** p_optname, char** p_oname, int* p_err);
 
 #endif

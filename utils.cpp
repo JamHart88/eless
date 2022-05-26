@@ -38,11 +38,11 @@ char* save(const char* s)
 // Like calloc(), but never returns an error (NULL).
 //
 
-void * ecalloc(int count, unsigned int size)
+void* ecalloc(int count, unsigned int size)
 {
-    void * p;
+    void* p;
 
-    p = (void *)calloc(count, size);
+    p = (void*)calloc(count, size);
     if (p != NULL)
         return (p);
     error((char*)"Cannot allocate memory", NULL_PARG);

@@ -134,11 +134,6 @@ static struct pattern_info filter_info;
 /*
  * Are there any uppercase letters in this string?
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// is_ucase(str)
-//     char *str;
 static int is_ucase(char* str)
 {
     char* str_end = str + strlen(str);
@@ -155,13 +150,6 @@ static int is_ucase(char* str)
 /*
  * Compile and save a search pattern.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// set_pattern(info, pattern, search_type)
-//     struct pattern_info *info;
-//     char *pattern;
-//     int search_type;
 static int set_pattern(struct pattern_info* info, char* pattern, int search_type)
 {
 #if !NO_REGEX
@@ -195,11 +183,6 @@ static int set_pattern(struct pattern_info* info, char* pattern, int search_type
 /*
  * Discard a saved pattern.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// clear_pattern(info)
-//     struct pattern_info *info;
 static void clear_pattern(struct pattern_info* info)
 {
     if (info->text != NULL)
@@ -213,11 +196,6 @@ static void clear_pattern(struct pattern_info* info)
 /*
  * Initialize saved pattern to nothing.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// init_pattern(info)
-//     struct pattern_info *info;
 static void init_pattern(struct pattern_info* info)
 {
     CLEAR_PATTERN(info->compiled);
@@ -228,11 +206,6 @@ static void init_pattern(struct pattern_info* info)
 /*
  * Initialize search variables.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// init_search(void)
-
 void init_search(void)
 {
     init_pattern(&search_info);
@@ -242,10 +215,6 @@ void init_search(void)
 /*
  * Determine which text conversions to perform before pattern matching.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// get_cvt_ops(void)
 static int get_cvt_ops(void)
 {
     int ops = 0;
@@ -267,11 +236,6 @@ static int get_cvt_ops(void)
 /*
  * Is there a previous (remembered) search pattern?
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// prev_pattern(info)
-//     struct pattern_info *info;
 static int prev_pattern(struct pattern_info* info)
 {
 #if !NO_REGEX
@@ -287,12 +251,6 @@ static int prev_pattern(struct pattern_info* info)
  * Repaint each line which contains highlighted text.
  * If on==0, force all hilites off.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// repaint_hilite(on)
-//     int on;
-
 void repaint_hilite(int on)
 {
     int sindex;
@@ -330,11 +288,6 @@ void repaint_hilite(int on)
 /*
  * Clear the attn hilite.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// clear_attn(void)
-
 void clear_attn(void)
 {
     int sindex;
@@ -377,11 +330,6 @@ void clear_attn(void)
 /*
  * Hide search string highlighting.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// undo_search(void)
-
 void undo_search(void)
 {
     if (!prev_pattern(&search_info)) {
@@ -402,12 +350,6 @@ void undo_search(void)
 /*
  * Clear the hilite list.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// clr_hlist(anchor)
-//     struct hilite_tree *anchor;
-
 void clr_hlist(struct hilite_tree* anchor)
 {
     struct hilite_storage* hls;
@@ -427,20 +369,10 @@ void clr_hlist(struct hilite_tree* anchor)
     prep_startpos = prep_endpos = NULL_POSITION;
 }
 
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// clr_hilite(void)
-
 void clr_hilite(void)
 {
     clr_hlist(&hilite_anchor);
 }
-
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// clr_filter(void)
 
 void clr_filter(void)
 {
@@ -549,12 +481,6 @@ struct hilite_node* hlist_find(struct hilite_tree* anchor, position_t pos)
 /*
  * Should any characters in a specified range be highlighted?
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// is_hilited_range(pos, epos)
-//     position_t pos;
-//     position_t epos;
 static int is_hilited_range(position_t pos, position_t epos)
 {
     struct hilite_node* n = hlist_find(&hilite_anchor, pos);
@@ -564,12 +490,6 @@ static int is_hilited_range(position_t pos, position_t epos)
 /*
  * Is a line "filtered" -- that is, should it be hidden?
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// is_filtered(pos)
-//     position_t pos;
-
 int is_filtered(position_t pos)
 {
     struct hilite_node* n;
@@ -585,12 +505,6 @@ int is_filtered(position_t pos)
  * If pos is hidden, return the next position which isn't, otherwise
  * just return pos.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public position_t
-// next_unfiltered(pos)
-//     position_t pos;
-
 position_t next_unfiltered(position_t pos)
 {
     struct hilite_node* n;
@@ -610,12 +524,6 @@ position_t next_unfiltered(position_t pos)
  * If pos is hidden, return the previous position which isn't or 0 if
  * we're filtered right to the beginning, otherwise just return pos.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public position_t
-// prev_unfiltered(pos)
-//     position_t pos;
-
 position_t prev_unfiltered(position_t pos)
 {
     struct hilite_node* n;
@@ -638,15 +546,6 @@ position_t prev_unfiltered(position_t pos)
  * Should any characters in a specified range be highlighted?
  * If nohide is nonzero, don't consider hide_hilite.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// is_hilited(pos, epos, nohide, p_matches)
-//     position_t pos;
-//     position_t epos;
-//     int nohide;
-//     int *p_matches;
-
 int is_hilited(position_t pos, position_t epos, int nohide, int* p_matches)
 {
     int match;
@@ -696,11 +595,6 @@ int is_hilited(position_t pos, position_t epos, int nohide, int* p_matches)
  * Tree node storage: get the current block of nodes if it has spare
  * capacity, or create a new one if not.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static struct hilite_storage*
-// hlist_getstorage(anchor)
-//     struct hilite_tree *anchor;
 static struct hilite_storage* hlist_getstorage(struct hilite_tree* anchor)
 {
     int capacity = 1;
@@ -729,11 +623,6 @@ static struct hilite_storage* hlist_getstorage(struct hilite_tree* anchor)
  * Tree node storage: retrieve a new empty node to be inserted into the
  * tree.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static struct hilite_node*
-// hlist_getnode(anchor)
-//     struct hilite_tree *anchor;
 static struct hilite_node* hlist_getnode(struct hilite_tree* anchor)
 {
     struct hilite_storage* s = hlist_getstorage(anchor);
@@ -743,12 +632,6 @@ static struct hilite_node* hlist_getnode(struct hilite_tree* anchor)
 /*
  * Rotate the tree left around a pivot node.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// hlist_rotate_left(anchor, n)
-//     struct hilite_tree *anchor;
-//     struct hilite_node *n;
 static void hlist_rotate_left(struct hilite_tree* anchor, struct hilite_node* n)
 {
     struct hilite_node* np = n->parent;
@@ -775,12 +658,6 @@ static void hlist_rotate_left(struct hilite_tree* anchor, struct hilite_node* n)
 /*
  * Rotate the tree right around a pivot node.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// hlist_rotate_right(anchor, n)
-//     struct hilite_tree *anchor;
-//     struct hilite_node *n;
 static void hlist_rotate_right(struct hilite_tree* anchor, struct hilite_node* n)
 {
     struct hilite_node* np = n->parent;
@@ -807,12 +684,6 @@ static void hlist_rotate_right(struct hilite_tree* anchor, struct hilite_node* n
 /*
  * Add a new hilite to a hilite list.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// add_hilite(anchor, hl)
-//     struct hilite_tree *anchor;
-//     struct hilite *hl;
 static void add_hilite(struct hilite_tree* anchor, struct hilite* hl)
 {
     struct hilite_node *p, *n, *u;
@@ -972,14 +843,6 @@ static void add_hilite(struct hilite_tree* anchor, struct hilite* hl)
 /*
  * Hilight every character in a range of displayed characters.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// create_hilites(linepos, start_index, end_index, chpos)
-//     position_t linepos;
-//     int start_index;
-//     int end_index;
-//     int *chpos;
 static void create_hilites(position_t linepos, int start_index, int end_index, int* chpos)
 {
     struct hilite hl;
@@ -1013,17 +876,6 @@ static void create_hilites(position_t linepos, int start_index, int end_index, i
  * the current pattern.
  * sp,ep delimit the first match already found.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// hilite_line(linepos, line, line_len, chpos, sp, ep, cvt_ops)
-//     position_t linepos;
-//     char *line;
-//     int line_len;
-//     int *chpos;
-//     char *sp;
-//     char *ep;
-//     int cvt_ops;
 static void hilite_line(position_t linepos, char* line, int line_len, int* chpos, char* sp, char* ep, int cvt_ops)
 {
     char* searchp;
@@ -1064,10 +916,6 @@ static void hilite_line(position_t linepos, char* line, int line_len, int* chpos
 /*
  * Find matching text which is currently on screen and highlight it.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static void
-// hilite_screen(void)
 static void hilite_screen(void)
 {
     struct scrpos scrpos;
@@ -1082,11 +930,6 @@ static void hilite_screen(void)
 /*
  * Change highlighting parameters.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// chg_hilite(void)
-
 void chg_hilite(void)
 {
     /*
@@ -1106,11 +949,6 @@ void chg_hilite(void)
 /*
  * Figure out where to start a search.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static position_t
-// search_pos(search_type)
-//     int search_type;
 static position_t search_pos(int search_type)
 {
     position_t pos;
@@ -1190,17 +1028,6 @@ static position_t search_pos(int search_type)
 /*
  * Search a subset of the file, specified by start/end position.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// search_range(pos, endpos, search_type, matches, maxlines, plinepos, pendpos)
-//     position_t pos;
-//     position_t endpos;
-//     int search_type;
-//     int matches;
-//     int maxlines;
-//     position_t *plinepos;
-//     position_t *pendpos;
 static int search_range(position_t pos, position_t endpos, int search_type, int matches, int maxlines, position_t* plinepos, position_t* pendpos)
 {
     char* line;
@@ -1366,11 +1193,6 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
 /*
  * search for a pattern in history. If found, compile that pattern.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// hist_pattern(search_type)
-//     int search_type;
 static int hist_pattern(int search_type)
 {
 #if CMD_HISTORY
@@ -1399,11 +1221,6 @@ static int hist_pattern(int search_type)
  * Change the caseless-ness of searches.
  * Updates the internal search state to reflect a change in the -i flag.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// chg_caseless(void)
-
 void chg_caseless(void)
 {
     if (!is_ucase_pattern)
@@ -1431,14 +1248,6 @@ void chg_caseless(void)
  * Caller may continue the search in another file
  * if less than n matches are found in this file.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// search(search_type, pattern, n)
-//     int search_type;
-//     char *pattern;
-//     int n;
-
 int search(int search_type, char* pattern, int n)
 {
     position_t pos;
@@ -1560,14 +1369,6 @@ int search(int search_type, char* pattern, int n)
  * If prep_endpos == NULL_POSITION, the prep region extends to EOF.
  * prep_hilite asks that the range (spos,epos) be covered by the prep region.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// prep_hilite(spos, epos, maxlines)
-//     position_t spos;
-//     position_t epos;
-//     int maxlines;
-
 void prep_hilite(position_t spos, position_t epos, int maxlines)
 {
     position_t nprep_startpos = prep_startpos;
@@ -1719,13 +1520,6 @@ void prep_hilite(position_t spos, position_t epos, int maxlines)
 /*
  * Set the pattern to be used for line filtering.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// set_filter_pattern(pattern, search_type)
-//     char *pattern;
-//     int search_type;
-
 void set_filter_pattern(char* pattern, int search_type)
 {
     clr_filter();
@@ -1739,11 +1533,6 @@ void set_filter_pattern(char* pattern, int search_type)
 /*
  * Is there a line filter in effect?
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// is_filtering(void)
-
 int is_filtering(void)
 {
     if (ch_getflags() & CH_HELPFILE)
@@ -1762,10 +1551,6 @@ int reg_show_error = 1;
 
 void
     regerror((char*)s) char* s;
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// is_filtering(void)
 
 int is_filtering(void)
 {

@@ -27,7 +27,7 @@
  int quiet;             /* Should we suppress the audible bell? */
  int how_search;        /* Where should forward searches start? */
  int top_scroll;        /* Repaint screen from top?
-                                 (alternative is scroll from bottom) */
+                           (alternative is scroll from bottom) */
  int pr_type;           /* Type of prompt (short, medium, long) */
  int bs_mode;           /* How to process backspaces */
  int know_dumb;         /* Don't complain about dumb terminals */
@@ -420,10 +420,6 @@ static struct loption option[] = {
 /*
  * Initialize each option to its default value.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// init_option(void)
 
 void init_option(void)
 {
@@ -448,11 +444,6 @@ void init_option(void)
 /*
  * Find an option in the option table, given its option letter.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public struct loption *
-// findopt(c)
-//     int c;
 
 struct loption* findopt(int c)
 {
@@ -470,7 +461,6 @@ struct loption* findopt(int c)
 /*
  *
  */
-// -------------------------------------------
 static int is_optchar(char c)
 {
     int retval = 0;
@@ -490,14 +480,6 @@ static int is_optchar(char c)
  * is updated to point after the matched name.
  * p_oname if non-NULL is set to point to the full option name.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public struct loption *
-// findopt_name(p_optname, p_oname, p_err)
-//     char **p_optname;
-//     char **p_oname;
-//     int *p_err;
-
 struct loption* findopt_name(char** p_optname, char** p_oname, int* p_err)
 {
     char* optname = *p_optname;

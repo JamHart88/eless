@@ -13,9 +13,8 @@
 
 #include "less.hpp"
 
-
- RETSIGTYPE winch (int type);
- void init_signals (int on);
- void psignals (void);
+RETSIGTYPE winch(int type);
+void init_signals(int on);
+void psignals(void);
 
 #endif

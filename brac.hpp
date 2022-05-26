@@ -7,7 +7,6 @@
 
 #include "less.hpp"
 
-
 void match_brac(int obrac, int cbrac, int forwdir, int n);
 
 #endif

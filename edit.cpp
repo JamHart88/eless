@@ -390,7 +390,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
     requestedIfile->setAltpipe(altpipe);
 
     ifile::getCurrentIfile()->setOpened(true); /* File has been opened */
-    
+
     initial_scrpos = ifile::getCurrentIfile()->getPos();
 
     new_file = true;
@@ -483,9 +483,9 @@ int edit_list(char* filelist)
      */
     init_textlist(&tl_files, filelist);
     filename = nullptr;
-    
+
     while ((filename = forw_textlist(&tl_files, filename)) != nullptr) {
-    
+
         gfilelist = lglob(filename);
         init_textlist(&tl_gfiles, gfilelist);
         gfilename = nullptr;
@@ -493,10 +493,10 @@ int edit_list(char* filelist)
         while ((gfilename = forw_textlist(&tl_gfiles, gfilename)) != nullptr) {
 
             qfilename = shell_unquote(gfilename);
-            
+
             if (edit(qfilename) == 0 && good_filename == nullptr)
                 good_filename = ifile::getCurrentIfile()->getFilename();
-            
+
             free(qfilename);
         }
         free(gfilelist);
@@ -616,9 +616,9 @@ int edit_index(int n)
     return (edit_ifile(h));
 }
 
-ifile::Ifile * save_curr_ifile(void)
+ifile::Ifile* save_curr_ifile(void)
 {
-    ifile::Ifile * ret = ifile::getCurrentIfile();
+    ifile::Ifile* ret = ifile::getCurrentIfile();
     if (ret != nullptr)
         ret->setHold(1);
     return (ret);

@@ -38,11 +38,6 @@ extern int oldbot;
 /*
  * Display the line which is in the line buffer.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// put_line(void)
-
 void put_line(void)
 {
     int c;
@@ -164,14 +159,13 @@ static int iprint_int(int num)
 
     int bufLength = utils::strlen_bound<int>();
 
-    char *bufPtr = new char[bufLength];
+    char* bufPtr = new char[bufLength];
 
     utils::typeToStr<int>(num, bufPtr, bufLength);
     putstr(bufPtr);
     int val = strlen(bufPtr);
     delete[] bufPtr;
     return (val);
-    
 }
 
 /*
@@ -180,12 +174,12 @@ static int iprint_int(int num)
 static int iprint_linenum(linenum_t num)
 {
     int bufLength = utils::strlen_bound<linenum_t>();
-    char * bufPtr =  new char[bufLength];
+    char* bufPtr = new char[bufLength];
 
     utils::typeToStr<linenum_t>(num, bufPtr, bufLength);
     putstr(bufPtr);
     int val = strlen(bufPtr);
-    delete [] bufPtr;
+    delete[] bufPtr;
     return val;
 }
 

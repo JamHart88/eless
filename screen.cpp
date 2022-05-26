@@ -94,37 +94,21 @@ static char *sc_pad, /* Pad string */
 
 static int init_done = 0;
 
-
 int auto_wrap; /* Terminal does \r\n when write past margin */
-
 int ignaw; /* Terminal ignores \n immediately after wrap */
-
 int erase_char; /* The user's erase char */
-
 int erase2_char; /* The user's other erase char */
-
 int kill_char; /* The user's line-kill char */
-
 int werase_char; /* The user's word-erase char */
-
 int sc_width, sc_height; /* Height & width of screen */
-
 int bo_s_width, bo_e_width; /* Printing width of boldface seq */
-
 int ul_s_width, ul_e_width; /* Printing width of underline seq */
-
 int so_s_width, so_e_width; /* Printing width of standout seq */
-
 int bl_s_width, bl_e_width; /* Printing width of blink seq */
-
 int above_mem, below_mem; /* Memory retained above/below screen */
-
 int can_goto_line; /* Can move cursor to any line */
-
 int clear_bg; /* Clear fills with background color */
-
 int missing_cap = 0; /* Some capability is missing */
-
 char* kent = NULL; /* Keypad ENTER sequence */
 
 static int attrmode = AT_NORMAL;
@@ -132,8 +116,8 @@ static int termcap_debug = -1;
 extern int binattr;
 extern int one_screen;
 
-static char* cheaper (char* t1, char* t2, char* def);
-static void tmodes (char* incap, char* outcap, char** instr,
+static char* cheaper(char* t1, char* t2, char* def);
+static void tmodes(char* incap, char* outcap, char** instr,
     char** outstr, char* def_instr, char* def_outstr,
     char** spp);
 
@@ -770,10 +754,16 @@ void get_term(void)
 
         sc_s_mousecap = ltgetstr((char*)"MOUSE_START", &sp);
         if (sc_s_mousecap == NULL)
-            sc_s_mousecap = (char*)"\33" "[?1000h" "\33" "[?1006h";
+            sc_s_mousecap = (char*)"\33"
+                                   "[?1000h"
+                                   "\33"
+                                   "[?1006h";
         sc_e_mousecap = ltgetstr((char*)"MOUSE_END", &sp);
         if (sc_e_mousecap == NULL)
-            sc_e_mousecap = (char*)"\33" "[?1006l" "\33" "[?1000l";
+            sc_e_mousecap = (char*)"\33"
+                                   "[?1006l"
+                                   "\33"
+                                   "[?1000l";
 
         sc_init = ltgetstr((char*)"ti", &sp);
         if (sc_init == NULL)
@@ -1159,7 +1149,6 @@ void clear_bot(void)
     }
 }
 
-
 void at_enter(int attr)
 {
     attr = apply_at_specials(attr);
@@ -1176,7 +1165,6 @@ void at_enter(int attr)
     attrmode = attr;
 }
 
-
 void at_exit(void)
 {
     /* Undo things in the reverse order we did them.  */
@@ -1191,7 +1179,6 @@ void at_exit(void)
     attrmode = AT_NORMAL;
 }
 
-
 void at_switch(int attr)
 {
     int new_attrmode = apply_at_specials(attr);
@@ -1203,7 +1190,6 @@ void at_switch(int attr)
     }
 }
 
-
 int is_at_equiv(int attr1, int attr2)
 {
     attr1 = apply_at_specials(attr1);
@@ -1211,7 +1197,6 @@ int is_at_equiv(int attr1, int attr2)
 
     return (attr1 == attr2);
 }
-
 
 int apply_at_specials(int attr)
 {

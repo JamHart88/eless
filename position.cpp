@@ -21,7 +21,7 @@
 #include "less.hpp"
 #include "utils.hpp"
 
-static position_t *table = NULL; /* The position table */
+static position_t* table = NULL; /* The position table */
 static int table_size = 0;
 
 extern int sc_width, sc_height;
@@ -35,16 +35,9 @@ extern int sc_width, sc_height;
  *    the bottom line on the screen
  *    the line after the bottom line on the screen
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public position_t
-// position(sindex)
-//     int sindex;
-
 position_t position(int sindex)
 {
-    switch (sindex)
-    {
+    switch (sindex) {
     case BOTTOM:
         sindex = sc_height - 2;
         break;
@@ -61,12 +54,6 @@ position_t position(int sindex)
 /*
  * Add a new file position to the bottom of the position table.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// add_forw_pos(pos)
-//     position_t pos;
-
 void add_forw_pos(position_t pos)
 {
     int i;
@@ -82,12 +69,6 @@ void add_forw_pos(position_t pos)
 /*
  * Add a new file position to the top of the position table.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// add_back_pos(pos)
-//     position_t pos;
-
 void add_back_pos(position_t pos)
 {
     int i;
@@ -103,11 +84,6 @@ void add_back_pos(position_t pos)
 /*
  * Initialize the position table, done whenever we clear the screen.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// pos_clear(void)
-
 void pos_clear(void)
 {
     int i;
@@ -119,11 +95,6 @@ void pos_clear(void)
 /*
  * Allocate or reallocate the position table.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// pos_init(void)
-
 void pos_init(void)
 {
     struct scrpos scrpos;
@@ -134,14 +105,12 @@ void pos_init(void)
      * If we already have a table, remember the first line in it
      * before we free it, so we can copy that line to the new table.
      */
-    if (table != NULL)
-    {
+    if (table != NULL) {
         get_scrpos(&scrpos, TOP);
-        free((char *)table);
-    }
-    else
+        free((char*)table);
+    } else
         scrpos.pos = NULL_POSITION;
-    table = (position_t *)utils::ecalloc(sc_height, sizeof(position_t));
+    table = (position_t*)utils::ecalloc(sc_height, sizeof(position_t));
     table_size = sc_height;
     pos_clear();
     if (scrpos.pos != NULL_POSITION)
@@ -153,12 +122,6 @@ void pos_init(void)
  * Check the position table to see if the position falls within its range.
  * Return the position table entry if found, -1 if not.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// onscreen(pos)
-//     position_t pos;
-
 int onscreen(position_t pos)
 {
     int i;
@@ -174,22 +137,10 @@ int onscreen(position_t pos)
 /*
  * See if the entire screen is empty.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// empty_screen(void)
-
 int empty_screen(void)
 {
     return (empty_lines(0, sc_height - 1));
 }
-
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// empty_lines(s, e)
-//     int s;
-//     int e;
 
 int empty_lines(int s, int e)
 {
@@ -209,21 +160,13 @@ int empty_lines(int s, int e)
  * such that the top few lines are empty, we may have to set
  * the screen line to a number > 0.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// get_scrpos(scrpos, where)
-//     struct scrpos *scrpos;
-//     int where;
-
-void get_scrpos(struct scrpos *scrpos, int where)
+void get_scrpos(struct scrpos* scrpos, int where)
 {
     int i;
     int dir;
     int last;
 
-    switch (where)
-    {
+    switch (where) {
     case TOP:
         i = 0;
         dir = +1;
@@ -237,8 +180,7 @@ void get_scrpos(struct scrpos *scrpos, int where)
         break;
     default:
         i = where;
-        if (table[i] == NULL_POSITION)
-        {
+        if (table[i] == NULL_POSITION) {
             scrpos->pos = NULL_POSITION;
             return;
         }
@@ -250,10 +192,8 @@ void get_scrpos(struct scrpos *scrpos, int where)
      * Find the first line on the screen which has something on it,
      * and return the screen line number and the file position.
      */
-    for (;; i += dir)
-    {
-        if (table[i] != NULL_POSITION)
-        {
+    for (;; i += dir) {
+        if (table[i] != NULL_POSITION) {
             scrpos->ln = i + 1;
             scrpos->pos = table[i];
             return;
@@ -276,12 +216,6 @@ void get_scrpos(struct scrpos *scrpos, int where)
  * or it may be in { -1 .. -(sc_height-1) } to refer to lines
  * relative to the bottom of the screen.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// sindex_from_sline(sline)
-//     int sline;
-
 int sindex_from_sline(int sline)
 {
     /*

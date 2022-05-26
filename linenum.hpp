@@ -27,15 +27,10 @@
 
 #include "less.hpp"
 
-
 void clr_linenum(void);
-
 void add_lnum(linenum_t linenum, position_t pos);
-
 linenum_t find_linenum(position_t pos);
-
 position_t find_pos(linenum_t linenum);
-
 linenum_t currline(int where);
 
 #endif

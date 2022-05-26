@@ -19,8 +19,8 @@
  * Unix features are present.
  */
 
-#include "less.hpp"
 #include "os.hpp"
+#include "less.hpp"
 #include "output.hpp"
 #include "utils.hpp"
 
@@ -44,7 +44,6 @@
 #define SET_JUMP _setjmp
 #define LONG_JUMP _longjmp
 
-
 int reading;
 
 static jmp_buf read_label;
@@ -56,36 +55,27 @@ extern int sigs;
  * A call to intread() from a signal handler will interrupt
  * any pending iread().
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// iread(fd, buf, len)
-//     int fd;
-//     unsigned char *buf;
-//     unsigned int len;
-
-int iread(int fd, unsigned char *buf, unsigned int len)
+int iread(int fd, unsigned char* buf, unsigned int len)
 {
     int n;
 
 start:
-    if (SET_JUMP(read_label))
-    {
+    if (SET_JUMP(read_label)) {
         /*
          * We jumped here from intread.
          */
         reading = 0;
-//#if HAVE_SIGPROCMASK
+        //#if HAVE_SIGPROCMASK
         {
             sigset_t mask;
             sigemptyset(&mask);
             sigprocmask(SIG_SETMASK, &mask, NULL);
         }
-//#else
-//#if HAVE_SIGSETMASK
-//        sigsetmask(0);
-//#endif
-//#endif
+        //#else
+        //#if HAVE_SIGSETMASK
+        //        sigsetmask(0);
+        //#endif
+        //#endif
         return (READ_INTR);
     }
 
@@ -100,8 +90,7 @@ start:
      */
     {
         extern int ignore_eoi;
-        if (!ignore_eoi)
-        {
+        if (!ignore_eoi) {
             static int consecutive_nulls = 0;
             if (n == 0)
                 consecutive_nulls++;
@@ -113,8 +102,7 @@ start:
     }
 #endif
     reading = 0;
-    if (n < 0)
-    {
+    if (n < 0) {
 #if HAVE_ERRNO
         /*
          * Certain values of errno indicate we should just retry the read.
@@ -139,11 +127,6 @@ start:
 /*
  * Interrupt a pending iread().
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// intread(void)
-
 void intread(void)
 {
     LONG_JUMP(read_label, 1);
@@ -152,10 +135,6 @@ void intread(void)
 /*
  * Return the current time.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public time_type
-// get_time(void)
 
 time_t get_time(void)
 {
@@ -165,16 +144,10 @@ time_t get_time(void)
 /*
  * errno_message: Return an error message based on the value of "errno".
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public char *
-// errno_message(filename)
-//     char *filename;
-
-char *errno_message(char *filename)
+char* errno_message(char* filename)
 {
-    char *p;
-    char *m;
+    char* p;
+    char* m;
     int len;
 #if HAVE_ERRNO
 #if MUST_DEFINE_ERRNO
@@ -185,18 +158,13 @@ char *errno_message(char *filename)
     p = "cannot open";
 #endif
     len = (int)(strlen(filename) + strlen(p) + 3);
-    m = (char *)utils::ecalloc(len, sizeof(char));
-    snprintf(m, len, "%s: %s", filename, p);
+    m = (char*)utils::ecalloc(len, sizeof(char));
+    ignore_result(snprintf(m, len, "%s: %s", filename, p));
     return (m);
 }
 
 /* #define HAVE_FLOAT 0 */
 
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static position_t
-// muldiv(val, num, den)
-//     position_t val, num, den;
 static position_t muldiv(position_t val, position_t num, position_t den)
 {
 #if HAVE_FLOAT
@@ -219,13 +187,6 @@ static position_t muldiv(position_t val, position_t num, position_t den)
  * Return the ratio of two POSITIONS, as a percentage.
  * {{ Assumes a position_t is a long int. }}
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// percentage(num, den)
-//     position_t num;
-//     position_t den;
-
 int percentage(position_t num, position_t den)
 {
     return (int)muldiv(num, (position_t)100, den);
@@ -234,14 +195,6 @@ int percentage(position_t num, position_t den)
 /*
  * Return the specified percentage of a position_t.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public position_t
-// percent_pos(pos, percent, fraction)
-//     position_t pos;
-//     int percent;
-//     long fraction;
-
 position_t percent_pos(position_t pos, int percent, long fraction)
 {
     /* Change percent (parts per 100) to perden (parts per NUM_FRAC_DENOM). */

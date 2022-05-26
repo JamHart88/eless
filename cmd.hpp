@@ -10,6 +10,7 @@
  */
 
 
+// clang-format off
 #define MAX_USERCMD            1000
 #define MAX_CMDLEN             16
 
@@ -145,5 +146,6 @@
 #define SK_BACKTAB             15
 #define SK_CTL_BACKSPACE       16
 #define SK_CONTROL_K           40
+// clang-format on
 
 #endif

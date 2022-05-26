@@ -64,9 +64,9 @@ static position_t pendpos;
 static char* end_ansi_chars;
 static char* mid_ansi_chars;
 
-static int attr_swidth (int a);
-static int attr_ewidth (int a);
-static int do_append (lwchar_t ch, char* rep, position_t pos);
+static int attr_swidth(int a);
+static int attr_ewidth(int a);
+static int do_append(lwchar_t ch, char* rep, position_t pos);
 
 extern int sigs;
 extern int bs_mode;
@@ -240,24 +240,24 @@ void plinenum(position_t pos)
      * if the -N option is set.
      */
     if (linenums == OPT_ONPLUS) {
-        
+
         int bufLength = utils::strlen_bound<linenum_t>();
-        char *bufPtr = new char [bufLength];
+        char* bufPtr = new char[bufLength];
 
         utils::typeToStr<linenum_t>(linenum, bufPtr, bufLength);
-        
+
         int numDigits = (int)strlen(bufPtr);
         int pad = 0;
 
         if (numDigits < MIN_LINENUM_WIDTH)
             pad = MIN_LINENUM_WIDTH - numDigits;
-        
+
         for (i = 0; i < pad; i++)
             add_linebuf(utils::CH_SPACE, AT_NORMAL, 1);
-        
+
         for (i = 0; i < numDigits; i++)
             add_linebuf(bufPtr[i], AT_BOLD, 1);
-        
+
         add_linebuf(utils::CH_SPACE, AT_NORMAL, 1);
         lmargin += numDigits + pad + 1;
 

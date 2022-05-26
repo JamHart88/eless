@@ -11,8 +11,8 @@
  * Routines to do pattern matching.
  */
 
-#include "less.hpp"
 #include "cvt.hpp"
+#include "less.hpp"
 #include "output.hpp"
 #include "utils.hpp"
 
@@ -22,152 +22,126 @@ extern int utf_mode;
 /*
  * Compile a search pattern, for future use by match_pattern.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// compile_pattern2(pattern, search_type, comp_pattern, show_error)
-//     char *pattern;
-//     int search_type;
-//     PATTERN_TYPE *comp_pattern;
-//     int show_error;
-static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_pattern, int show_error)
+static int compile_pattern2(char* pattern, int search_type, PATTERN_TYPE* comp_pattern, int show_error)
 {
     if (search_type & SRCH_NO_REGEX)
         return (0);
-  {
+    {
 #if HAVE_GNU_REGEX
-    struct re_pattern_buffer *comp = (struct re_pattern_buffer *)
-        ecalloc(1, sizeof(struct re_pattern_buffer));
-    re_set_syntax(RE_SYNTAX_POSIX_EXTENDED);
-    if (re_compile_pattern(pattern, strlen(pattern), comp))
-    {
-        free(comp);
-        if (show_error)
-            error((char *)"Invalid pattern", NULL_PARG);
-        return (-1);
-    }
-    if (*comp_pattern != NULL)
-    {
-        regfree(*comp_pattern);
-        free(*comp_pattern);
-    }
-    *comp_pattern = comp;
+        struct re_pattern_buffer* comp = (struct re_pattern_buffer*)
+            ecalloc(1, sizeof(struct re_pattern_buffer));
+        re_set_syntax(RE_SYNTAX_POSIX_EXTENDED);
+        if (re_compile_pattern(pattern, strlen(pattern), comp)) {
+            free(comp);
+            if (show_error)
+                error((char*)"Invalid pattern", NULL_PARG);
+            return (-1);
+        }
+        if (*comp_pattern != NULL) {
+            regfree(*comp_pattern);
+            free(*comp_pattern);
+        }
+        *comp_pattern = comp;
 #endif
 #if HAVE_POSIX_REGCOMP
-    regex_t *comp = (regex_t *) utils::ecalloc(1, sizeof(regex_t));
-    if (regcomp(comp, pattern, REGCOMP_FLAG))
-    {
-        free(comp);
-        if (show_error)
-            error((char *)"Invalid pattern", NULL_PARG);
-        return (-1);
-    }
-    if (*comp_pattern != NULL)
-    {
-        regfree(*comp_pattern);
-        free(*comp_pattern);
-    }
-    *comp_pattern = comp;
+        regex_t* comp = (regex_t*)utils::ecalloc(1, sizeof(regex_t));
+        if (regcomp(comp, pattern, REGCOMP_FLAG)) {
+            free(comp);
+            if (show_error)
+                error((char*)"Invalid pattern", NULL_PARG);
+            return (-1);
+        }
+        if (*comp_pattern != NULL) {
+            regfree(*comp_pattern);
+            free(*comp_pattern);
+        }
+        *comp_pattern = comp;
 #endif
 #if HAVE_PCRE
-    const char *errstring;
-    int erroffset;
-    parg_t parg;
-    pcre *comp = pcre_compile(pattern,
+        const char* errstring;
+        int erroffset;
+        parg_t parg;
+        pcre* comp = pcre_compile(pattern,
             (utf_mode) ? PCRE_UTF8 | PCRE_NO_UTF8_CHECK : 0,
             &errstring, &erroffset, NULL);
-    if (comp == NULL)
-    {
-        parg.p_string = (char *) errstring;
-        if (show_error)
-            error((char *)"%s", &parg);
-        return (-1);
-    }
-    *comp_pattern = comp;
+        if (comp == NULL) {
+            parg.p_string = (char*)errstring;
+            if (show_error)
+                error((char*)"%s", &parg);
+            return (-1);
+        }
+        *comp_pattern = comp;
 #endif
 #if HAVE_PCRE2
-    int errcode;
-    PCRE2_SIZE erroffset;
-    parg_t parg;
-    pcre2_code *comp = pcre2_compile((PCRE2_SPTR)pattern, strlen(pattern),
+        int errcode;
+        PCRE2_SIZE erroffset;
+        parg_t parg;
+        pcre2_code* comp = pcre2_compile((PCRE2_SPTR)pattern, strlen(pattern),
             0, &errcode, &erroffset, NULL);
-    if (comp == NULL)
-    {
-        if (show_error)
-        {
-            char msg[160];
-            pcre2_get_error_message(errcode, (PCRE2_UCHAR*)msg, sizeof(msg));
-            parg.p_string = msg;
-            error((char *)"%s", &parg);
+        if (comp == NULL) {
+            if (show_error) {
+                char msg[160];
+                pcre2_get_error_message(errcode, (PCRE2_UCHAR*)msg, sizeof(msg));
+                parg.p_string = msg;
+                error((char*)"%s", &parg);
+            }
+            return (-1);
         }
-        return (-1);
-    }
-    *comp_pattern = comp;
+        *comp_pattern = comp;
 #endif
 #if HAVE_RE_COMP
-    parg_t parg;
-    if ((parg.p_string = re_comp(pattern)) != NULL)
-    {
-        if (show_error)
-            error((char *)"%s", &parg);
-        return (-1);
-    }
-    *comp_pattern = 1;
+        parg_t parg;
+        if ((parg.p_string = re_comp(pattern)) != NULL) {
+            if (show_error)
+                error((char*)"%s", &parg);
+            return (-1);
+        }
+        *comp_pattern = 1;
 #endif
 #if HAVE_REGCMP
-    char *comp;
-    if ((comp = regcmp(pattern, 0)) == NULL)
-    {
-        if (show_error)
-            error((char *)"Invalid pattern", NULL_PARG);
-        return (-1);
-    }
-    if (comp_pattern != NULL)
-        free(*comp_pattern);
-    *comp_pattern = comp;
+        char* comp;
+        if ((comp = regcmp(pattern, 0)) == NULL) {
+            if (show_error)
+                error((char*)"Invalid pattern", NULL_PARG);
+            return (-1);
+        }
+        if (comp_pattern != NULL)
+            free(*comp_pattern);
+        *comp_pattern = comp;
 #endif
 #if HAVE_V8_REGCOMP
-    struct regexp *comp;
-    reg_show_error = show_error;
-    comp = regcomp(pattern);
-    reg_show_error = 1;
-    if (comp == NULL)
-    {
-        /*
-         * regcomp has already printed an error message 
-         * via regerror((char *)).
-         */
-        return (-1);
-    }
-    if (*comp_pattern != NULL)
-        free(*comp_pattern);
-    *comp_pattern = comp;
+        struct regexp* comp;
+        reg_show_error = show_error;
+        comp = regcomp(pattern);
+        reg_show_error = 1;
+        if (comp == NULL) {
+            /*
+             * regcomp has already printed an error message
+             * via regerror((char *)).
+             */
+            return (-1);
+        }
+        if (*comp_pattern != NULL)
+            free(*comp_pattern);
+        *comp_pattern = comp;
 #endif
-  }
+    }
     return (0);
 }
 
 /*
  * Like compile_pattern2, but convert the pattern to lowercase if necessary.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// compile_pattern(pattern, search_type, comp_pattern)
-//     char *pattern;
-//     int search_type;
-//     PATTERN_TYPE *comp_pattern;
- int compile_pattern(char *pattern, int search_type, PATTERN_TYPE *comp_pattern)
+int compile_pattern(char* pattern, int search_type, PATTERN_TYPE* comp_pattern)
 {
-    char *cvt_pattern;
+    char* cvt_pattern;
     int result;
 
     if (caseless != OPT_ONPLUS)
         cvt_pattern = pattern;
-    else
-    {
-        cvt_pattern = (char*) utils::ecalloc(1, cvt_length(strlen(pattern), CVT_TO_LC));
-        cvt_text(cvt_pattern, pattern, (int *)NULL, (int *)NULL, CVT_TO_LC);
+    else {
+        cvt_pattern = (char*)utils::ecalloc(1, cvt_length(strlen(pattern), CVT_TO_LC));
+        cvt_text(cvt_pattern, pattern, (int*)NULL, (int*)NULL, CVT_TO_LC);
     }
     result = compile_pattern2(cvt_pattern, search_type, comp_pattern, 1);
     if (cvt_pattern != pattern)
@@ -178,24 +152,17 @@ static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_p
 /*
  * Forget that we have a compiled pattern.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public void
-// uncompile_pattern(pattern)
-//     PATTERN_TYPE *pattern;
- void uncompile_pattern(PATTERN_TYPE *pattern)
+void uncompile_pattern(PATTERN_TYPE* pattern)
 {
 #if HAVE_GNU_REGEX
-    if (*pattern != NULL)
-    {
+    if (*pattern != NULL) {
         regfree(*pattern);
         free(*pattern);
     }
     *pattern = NULL;
 #endif
 #if HAVE_POSIX_REGCOMP
-    if (*pattern != NULL)
-    {
+    if (*pattern != NULL) {
         regfree(*pattern);
         free(*pattern);
     }
@@ -229,12 +196,7 @@ static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_p
 /*
  * Can a pattern be successfully compiled?
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// valid_pattern(pattern)
-//     char *pattern;
- int valid_pattern(char *pattern)
+int valid_pattern(char* pattern)
 {
     PATTERN_TYPE comp_pattern;
     int result;
@@ -250,12 +212,7 @@ static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_p
 /*
  * Is a compiled pattern null?
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// is_null_pattern(pattern)
-//     PATTERN_TYPE pattern;
- int is_null_pattern(PATTERN_TYPE pattern)
+int is_null_pattern(PATTERN_TYPE pattern)
 {
 #if HAVE_GNU_REGEX
     return (pattern == NULL);
@@ -287,25 +244,14 @@ static int compile_pattern2(char *pattern, int search_type, PATTERN_TYPE *comp_p
  * Simple pattern matching function.
  * It supports no metacharacters like *, etc.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// static int
-// match(pattern, pattern_len, buf, buf_len, pfound, pend)
-//     char *pattern;
-//     int pattern_len;
-//     char *buf;
-//     int buf_len;
-//     char **pfound, **pend;
-static int match(char *pattern, int pattern_len, char *buf, int buf_len, char **pfound, char **pend)
+static int match(char* pattern, int pattern_len, char* buf, int buf_len, char** pfound, char** pend)
 {
     char *pp, *lp;
-    char *pattern_end = pattern + pattern_len;
-    char *buf_end = buf + buf_len;
+    char* pattern_end = pattern + pattern_len;
+    char* buf_end = buf + buf_len;
 
-    for ( ;  buf < buf_end;  buf++)
-    {
-        for (pp = pattern, lp = buf;  ;  pp++, lp++)
-        {
+    for (; buf < buf_end; buf++) {
+        for (pp = pattern, lp = buf;; pp++, lp++) {
             char cp = *pp;
             char cl = *lp;
             if (caseless == OPT_ONPLUS && iswupper(cp))
@@ -315,8 +261,7 @@ static int match(char *pattern, int pattern_len, char *buf, int buf_len, char **
             if (pp == pattern_end || lp == buf_end)
                 break;
         }
-        if (pp == pattern_end)
-        {
+        if (pp == pattern_end) {
             if (pfound != NULL)
                 *pfound = buf;
             if (pend != NULL)
@@ -331,19 +276,7 @@ static int match(char *pattern, int pattern_len, char *buf, int buf_len, char **
  * Perform a pattern match with the previously compiled pattern.
  * Set sp and ep to the start and end of the matched string.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public int
-// match_pattern(pattern, tpattern, line, line_len, sp, ep, notbol, search_type)
-//     PATTERN_TYPE pattern;
-//     char *tpattern;
-//     char *line;
-//     int line_len;
-//     char **sp;
-//     char **ep;
-//     int notbol;
-//     int search_type;
- int match_pattern(PATTERN_TYPE pattern, char *tpattern, char *line, int line_len, char **sp, char **ep, int notbol, int search_type)
+int match_pattern(PATTERN_TYPE pattern, char* tpattern, char* line, int line_len, char** sp, char** ep, int notbol, int search_type)
 {
     int matched;
 
@@ -353,116 +286,107 @@ static int match(char *pattern, int pattern_len, char *buf, int buf_len, char **
 #endif
     if (search_type & SRCH_NO_REGEX)
         matched = match(tpattern, strlen(tpattern), line, line_len, sp, ep);
-    else
-    {
+    else {
 #if HAVE_GNU_REGEX
-    {
-        struct re_registers search_regs;
-        pattern->not_bol = notbol;
-        pattern->regs_allocated = REGS_UNALLOCATED;
-        matched = re_search(pattern, line, line_len, 0, line_len, &search_regs) >= 0;
-        if (matched)
         {
-            *sp = line + search_regs.start[0];
-            *ep = line + search_regs.end[0];
+            struct re_registers search_regs;
+            pattern->not_bol = notbol;
+            pattern->regs_allocated = REGS_UNALLOCATED;
+            matched = re_search(pattern, line, line_len, 0, line_len, &search_regs) >= 0;
+            if (matched) {
+                *sp = line + search_regs.start[0];
+                *ep = line + search_regs.end[0];
+            }
         }
-    }
 #endif
 #if HAVE_POSIX_REGCOMP
-    {
-        regmatch_t rm;
-        int flags = (notbol) ? REG_NOTBOL : 0;
-#ifdef REG_STARTEND
-        flags |= REG_STARTEND;
-        rm.rm_so = 0;
-        rm.rm_eo = line_len;
-#endif
-        matched = !regexec(pattern, line, 1, &rm, flags);
-        if (matched)
         {
-#ifndef __WATCOMC__
-            *sp = line + rm.rm_so;
-            *ep = line + rm.rm_eo;
-#else
-            *sp = rm.rm_sp;
-            *ep = rm.rm_ep;
+            regmatch_t rm;
+            int flags = (notbol) ? REG_NOTBOL : 0;
+#ifdef REG_STARTEND
+            flags |= REG_STARTEND;
+            rm.rm_so = 0;
+            rm.rm_eo = line_len;
 #endif
+            matched = !regexec(pattern, line, 1, &rm, flags);
+            if (matched) {
+#ifndef __WATCOMC__
+                *sp = line + rm.rm_so;
+                *ep = line + rm.rm_eo;
+#else
+                *sp = rm.rm_sp;
+                *ep = rm.rm_ep;
+#endif
+            }
         }
-    }
 #endif
 #if HAVE_PCRE
-    {
-        int flags = (notbol) ? PCRE_NOTBOL : 0;
-        int ovector[3];
-        matched = pcre_exec(pattern, NULL, line, line_len,
-            0, flags, ovector, 3) >= 0;
-        if (matched)
         {
-            *sp = line + ovector[0];
-            *ep = line + ovector[1];
+            int flags = (notbol) ? PCRE_NOTBOL : 0;
+            int ovector[3];
+            matched = pcre_exec(pattern, NULL, line, line_len,
+                          0, flags, ovector, 3)
+                >= 0;
+            if (matched) {
+                *sp = line + ovector[0];
+                *ep = line + ovector[1];
+            }
         }
-    }
 #endif
 #if HAVE_PCRE2
-    {
-        int flags = (notbol) ? PCRE2_NOTBOL : 0;
-        pcre2_match_data *md = pcre2_match_data_create(3, NULL);
-        matched = pcre2_match(pattern, (PCRE2_SPTR)line, line_len,
-            0, flags, md, NULL) >= 0;
-        if (matched)
         {
-            PCRE2_SIZE *ovector = pcre2_get_ovector_pointer(md);
-            *sp = line + ovector[0];
-            *ep = line + ovector[1];
+            int flags = (notbol) ? PCRE2_NOTBOL : 0;
+            pcre2_match_data* md = pcre2_match_data_create(3, NULL);
+            matched = pcre2_match(pattern, (PCRE2_SPTR)line, line_len,
+                          0, flags, md, NULL)
+                >= 0;
+            if (matched) {
+                PCRE2_SIZE* ovector = pcre2_get_ovector_pointer(md);
+                *sp = line + ovector[0];
+                *ep = line + ovector[1];
+            }
+            pcre2_match_data_free(md);
         }
-        pcre2_match_data_free(md);
-    }
 #endif
 #if HAVE_RE_COMP
-    matched = (re_exec(line) == 1);
-    /*
-     * re_exec doesn't seem to provide a way to get the matched string.
-     */
-    *sp = *ep = NULL;
+        matched = (re_exec(line) == 1);
+        /*
+         * re_exec doesn't seem to provide a way to get the matched string.
+         */
+        *sp = *ep = NULL;
 #endif
 #if HAVE_REGCMP
-    *ep = regex(pattern, line);
-    matched = (*ep != NULL);
-    if (matched)
-        *sp = __loc1;
+        *ep = regex(pattern, line);
+        matched = (*ep != NULL);
+        if (matched)
+            *sp = __loc1;
 #endif
 #if HAVE_V8_REGCOMP
 #if HAVE_REGEXEC2
-    matched = regexec2(pattern, line, notbol);
+        matched = regexec2(pattern, line, notbol);
 #else
-    matched = regexec(pattern, line);
+        matched = regexec(pattern, line);
 #endif
-    if (matched)
-    {
-        *sp = pattern->startp[0];
-        *ep = pattern->endp[0];
-    }
+        if (matched) {
+            *sp = pattern->startp[0];
+            *ep = pattern->endp[0];
+        }
 #endif
     }
-    matched = (!(search_type & SRCH_NO_MATCH) && matched) ||
-            ((search_type & SRCH_NO_MATCH) && !matched);
+    matched = (!(search_type & SRCH_NO_MATCH) && matched) || ((search_type & SRCH_NO_MATCH) && !matched);
     return (matched);
 }
 
 /*
  * Return the name of the pattern matching library.
  */
-// -------------------------------------------
-// Converted from C to C++ - C below
-// public char *
-// pattern_lib_name(void)
- char * pattern_lib_name(void)
+char* pattern_lib_name(void)
 {
 #if HAVE_GNU_REGEX
     return ("GNU");
 #else
 #if HAVE_POSIX_REGCOMP
-    return ((char *)"POSIX");
+    return ((char*)"POSIX");
 #else
 #if HAVE_PCRE2
     return ("PCRE2");

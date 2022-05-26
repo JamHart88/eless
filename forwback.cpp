@@ -12,9 +12,9 @@
  * scrolling either forward or backward.
  */
 
+#include "forwback.hpp"
 #include "ch.hpp"
 #include "edit.hpp"
-#include "forwback.hpp"
 #include "input.hpp"
 #include "jump.hpp"
 #include "less.hpp"
@@ -25,7 +25,6 @@
 #include "screen.hpp"
 #include "search.hpp"
 #include "utils.hpp"
-
 
 int squished;
 
@@ -54,7 +53,6 @@ extern int status_col;
 #if TAGS
 extern char* tagoption;
 #endif
-
 
 screen_trashed_t screen_trashed = TRASHED;
 

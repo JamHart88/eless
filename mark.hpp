@@ -16,8 +16,8 @@ void lastmark(void);
 void gomark(int c);
 position_t markpos(int c);
 char posmark(position_t pos);
-void unmark(ifile::Ifile * ifilePtr);
-void mark_check_ifile(ifile::Ifile * ifilePtr);
+void unmark(ifile::Ifile* ifilePtr);
+void mark_check_ifile(ifile::Ifile* ifilePtr);
 void save_marks(FILE* fout, char* hdr);
 void restore_mark(char* line);
 
