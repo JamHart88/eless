@@ -27,7 +27,7 @@ public:
     Ifile(const char* filename);
     Ifile(const Ifile& src);
     Ifile& operator=(const Ifile& src);
-    ~Ifile();
+    virtual ~Ifile();
     friend bool operator==(const Ifile& lhs, const Ifile& rhs);
 
     //const char* filename();
@@ -54,8 +54,8 @@ public:
     void setHold(int incr);
 
     // File state - used in ch.cpp
-    void* getFilestate() { return this->h_filestate; };
-    void setFilestate(void* filestate);
+    virtual void* getFilestate() { return this->h_filestate; };
+    virtual void setFilestate(void* filestate);
 
     // Alt Pipe
     void* getAltpipe() { return this->h_altpipe; };

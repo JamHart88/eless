@@ -101,4 +101,6 @@ test/*/filename.hpp
 test/*/command.hpp
 test/*/ifile.cpp
 test/*/forwback.hpp
+test/*/ch.cpp
 test_ifile
+test_ch

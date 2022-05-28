@@ -15,10 +15,10 @@
 
 #include "ch.hpp"
 
-#include "ifile.hpp"
-#include "less.hpp"
 #include "filename.hpp"
 #include "forwback.hpp"
+#include "ifile.hpp"
+#include "less.hpp"
 #include "os.hpp"
 #include "output.hpp"
 #include "prompt.hpp"
@@ -30,9 +30,7 @@ extern dev_t curr_dev;
 extern ino_t curr_ino;
 #endif
 
-
-typedef position_t BLOCKNUM;
-
+typedef position_t blocknum_t;
 
 int ignore_eoi;
 
@@ -47,10 +45,11 @@ struct bufnode {
     struct bufnode *hnext, *hprev;
 };
 
-#define LBUFSIZE 8192
+const int LBUFSIZE = 8192;
+
 struct buf {
     struct bufnode node;
-    BLOCKNUM block;
+    blocknum_t block;
     unsigned int datasize;
     unsigned char data[LBUFSIZE];
 };
@@ -69,7 +68,7 @@ struct filestate {
     int flags;
     position_t fpos;
     int nbufs;
-    BLOCKNUM block;
+    blocknum_t block;
     unsigned int offset;
     position_t fsize;
 };
@@ -387,14 +386,13 @@ void end_logfile()
  * Write all the existing buffered data to the log file.
  */
 
-
 void sync_logfile()
 {
     struct buf* bp;
     struct bufnode* bn;
     bool warned = false;
-    BLOCKNUM block;
-    BLOCKNUM nblocks;
+    blocknum_t block;
+    blocknum_t nblocks;
 
     nblocks = (ch_fpos + LBUFSIZE - 1) / LBUFSIZE;
     for (block = 0; block < nblocks; block++) {
@@ -420,7 +418,7 @@ void sync_logfile()
 /*
  * Determine if a specific block is currently in one of the buffers.
  */
-static bool buffered(BLOCKNUM block)
+static bool buffered(blocknum_t block)
 {
     struct buf* bp;
     struct bufnode* bn;
@@ -443,7 +441,7 @@ static bool buffered(BLOCKNUM block)
 
 int ch_seek(position_t pos)
 {
-    BLOCKNUM new_block;
+    blocknum_t new_block;
     position_t len;
 
     if (thisfile == nullptr)
@@ -770,14 +768,18 @@ static void ch_delbufs()
  * Is it possible to seek on a file descriptor?
  */
 
-int seekable(int f) { return (lseek(f, (off_t)1, SEEK_SET) != BAD_LSEEK); }
+int seekable(int f) { 
+    return (lseek(f, (off_t)1, SEEK_SET) != BAD_LSEEK); 
+}
 
 /*
  * Force EOF to be at the current read position.
  * This is used after an ignore_eof read, during which the EOF may change.
  */
 
-void ch_set_eof() { ch_fsize = ch_fpos; }
+void ch_set_eof() { 
+    ch_fsize = ch_fpos; 
+}
 
 /*
  * Initialize file state for a new file.
