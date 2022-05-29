@@ -8,7 +8,7 @@
 #include "gmock/gmock.h"
 
 
-const bool ENABLE_LOGGING = false;
+const bool ENABLE_LOGGING = true;
 void log(std::string s, bool highlight = true);
 
 namespace ifile {

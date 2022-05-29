@@ -84,6 +84,14 @@ TEST_F(ChUnitTestEmpty, chflags)
   EXPECT_EQ(res, 0);
 }
 
+
+TEST_F(ChUnitTestEmpty, ch_tell_nullptr)
+{
+  position_t pos = ch_tell();
+  EXPECT_EQ(pos, NULL_POSITION);
+}
+
+
 TEST_F(ChUnitTestEmpty, ch_init1)
 {
   const int test_file_id = 10;
@@ -234,17 +242,21 @@ public:
 };
 // --------------------------------------------------------------
 
-TEST_F(ChUnitTest1Buff, ch_init4)
+TEST_F(ChUnitTest1Buff, ch_init_and_reading)
 {
   using namespace ifile;
 
   const int test_file_id    = 9;
   const int test_flags      = CH_NODATA | CH_CANSEEK;
   const int test_file_size  = 9999;
+  const int test_block      = 0;
+  const int test_offset     = 0;
 
   capturedFilestate->file  = -1; // Set to null - will change in test
   capturedFilestate->flags = test_flags;
   capturedFilestate->fsize = test_file_size;
+  capturedFilestate->block = test_block;
+  capturedFilestate->offset = test_offset;
 
   EXPECT_CALL(GetMock<ChMock>(), getCurrentIfile()).
     Times(1).
@@ -261,13 +273,22 @@ TEST_F(ChUnitTest1Buff, ch_init4)
     Times(1).
     WillOnce(Return(test_file_size));
 
+  // part 1 - init
   ch_init(test_file_id,   // f
           test_flags);    // flags
 
   EXPECT_EQ(capturedFilestate->file, test_file_id);
   EXPECT_EQ(capturedFilestate->flags, test_flags); 
   EXPECT_EQ(capturedFilestate->fsize, test_file_size);
+
+  // part 2 == ch_tell
+  position_t pos = ch_tell();
+
+  EXPECT_EQ(pos, (test_block * LBUFSIZE) + test_offset);
+
 }
+
+
 
 
 // =================================================================
