@@ -51,8 +51,12 @@ public:
     // ifile
     MOCK_METHOD0(getCurrentIfile, ifile::Ifile* (void));
 
-    // 
+    // other - system calls
     MOCK_METHOD3(lseek, __off_t(int, __off_t, int));
+    MOCK_METHOD1(close, int (int fd));    
+    MOCK_METHOD3(write, ssize_t (int fd, const void * buf, size_t n));
+    MOCK_METHOD2(stat, int(const char *  file, struct stat * buf));
+
 };
 
 #endif
