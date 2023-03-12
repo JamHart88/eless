@@ -1,6 +1,9 @@
 *.o
 *.log
 less
+a
+t
+eless
 trace.out
 *.html
 *.out
