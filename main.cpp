@@ -51,19 +51,13 @@ char* progname;
 
 int dohelp;
 
-#if LOGFILE
-
+// Logile related parameters
 int logfile = -1;
-
 bool force_logfile = false;
-
-char* namelogfile = NULL;
-#endif
+char* namelogfile = nullptr;
 
 #if EDITOR
-
 char* editor;
-
 char* editproto;
 #endif
 

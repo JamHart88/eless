@@ -96,10 +96,8 @@ static struct optname K__optname     = {(char *) "quit-on-intr",         NULL };
 static struct optname L__optname     = {(char *) "no-lessopen",          NULL };
 static struct optname m_optname      = {(char *) "long-prompt",          NULL };
 static struct optname n_optname      = {(char *) "line-numbers",         NULL };
-#if LOGFILE
 static struct optname o_optname      = {(char *) "log-file",             NULL };
 static struct optname O__optname     = {(char *) "LOG-FILE",             NULL };
-#endif
 static struct optname p_optname      = {(char *) "pattern",              NULL };
 static struct optname P__optname     = {(char *) "prompt",               NULL };
 static struct optname q2_optname     = {(char *) "silent",               NULL };
@@ -255,7 +253,6 @@ static struct loption option[] = {
         { (char*)"Don't use line numbers",
             (char*)"Use line numbers",
             (char*)"constly display line numbers" } },
-#if LOGFILE
     { 'o', &o_optname,
         STRING, 0, NULL, opt_o,
         { (char*)"log file: ",
@@ -266,7 +263,6 @@ static struct loption option[] = {
         { (char*)"Log file: ",
             NULL,
             NULL } },
-#endif
     { 'p', &p_optname,
         STRING | NO_TOGGLE | NO_QUERY, 0, NULL, opt_p,
         { NULL,

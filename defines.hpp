@@ -88,11 +88,6 @@
 #define    PIPEC        1
 
 /*
- * LOGFILE is 1 if you wish to allow the -o option (to create log files).
- */
-#define    LOGFILE        1
-
-/*
  * GNU_OPTIONS is 1 if you wish to support the GNU-style command
  * line options --help and --version.
  */

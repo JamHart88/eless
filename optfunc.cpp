@@ -66,18 +66,18 @@ extern int rscroll_attr;
 extern int mousecap;
 extern int wheel_lines;
 extern int less_is_more;
-#if LOGFILE
+
 extern char* namelogfile;
 extern bool force_logfile;
 extern int logfile;
-#endif
+
 #if TAGS
 char* tagoption = NULL;
 extern char* tags;
 extern char ztags[];
 #endif
 
-#if LOGFILE
+
 /*
  * Handler for -o option.
  */
@@ -127,7 +127,6 @@ void opt__O(int type, char* s)
     force_logfile = true;
     opt_o(type, s);
 }
-#endif
 
 /*
  * Handlers for -j option.

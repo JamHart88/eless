@@ -734,7 +734,7 @@ char* open_altfile(char* filename, int* pf, void** pfd)
     qfilename = shell_quote(filename);
     len = (int)(strlen(lessopen) + strlen(qfilename) + 2);
     cmd = (char*)utils::ecalloc(len, sizeof(char));
-    snprintf(cmd, len, lessopen, qfilename);
+    ignore_result(snprintf(cmd, len, lessopen, qfilename));
     free(qfilename);
     fd = shellcmd(cmd);
     free(cmd);

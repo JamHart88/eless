@@ -22,6 +22,9 @@
 #include "search.hpp"
 #include "utils.hpp"
 
+// Only for debugging
+#include "debug.hpp"
+
 #if HAVE_STAT
 #include <sys/stat.h>
 #endif
@@ -42,11 +45,9 @@ extern void* ml_examine;
 extern char openquote;
 extern char closequote;
 
-#if LOGFILE
 extern int logfile;
 extern bool force_logfile;
 extern char* namelogfile;
-#endif
 
 #if HAVE_STAT_INO
 dev_t curr_dev;
@@ -235,9 +236,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
      * {{ Some stupid implementations of popen() mess up if you do:
      *    fA = popen("A"); fB = popen("B"); pclose(fA); pclose(fB); }}
      */
-#if LOGFILE
     end_logfile();
-#endif
 
     was_curr_ifile = save_curr_ifile();
     if (curr_ifile != nullptr) {
@@ -397,10 +396,9 @@ int edit_ifile(ifile::Ifile* requestedIfile)
     ch_init(f, chflags);
 
     if (!(chflags & CH_HELPFILE)) {
-#if LOGFILE
         if (namelogfile != nullptr && is_tty)
             use_logfile(namelogfile);
-#endif
+
 #if HAVE_STAT_INO
         /* Remember the i-number and device of the opened file. */
         if (strcmp(open_filename, "-") != 0) {
@@ -698,7 +696,6 @@ void cat_file(void)
     flush();
 }
 
-#if LOGFILE
 
 /*
  * If the user asked for a log file and our input file
@@ -787,7 +784,6 @@ loop:
         error((char*)"Cannot write to \"%s\"", parg);
         return;
     }
-    // SET_BINARY(logfile); // no longer needed?
+    
 }
 
-#endif

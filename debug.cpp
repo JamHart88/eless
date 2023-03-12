@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+
+// File for debugging. 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -101,7 +104,7 @@ void __attribute__((__no_instrument_function__)) debug(const char* str, const in
 void __attribute__((__no_instrument_function__)) debug(const char* str1, const int linenum, const char* str2)
 {
     if (fp_trace != NULL) {
-        fprintf(fp_trace, "DBG: FILE: %s LINE: %d \n", str1, linenum);
-        fprintf(fp_trace, "DBG: %s\n", str2);
+        fprintf(fp_trace, "DBG: FILE: %s LINE: %d : ", str1, linenum);
+        fprintf(fp_trace, "'%s'\n", str2);
     }
 }

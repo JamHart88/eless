@@ -296,13 +296,13 @@ int getIndex(const Ifile* ifile)
 Ifile::Ifile(const char* filename)
 {
     h_filename = utils::save(filename);
-    h_filestate = NULL;
+    h_filestate = nullptr;
     h_hold = 0;
     h_opened = false;
     h_scrpos.pos = NULL_POSITION;
     h_scrpos.ln = 0;
-    h_altpipe = NULL;
-    h_altfilename = NULL;
+    h_altpipe = nullptr;
+    h_altfilename = nullptr;
 };
 
 /*
@@ -315,7 +315,7 @@ Ifile::Ifile(const Ifile& src)
     this->h_hold = src.h_hold;
     this->h_opened = src.h_opened;
     this->h_scrpos = src.h_scrpos;
-    this->h_altpipe = NULL;
+    this->h_altpipe = nullptr;
     this->h_altfilename = src.h_altfilename;
 };
 
@@ -332,7 +332,7 @@ Ifile& Ifile::operator=(const Ifile& src)
         this->h_hold = src.h_hold;
         this->h_opened = src.h_opened;
         this->h_scrpos = src.h_scrpos;
-        this->h_altpipe = NULL;
+        this->h_altpipe = nullptr;
         this->h_altfilename = src.h_altfilename;
     }
     return *this;

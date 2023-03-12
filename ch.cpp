@@ -5,6 +5,7 @@
  * License or the Less License, as specified in the README file.
  *
  * For more information, see the README file.
+ * new
  */
 
 /*
@@ -23,6 +24,12 @@
 #include "output.hpp"
 #include "prompt.hpp"
 #include "screen.hpp"
+
+// For debugging only
+#include <iostream>
+#include <string>
+#include <sstream>
+
 
 #if HAVE_STAT_INO
 #include <sys/stat.h>
@@ -54,7 +61,6 @@ struct buf {
     unsigned char data[LBUFSIZE];
 };
 #define bufnode_buf(bn) ((struct buf*)(bn))
-
 /*
  * The file state is maintained in a filestate structure.
  * A pointer to the filestate is kept in the ifile structure.
@@ -118,21 +124,118 @@ struct filestate {
     thisfile->hashtbl[h].hnext->hprev = (bn); \
     thisfile->hashtbl[h].hnext = (bn);
 
-static struct filestate* thisfile;
-static int ch_ungotchar = -1;
-static int maxbufs = -1;
+namespace {
+    static struct filestate* thisfile;
+    static int ch_ungotchar = -1;
+    static int maxbufs = -1;
+    static int ch_addbuf();
+}
 
 extern int autobuf;
 extern int sigs;
 extern int follow_mode;
 extern char helpdata[];
 extern int size_helpdata;
-#if LOGFILE
 extern int logfile;
 extern char* namelogfile;
-#endif
 
-static int ch_addbuf();
+
+namespace {
+    const bool Debug = false;
+
+    void chDebug(std::string s){
+        if (Debug)
+            debug (s.c_str());
+    }
+
+}
+
+// TODO: remove debug only routines
+std::string ptr_to_string(const void* ptr) {
+    std::string ret = " ";
+    if (ptr == nullptr) 
+        ret += "nullptr";
+    else {
+        std::ostringstream ptrss;
+        ptrss << ptr;
+        ret +=  ptrss.str();
+    }    
+    return ret;
+}
+
+// TODO: remove debug only routines
+std::string to_string(bufnode * node);
+
+// TODO: remove debug only routines
+std::string hashtbl_to_string(bufnode * bn){
+    std::string val = "";
+    val += " HASHTBL SKIPPED";
+    //for (int i = 0; i < BUFHASH_SIZE; i++) {
+    //    val += "hastbl[" + std::to_string(i) + "]: \n";
+    //    val += to_string((bufnode *)&bn[i]);
+    //}
+    return val;
+};
+
+// TODO: remove debug only routines
+std::string to_string(buf * bufPtr) {
+    std::string ret = "   buf []" + ptr_to_string(bufPtr);
+    ret += "\n   node: -> ";
+    ret += ptr_to_string(&bufPtr->node);
+    ret += "\n   block: ";
+    ret += std::to_string(static_cast<int>(bufPtr->block));
+    ret += "\n   datasize: ";
+    ret += std::to_string(static_cast<int>(bufPtr->datasize));
+    ret += "\n   data[]: ";
+    ret += reinterpret_cast<char*>(bufPtr->data);
+    ret += "\n";
+    return ret;
+};
+
+// TODO: remove debug only routines
+std::string to_string(bufnode * node) {
+    std::string ret = "";
+    ret += " [node address = " + ptr_to_string(node) + "]\n";
+    ret += " next:";
+    ret += ptr_to_string(static_cast<void *>(node->next));
+    ret += "\n";
+    if (node != node->next && node->next != nullptr)
+        ret += to_string((buf *)node->next) + "\n";
+    ret += " prev: ";
+    ret += ptr_to_string(static_cast<void *>(node->prev));
+    ret += "\n";
+    if (node != node->prev && node->prev != nullptr)
+        ret += to_string((buf *)node->prev) + "\n";
+    ret += " hnext: ";
+    ret += ptr_to_string(static_cast<void *>(node->hnext));
+    ret += "\n";
+    if (node != node->hnext && node->hnext != nullptr)
+        ret += to_string((buf *)node->hnext) + "\n";
+    ret += " hprev: ";
+    ret += ptr_to_string(static_cast<void *>(node->hprev));
+    ret += "\n";
+    if (node != node->hprev && node->hprev != nullptr)
+        ret += to_string((buf *)node->hprev) + "\n";
+    return ret;
+}
+
+// TODO: remove debug only routines
+std::string to_string(filestate * fs) {
+    std::string ret = "";
+    ret += "buflist:\n";
+    ret += to_string(&fs->buflist);   
+    ret += hashtbl_to_string(fs->hashtbl);
+    ret += "\nfile: " + std::to_string(fs->file);
+    ret += "\nflags: " + std::to_string(fs->flags);
+    ret += "\nfpos: " + std::to_string(fs->fpos);
+    ret += "\nnbufs: " + std::to_string(fs->nbufs);
+    ret += "\nblock: " + std::to_string(fs->block);
+    ret += "\noffset: " + std::to_string(fs->offset);
+    ret += "\nfsize: " + std::to_string(fs->fsize);
+    ret += "\n";
+    return ret;
+};
+
 
 /*
  * Get the character pointed to by the read pointer.
@@ -147,8 +250,16 @@ int ch_get()
     position_t pos;
     position_t len;
 
-    if (thisfile == nullptr)
+    if (thisfile == nullptr) {
+        chDebug("return EOI");
         return (EOI);
+    }
+
+
+    chDebug("----------------------------------");
+    chDebug("ch_get - buff count = " + std::to_string(thisfile->nbufs));
+    chDebug("block = " + std::to_string(thisfile->block) +
+	    " offset = " + std::to_string(thisfile->offset));
 
     /*
      * Quick check for the common case where
@@ -156,16 +267,26 @@ int ch_get()
      */
     if (thisfile->buflist.next != END_OF_CHAIN) {
         bp = bufnode_buf(thisfile->buflist.next);
-        if (thisfile->block == bp->block && thisfile->offset < bp->datasize)
-            return bp->data[thisfile->offset];
+        if (thisfile->block == bp->block && thisfile->offset < bp->datasize){
+	  char c = static_cast<char>(bp->data[thisfile->offset]);
+	  std::string cstr = "'";
+	  cstr += std::string(&c);
+	  cstr += "'";
+	  cstr += std::to_string(c);
+	  chDebug("return data[offset] = " + cstr);
+	  return bp->data[thisfile->offset];
+	}
     }
 
     /*
      * Look for a buffer holding the desired block.
      */
     h = BUFHASH(thisfile->block);
+    chDebug("thisfile->block = " + std::to_string(thisfile->block));
+    chDebug("hashchain h = " + std::to_string(h));
     FOR_BUFS_IN_CHAIN(h, bn)
     {
+        chDebug("Searching hashchain h=" + std::to_string(h));
         bp = bufnode_buf(bn);
         if (bp->block == thisfile->block) {
             if (thisfile->offset >= bp->datasize)
@@ -173,6 +294,7 @@ int ch_get()
                  * Need more data in this buffer.
                  */
                 break;
+	    chDebug("jump to found");
             goto found;
         }
     }
@@ -184,6 +306,8 @@ int ch_get()
          * If the LRU buffer has data in it,
          * then maybe allocate a new buffer.
          */
+        chDebug("bn == END_OF_CHAIN");
+      
         if (thisfile->buflist.prev == END_OF_CHAIN || bufnode_buf(thisfile->buflist.prev)->block != -1) {
             /*
              * There is no empty buffer to use.
@@ -204,6 +328,12 @@ int ch_get()
         bp->block = thisfile->block;
         bp->datasize = 0;
         BUF_HASH_INS(bn, h); /* Insert into new hash chain. */
+
+        chDebug("ch_get - created new buf");
+        chDebug(to_string(bp));
+        chDebug(to_string(thisfile));
+
+        
     }
 
 read_more:
@@ -245,8 +375,11 @@ read_more:
     } else {
         n = iread(thisfile->file, &bp->data[bp->datasize],
             (unsigned int)(LBUFSIZE - bp->datasize));
+        chDebug("iread result");
+        chDebug("n = " + std::to_string(n));
+        chDebug(reinterpret_cast<char *>(bp->data));
     }
-
+    
     if (n == READ_INTR)
         return (EOI);
     if (n < 0) {
@@ -257,17 +390,15 @@ read_more:
         n = 0;
     }
 
-#if LOGFILE
     /*
      * If we have a log file, write the new data to it.
      */
     if (logfile >= 0 && n > 0)
         ignore_result(write(logfile, (char*)&bp->data[bp->datasize], n));
-#endif
 
     thisfile->fpos += n;
     bp->datasize += n;
-
+    
     /*
      * If we have read to end of file, set thisfile->fsize to indicate
      * the position of the end of file.
@@ -308,7 +439,7 @@ read_more:
         if (sigs)
             return (EOI);
     }
-
+    
 found:
     if (thisfile->buflist.next != bn) {
         /*
@@ -324,13 +455,18 @@ found:
         BUF_HASH_RM(bn);
         BUF_HASH_INS(bn, h);
     }
-
     if (thisfile->offset >= bp->datasize)
         /*
          * After all that, we still don't have enough data.
          * Go back and try again.
          */
         goto read_more;
+
+
+    chDebug("ch_get - read block");
+    chDebug(to_string(bp));
+    chDebug(to_string(thisfile));
+    chDebug(reinterpret_cast<char *>(bp->data));
 
     return (bp->data[thisfile->offset]);
 }
@@ -347,7 +483,6 @@ void ch_ungetchar(int c)
     ch_ungotchar = c;
 }
 
-#if LOGFILE
 /*
  * Close the logfile.
  * If we haven't read all of standard input into it, do that now.
@@ -368,6 +503,7 @@ void end_logfile()
     }
     close(logfile);
     logfile = -1;
+    free(namelogfile);
     namelogfile = nullptr;
 }
 
@@ -404,7 +540,6 @@ void sync_logfile()
     }
 }
 
-#endif
 
 /*
  * Determine if a specific block is currently in one of the buffers.
@@ -439,11 +574,21 @@ int ch_seek(position_t pos)
         return (0);
 
     len = ch_length();
+
+    //unit_test - log ("ch_seek len = " + std::to_string(len) + " pos = " + std::to_string(pos));
+
     if (pos < ch_zero || (len != NULL_POSITION && pos > len))
         return (1);
 
     new_block = pos / LBUFSIZE;
+
+    //unit_test - log("new_block = " + std::to_string(new_block));
+    //unit_test - log("flags = " + std::to_string(thisfile->flags));
+    //unit_test - log("fpos = " + std::to_string(thisfile->fpos));
+    //unit_test - log("buffered = " + std::to_string(buffered(new_block)));
+
     if (!(thisfile->flags & CH_CANSEEK) && pos != thisfile->fpos && !buffered(new_block)) {
+        
         if (thisfile->fpos > pos)
             return (1);
         while (thisfile->fpos < pos) {
@@ -546,6 +691,11 @@ int ch_beg_seek()
     }
     thisfile->block = bufnode_buf(firstbn)->block;
     thisfile->offset = 0;
+
+    chDebug("ch_beg_seek");
+    chDebug(to_string(thisfile));
+
+
     return (0);
 }
 
@@ -582,7 +732,7 @@ position_t ch_tell()
 int ch_forw_get()
 {
     int c;
-
+    chDebug("ch_forw_get");
     if (thisfile == nullptr)
         return (EOI);
     c = ch_get();
@@ -603,6 +753,7 @@ int ch_forw_get()
 
 int ch_back_get()
 {
+    chDebug("ch_back_get");
     if (thisfile == nullptr)
         return (EOI);
     if (thisfile->offset > 0)
@@ -620,7 +771,7 @@ int ch_back_get()
 
 /*
  * Set max amount of buffer space.
- * bufspace is in units of 1024 bytes.  -1 mean no limit.
+ * bufspace is in units of 1024 bytes. -1 means no limit.
  */
 
 void ch_setbufspace(int bufspace)
@@ -668,6 +819,7 @@ void ch_flush()
      * Seek to a known position: the beginning of the file.
      */
     thisfile->fpos = 0;
+    //log("flush-> fpos = " + std::to_string(thisfile->fpos));
     thisfile->block = 0; /* thisfile->fpos / LBUFSIZE; */
     thisfile->offset = 0; /* thisfile->fpos % LBUFSIZE; */
 
@@ -692,8 +844,13 @@ void ch_flush()
          */
         error((char*)"seek error to 0", NULL_PARG);
     }
+
+    chDebug("ch_flush");
+    chDebug(to_string(thisfile));
+
 }
 
+namespace {
 /*
  * Allocate a new buffer.
  * The buffer is added to the tail of the buffer chain.
@@ -716,8 +873,16 @@ static int ch_addbuf()
 
     BUF_INS_TAIL(bn);
     BUF_HASH_INS(bn, 0);
+
+
+    chDebug("ch_addbuf add buff:");
+    chDebug(to_string(bp));
+    chDebug("------------------------ thisfile now ------------------------\n");
+    chDebug(to_string(thisfile));
+    chDebug("--------------------------------------------------------------\n");
     return (0);
 }
+} // namespace
 
 /*
  *
@@ -740,15 +905,20 @@ static void ch_delbufs()
     struct bufnode* bn;
 
     while (thisfile->buflist.next != END_OF_CHAIN) {
-#ifndef CLANGTIDY
+//#ifndef CLANGTIDY
         // Clang-tidy has problems with this code
         bn = thisfile->buflist.next;
         BUF_RM(bn);
         free(bufnode_buf(bn));
-#endif
+//#endif
     }
     thisfile->nbufs = 0;
     init_hashtbl();
+
+    chDebug("ch_delbufs");
+    chDebug(to_string(thisfile));
+
+
 }
 
 /*
@@ -793,6 +963,10 @@ void ch_init(int f, int flags)
         thisfile->fsize = NULL_POSITION;
         thisfile->flags = flags;
         init_hashtbl();
+
+        chDebug("ch_init JJJ");
+        chDebug(to_string(thisfile));
+
         /*
          * Try to seek; set CH_CANSEEK if it works.
          */
@@ -811,10 +985,10 @@ void ch_init(int f, int flags)
 
 void ch_close()
 {
-    bool keepstate = false;
-
     if (thisfile == nullptr)
         return;
+
+    bool keepstate = false;
 
     if (thisfile->flags & (CH_CANSEEK | CH_POPENED | CH_HELPFILE)) {
         /*

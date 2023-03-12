@@ -82,6 +82,7 @@ get_forw_line:
      */
     base_pos = curr_pos;
     for (;;) {
+        debug("forw_get - step back to beg of line - base_pos = ", base_pos);
         if (is_abort_signal(sigs)) {
             null_line();
             return (NULL_POSITION);
@@ -96,6 +97,7 @@ get_forw_line:
         --base_pos;
     }
 
+    debug("forw_get - read_forward again");
     /*
      * Read forward again to the position we should start at.
      */
@@ -146,6 +148,7 @@ get_forw_line:
             return (NULL_POSITION);
         }
         if (c == '\n' || c == EOI) {
+            debug("fowr_line, got EOI or NL");
             /*
              * End of the line.
              */
@@ -166,6 +169,7 @@ get_forw_line:
          */
         backchars = pappend(c, ch_tell() - 1);
         if (backchars > 0) {
+            debug("forw_line - line too long - backchars = ", backchars);
             /*
              * The char won't fit in the line; the line
              * is too long to print in the screen width.
@@ -211,6 +215,7 @@ get_forw_line:
 #endif
 
     if (squeeze && blankline) {
+        debug("squeeze and blankline");
         /*
          * This line is blank.
          * Skip down to the last contiguous blank line
@@ -226,6 +231,7 @@ get_forw_line:
         new_pos = ch_tell();
     }
 
+    debug("forw_line return new_pos = ", new_pos);
     return (new_pos);
 }
 
@@ -238,6 +244,7 @@ get_forw_line:
  */
 position_t back_line(position_t curr_pos)
 {
+    debug ("back_line called currpos", curr_pos);
     position_t new_pos, begin_new_pos, base_pos;
     int c;
 

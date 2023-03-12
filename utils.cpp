@@ -26,10 +26,10 @@ namespace utils {
 
 char* save(const char* s)
 {
-    char* p;
+    D(s)
     int len = strlen(s) + 1;
-    p = (char*)ecalloc(len, sizeof(char));
-    memcpy(p, s, len);
+    char * p = (char*)ecalloc(len, sizeof(char));
+    memcpy(p, s, len - 1);
     return (p);
 }
 

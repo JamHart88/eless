@@ -1,4 +1,4 @@
-# Makefile for less.
+# Makefile for eless.
 
 #### Start of system configuration section. ####
 
@@ -13,11 +13,11 @@ INSTALL_DATA = ${INSTALL} -m 644
 CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
-CPPFLAGS = -std=c++0x -g -O0 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal -Wpedantic
+CPPFLAGS = -std=c++0x -g -O0 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal -Wpedantic 
 # Removed CPP flags
 # Make this -O2 for production
 # -std=c++11  - AIX XLC++ only has c++0x 
-#-finstrument-functions -Werror -Wpedantic -Wshadow 
+# -finstrument-functions -Werror -Wpedantic -Wshadow 
 #CPPFLAGS = -g  -Wall 
 EXEEXT = 
 O=o
@@ -56,9 +56,9 @@ OBJ = \
 	output.${O} pattern.${O} position.${O} prompt.${O} search.${O} signal.${O} \
 	tags.${O} ttyin.${O} version.${O} debug.${O} utils.${O}
 
-all: less$(EXEEXT)
+all: eless$(EXEEXT)
 
-less$(EXEEXT): ${OBJ}
+eless$(EXEEXT): ${OBJ}
 	${CC} ${LDFLAGS} -o $@ ${OBJ} ${LIBS}
 
 charset.${O}: compose.uni ubin.uni wide.uni
@@ -66,7 +66,7 @@ charset.${O}: compose.uni ubin.uni wide.uni
 ${OBJ}: ${srcdir}/less.hpp ${srcdir}/funcs.hpp defines.hpp 
 
 install: all ${srcdir}/less.nro installdirs
-	${INSTALL_PROGRAM} less$(EXEEXT) ${DESTDIR}${bindir}/${binprefix}less$(EXEEXT)
+	${INSTALL_PROGRAM} eless$(EXEEXT) ${DESTDIR}${bindir}/${binprefix}less$(EXEEXT)
 	${INSTALL_DATA} ${srcdir}/less.nro ${DESTDIR}${mandir}/man${manext}/${manprefix}less.${manext}
 
 install-strip:
@@ -76,7 +76,7 @@ installdirs: mkinstalldirs
 	${srcdir}/mkinstalldirs ${DESTDIR}${bindir} ${DESTDIR}${mandir}/man${manext}
 
 uninstall:
-	rm -f ${DESTDIR}${bindir}/${binprefix}less$(EXEEXT)
+	rm -f ${DESTDIR}${bindir}/${binprefix}eless$(EXEEXT)
 	rm -f ${DESTDIR}${mandir}/man${manext}/${manprefix}less.${manext}
 
 info:
@@ -99,7 +99,7 @@ TAGS:
 #CONFIG_FILES=Makefile CONFIG_HEADERS= ./config.status
 
 clean:
-	rm -f *.${O} core less$(EXEEXT)
+	rm -f *.${O} core eless$(EXEEXT)
 
 mostlyclean: clean
 
