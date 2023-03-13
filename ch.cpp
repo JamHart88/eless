@@ -5,7 +5,7 @@
  * License or the Less License, as specified in the README file.
  *
  * For more information, see the README file.
- * new
+ * 
  */
 
 /*
@@ -24,6 +24,8 @@
 #include "output.hpp"
 #include "prompt.hpp"
 #include "screen.hpp"
+#include "help.hpp"
+#include "signal.hpp"
 
 // For debugging only
 #include <iostream>
@@ -37,9 +39,9 @@ extern dev_t curr_dev;
 extern ino_t curr_ino;
 #endif
 
-typedef position_t blocknum_t;
+namespace ch {
 
-int ignore_eoi;
+typedef position_t blocknum_t;
 
 /*
  * Pool of buffers holding the most recently used blocks of the input file.
@@ -130,14 +132,6 @@ namespace {
     static int maxbufs = -1;
     static int ch_addbuf();
 }
-
-extern int autobuf;
-extern int sigs;
-extern int follow_mode;
-extern char helpdata[];
-extern int size_helpdata;
-extern int logfile;
-extern char* namelogfile;
 
 
 namespace {
@@ -315,12 +309,12 @@ int ch_get()
              * 1. We can't seek on this file and -b is not in effect; or
              * 2. We haven't allocated the max buffers for this file yet.
              */
-            if ((autobuf && !(thisfile->flags & CH_CANSEEK)) || (maxbufs < 0 || thisfile->nbufs < maxbufs))
-                if (ch_addbuf())
+            if ((less::Settings::autobuf && !(thisfile->flags & CH_CANSEEK)) || (maxbufs < 0 || thisfile->nbufs < maxbufs))
+                if (ch::ch_addbuf())
                     /*
                      * Allocation failed: turn off autobuf.
                      */
-                    autobuf = OPT_OFF;
+                    less::Settings::autobuf = OPT_OFF;
         }
         bn = thisfile->buflist.prev;
         bp = bufnode_buf(bn);
@@ -370,7 +364,7 @@ read_more:
         n = 1;
         ch_ungotchar = -1;
     } else if (thisfile->flags & CH_HELPFILE) {
-        bp->data[bp->datasize] = helpdata[thisfile->fpos];
+        bp->data[bp->datasize] = help::helpdata[thisfile->fpos];
         n = 1;
     } else {
         n = iread(thisfile->file, &bp->data[bp->datasize],
@@ -393,8 +387,8 @@ read_more:
     /*
      * If we have a log file, write the new data to it.
      */
-    if (logfile >= 0 && n > 0)
-        ignore_result(write(logfile, (char*)&bp->data[bp->datasize], n));
+    if (less::Settings::logfile >= 0 && n > 0)
+        ignore_result(write(less::Settings::logfile, (char*)&bp->data[bp->datasize], n));
 
     thisfile->fpos += n;
     bp->datasize += n;
@@ -405,7 +399,7 @@ read_more:
      */
     if (n == 0) {
         thisfile->fsize = pos;
-        if (ignore_eoi) {
+        if (less::Settings::ignore_eoi) {
             /*
              * We are ignoring EOF.
              * Wait a while, then try again.
@@ -420,7 +414,7 @@ read_more:
             slept = true;
 
 #if HAVE_STAT_INO
-            if (follow_mode == FOLLOW_NAME) {
+            if (less::Settings::follow_mode == FOLLOW_NAME) {
                 /* See whether the file's i-number has changed,
                  * or the file has shrunk.
                  * If so, force the file to be closed and
@@ -436,7 +430,7 @@ read_more:
             }
 #endif
         }
-        if (sigs)
+        if (less::Settings::sigs)
             return (EOI);
     }
     
@@ -492,19 +486,19 @@ void end_logfile()
 {
     static bool tried = false;
 
-    if (logfile < 0)
+    if (less::Settings::logfile < 0)
         return;
     if (!tried && thisfile->fsize == NULL_POSITION) {
         tried = true;
         ierror((char*)"Finishing logfile", NULL_PARG);
         while (ch_forw_get() != EOI)
-            if (is_abort_signal(sigs))
+            if (is_abort_signal(less::Settings::sigs))
                 break;
     }
-    close(logfile);
-    logfile = -1;
-    free(namelogfile);
-    namelogfile = nullptr;
+    close(less::Settings::logfile);
+    less::Settings::logfile = -1;
+    free(less::Settings::namelogfile);
+    less::Settings::namelogfile = nullptr;
 }
 
 /*
@@ -528,7 +522,7 @@ void sync_logfile()
         {
             bp = bufnode_buf(bn);
             if (bp->block == block) {
-                ignore_result(write(logfile, (char*)bp->data, bp->datasize));
+                ignore_result(write(less::Settings::logfile, (char*)bp->data, bp->datasize));
                 wrote = true;
                 break;
             }
@@ -594,7 +588,7 @@ int ch_seek(position_t pos)
         while (thisfile->fpos < pos) {
             if (ch_forw_get() == EOI)
                 return (1);
-            if (is_abort_signal(sigs))
+            if (is_abort_signal(less::Settings::sigs))
                 return (1);
         }
         return (0);
@@ -629,7 +623,7 @@ int ch_end_seek()
      * Do it the slow way: read till end of data.
      */
     while (ch_forw_get() != EOI)
-        if (is_abort_signal(sigs))
+        if (is_abort_signal(less::Settings::sigs))
             return (1);
     return (0);
 }
@@ -706,10 +700,10 @@ position_t ch_length()
 {
     if (thisfile == nullptr)
         return (NULL_POSITION);
-    if (ignore_eoi)
+    if (less::Settings::ignore_eoi)
         return (NULL_POSITION);
     if (thisfile->flags & CH_HELPFILE)
-        return (size_helpdata);
+        return (help::size_helpdata);
     if (thisfile->flags & CH_NODATA)
         return (0);
     return (thisfile->fsize);
@@ -1029,3 +1023,5 @@ int ch_getflags()
         return (0);
     return (thisfile->flags);
 }
+
+}; // namespace ch
