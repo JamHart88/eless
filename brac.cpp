@@ -27,6 +27,9 @@
  * "close bracket" are given.
  */
 
+namespace bracket {
+    
+
 void match_brac(int obrac, int cbrac, int forwdir, int n)
 {
     int c;
@@ -92,3 +95,5 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
     }
     error((char*)"No matching bracket", NULL_PARG);
 }
+
+}; // namespace bracket

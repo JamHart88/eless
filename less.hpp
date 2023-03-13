@@ -361,6 +361,10 @@ struct Settings {
     // From ch:
     static int ignore_eoi;
 
+    // From charset
+    static int utf_mode;
+    static int binattr;
+
 };
 
 inline int Settings::logfile = -1; 
@@ -372,6 +376,9 @@ inline int Settings::autobuf = 0;
 inline int Settings::sigs = 0;
 
 inline int Settings::ignore_eoi = 0;
+
+inline int Settings::utf_mode = 0;
+inline int Settings::binattr = AT_STANDOUT;
 
 }
 

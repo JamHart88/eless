@@ -17,7 +17,7 @@
 #include "utils.hpp"
 
 extern int caseless;
-extern int utf_mode;
+
 
 /*
  * Compile a search pattern, for future use by match_pattern.
@@ -62,7 +62,7 @@ static int compile_pattern2(char* pattern, int search_type, PATTERN_TYPE* comp_p
         int erroffset;
         parg_t parg;
         pcre* comp = pcre_compile(pattern,
-            (utf_mode) ? PCRE_UTF8 | PCRE_NO_UTF8_CHECK : 0,
+            (less::Settings::utf_mode) ? PCRE_UTF8 | PCRE_NO_UTF8_CHECK : 0,
             &errstring, &erroffset, NULL);
         if (comp == NULL) {
             parg.p_string = (char*)errstring;

@@ -37,7 +37,7 @@
 extern int force_open;
 extern int use_lessopen;
 extern int ctldisp;
-extern int utf_mode;
+
 extern char openquote;
 extern char closequote;
 /*
@@ -363,14 +363,14 @@ int bin_file(int f)
         return (0);
     edata = &data[n];
     for (p = data; p < edata;) {
-        if (utf_mode && !is_utf8_well_formed(p, edata - data)) {
+        if (less::Settings::utf_mode && !charset::is_utf8_well_formed(p, edata - data)) {
             bin_count++;
-            utf_skip_to_lead(&p, edata);
+            charset::utf_skip_to_lead(&p, edata);
         } else {
-            lwchar_t c = step_char(&p, +1, edata);
+            lwchar_t c = charset::step_char(&p, +1, edata);
             if (ctldisp == OPT_ONPLUS && is_csi_start(c))
                 skip_ansi(&p, edata);
-            else if (binary_char(c))
+            else if (charset::binary_char(c))
                 bin_count++;
         }
     }

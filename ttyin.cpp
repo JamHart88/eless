@@ -17,7 +17,7 @@
 #include "utils.hpp"
 
 int tty;
-extern int utf_mode;
+
 extern int wheel_lines;
 
 /*

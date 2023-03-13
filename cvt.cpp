@@ -17,14 +17,13 @@
 #include "line.hpp"
 #include "utils.hpp"
 
-extern int utf_mode;
 
 /*
  * Get the length of a buffer needed to convert a string.
  */
 int cvt_length(int len, int ops)
 {
-    if (utf_mode)
+    if (less::Settings::utf_mode)
         /*
          * Just copying a string in UTF-8 mode can cause it to grow
          * in length.
@@ -72,12 +71,12 @@ void cvt_text(char* odst,
     for (src = osrc, dst = odst; src < src_end;) {
         int src_pos = (int)(src - osrc);
         int dst_pos = (int)(dst - odst);
-        ch = step_char(&src, +1, src_end);
+        ch = charset::step_char(&src, +1, src_end);
         if ((ops & CVT_BS) && ch == '\b' && dst > odst) {
             /* Delete backspace and preceding char. */
             do {
                 dst--;
-            } while (dst > odst && utf_mode && !IS_ASCII_OCTET(*dst) && !IS_UTF8_LEAD(*dst));
+            } while (dst > odst && less::Settings::utf_mode && !IS_ASCII_OCTET(*dst) && !IS_UTF8_LEAD(*dst));
         } else if ((ops & CVT_ANSI) && is_csi_start(ch)) {
             /* Skip to end of ANSI escape sequence. */
             src++; /* skip the csi_char start char */
@@ -88,7 +87,7 @@ void cvt_text(char* odst,
             /* Just copy the char to the destination buffer. */
             if ((ops & CVT_TO_LC) && isupper(ch))
                 ch = tolower(ch);
-            put_wchar(&dst, ch);
+            charset::put_wchar(&dst, ch);
             /* Record the original position of the char. */
             if (chpos != NULL)
                 chpos[dst_pos] = src_pos;

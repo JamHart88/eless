@@ -559,7 +559,7 @@ void opt_rscroll(int type, char* s)
     case TOGGLE: {
         char* fmt;
         int attr = AT_STANDOUT;
-        setfmt(s, &fmt, &attr, (char*)"*s>");
+        charset::setfmt(s, &fmt, &attr, (char*)"*s>");
         if (strcmp(fmt, "-") == 0) {
             rscroll_char = 0;
         } else {
@@ -569,7 +569,7 @@ void opt_rscroll(int type, char* s)
         break;
     }
     case QUERY: {
-        p.p_string = rscroll_char ? (char*)prchar(rscroll_char) : (char*)"-";
+        p.p_string = rscroll_char ? (char*)charset::prchar(rscroll_char) : (char*)"-";
         error((char*)"rscroll char is %s", p);
         break;
     }

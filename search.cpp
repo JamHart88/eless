@@ -41,7 +41,7 @@ extern int status_col;
 extern void* ml_search;
 extern position_t start_attnpos;
 extern position_t end_attnpos;
-extern int utf_mode;
+
 extern screen_trashed_t screen_trashed;
 #if HILITE_SEARCH
 extern int hilite_search;
@@ -139,7 +139,7 @@ static int is_ucase(char* str)
     lwchar_t ch;
 
     while (str < str_end) {
-        ch = step_char(&str, +1, str_end);
+        ch = charset::step_char(&str, +1, str_end);
         if (iswupper(ch))
             return (1);
     }

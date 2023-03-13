@@ -113,7 +113,6 @@ char* kent = NULL; /* Keypad ENTER sequence */
 
 static int attrmode = AT_NORMAL;
 static int termcap_debug = -1;
-extern int binattr;
 extern int one_screen;
 
 static char* cheaper(char* t1, char* t2, char* def);
@@ -1200,7 +1199,7 @@ int is_at_equiv(int attr1, int attr2)
 int apply_at_specials(int attr)
 {
     if (attr & AT_BINARY)
-        attr |= binattr;
+        attr |= less::Settings::binattr;
     if (attr & AT_HILITE)
         attr |= AT_STANDOUT;
     attr &= ~(AT_BINARY | AT_HILITE);

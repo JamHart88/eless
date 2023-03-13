@@ -7,6 +7,10 @@
 
 #include "less.hpp"
 
+namespace bracket {
+
 void match_brac(int obrac, int cbrac, int forwdir, int n);
+
+}; // namespace bracket
 
 #endif

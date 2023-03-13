@@ -31,7 +31,7 @@
 #endif
 
 extern int sc_width;
-extern int utf_mode;
+
 extern int no_hist_dups;
 extern int marks_modified;
 
@@ -160,15 +160,15 @@ static int cmd_mbc_buf_index;
     {
         char *ns = (char *) s;
         int width;
-        ch = step_char(&ns, +1, endline);
+        ch = charset::step_char(&ns, +1, endline);
         while (s < ns)
             putchr(*s++);
-        if (!utf_mode)
+        if (!less::Settings::utf_mode)
             width = 1;
-        else if (is_composing_char(ch) || is_combining_char(prev_ch, ch))
+        else if (charset::is_composing_char(ch) || charset::is_combining_char(prev_ch, ch))
             width = 0;
         else
-            width = is_wide_char(ch) ? 2 : 1;
+            width = charset::is_wide_char(ch) ? 2 : 1;
         cmd_col += width;
         prompt_col += width;
         prev_ch = ch;
@@ -186,7 +186,7 @@ static int cmd_mbc_buf_index;
 
     while (*s != '\0')
     {
-        step_char(&s, +1, endline);
+        charset::step_char(&s, +1, endline);
         len++;
     }
     return (len);
@@ -208,22 +208,22 @@ static char * cmd_step_common(char *p,
 
     if (len == 1)
     {
-        pr = prchar((int) ch);
+        pr = charset::prchar((int) ch);
         width = (int) strlen(pr);
     } else
     {
-        pr = prutfchar(ch);
-        if (is_composing_char(ch))
+        pr = charset::prutfchar(ch);
+        if (charset::is_composing_char(ch))
             width = 0;
-        else if (is_ubin_char(ch))
+        else if (charset::is_ubin_char(ch))
             width = (int) strlen(pr);
         else
         {
-            lwchar_t prev_ch = step_char(&p, -1, cmdbuf);
-            if (is_combining_char(prev_ch, ch))
+            lwchar_t prev_ch = charset::step_char(&p, -1, cmdbuf);
+            if (charset::is_combining_char(prev_ch, ch))
                 width = 0;
             else
-                width = is_wide_char(ch) ? 2 : 1;
+                width = charset::is_wide_char(ch) ? 2 : 1;
         }
     }
     if (pwidth != NULL)
@@ -241,7 +241,7 @@ static char * cmd_step_right(char **pp,
     int *bswidth)
 {
     char *p = *pp;
-    lwchar_t ch = step_char(pp, +1, p + strlen(p));
+    lwchar_t ch = charset::step_char(pp, +1, p + strlen(p));
 
     return cmd_step_common(p, ch, *pp - p, pwidth, bswidth);
 }
@@ -254,7 +254,7 @@ static char * cmd_step_left(char **pp,
     int *bswidth)
 {
     char *p = *pp;
-    lwchar_t ch = step_char(pp, -1, cmdbuf);
+    lwchar_t ch = charset::step_char(pp, -1, cmdbuf);
 
     return cmd_step_common(*pp, ch, p - *pp, pwidth, bswidth);
 }
@@ -929,7 +929,7 @@ static int cmd_istr(char *str)
     for (s = str;  *s != '\0';  )
     {
         char *os = s;
-        step_char(&s, +1, endline);
+        charset::step_char(&s, +1, endline);
         action = cmd_ichar(os, s - os);
         if (action != CC_OK)
         {
@@ -1206,7 +1206,7 @@ fail:
     int action;
     int len;
 
-    if (!utf_mode)
+    if (!less::Settings::utf_mode)
     {
         cmd_mbc_buf[0] = c;
         len = 1;
@@ -1222,7 +1222,7 @@ fail:
                 cmd_mbc_buf_len = 1;
             else if (IS_UTF8_LEAD(c))
             {
-                cmd_mbc_buf_len = utf_len(c);
+                cmd_mbc_buf_len = charset::utf_len(c);
                 return (CC_OK);
             } else
             {
@@ -1235,7 +1235,7 @@ fail:
             cmd_mbc_buf[cmd_mbc_buf_index++] = c;
             if (cmd_mbc_buf_index < cmd_mbc_buf_len)
                 return (CC_OK);
-            if (!is_utf8_well_formed(cmd_mbc_buf, cmd_mbc_buf_index))
+            if (!charset::is_utf8_well_formed(cmd_mbc_buf, cmd_mbc_buf_index))
             {
                 /* complete, but not well formed (non-shortest form), sequence */
                 cmd_mbc_buf_len = 0;

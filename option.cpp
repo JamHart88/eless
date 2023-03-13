@@ -60,7 +60,7 @@ char* propt(int c)
 {
     static char buf[8];
 
-    sprintf(buf, "-%s", prchar(c));
+    sprintf(buf, "-%s", charset::prchar(c));
     return (buf);
 }
 

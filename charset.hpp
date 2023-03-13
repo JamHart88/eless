@@ -16,6 +16,7 @@
 
 #include "less.hpp"
 
+namespace charset {
 
 #define IS_ASCII_OCTET(c)   (((c) & 0x80) == 0)
 #define IS_UTF8_TRAIL(c)    (((c) & 0xC0) == 0x80)
@@ -45,4 +46,5 @@
  int is_wide_char (lwchar_t ch);
  int is_combining_char (lwchar_t ch1, lwchar_t ch2);
 
+}; // namespace charset
 #endif

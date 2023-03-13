@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
     init_mark();
     init_cmds();
     get_term();
-    init_charset();
+    charset::init_charset();
     init_line();
     init_cmdhist();
     init_option();

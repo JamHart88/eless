@@ -72,7 +72,6 @@ extern int bs_mode;
 extern int linenums;
 extern int ctldisp;
 extern int twiddle;
-extern int binattr;
 extern int status_col;
 extern int auto_wrap, ignaw;
 extern int bo_s_width, bo_e_width;
@@ -80,7 +79,7 @@ extern int ul_s_width, ul_e_width;
 extern int bl_s_width, bl_e_width;
 extern int so_s_width, so_e_width;
 extern int sc_width, sc_height;
-extern int utf_mode;
+
 extern position_t start_attnpos;
 extern position_t end_attnpos;
 extern char rscroll_char;
@@ -313,23 +312,23 @@ static void pshift(int shift)
 
         width = 0;
 
-        if (!IS_ASCII_OCTET(c) && utf_mode) {
+        if (!IS_ASCII_OCTET(c) && less::Settings::utf_mode) {
             /* Assumes well-formedness validation already done.  */
             lwchar_t ch;
 
-            len = utf_len(c);
+            len = charset::utf_len(c);
             if (from + len > curr)
                 break;
-            ch = get_wchar(linebuf + from);
-            if (!is_composing_char(ch) && !is_combining_char(prev_ch, ch))
-                width = is_wide_char(ch) ? 2 : 1;
+            ch = charset::get_wchar(linebuf + from);
+            if (!charset::is_composing_char(ch) && !charset::is_combining_char(prev_ch, ch))
+                width = charset::is_wide_char(ch) ? 2 : 1;
             prev_ch = ch;
         } else {
             len = 1;
             if (c == '\b')
                 /* XXX - Incorrect if several '\b' in a row.  */
-                width = (utf_mode && is_wide_char(prev_ch)) ? -2 : -1;
-            else if (!control_char(c))
+                width = (less::Settings::utf_mode && charset::is_wide_char(prev_ch)) ? -2 : -1;
+            else if (!charset::control_char(c))
                 width = 1;
             prev_ch = 0;
         }
@@ -446,10 +445,10 @@ static int pwidth(lwchar_t ch, int a, lwchar_t prev_ch)
          * Backspace moves backwards one or two positions.
          * XXX - Incorrect if several '\b' in a row.
          */
-        return (utf_mode && is_wide_char(prev_ch)) ? -2 : -1;
+        return (less::Settings::utf_mode && charset::is_wide_char(prev_ch)) ? -2 : -1;
 
-    if (!utf_mode || is_ascii_char(ch)) {
-        if (control_char((char)ch)) {
+    if (!less::Settings::utf_mode || is_ascii_char(ch)) {
+        if (charset::control_char((char)ch)) {
             /*
              * Control characters do unpredictable things,
              * so we don't even try to guess; say it doesn't move.
@@ -458,7 +457,7 @@ static int pwidth(lwchar_t ch, int a, lwchar_t prev_ch)
             return (0);
         }
     } else {
-        if (is_composing_char(ch) || is_combining_char(prev_ch, ch)) {
+        if (charset::is_composing_char(ch) || charset::is_combining_char(prev_ch, ch)) {
             /*
              * Composing and combining chars take up no space.
              *
@@ -479,7 +478,7 @@ static int pwidth(lwchar_t ch, int a, lwchar_t prev_ch)
      * plus the width of any attribute enter/exit sequence.
      */
     w = 1;
-    if (is_wide_char(ch))
+    if (charset::is_wide_char(ch))
         w++;
     if (curr > 0 && !is_at_equiv(attr[curr - 1], a))
         w += attr_ewidth(attr[curr - 1]);
@@ -496,13 +495,13 @@ static int backc(void)
 {
     lwchar_t prev_ch;
     char* p = linebuf + curr;
-    lwchar_t ch = step_char(&p, -1, linebuf + lmargin);
+    lwchar_t ch = charset::step_char(&p, -1, linebuf + lmargin);
     int width;
 
     /* This assumes that there is no '\b' in linebuf.  */
     while (curr > lmargin && column > lmargin && (!(attr[curr - 1] & (AT_ANSI | AT_BINARY)))) {
         curr = (int)(p - linebuf);
-        prev_ch = step_char(&p, -1, linebuf + lmargin);
+        prev_ch = charset::step_char(&p, -1, linebuf + lmargin);
         width = pwidth(ch, attr[curr], prev_ch);
         column -= width;
         if (width > 0)
@@ -525,7 +524,7 @@ static int in_ansi_esc_seq(void)
      * or an end char (which means we're NOT in a seq).
      */
     for (p = &linebuf[curr]; p > linebuf;) {
-        lwchar_t ch = step_char(&p, -1, linebuf);
+        lwchar_t ch = charset::step_char(&p, -1, linebuf);
         if (is_csi_start(ch))
             return (1);
         if (!is_ansi_middle(ch))
@@ -567,7 +566,7 @@ void skip_ansi(char** pp, const char* limit)
 {
     lwchar_t c;
     do {
-        c = step_char(pp, +1, limit);
+        c = charset::step_char(pp, +1, limit);
     } while (*pp < limit && is_ansi_middle(c));
     /* Note that we discard final char, for which is_ansi_middle is false. */
 }
@@ -614,7 +613,7 @@ static int store_char(lwchar_t ch, int a, char* rep, position_t pos)
             char* p = &linebuf[curr];
             lwchar_t bch;
             do {
-                bch = step_char(&p, -1, linebuf);
+                bch = charset::step_char(&p, -1, linebuf);
             } while (p > linebuf && !is_csi_start(bch));
             curr = (int)(p - linebuf);
             return 0;
@@ -626,7 +625,7 @@ static int store_char(lwchar_t ch, int a, char* rep, position_t pos)
         w = 0;
     } else {
         char* p = &linebuf[curr];
-        lwchar_t prev_ch = step_char(&p, -1, linebuf);
+        lwchar_t prev_ch = charset::step_char(&p, -1, linebuf);
         w = pwidth(ch, a, prev_ch);
     }
 
@@ -641,7 +640,7 @@ static int store_char(lwchar_t ch, int a, char* rep, position_t pos)
         rep = &cs;
         replen = 1;
     } else {
-        replen = utf_len(rep[0]);
+        replen = charset::utf_len(rep[0]);
     }
     if (curr + replen >= size_linebuf - 6) {
         /*
@@ -710,13 +709,13 @@ static int store_prchar(lwchar_t c, position_t pos)
     /*
      * Convert to printable representation.
      */
-    s = prchar(c);
+    s = charset::prchar(c);
 
     /*
      * Make sure we can get the entire representation
      * of the character on this line.
      */
-    if (column + (int)strlen(s) - 1 + pwidth(' ', binattr, 0) + attr_ewidth(binattr) > sc_width)
+    if (column + (int)strlen(s) - 1 + pwidth(' ', less::Settings::binattr, 0) + attr_ewidth(less::Settings::binattr) > sc_width)
         return 1;
 
     for (; *s != 0; s++)
@@ -779,7 +778,7 @@ int pappend(int c, position_t pos)
         return (0);
     }
 
-    if (!utf_mode) {
+    if (!less::Settings::utf_mode) {
         r = do_append(c, NULL, pos);
     } else {
         /* Perform strict validation in all possible cases. */
@@ -790,7 +789,7 @@ int pappend(int c, position_t pos)
             if (IS_ASCII_OCTET(c))
                 r = do_append(c, NULL, pos);
             else if (IS_UTF8_LEAD(c)) {
-                mbc_buf_len = utf_len(c);
+                mbc_buf_len = charset::utf_len(c);
                 mbc_pos = pos;
                 return (0);
             } else
@@ -800,8 +799,8 @@ int pappend(int c, position_t pos)
             mbc_buf[mbc_buf_index++] = c;
             if (mbc_buf_index < mbc_buf_len)
                 return (0);
-            if (is_utf8_well_formed(mbc_buf, mbc_buf_index))
-                r = do_append(get_wchar(mbc_buf), mbc_buf, mbc_pos);
+            if (charset::is_utf8_well_formed(mbc_buf, mbc_buf_index))
+                r = do_append(charset::get_wchar(mbc_buf), mbc_buf, mbc_pos);
             else
                 /* Complete, but not shortest form, sequence. */
                 mbc_buf_index = r = flush_mbc_buf(mbc_pos);
@@ -829,7 +828,7 @@ int pappend(int c, position_t pos)
     }
     if (r) {
         /* How many chars should caller back up? */
-        r = (!utf_mode) ? 1 : mbc_buf_index;
+        r = (!less::Settings::utf_mode) ? 1 : mbc_buf_index;
     }
     return (r);
 }
@@ -868,10 +867,10 @@ static int do_append(lwchar_t ch, char* rep, position_t pos)
          * bold (if an identical character is overstruck),
          * or just deletion of the character in the buffer.
          */
-        overstrike = utf_mode ? -1 : 0;
-        if (utf_mode) {
+        overstrike = less::Settings::utf_mode ? -1 : 0;
+        if (less::Settings::utf_mode) {
             /* To be correct, this must be a base character.  */
-            prev_ch = get_wchar(linebuf + curr);
+            prev_ch = charset::get_wchar(linebuf + curr);
         } else {
             prev_ch = (unsigned char)linebuf[curr];
         }
@@ -902,7 +901,7 @@ static int do_append(lwchar_t ch, char* rep, position_t pos)
         }
         /* Else we replace prev_ch, but we keep its attributes.  */
     } else if (overstrike < 0) {
-        if (is_composing_char(ch) || is_combining_char(get_wchar(linebuf + curr), ch))
+        if (charset::is_composing_char(ch) || charset::is_combining_char(charset::get_wchar(linebuf + curr), ch))
             /* Continuation of the same overstrike.  */
             a = last_overstrike;
         else
@@ -921,7 +920,7 @@ static int do_append(lwchar_t ch, char* rep, position_t pos)
             STORE_TAB(a, pos);
             break;
         }
-    } else if ((!utf_mode || is_ascii_char(ch)) && control_char((char)ch)) {
+    } else if ((!less::Settings::utf_mode || is_ascii_char(ch)) && charset::control_char((char)ch)) {
     do_control_char:
         if (ctldisp == OPT_ON || (ctldisp == OPT_ONPLUS && is_csi_start(ch))) {
             /*
@@ -931,12 +930,12 @@ static int do_append(lwchar_t ch, char* rep, position_t pos)
         } else {
             STORE_PRCHAR((char)ch, pos);
         }
-    } else if (utf_mode && ctldisp != OPT_ON && is_ubin_char(ch)) {
+    } else if (less::Settings::utf_mode && ctldisp != OPT_ON && charset::is_ubin_char(ch)) {
         char* s;
 
-        s = prutfchar(ch);
+        s = charset::prutfchar(ch);
 
-        if (column + (int)strlen(s) - 1 + pwidth(' ', binattr, 0) + attr_ewidth(binattr) > sc_width)
+        if (column + (int)strlen(s) - 1 + pwidth(' ', less::Settings::binattr, 0) + attr_ewidth(less::Settings::binattr) > sc_width)
             return (1);
 
         for (; *s != 0; s++)

@@ -25,8 +25,7 @@
 
 extern int bs_mode;
 
-
-int utf_mode = 0;
+namespace charset {
 
 /*
  * Predefined character sets,
@@ -35,30 +34,30 @@ int utf_mode = 0;
 // clang-format off
 struct charset {
     const char *name;
-    int *p_flag;
+    int        *p_flag;
     const char *desc;
 } charsets[] = {
-    { "ascii",        NULL,       "8bcccbcc18b95.b" },
-    { "utf-8",        &utf_mode,  "8bcccbcc18b95.b126.bb" },
-    { "iso8859",      NULL,       "8bcccbcc18b95.33b." },
-    { "latin3",       NULL,       "8bcccbcc18b95.33b5.b8.b15.b4.b12.b18.b12.b." },
-    { "arabic",       NULL,       "8bcccbcc18b95.33b.3b.7b2.13b.3b.b26.5b19.b" },
-    { "greek",        NULL,       "8bcccbcc18b95.33b4.2b4.b3.b35.b44.b" },
-    { "greek2005",    NULL,       "8bcccbcc18b95.33b14.b35.b44.b" },
-    { "hebrew",       NULL,       "8bcccbcc18b95.33b.b29.32b28.2b2.b" },
-    { "koi8-r",       NULL,       "8bcccbcc18b95.b." },
-    { "KOI8-T",       NULL,       "8bcccbcc18b95.b8.b6.b8.b.b.5b7.3b4.b4.b3.b.b.3b." },
-    { "georgianps",   NULL,       "8bcccbcc18b95.3b11.4b12.2b." },
-    { "tcvn",         NULL,       "b..b...bcccbccbbb7.8b95.b48.5b." },
-    { "TIS-620",      NULL,       "8bcccbcc18b95.b.4b.11b7.8b." },
-    { "next",         NULL,       "8bcccbcc18b95.bb125.bb" },
-    { "dos",          NULL,       "8bcccbcc12bc5b95.b." },
-    { "windows-1251", NULL,       "8bcccbcc12bc5b95.b24.b." },
-    { "windows-1252", NULL,       "8bcccbcc12bc5b95.b.b11.b.2b12.b." },
-    { "windows-1255", NULL,       "8bcccbcc12bc5b95.b.b8.b.5b9.b.4b." },
-    { "ebcdic",       NULL,        "5bc6bcc7bcc41b.9b7.9b5.b..8b6.10b6.b9.7b9.8b8.17b3.3b9.7b9.8b8.6b10.b.b.b." },
-    { "IBM-1047",     NULL,       "4cbcbc3b9cbccbccbb4c6bcc5b3cbbc4bc4bccbc191.b" },
-    { NULL,           NULL,        NULL }
+    { "ascii",        NULL,                      "8bcccbcc18b95.b" },
+    { "utf-8",        &less::Settings::utf_mode, "8bcccbcc18b95.b126.bb" },
+    { "iso8859",      NULL,                      "8bcccbcc18b95.33b." },
+    { "latin3",       NULL,                      "8bcccbcc18b95.33b5.b8.b15.b4.b12.b18.b12.b." },
+    { "arabic",       NULL,                      "8bcccbcc18b95.33b.3b.7b2.13b.3b.b26.5b19.b" },
+    { "greek",        NULL,                      "8bcccbcc18b95.33b4.2b4.b3.b35.b44.b" },
+    { "greek2005",    NULL,                      "8bcccbcc18b95.33b14.b35.b44.b" },
+    { "hebrew",       NULL,                      "8bcccbcc18b95.33b.b29.32b28.2b2.b" },
+    { "koi8-r",       NULL,                      "8bcccbcc18b95.b." },
+    { "KOI8-T",       NULL,                      "8bcccbcc18b95.b8.b6.b8.b.b.5b7.3b4.b4.b3.b.b.3b." },
+    { "georgianps",   NULL,                      "8bcccbcc18b95.3b11.4b12.2b." },
+    { "tcvn",         NULL,                      "b..b...bcccbccbbb7.8b95.b48.5b." },
+    { "TIS-620",      NULL,                      "8bcccbcc18b95.b.4b.11b7.8b." },
+    { "next",         NULL,                      "8bcccbcc18b95.bb125.bb" },
+    { "dos",          NULL,                      "8bcccbcc12bc5b95.b." },
+    { "windows-1251", NULL,                      "8bcccbcc12bc5b95.b24.b." },
+    { "windows-1252", NULL,                      "8bcccbcc12bc5b95.b.b11.b.2b12.b." },
+    { "windows-1255", NULL,                      "8bcccbcc12bc5b95.b.b8.b.5b9.b.4b." },
+    { "ebcdic",       NULL,                      "5bc6bcc7bcc41b.9b7.9b5.b..8b6.10b6.b9.7b9.8b8.17b3.3b9.7b9.8b8.6b10.b.b.b." },
+    { "IBM-1047",     NULL,                      "4cbcbc3b9cbccbccbb4c6bcc5b3cbbc4bc4bccbc191.b" },
+    { NULL,           NULL,                      NULL }
 };
 // clang-format on
 
@@ -123,7 +122,7 @@ static char chardef[256];
 static char* binfmt = NULL;
 static char* utfbinfmt = NULL;
 
-int binattr = AT_STANDOUT;
+
 
 /*
  * Define a charset, given a description string.
@@ -256,7 +255,7 @@ static void ilocale(void)
 
 void setfmt(char* s, char** fmtvarptr, int* attrptr, char* default_fmt)
 {
-    if (s && utf_mode) {
+    if (s && less::Settings::utf_mode) {
         /* It would be too hard to account for width otherwise.  */
         char const* t = s;
         while (*t) {
@@ -369,10 +368,10 @@ void init_charset(void)
     set_charset();
 
     s = lgetenv((char*)"LESSBINFMT");
-    setfmt(s, &binfmt, &binattr, (char*)"*s<%02X>");
+    setfmt(s, &binfmt, &less::Settings::binattr, (char*)"*s<%02X>");
 
     s = lgetenv((char*)"LESSUTFBINFMT");
-    setfmt(s, &utfbinfmt, &binattr, (char*)"<U+%04lX>");
+    setfmt(s, &utfbinfmt, &less::Settings::binattr, (char*)"<U+%04lX>");
 }
 
 /*
@@ -381,7 +380,7 @@ void init_charset(void)
 
 int binary_char(lwchar_t c)
 {
-    if (utf_mode)
+    if (less::Settings::utf_mode)
         return (is_ubin_char(c));
     c &= 0377;
     return (chardef[c] & IS_BINARY_CHAR);
@@ -408,7 +407,7 @@ char* prchar(lwchar_t c)
     static char buf[32];
 
     c &= 0377;
-    if ((c < 128 || !utf_mode) && !control_char(c))
+    if ((c < 128 || !less::Settings::utf_mode) && !control_char(c))
         snprintf(buf, sizeof(buf), "%c", (int)c);
     else if (c == esc)
         strcpy(buf, "ESC");
@@ -550,7 +549,7 @@ lwchar_t get_wchar(const char* p)
 
 void put_wchar(char** pp, lwchar_t ch)
 {
-    if (!utf_mode || ch < 0x80) {
+    if (!less::Settings::utf_mode || ch < 0x80) {
         /* 0xxxxxxx */
         *(*pp)++ = (char)ch;
     } else if (ch < 0x800) {
@@ -599,7 +598,7 @@ lwchar_t step_char(
     int len;
     char* p = *pp;
 
-    if (!utf_mode) {
+    if (!less::Settings::utf_mode) {
         /* It's easy if chars are one byte. */
         if (dir > 0)
             ch = (lwchar_t)(unsigned char)((p < limit) ? *p++ : 0);
@@ -730,3 +729,5 @@ int is_combining_char(lwchar_t ch1, lwchar_t ch2)
     }
     return 0;
 }
+
+}; // namespace charset
