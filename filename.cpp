@@ -325,7 +325,7 @@ char* fcomplete(char* s)
     {
         int len = (int)strlen(s) + 2;
         fpat = (char*)utils::ecalloc(len, sizeof(char));
-        snprintf(fpat, len, "%s*", s);
+        ignore_result(snprintf(fpat, len, "%s*", s));
     }
     qs = lglob(fpat);
     s = shell_unquote(qs);
@@ -354,7 +354,7 @@ int bin_file(int f)
     char* p;
     char* edata;
 
-    if (!seekable(f))
+    if (!ch::seekable(f))
         return (0);
     if (lseek(f, (off_t)0, SEEK_SET) == BAD_LSEEK)
         return (0);
@@ -462,7 +462,7 @@ static FILE* shellcmd(char* cmd)
         } else {
             int len = (int)(strlen(shell) + strlen(esccmd) + 5);
             scmd = (char*)utils::ecalloc(len, sizeof(char));
-            snprintf(scmd, len, "%s %s %s", shell, shell_coption(), esccmd);
+            ignore_result(snprintf(scmd, len, "%s %s %s", shell, shell_coption(), esccmd));
             free(esccmd);
             fd = popen(scmd, "r");
             free(scmd);
@@ -613,11 +613,11 @@ char* lglob(char* filename)
          */
         len = (int)(strlen(lessecho) + strlen(filename) + (7 * strlen(metachars())) + 24);
         cmd = (char*)utils::ecalloc(len, sizeof(char));
-        snprintf(cmd, len, "%s -p0x%x -d0x%x -e%s ", lessecho, openquote, closequote, esc);
+        ignore_result(snprintf(cmd, len, "%s -p0x%x -d0x%x -e%s ", lessecho, openquote, closequote, esc));
         free(esc);
         for (s = metachars(); *s != '\0'; s++)
-            sprintf(cmd + strlen(cmd), "-n0x%x ", *s);
-        sprintf(cmd + strlen(cmd), "-- %s", filename);
+            ignore_result(sprintf(cmd + strlen(cmd), "-n0x%x ", *s));
+        ignore_result(sprintf(cmd + strlen(cmd), "-- %s", filename));
         fd = shellcmd(cmd);
         free(cmd);
         if (fd == nullptr) {
@@ -701,7 +701,7 @@ char* open_altfile(char* filename, int* pf, void** pfd)
 
     if (!use_lessopen)
         return (nullptr);
-    ch_ungetchar(-1);
+    ch::ch_ungetchar(-1);
     if ((lessopen = lgetenv((char*)"LESSOPEN")) == nullptr)
         return (nullptr);
     while (*lessopen == '|') {
@@ -772,7 +772,7 @@ char* open_altfile(char* filename, int* pf, void** pfd)
             }
             return (nullptr);
         }
-        ch_ungetchar(c);
+        ch::ch_ungetchar(c);
         *pfd = (void*)fd;
         *pf = f;
         return (utils::save("-"));
@@ -800,7 +800,7 @@ void close_altfile(char* altfilename, char* filename)
     char* cmd;
     int len;
 
-    ch_ungetchar(-1);
+    ch::ch_ungetchar(-1);
     if ((lessclose = lgetenv((char*)"LESSCLOSE")) == nullptr)
         return;
     if (num_pct_s(lessclose) > 2) {
@@ -809,7 +809,7 @@ void close_altfile(char* altfilename, char* filename)
     }
     len = (int)(strlen(lessclose) + strlen(filename) + strlen(altfilename) + 2);
     cmd = (char*)utils::ecalloc(len, sizeof(char));
-    snprintf(cmd, len, lessclose, filename, altfilename);
+    ignore_result(snprintf(cmd, len, lessclose, filename, altfilename));
     fd = shellcmd(cmd);
     free(cmd);
     if (fd != nullptr)

@@ -34,14 +34,12 @@ int forw_prompt;
 
 int same_pos_bell = 1;
 
-extern int sigs;
 extern int top_scroll;
 extern int quiet;
 extern int sc_width, sc_height;
 extern int plusoption;
 extern int forw_scroll;
 extern int back_scroll;
-extern int ignore_eoi;
 extern int clear_bg;
 extern int final_attr;
 extern int oldbot;
@@ -75,10 +73,10 @@ int eof_displayed(void)
 {
     position_t pos;
 
-    if (ignore_eoi)
+    if (less::Settings::ignore_eoi)
         return (0);
 
-    if (ch_length() == NULL_POSITION)
+    if (ch::ch_length() == NULL_POSITION)
         /*
          * If the file length is not known,
          * we can't possibly be displaying EOF.
@@ -91,7 +89,7 @@ int eof_displayed(void)
      * we must be just at EOF.
      */
     pos = position(BOTTOM_PLUS_ONE);
-    return (pos == NULL_POSITION || pos == ch_length());
+    return (pos == NULL_POSITION || pos == ch::ch_length());
 }
 
 /*
@@ -160,14 +158,14 @@ void forw(int n, position_t pos,
 
 #if HILITE_SEARCH
     if (hilite_search == OPT_ONPLUS || is_filtering() || status_col) {
-        prep_hilite(pos, pos + 4 * size_linebuf, ignore_eoi ? 1 : -1);
+        prep_hilite(pos, pos + 4 * size_linebuf, less::Settings::ignore_eoi ? 1 : -1);
         pos = next_unfiltered(pos);
     }
 #endif
 
     if (!do_repaint) {
         debug("not do_repaint");
-        if (top_scroll && n >= sc_height - 1 && pos != ch_length()) {
+        if (top_scroll && n >= sc_height - 1 && pos != ch::ch_length()) {
             debug("start new screen");
             /*
              * Start a new screen.
@@ -272,7 +270,7 @@ void forw(int n, position_t pos,
         forw_prompt = 1;
     }
 
-    if (nlines == 0 && !ignore_eoi && same_pos_bell)
+    if (nlines == 0 && !less::Settings::ignore_eoi && same_pos_bell)
         eof_bell();
     else if (do_repaint) {
         debug("repaint from forw");
@@ -345,7 +343,7 @@ void forward(int n, int force, int only_last)
 {
     position_t pos;
 
-    if (get_quit_at_eof() && eof_displayed() && !(ch_getflags() & CH_HELPFILE)) {
+    if (get_quit_at_eof() && eof_displayed() && !(ch::ch_getflags() & CH_HELPFILE)) {
         /*
          * If the -e flag is set and we're trying to go
          * forward from end-of-file, go on to the next file.
@@ -357,9 +355,9 @@ void forward(int n, int force, int only_last)
 
     pos = position(BOTTOM_PLUS_ONE);
     if (pos == NULL_POSITION && (!force || empty_lines(2, sc_height - 1))) {
-        if (ignore_eoi) {
+        if (less::Settings::ignore_eoi) {
             /*
-             * ignore_eoi is to support A_F_FOREVER.
+             * less::Settings::ignore_eoi is to support A_F_FOREVER.
              * Back up until there is a line at the bottom
              * of the screen.
              */

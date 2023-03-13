@@ -39,7 +39,7 @@ void jump_forw(void)
     position_t pos;
     position_t end_pos;
 
-    if (ch_end_seek()) {
+    if (ch::ch_end_seek()) {
         error((char*)"Cannot seek to end of file", NULL_PARG);
         return;
     }
@@ -55,7 +55,7 @@ void jump_forw(void)
      * to get to the beginning of the last line.
      */
     pos_clear();
-    end_pos = ch_tell();
+    end_pos = ch::ch_tell();
     pos = back_line(end_pos);
     if (pos == NULL_POSITION)
         jump_loc(ch_zero, sc_height - 1);
@@ -74,11 +74,11 @@ void jump_forw_buffered(void)
 {
     position_t end;
 
-    if (ch_end_buffer_seek()) {
+    if (ch::ch_end_buffer_seek()) {
         error((char*)"Cannot seek to end of buffers", NULL_PARG);
         return;
     }
-    end = ch_tell();
+    end = ch::ch_tell();
     if (end != NULL_POSITION && end > 0)
         jump_line_loc(end - 1, sc_height - 1);
 }
@@ -99,12 +99,12 @@ void jump_back(linenum_t linenum)
      * use ch_beg_seek() to get as close as we can.
      */
     pos = find_pos(linenum);
-    if (pos != NULL_POSITION && ch_seek(pos) == 0) {
+    if (pos != NULL_POSITION && ch::ch_seek(pos) == 0) {
         if (show_attn)
             set_attnpos(pos);
         jump_loc(pos, jump_sline);
-    } else if (linenum <= 1 && ch_beg_seek() == 0) {
-        jump_loc(ch_tell(), jump_sline);
+    } else if (linenum <= 1 && ch::ch_beg_seek() == 0) {
+        jump_loc(ch::ch_tell(), jump_sline);
         error((char*)"Cannot seek to beginning of file", NULL_PARG);
     } else {
         parg.p_linenum = linenum;
@@ -146,14 +146,14 @@ void jump_percent(int percent, long fraction)
      * Determine the position in the file
      * (the specified percentage of the file's length).
      */
-    len = ch_length();
+    len = ch::ch_length();
 
     if (len == NULL_POSITION) {
         ierror((char*)"Determining length of file", NULL_PARG);
-        ch_end_seek();
+        ch::ch_end_seek();
     }
 
-    len = ch_length();
+    len = ch::ch_length();
 
     if (len == NULL_POSITION) {
         error((char*)"Don't know length of file", NULL_PARG);
@@ -178,15 +178,15 @@ void jump_line_loc(position_t pos, int sline)
 {
     int c;
 
-    if (ch_seek(pos) == 0) {
+    if (ch::ch_seek(pos) == 0) {
         /*
          * Back up to the beginning of the line.
          */
-        while ((c = ch_back_get()) != '\n' && c != EOI)
+        while ((c = ch::ch_back_get()) != '\n' && c != EOI)
             ;
         if (c == '\n')
-            (void)ch_forw_get();
-        pos = ch_tell();
+            (void)ch::ch_forw_get();
+        pos = ch::ch_tell();
     }
     if (show_attn)
         set_attnpos(pos);
@@ -232,7 +232,7 @@ void jump_loc(position_t pos, int sline)
      * Line is not on screen.
      * Seek to the desired location.
      */
-    if (ch_seek(pos)) {
+    if (ch::ch_seek(pos)) {
         error((char*)"Cannot seek to that file position", NULL_PARG);
         return;
     }

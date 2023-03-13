@@ -48,8 +48,6 @@ int reading;
 
 static jmp_buf read_label;
 
-extern int sigs;
-
 /*
  * Like read() system call, but is deliberately interruptible.
  * A call to intread() from a signal handler will interrupt
@@ -89,8 +87,7 @@ start:
      * start returning 0 forever, instead of -1.
      */
     {
-        extern int ignore_eoi;
-        if (!ignore_eoi) {
+        if (!less::Settings::ignore_eoi) {
             static int consecutive_nulls = 0;
             if (n == 0)
                 consecutive_nulls++;

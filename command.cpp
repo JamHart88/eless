@@ -41,8 +41,8 @@
 #include "ttyin.hpp"
 #include "utils.hpp"
 
+
 extern int erase_char, erase2_char, kill_char;
-extern int sigs;
 extern int quit_if_one_screen;
 extern int squished;
 extern int sc_width;
@@ -53,7 +53,6 @@ extern int jump_sline;
 extern int quitting;
 extern int wscroll;
 extern int top_scroll;
-extern int ignore_eoi;
 extern int hshift;
 extern int bs_mode;
 extern int show_attn;
@@ -412,7 +411,7 @@ static int mca_opt_nonfirst_char(int c)
         cmd_reset();
         mca_opt_toggle();
         for (p = oname; *p != '\0'; p++) {
-            c = static_cast<int>(*p);
+            c = static_cast<unsigned char>(*p);
             if (!opt_lower && islower(c))
                 c = isupper(c);
             if (cmd_char(c) != CC_OK)
@@ -632,9 +631,9 @@ static int mca_char(int c)
  */
 static void clear_buffers(void)
 {
-    if (!(ch_getflags() & CH_CANSEEK))
+    if (!(ch::ch_getflags() & CH_CANSEEK))
         return;
-    ch_flush();
+    ch::ch_flush();
     clr_linenum();
 #if HILITE_SEARCH
     clr_hilite();
@@ -663,9 +662,9 @@ static void make_display(void)
     } else if (screen_trashed != NOT_TRASHED) {
         debug("Screen trashed");
         int save_top_scroll = top_scroll;
-        int save_ignore_eoi = ignore_eoi;
+        int save_eoi = less::Settings::ignore_eoi;
         top_scroll = 1;
-        ignore_eoi = 0;
+        less::Settings::ignore_eoi = 0;
         if (screen_trashed == TRASHED_AND_REOPEN_FILE) {
 
             reopen_curr_ifile();
@@ -673,7 +672,7 @@ static void make_display(void)
         }
         repaint();
         top_scroll = save_top_scroll;
-        ignore_eoi = save_ignore_eoi;
+        less::Settings::ignore_eoi = save_eoi;
     }
 }
 
@@ -701,7 +700,7 @@ static void prompt(void)
     /*
      * If we've hit EOF on the last file and the -E flag is set, quit.
      */
-    if (get_quit_at_eof() == OPT_ONPLUS && eof_displayed() && !(ch_getflags() & CH_HELPFILE) && 
+    if (get_quit_at_eof() == OPT_ONPLUS && eof_displayed() && !(ch::ch_getflags() & CH_HELPFILE) && 
         ifile::nextIfile(ifile::getCurrentIfile()) == nullptr)
         utils::quit(QUIT_OK);
 
@@ -709,7 +708,7 @@ static void prompt(void)
      * If the entire file is displayed and the -F flag is set, quit.
      */
     if (quit_if_one_screen && entire_file_displayed() && 
-        !(ch_getflags() & CH_HELPFILE) && ifile::nextIfile(ifile::getCurrentIfile()) == nullptr)
+        !(ch::ch_getflags() & CH_HELPFILE) && ifile::nextIfile(ifile::getCurrentIfile()) == nullptr)
         utils::quit(QUIT_OK);
 
     /*
@@ -981,15 +980,15 @@ static int forw_loop(int until_hilite)
 {
     position_t curr_len;
 
-    if (ch_getflags() & CH_HELPFILE)
+    if (ch::ch_getflags() & CH_HELPFILE)
         return (A_NOACTION);
 
     cmd_exec();
     jump_forw_buffered();
-    curr_len = ch_length();
+    curr_len = ch::ch_length();
     highest_hilite = until_hilite ? curr_len : NULL_POSITION;
-    ignore_eoi = 1;
-    while (!sigs) {
+    less::Settings::ignore_eoi = 1;
+    while (!less::Settings::sigs) {
         if (until_hilite && highest_hilite > curr_len) {
             bell();
             break;
@@ -997,14 +996,14 @@ static int forw_loop(int until_hilite)
         make_display();
         forward(1, 0, 0);
     }
-    ignore_eoi = 0;
-    ch_set_eof();
+    less::Settings::ignore_eoi = 0;
+    ch::ch_set_eof();
 
     /*
      * This gets us back in "F mode" after processing
      * a non-abort signal (e.g. window-change).
      */
-    if (sigs && !is_abort_signal(sigs))
+    if (less::Settings::sigs && !is_abort_signal(less::Settings::sigs))
         return (until_hilite ? A_F_UNTIL_HILITE : A_F_FOREVER);
 
     return (A_NOACTION);
@@ -1044,7 +1043,7 @@ void commands(void)
         /*
          * See if any signals need processing.
          */
-        if (sigs) {
+        if (less::Settings::sigs) {
             psignals();
             if (quitting)
                 utils::quit(QUIT_SAVED_STATUS);
@@ -1061,7 +1060,7 @@ void commands(void)
          */
         cmd_reset();
         prompt();
-        if (sigs)
+        if (less::Settings::sigs)
             continue;
         if (newaction == A_NOACTION) {
             c = getcc();
@@ -1073,7 +1072,7 @@ void commands(void)
     again:
         debug("at again:");
 
-        if (sigs)
+        if (less::Settings::sigs)
             continue;
 
         if (newaction != A_NOACTION) {
@@ -1392,7 +1391,7 @@ void commands(void)
             /*
              * Print file name, etc.
              */
-            if (ch_getflags() & CH_HELPFILE)
+            if (ch::ch_getflags() & CH_HELPFILE)
                 break;
             cmd_exec();
             parg.p_string = eq_message();
@@ -1411,7 +1410,7 @@ void commands(void)
             /*
              * Exit.
              */
-            if (ifile::getCurrentIfile() != nullptr && ch_getflags() & CH_HELPFILE) {
+            if (ifile::getCurrentIfile() != nullptr && ch::ch_getflags() & CH_HELPFILE) {
                 /*
                  * Quit while viewing the help file
                  * just means return to viewing the
@@ -1523,7 +1522,7 @@ void commands(void)
             /*
              * Help.
              */
-            if (ch_getflags() & CH_HELPFILE)
+            if (ch::ch_getflags() & CH_HELPFILE)
                 break;
             cmd_exec();
             save_hshift = hshift;
@@ -1552,7 +1551,7 @@ void commands(void)
              * Invoke an editor on the input file.
              */
 #if EDITOR
-            if (ch_getflags() & CH_HELPFILE)
+            if (ch::ch_getflags() & CH_HELPFILE)
                 break;
             if (strcmp(ifile::getCurrentIfile()->getFilename(), "-") == 0) {
                 error((char*)"Cannot edit standard input", NULL_PARG);
@@ -1590,7 +1589,7 @@ void commands(void)
             if (number <= 0)
                 number = 1;
             if (edit_next((int)number)) {
-                if (get_quit_at_eof() && eof_displayed() && !(ch_getflags() & CH_HELPFILE))
+                if (get_quit_at_eof() && eof_displayed() && !(ch::ch_getflags() & CH_HELPFILE))
                     utils::quit(QUIT_OK);
                 parg.p_string = (number > 1) ? (char*)"(N-th) " : (char*)"";
                 error((char*)"No %snext file", parg);
@@ -1675,7 +1674,7 @@ void commands(void)
             /*
              * Remove a file from the input file list.
              */
-            if (ch_getflags() & CH_HELPFILE)
+            if (ch::ch_getflags() & CH_HELPFILE)
                 break;
             old_ifile = ifile::getCurrentIfile();
             new_ifile = ifile::getOffIfile(ifile::getCurrentIfile());
@@ -1748,7 +1747,7 @@ void commands(void)
             /*
              * Set a mark.
              */
-            if (ch_getflags() & CH_HELPFILE)
+            if (ch::ch_getflags() & CH_HELPFILE)
                 break;
             start_mca(A_SETMARK, "set mark: ", (void*)nullptr, 0);
             c = getcc();

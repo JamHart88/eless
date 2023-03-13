@@ -135,7 +135,6 @@ extern int no_back_scroll;
 extern int swindow;
 extern int no_init;
 extern int no_keypad;
-extern int sigs;
 extern int wscroll;
 extern int top_scroll;
 extern int quit_if_one_screen;

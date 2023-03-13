@@ -28,7 +28,6 @@ int final_attr;
 
 int at_prompt;
 
-extern int sigs;
 extern int sc_width;
 extern int so_s_width, so_e_width;
 extern bool any_display;
@@ -44,7 +43,7 @@ void put_line(void)
     int i;
     int a;
 
-    if (is_abort_signal(sigs)) {
+    if (is_abort_signal(less::Settings::sigs)) {
         /*
          * Don't output if a signal is pending.
          */

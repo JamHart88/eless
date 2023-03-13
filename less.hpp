@@ -342,4 +342,37 @@ struct mlist;
 struct loption;
 struct hilite_tree;
 
+namespace less {
+struct Settings {   
+    // Logile related parameters
+    static int logfile;
+    static bool force_logfile;
+    static char* namelogfile;
+
+    // Options fields
+    static int follow_mode;       /* F cmd Follows file desc or file name? */
+    static int autobuf;           /* Automatically allocate buffers as needed */
+
+    /*
+    * sigs contains bits indicating signals which need to be processed.
+    */
+    static int sigs;
+
+    // From ch:
+    static int ignore_eoi;
+
+};
+
+inline int Settings::logfile = -1; 
+inline bool Settings::force_logfile = false;
+inline char* Settings::namelogfile = nullptr;
+inline int Settings::follow_mode = 0;
+inline int Settings::autobuf = 0;
+
+inline int Settings::sigs = 0;
+
+inline int Settings::ignore_eoi = 0;
+
+}
+
 #endif

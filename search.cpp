@@ -30,7 +30,6 @@
 #define MINPOS(a, b) (((a) < (b)) ? (a) : (b))
 #define MAXPOS(a, b) (((a) > (b)) ? (a) : (b))
 
-extern int sigs;
 extern int how_search;
 extern int caseless;
 extern int linenums;
@@ -494,7 +493,7 @@ int is_filtered(position_t pos)
 {
     struct hilite_node* n;
 
-    if (ch_getflags() & CH_HELPFILE)
+    if (ch::ch_getflags() & CH_HELPFILE)
         return (0);
 
     n = hlist_find(&filter_anchor, pos);
@@ -509,7 +508,7 @@ position_t next_unfiltered(position_t pos)
 {
     struct hilite_node* n;
 
-    if (ch_getflags() & CH_HELPFILE)
+    if (ch::ch_getflags() & CH_HELPFILE)
         return (pos);
 
     n = hlist_find(&filter_anchor, pos);
@@ -528,7 +527,7 @@ position_t prev_unfiltered(position_t pos)
 {
     struct hilite_node* n;
 
-    if (ch_getflags() & CH_HELPFILE)
+    if (ch::ch_getflags() & CH_HELPFILE)
         return (pos);
 
     n = hlist_find(&filter_anchor, pos);
@@ -965,10 +964,10 @@ static position_t search_pos(int search_type)
         if (search_type & SRCH_FORW) {
             pos = ch_zero;
         } else {
-            pos = ch_length();
+            pos = ch::ch_length();
             if (pos == NULL_POSITION) {
-                (void)ch_end_seek();
-                pos = ch_length();
+                (void)ch::ch_end_seek();
+                pos = ch::ch_length();
             }
         }
         sindex = 0;
@@ -1049,7 +1048,7 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
          * we hit end-of-file (or beginning-of-file if we're
          * going backwards), or until we hit the end position.
          */
-        if (is_abort_signal(sigs)) {
+        if (is_abort_signal(less::Settings::sigs)) {
             /*
              * A signal aborts the search.
              */
@@ -1535,7 +1534,7 @@ void set_filter_pattern(char* pattern, int search_type)
  */
 int is_filtering(void)
 {
-    if (ch_getflags() & CH_HELPFILE)
+    if (ch::ch_getflags() & CH_HELPFILE)
         return (0);
     return prev_pattern(&filter_info);
 }

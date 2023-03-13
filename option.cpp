@@ -497,7 +497,7 @@ char* opt_toggle_disallowed(int c)
 {
     switch (c) {
     case 'o':
-        if (ch_getflags() & CH_CANSEEK)
+        if (ch::ch_getflags() & CH_CANSEEK)
             return (char*)"Input is not a pipe";
         break;
     }

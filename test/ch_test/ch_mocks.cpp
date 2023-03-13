@@ -9,7 +9,6 @@
 #include <string>
 
 // Maybe need to initialize all these in the fixture
-int autobuf;
 char helpdata[] = { '\n', 'S', '\b', 'S', 'U', '\b', 'U', 'M' };
 int size_helpdata = sizeof(helpdata) - 1;
 int logfile = -1;

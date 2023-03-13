@@ -67,10 +67,6 @@ extern int mousecap;
 extern int wheel_lines;
 extern int less_is_more;
 
-extern char* namelogfile;
-extern bool force_logfile;
-extern int logfile;
-
 #if TAGS
 char* tagoption = NULL;
 extern char* tags;
@@ -88,31 +84,31 @@ void opt_o(int type, char* s)
 
     switch (type) {
     case INIT:
-        namelogfile = utils::save(s);
+        less::Settings::namelogfile = utils::save(s);
         break;
     case TOGGLE:
-        if (ch_getflags() & CH_CANSEEK) {
+        if (ch::ch_getflags() & CH_CANSEEK) {
             error((char*)"Input is not a pipe", NULL_PARG);
             return;
         }
-        if (logfile >= 0) {
+        if (less::Settings::logfile >= 0) {
             error((char*)"Log file is already in use", NULL_PARG);
             return;
         }
         s = utils::skipsp(s);
-        if (namelogfile != NULL)
-            free(namelogfile);
+        if (less::Settings::namelogfile != NULL)
+            free(less::Settings::namelogfile);
         filename = lglob(s);
-        namelogfile = shell_unquote(filename);
+        less::Settings::namelogfile = shell_unquote(filename);
         free(filename);
-        use_logfile(namelogfile);
-        sync_logfile();
+        use_logfile(less::Settings::namelogfile);
+        ch::sync_logfile();
         break;
     case QUERY:
-        if (logfile < 0)
+        if (less::Settings::logfile < 0)
             error((char*)"No log file", NULL_PARG);
         else {
-            parg.p_string = namelogfile;
+            parg.p_string = less::Settings::namelogfile;
             error((char*)"Log file \"%s\"", parg);
         }
         break;
@@ -124,7 +120,7 @@ void opt_o(int type, char* s)
  */
 void opt__O(int type, char* s)
 {
-    force_logfile = true;
+    less::Settings::force_logfile = true;
     opt_o(type, s);
 }
 
@@ -410,7 +406,7 @@ void opt_b(int type, char* s)
         /*
          * Set the new number of buffers.
          */
-        ch_setbufspace(bufspace);
+        ch::ch_setbufspace(bufspace);
         break;
     case QUERY:
         break;

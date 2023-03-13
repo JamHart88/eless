@@ -27,8 +27,6 @@ extern int squeeze;
 extern int chopline;
 extern int hshift;
 extern int quit_if_one_screen;
-extern int sigs;
-extern int ignore_eoi;
 extern int status_col;
 extern position_t start_attnpos;
 extern position_t end_attnpos;
@@ -68,11 +66,11 @@ get_forw_line:
          * for efficiency we prepare several lines ahead at once.
          */
         prep_hilite(curr_pos, curr_pos + 3 * size_linebuf,
-            ignore_eoi ? 1 : -1);
+            less::Settings::ignore_eoi ? 1 : -1);
         curr_pos = next_unfiltered(curr_pos);
     }
 #endif
-    if (ch_seek(curr_pos)) {
+    if (ch::ch_seek(curr_pos)) {
         null_line();
         return (NULL_POSITION);
     }
@@ -83,15 +81,15 @@ get_forw_line:
     base_pos = curr_pos;
     for (;;) {
         debug("forw_get - step back to beg of line - base_pos = ", base_pos);
-        if (is_abort_signal(sigs)) {
+        if (is_abort_signal(less::Settings::sigs)) {
             null_line();
             return (NULL_POSITION);
         }
-        c = ch_back_get();
+        c = ch::ch_back_get();
         if (c == EOI)
             break;
         if (c == '\n') {
-            (void)ch_forw_get();
+            (void)ch::ch_forw_get();
             break;
         }
         --base_pos;
@@ -103,21 +101,21 @@ get_forw_line:
      */
     prewind();
     plinenum(base_pos);
-    (void)ch_seek(base_pos);
+    (void)ch::ch_seek(base_pos);
     new_pos = base_pos;
     while (new_pos < curr_pos) {
-        if (is_abort_signal(sigs)) {
+        if (is_abort_signal(less::Settings::sigs)) {
             null_line();
             return (NULL_POSITION);
         }
-        c = ch_forw_get();
+        c = ch::ch_forw_get();
         backchars = pappend(c, new_pos);
         new_pos++;
         if (backchars > 0) {
             pshift_all();
             new_pos -= backchars;
             while (--backchars >= 0)
-                (void)ch_back_get();
+                (void)ch::ch_back_get();
         }
     }
     (void)pflushmbc();
@@ -127,7 +125,7 @@ get_forw_line:
     /*
      * Read the first character to display.
      */
-    c = ch_forw_get();
+    c = ch::ch_forw_get();
     if (c == EOI) {
         null_line();
         return (NULL_POSITION);
@@ -143,7 +141,7 @@ get_forw_line:
     bool endline = false;
 
     for (;;) {
-        if (is_abort_signal(sigs)) {
+        if (is_abort_signal(less::Settings::sigs)) {
             null_line();
             return (NULL_POSITION);
         }
@@ -153,7 +151,7 @@ get_forw_line:
              * End of the line.
              */
             backchars = pflushmbc();
-            new_pos = ch_tell();
+            new_pos = ch::ch_tell();
             if (backchars > 0 && !chopline && hshift == 0) {
                 new_pos -= backchars + 1;
                 endline = false;
@@ -167,7 +165,7 @@ get_forw_line:
         /*
          * Append the char to the line and get the next char.
          */
-        backchars = pappend(c, ch_tell() - 1);
+        backchars = pappend(c, ch::ch_tell() - 1);
         if (backchars > 0) {
             debug("forw_line - line too long - backchars = ", backchars);
             /*
@@ -177,23 +175,23 @@ get_forw_line:
              */
             if (chopline || hshift > 0) {
                 do {
-                    if (is_abort_signal(sigs)) {
+                    if (is_abort_signal(less::Settings::sigs)) {
                         null_line();
                         return (NULL_POSITION);
                     }
-                    c = ch_forw_get();
+                    c = ch::ch_forw_get();
                 } while (c != '\n' && c != EOI);
-                new_pos = ch_tell();
+                new_pos = ch::ch_tell();
                 endline = true;
                 quit_if_one_screen = false;
                 chopped = true;
             } else {
-                new_pos = ch_tell() - backchars;
+                new_pos = ch::ch_tell() - backchars;
                 endline = false;
             }
             break;
         }
-        c = ch_forw_get();
+        c = ch::ch_forw_get();
     }
 
     pdone(endline, chopped, 1);
@@ -208,7 +206,7 @@ get_forw_line:
         goto get_forw_line;
     }
 
-    if (status_col && is_hilited(base_pos, ch_tell() - 1, 1, NULL)) {
+    if (status_col && is_hilited(base_pos, ch::ch_tell() - 1, 1, NULL)) {
         debug("line 223 status_col val = ", static_cast<int>(status_col));
         set_status_col('*');
     }
@@ -221,14 +219,14 @@ get_forw_line:
          * Skip down to the last contiguous blank line
          * and pretend it is the one which we are returning.
          */
-        while ((c = ch_forw_get()) == '\n' || c == '\r')
-            if (is_abort_signal(sigs)) {
+        while ((c = ch::ch_forw_get()) == '\n' || c == '\r')
+            if (is_abort_signal(less::Settings::sigs)) {
                 null_line();
                 return (NULL_POSITION);
             }
         if (c != EOI)
-            (void)ch_back_get();
-        new_pos = ch_tell();
+            (void)ch::ch_back_get();
+        new_pos = ch::ch_tell();
     }
 
     debug("forw_line return new_pos = ", new_pos);
@@ -261,7 +259,7 @@ get_back_line:
         prep_hilite((curr_pos < 3 * size_linebuf) ? 0 : curr_pos - 3 * size_linebuf, curr_pos, -1);
     }
 #endif
-    if (ch_seek(curr_pos - 1)) {
+    if (ch::ch_seek(curr_pos - 1)) {
         null_line();
         return (NULL_POSITION);
     }
@@ -270,10 +268,10 @@ get_back_line:
         /*
          * Find out if the "current" line was blank.
          */
-        (void)ch_forw_get(); /* Skip the newline */
-        c = ch_forw_get(); /* First char of "current" line */
-        (void)ch_back_get(); /* Restore our position */
-        (void)ch_back_get();
+        (void)ch::ch_forw_get(); /* Skip the newline */
+        c = ch::ch_forw_get(); /* First char of "current" line */
+        (void)ch::ch_back_get(); /* Restore our position */
+        (void)ch::ch_back_get();
 
         if (c == '\n' || c == '\r') {
             /*
@@ -281,8 +279,8 @@ get_back_line:
              * Skip over any preceding blank lines,
              * since we skipped them in forw_line().
              */
-            while ((c = ch_back_get()) == '\n' || c == '\r')
-                if (is_abort_signal(sigs)) {
+            while ((c = ch::ch_back_get()) == '\n' || c == '\r')
+                if (is_abort_signal(less::Settings::sigs)) {
                     null_line();
                     return (NULL_POSITION);
                 }
@@ -290,7 +288,7 @@ get_back_line:
                 null_line();
                 return (NULL_POSITION);
             }
-            (void)ch_forw_get();
+            (void)ch::ch_forw_get();
         }
     }
 
@@ -298,17 +296,17 @@ get_back_line:
      * Scan backwards until we hit the beginning of the line.
      */
     for (;;) {
-        if (is_abort_signal(sigs)) {
+        if (is_abort_signal(less::Settings::sigs)) {
             null_line();
             return (NULL_POSITION);
         }
-        c = ch_back_get();
+        c = ch::ch_back_get();
         if (c == '\n') {
             /*
              * This is the newline ending the previous line.
              * We have hit the beginning of the line.
              */
-            base_pos = ch_tell() + 1;
+            base_pos = ch::ch_tell() + 1;
             break;
         }
         if (c == EOI) {
@@ -317,7 +315,7 @@ get_back_line:
              * This must be the first line in the file.
              * This must, of course, be the beginning of the line.
              */
-            base_pos = ch_tell();
+            base_pos = ch::ch_tell();
             break;
         }
     }
@@ -332,7 +330,7 @@ get_back_line:
      *    but I don't know of any better way. }}
      */
     new_pos = base_pos;
-    if (ch_seek(new_pos)) {
+    if (ch::ch_seek(new_pos)) {
         null_line();
         return (NULL_POSITION);
     }
@@ -342,11 +340,11 @@ get_back_line:
     plinenum(new_pos);
 loop:
     begin_new_pos = new_pos;
-    (void)ch_seek(new_pos);
+    (void)ch::ch_seek(new_pos);
 
     do {
-        c = ch_forw_get();
-        if (c == EOI || is_abort_signal(sigs)) {
+        c = ch::ch_forw_get();
+        if (c == EOI || is_abort_signal(less::Settings::sigs)) {
             null_line();
             return (NULL_POSITION);
         }
@@ -360,7 +358,7 @@ loop:
             endline = true;
             break;
         }
-        backchars = pappend(c, ch_tell() - 1);
+        backchars = pappend(c, ch::ch_tell() - 1);
         if (backchars > 0) {
             /*
              * Got a full printable line, but we haven't
@@ -376,7 +374,7 @@ loop:
         shift:
             pshift_all();
             while (backchars-- > 0) {
-                (void)ch_back_get();
+                (void)ch::ch_back_get();
                 new_pos--;
             }
             goto loop;
@@ -412,21 +410,21 @@ void set_attnpos(position_t pos)
     int c;
 
     if (pos != NULL_POSITION) {
-        if (ch_seek(pos))
+        if (ch::ch_seek(pos))
             return;
         for (;;) {
-            c = ch_forw_get();
+            c = ch::ch_forw_get();
             if (c == EOI)
                 break;
             if (c == '\n' || c == '\r') {
-                (void)ch_back_get();
+                (void)ch::ch_back_get();
                 break;
             }
             pos++;
         }
         end_attnpos = pos;
         for (;;) {
-            c = ch_back_get();
+            c = ch::ch_back_get();
             if (c == EOI || c == '\n' || c == '\r')
                 break;
             pos--;

@@ -28,11 +28,7 @@
 
 #include <signal.h>
 
-/*
- * "sigs" contains bits indicating signals which need to be processed.
- */
-
-int sigs;
+// TODO: Move to namespace
 
 extern int sc_width, sc_height;
 extern int lnloop;
@@ -55,7 +51,7 @@ static RETSIGTYPE u_interrupt(int type)
 {
     bell();
     signal(SIGINT, u_interrupt);
-    sigs |= S_INTERRUPT;
+    less::Settings::sigs |= S_INTERRUPT;
     if (reading)
         intread(); /* May longjmp */
 }
@@ -73,7 +69,7 @@ static RETSIGTYPE u_interrupt(int type)
 static RETSIGTYPE stop(int type)
 {
     signal(SIGTSTP, stop);
-    sigs |= S_STOP;
+    less::Settings::sigs |= S_STOP;
     if (reading)
         intread();
 }
@@ -102,7 +98,7 @@ static RETSIGTYPE stop(int type)
 RETSIGTYPE winch(int type)
 {
     signal(SIG_LESSWINDOW, winch);
-    sigs |= S_WINCH;
+    less::Settings::sigs |= S_WINCH;
     if (reading)
         intread();
 }
@@ -174,7 +170,7 @@ void init_signals(int on)
 
 /*
  * Process any signals we have received.
- * A received signal cause a bit to be set in "sigs".
+ * A received signal cause a bit to be set in "less::Settings::sigs".
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
@@ -185,9 +181,9 @@ void psignals(void)
 {
     int tsignals;
 
-    if ((tsignals = sigs) == 0)
+    if ((tsignals = less::Settings::sigs) == 0)
         return;
-    sigs = 0;
+    less::Settings::sigs = 0;
 
 #ifdef SIGTSTP
     if (tsignals & S_STOP) {

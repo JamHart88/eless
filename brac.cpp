@@ -42,7 +42,7 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
      * depending on the type of bracket.
      */
     pos = position((forwdir) ? TOP : BOTTOM);
-    if (pos == NULL_POSITION || ch_seek(pos)) {
+    if (pos == NULL_POSITION || ch::ch_seek(pos)) {
         if (forwdir)
             error((char*)"Nothing in top line", NULL_PARG);
         else
@@ -54,7 +54,7 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
      * Look thru the line to find the open bracket to match.
      */
     do {
-        if ((c = ch_forw_get()) == '\n' || c == EOI) {
+        if ((c = ch::ch_forw_get()) == '\n' || c == EOI) {
             if (forwdir)
                 error((char*)"No bracket in top line", NULL_PARG);
             else
@@ -70,12 +70,12 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
      * If searching backward, skip back over the open bracket.
      */
     if (!forwdir)
-        (void)ch_back_get();
+        (void)ch::ch_back_get();
 
     /*
      * Search the file for the matching bracket.
      */
-    chget = (forwdir) ? ch_forw_get : ch_back_get;
+    chget = (forwdir) ? ch::ch_forw_get : ch::ch_back_get;
     nest = 0;
     while ((c = (*chget)()) != EOI) {
         if (c == obrac)
@@ -86,7 +86,7 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
              * If searching backward, put it on the top line.
              * If searching forward, put it on the bottom line.
              */
-            jump_line_loc(ch_tell(), forwdir ? -1 : 1);
+            jump_line_loc(ch::ch_tell(), forwdir ? -1 : 1);
             return;
         }
     }

@@ -163,7 +163,7 @@ static position_t curr_byte(int where)
     while (pos == NULL_POSITION && where >= 0 && where < sc_height - 1)
         pos = position(++where);
     if (pos == NULL_POSITION)
-        pos = ch_length();
+        pos = ch::ch_length();
     return (pos);
 }
 
@@ -196,7 +196,7 @@ static int cond(char c, int where)
         return (currline(where) != 0);
     case 'L': /* Final line number known? */
     case 'D': /* Final page number known? */
-        return (linenums && ch_length() != NULL_POSITION);
+        return (linenums && ch::ch_length() != NULL_POSITION);
     case 'm': /* More than one file? */
 #if TAGS
         return (ntags() ? (ntags() > 1) : (ifile::numIfiles() > 1));
@@ -210,12 +210,12 @@ static int cond(char c, int where)
         return (new_file);
 #endif
     case 'p': /* Percent into file (bytes) known? */
-        return (curr_byte(where) != NULL_POSITION && ch_length() > 0);
+        return (curr_byte(where) != NULL_POSITION && ch::ch_length() > 0);
     case 'P': /* Percent into file (lines) known? */
-        return (currline(where) != 0 && (len = ch_length()) > 0 && find_linenum(len) != 0);
+        return (currline(where) != 0 && (len = ch::ch_length()) > 0 && find_linenum(len) != 0);
     case 's': /* Size of file known? */
     case 'B':
-        return (ch_length() != NULL_POSITION);
+        return (ch::ch_length() != NULL_POSITION);
     case 'x': /* Is there a "next" file? */
 #if TAGS
         if (ntags())
@@ -266,7 +266,7 @@ static void protochar(int c, int where, int iseditproto)
         break;
     case 'D': /* Final page number */
         /* Find the page number of the last byte in the file (len-1). */
-        len = ch_length();
+        len = ch::ch_length();
         if (len == NULL_POSITION)
             ap_quest();
         else if (len == 0)
@@ -312,7 +312,7 @@ static void protochar(int c, int where, int iseditproto)
             ap_quest();
         break;
     case 'L': /* Final line number */
-        len = ch_length();
+        len = ch::ch_length();
         if (len == NULL_POSITION || len == ch_zero || (linenum = find_linenum(len)) <= 0)
             ap_quest();
         else
@@ -329,7 +329,7 @@ static void protochar(int c, int where, int iseditproto)
         break;
     case 'p': /* Percent into file (bytes) */
         pos = curr_byte(where);
-        len = ch_length();
+        len = ch::ch_length();
         if (pos != NULL_POSITION && len > 0)
             ap_int(percentage(pos, len));
         else
@@ -337,14 +337,14 @@ static void protochar(int c, int where, int iseditproto)
         break;
     case 'P': /* Percent into file (lines) */
         linenum = currline(where);
-        if (linenum == 0 || (len = ch_length()) == NULL_POSITION || len == ch_zero || (last_linenum = find_linenum(len)) <= 0)
+        if (linenum == 0 || (len = ch::ch_length()) == NULL_POSITION || len == ch_zero || (last_linenum = find_linenum(len)) <= 0)
             ap_quest();
         else
             ap_int(percentage(linenum, last_linenum));
         break;
     case 's': /* Size of file */
     case 'B':
-        len = ch_length();
+        len = ch::ch_length();
         if (len != NULL_POSITION)
             ap_pos(len);
         else
@@ -557,7 +557,7 @@ char* pr_string(void)
 
     type = (!less_is_more) ? pr_type : pr_type ? 0
                                                : 1;
-    prompt = pr_expand((ch_getflags() & CH_HELPFILE) ? hproto : prproto[type],
+    prompt = pr_expand((ch::ch_getflags() & CH_HELPFILE) ? hproto : prproto[type],
         sc_width - so_s_width - so_e_width - 2);
     new_file = false;
     return (prompt);

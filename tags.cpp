@@ -34,7 +34,6 @@ static int total;
 static int curseq;
 
 extern int linenums;
-extern int sigs;
 extern int ctldisp;
 
 enum tag_result {
@@ -473,7 +472,7 @@ static position_t ctagsearch(void)
          * Get lines until we find a matching one or
          * until we hit end-of-file.
          */
-        if (is_abort_signal(sigs))
+        if (is_abort_signal(less::Settings::sigs))
             return (NULL_POSITION);
 
         /*
@@ -603,7 +602,7 @@ static enum tag_result findgtag(char* tag, /* tag to load */ int type)
             char *name, *file, *line;
             int len;
 
-            if (sigs) {
+            if (less::Settings::sigs) {
 #if HAVE_POPEN
                 if (fp != stdin)
                     pclose(fp);

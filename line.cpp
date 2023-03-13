@@ -68,7 +68,6 @@ static int attr_swidth(int a);
 static int attr_ewidth(int a);
 static int do_append(lwchar_t ch, char* rep, position_t pos);
 
-extern int sigs;
 extern int bs_mode;
 extern int linenums;
 extern int ctldisp;
@@ -343,7 +342,7 @@ static void pshift(int shift)
              * combining_char pair, so reset prev_ch in case we're
              * followed by a '\b'.
              */
-            prev_ch = linebuf[to++] = ' ';
+            prev_ch = static_cast<unsigned char>(linebuf[to++] = ' ');
             from += len;
             shifted++;
             continue;
@@ -876,7 +875,7 @@ static int do_append(lwchar_t ch, char* rep, position_t pos)
         } else {
             prev_ch = (unsigned char)linebuf[curr];
         }
-        a = attr[curr];
+        a = static_cast<unsigned char>(attr[curr]);
         if (ch == prev_ch) {
             /*
              * Overstriking a char with itself means make it bold.
@@ -1096,7 +1095,7 @@ int gline(int i, int* ap)
         return i ? '\0' : '\n';
     }
 
-    *ap = attr[i];
+    *ap = static_cast<unsigned char>(attr[i]);
     return (linebuf[i] & 0xFF);
 }
 
@@ -1122,13 +1121,13 @@ position_t forw_raw_line(position_t curr_pos, char** linep, int* line_lenp)
     int c;
     position_t new_pos;
 
-    if (curr_pos == NULL_POSITION || ch_seek(curr_pos) || (c = ch_forw_get()) == EOI)
+    if (curr_pos == NULL_POSITION || ch::ch_seek(curr_pos) || (c = ch::ch_forw_get()) == EOI)
         return (NULL_POSITION);
 
     n = 0;
     for (;;) {
-        if (c == '\n' || c == EOI || is_abort_signal(sigs)) {
-            new_pos = ch_tell();
+        if (c == '\n' || c == EOI || is_abort_signal(less::Settings::sigs)) {
+            new_pos = ch::ch_tell();
             break;
         }
         if (n >= size_linebuf - 1) {
@@ -1137,12 +1136,12 @@ position_t forw_raw_line(position_t curr_pos, char** linep, int* line_lenp)
                  * Overflowed the input buffer.
                  * Pretend the line ended here.
                  */
-                new_pos = ch_tell() - 1;
+                new_pos = ch::ch_tell() - 1;
                 break;
             }
         }
         linebuf[n++] = c;
-        c = ch_forw_get();
+        c = ch::ch_forw_get();
     }
     linebuf[n] = '\0';
     if (linep != NULL)
@@ -1163,19 +1162,19 @@ position_t back_raw_line(position_t curr_pos, char** linep, int* line_lenp)
     int c;
     position_t new_pos;
 
-    if (curr_pos == NULL_POSITION || curr_pos <= ch_zero || ch_seek(curr_pos - 1))
+    if (curr_pos == NULL_POSITION || curr_pos <= ch_zero || ch::ch_seek(curr_pos - 1))
         return (NULL_POSITION);
 
     n = size_linebuf;
     linebuf[--n] = '\0';
     for (;;) {
-        c = ch_back_get();
-        if (c == '\n' || is_abort_signal(sigs)) {
+        c = ch::ch_back_get();
+        if (c == '\n' || is_abort_signal(less::Settings::sigs)) {
             /*
              * This is the newline ending the previous line.
              * We have hit the beginning of the line.
              */
-            new_pos = ch_tell() + 1;
+            new_pos = ch::ch_tell() + 1;
             break;
         }
         if (c == EOI) {
@@ -1196,7 +1195,7 @@ position_t back_raw_line(position_t curr_pos, char** linep, int* line_lenp)
                  * Overflowed the input buffer.
                  * Pretend the line ended here.
                  */
-                new_pos = ch_tell() + 1;
+                new_pos = ch::ch_tell() + 1;
                 break;
             }
             /*

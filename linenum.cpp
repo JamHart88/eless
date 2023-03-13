@@ -71,7 +71,6 @@ static struct linenum_info pool[NPOOL]; /* The pool itself */
 static struct linenum_info* spare; /* We always keep one spare entry */
 
 extern int linenums;
-extern int sigs;
 extern int sc_height;
 
 /*
@@ -293,7 +292,7 @@ linenum_t find_linenum(position_t pos)
          * Go forward.
          */
         p = p->prev;
-        if (ch_seek(p->pos))
+        if (ch::ch_seek(p->pos))
             return (0);
         loopcount = 0;
         for (linenum = p->line, cpos = p->pos; cpos < pos; linenum++) {
@@ -301,7 +300,7 @@ linenum_t find_linenum(position_t pos)
              * Allow a signal to abort this loop.
              */
             cpos = forw_raw_line(cpos, (char**)NULL, (int*)NULL);
-            if (is_abort_signal(sigs)) {
+            if (is_abort_signal(less::Settings::sigs)) {
                 abort_long();
                 return (0);
             }
@@ -323,7 +322,7 @@ linenum_t find_linenum(position_t pos)
         /*
          * Go backward.
          */
-        if (ch_seek(p->pos))
+        if (ch::ch_seek(p->pos))
             return (0);
         loopcount = 0;
         for (linenum = p->line, cpos = p->pos; cpos > pos; linenum--) {
@@ -331,7 +330,7 @@ linenum_t find_linenum(position_t pos)
              * Allow a signal to abort this loop.
              */
             cpos = back_raw_line(cpos, (char**)NULL, (int*)NULL);
-            if (is_abort_signal(sigs)) {
+            if (is_abort_signal(less::Settings::sigs)) {
                 abort_long();
                 return (0);
             }
@@ -378,14 +377,14 @@ position_t find_pos(linenum_t linenum)
          * Go forward.
          */
         p = p->prev;
-        if (ch_seek(p->pos))
+        if (ch::ch_seek(p->pos))
             return (NULL_POSITION);
         for (clinenum = p->line, cpos = p->pos; clinenum < linenum; clinenum++) {
             /*
              * Allow a signal to abort this loop.
              */
             cpos = forw_raw_line(cpos, (char**)NULL, (int*)NULL);
-            if (is_abort_signal(sigs))
+            if (is_abort_signal(less::Settings::sigs))
                 return (NULL_POSITION);
             if (cpos == NULL_POSITION)
                 return (NULL_POSITION);
@@ -394,14 +393,14 @@ position_t find_pos(linenum_t linenum)
         /*
          * Go backward.
          */
-        if (ch_seek(p->pos))
+        if (ch::ch_seek(p->pos))
             return (NULL_POSITION);
         for (clinenum = p->line, cpos = p->pos; clinenum > linenum; clinenum--) {
             /*
              * Allow a signal to abort this loop.
              */
             cpos = back_raw_line(cpos, (char**)NULL, (int*)NULL);
-            if (is_abort_signal(sigs))
+            if (is_abort_signal(less::Settings::sigs))
                 return (NULL_POSITION);
             if (cpos == NULL_POSITION)
                 return (NULL_POSITION);
@@ -426,7 +425,7 @@ linenum_t currline(int where)
     linenum_t linenum;
 
     pos = position(where);
-    len = ch_length();
+    len = ch::ch_length();
     while (pos == NULL_POSITION && where >= 0 && where < sc_height)
         pos = position(++where);
     if (pos == NULL_POSITION)

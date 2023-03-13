@@ -38,16 +38,11 @@ extern char* every_first_cmd;
 extern bool any_display;
 extern int force_open;
 extern int is_tty;
-extern int sigs;
 extern struct scrpos initial_scrpos;
 extern void* ml_examine;
 
 extern char openquote;
 extern char closequote;
-
-extern int logfile;
-extern bool force_logfile;
-extern char* namelogfile;
 
 #if HAVE_STAT_INO
 dev_t curr_dev;
@@ -169,8 +164,8 @@ static void close_file(void)
     /*
      * Close the file descriptor, unless it is a pipe.
      */
-    chflags = ch_getflags();
-    ch_close();
+    chflags = ch::ch_getflags();
+    ch::ch_close();
     /*
      * If we opened a file using an alternate name,
      * do special stuff to close it.
@@ -236,11 +231,11 @@ int edit_ifile(ifile::Ifile* requestedIfile)
      * {{ Some stupid implementations of popen() mess up if you do:
      *    fA = popen("A"); fB = popen("B"); pclose(fA); pclose(fB); }}
      */
-    end_logfile();
+    ch::end_logfile();
 
     was_curr_ifile = save_curr_ifile();
     if (curr_ifile != nullptr) {
-        chflags = ch_getflags();
+        chflags = ch::ch_getflags();
         close_file();
         if ((chflags & CH_HELPFILE) && was_curr_ifile->getHoldCount() <= 1) {
             /*
@@ -393,11 +388,11 @@ int edit_ifile(ifile::Ifile* requestedIfile)
     initial_scrpos = ifile::getCurrentIfile()->getPos();
 
     new_file = true;
-    ch_init(f, chflags);
+    ch::ch_init(f, chflags);
 
     if (!(chflags & CH_HELPFILE)) {
-        if (namelogfile != nullptr && is_tty)
-            use_logfile(namelogfile);
+        if (less::Settings::namelogfile != nullptr && is_tty)
+            use_logfile(less::Settings::namelogfile);
 
 #if HAVE_STAT_INO
         /* Remember the i-number and device of the opened file. */
@@ -559,7 +554,7 @@ static int edit_istep(ifile::Ifile* h, int n, int dir)
              */
             return (1);
         }
-        if (is_abort_signal(sigs)) {
+        if (is_abort_signal(less::Settings::sigs)) {
             /*
              * Interrupt breaks out, if we're in a long
              * list of files that can't be opened.
@@ -691,7 +686,7 @@ void cat_file(void)
 {
     int c;
 
-    while ((c = ch_forw_get()) != EOI)
+    while ((c = ch::ch_forw_get()) != EOI)
         putchr(c);
     flush();
 }
@@ -708,7 +703,7 @@ void use_logfile(char* filename)
     int answer;
     parg_t parg;
 
-    if (ch_getflags() & CH_CANSEEK)
+    if (ch::ch_getflags() & CH_CANSEEK)
         /*
          * Can't currently use a log file on a file that can seek.
          */
@@ -726,7 +721,7 @@ void use_logfile(char* filename)
      * Decide whether to overwrite the log file or append to it.
      * If it doesn't exist we "overwrite" it.
      */
-    if (!exists || force_logfile) {
+    if (!exists || less::Settings::force_logfile) {
         /*
          * Overwrite (or create) the log file.
          */
@@ -746,17 +741,17 @@ loop:
         /*
          * Overwrite: create the file.
          */
-        logfile = creat(filename, 0644);
+        less::Settings::logfile = creat(filename, 0644);
         break;
     case 'A':
     case 'a':
         /*
          * Append: open the file and seek to the end.
          */
-        logfile = open(filename, OPEN_APPEND);
-        if (lseek(logfile, (off_t)0, SEEK_END) == BAD_LSEEK) {
-            close(logfile);
-            logfile = -1;
+        less::Settings::logfile = open(filename, OPEN_APPEND);
+        if (lseek(less::Settings::logfile, (off_t)0, SEEK_END) == BAD_LSEEK) {
+            close(less::Settings::logfile);
+            less::Settings::logfile = -1;
         }
         break;
     case 'D':
@@ -776,7 +771,7 @@ loop:
         goto loop;
     }
 
-    if (logfile < 0) {
+    if (less::Settings::logfile < 0) {
         /*
          * Error in opening logfile.
          */

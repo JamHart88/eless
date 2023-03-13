@@ -22,6 +22,7 @@
  */
 // TODO: Look at moving these to a globals/settings package. Also there are 
 // bools here that need to be type defined correctly
+// Move to less.hpp Less struct - like follow_mode
 
 // clang-format off
  int quiet;             /* Should we suppress the audible bell? */
@@ -39,7 +40,6 @@
  int forw_scroll;       /* Repaint screen on forward movement */
  int caseless;          /* Do "caseless" searches */
  int linenums;          /* Use line numbers */
- int autobuf;           /* Automatically allocate buffers as needed */
  int bufspace;          /* Max buffer space per file (K) */
  int ctldisp;           /* Send control chars to screen untranslated */
  int force_open;        /* Open the file even if not regular file */
@@ -56,7 +56,6 @@
  int status_col;        /* Display a status column */
  int use_lessopen;      /* Use the LESSOPEN filter */
  int quit_on_intr;      /* Quit on interrupt */
- int follow_mode;       /* F cmd Follows file desc or file name? */
  int oldbot;            /* Old bottom of screen behavior {{REMOVE}} */
  int opt_use_backslash; /* Use backslash escaping in option parsing */
  char rscroll_char;     /* Char which marks chopped lines with -S */
@@ -160,7 +159,7 @@ static struct loption option[] = {
             NULL 
         } },
     { 'B', &B__optname,
-        BOOL, OPT_ON, &autobuf, NULL,
+        BOOL, OPT_ON, &less::Settings::autobuf, NULL,
         { 
             (char*)"Don't automatically allocate buffers",
             (char*)"Automatically allocate buffers when needed",
@@ -371,7 +370,7 @@ static struct loption option[] = {
             (char*)"Use old bottom of screen behavior",
             NULL } },
     { OLETTER_NONE, &follow_optname,
-        BOOL, FOLLOW_DESC, &follow_mode, NULL,
+        BOOL, FOLLOW_DESC, &less::Settings::follow_mode, NULL,
         { (char*)"F command follows file descriptor",
             (char*)"F command follows file name",
             NULL } },

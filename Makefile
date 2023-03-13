@@ -13,7 +13,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
-CPPFLAGS = -std=c++0x -g -O0 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal -Wpedantic 
+CPPFLAGS = -std=c++17 -g -O0 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal -Wpedantic 
 # Removed CPP flags
 # Make this -O2 for production
 # -std=c++11  - AIX XLC++ only has c++0x 
@@ -51,7 +51,7 @@ SHELL = /bin/sh
 OBJ = \
 	main.${O} screen.${O} brac.${O} ch.${O} charset.${O} cmdbuf.${O} \
 	command.${O} cvt.${O} decode.${O} edit.${O} filename.${O} forwback.${O} \
-	help.${O} ifile.${O} input.${O} jump.${O} line.${O} linenum.${O} \
+	ifile.${O} input.${O} jump.${O} line.${O} linenum.${O} \
 	lsystem.${O} mark.${O} optfunc.${O} option.${O} opttbl.${O} os.${O} \
 	output.${O} pattern.${O} position.${O} prompt.${O} search.${O} signal.${O} \
 	tags.${O} ttyin.${O} version.${O} debug.${O} utils.${O}

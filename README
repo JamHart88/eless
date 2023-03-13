@@ -1,11 +1,20 @@
 
                             eLess, version 0.1
 
-    This is the distribution of less, version 557, released 21 Mar 2020
-    but modified:
+    This was taken from the distribution of less, version 557, 
+    released 21 Mar 2020 but modified as below:
       Removed any MSDOS/Windows specific code
       Converted to C++
-      
+      Fixed memory issues and static analyis issues
+      Removed macros
+
+      Current progress:
+         ifile - finished migrating to C++ and switched to using std 
+                 library functions. Wrote unit tests.
+                 created file namnespace
+         ch    - developing unit tests and working on migrating to 
+                 use std library and removing macros
+         
     The original source of this program was from the GNU project 
     (http://www.gnu.org).
 
@@ -33,6 +42,8 @@ Major changes made since the last posted version are in NEWS.
 =======================================================================
 To build:
 
+jhar TODO: These may need to be updated:
+
 1. It is a good idea to look over the generated Makefile and defines.h
    and make sure they look ok.  If you know of any peculiarities of
    your system that configure might not have detected, you may fix the
@@ -49,7 +60,7 @@ To build:
 
 4. Type "make" and watch the fun.
 
-5. If the make succeeds, it will generate the programs "less" in the
+5. If the make succeeds, it will generate the programs "eless" in the
    current directoy
 
 6. When satisfied that it works, if you wish to install it
@@ -70,12 +81,3 @@ in double curly brackets {{ like this }}.
 (Note that the above note was originally written at a time when 
 "hackers" most commonly meant "enthusiastic and dedicated computer 
 programmers", not "persons who attempt to circumvent computer security".)
-
-
-=======================================================================
-ACKNOWLEDGMENTS:
-  Some versions of the less distribution are packaged using 
-  Info-ZIP's compression utility.
-  Info-ZIP's software is free and can be obtained as source 
-  code or executables from various anonymous-ftp sites,
-  including ftp.uu.net:/pub/archiving/zip.

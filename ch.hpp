@@ -8,6 +8,8 @@
 //
 #include "less.hpp"
 
+namespace ch {
+
 void ch_ungetchar(int c);
 void end_logfile(void);
 void sync_logfile(void);
@@ -26,6 +28,8 @@ void ch_set_eof(void);
 void ch_init(int f, int flags);
 void ch_close(void);
 int ch_getflags(void);
+
+}; // namespace ch
 
 #endif
 
