@@ -13,7 +13,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = --coverage
-CPPFLAGS = -std=c++11 -g -O0 -Wall --coverage
+CPPFLAGS = -std=c++17 -g -O0 -Wall --coverage
 EXEEXT = 
 O=o
 
@@ -57,7 +57,7 @@ ${OBJ}: less.hpp ch_unittest.cpp ch.cpp ../mocks.cpp ch_mocks.hpp ch_mocks.cpp
 
 
 clean:
-	rm -rf *.${O} core test_ch *.gcda *.gcno ./results my.info lcov.out
+	rm -rf *.${O} core test_ch *.gcda *.gcno ./results my.info lcov.out *.out
 
 moreclean:
 	./clean.sh

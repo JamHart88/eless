@@ -32,6 +32,7 @@ test/lsystem.hpp
 test/prompt.hpp
 test/decode.hpp
 test/jump.hpp
+test/help.hpp
 test/ch.hpp
 test/ttyin.hpp
 test/pattern.hpp
@@ -79,6 +80,7 @@ test/*/jump.hpp
 test/*/ch.hpp
 test/*/ttyin.hpp
 test/*/pattern.hpp
+test/*/help.hpp
 test/*/lesskey.hpp
 test/*/funcs.hpp
 test/*/lglob.hpp

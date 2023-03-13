@@ -14,6 +14,7 @@ rm -f edit.hpp > /dev/null
 rm -f filename.hpp > /dev/null
 rm -f forwback.hpp > /dev/null
 rm -f funcs.hpp > /dev/null
+rm -f help.hpp > /dev/null
 rm -f ifile.hpp > /dev/null
 rm -f input.hpp > /dev/null
 rm -f jump.hpp > /dev/null
