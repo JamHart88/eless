@@ -83,46 +83,46 @@ public:
 
 TEST_F(ChUnitTestEmpty, chflags)
 {
-  int res = ch_getflags();
+  int res = getflags();
   EXPECT_EQ(res, 0);
 }
 
-TEST_F(ChUnitTestEmpty, ch_tell_nullptr)
+TEST_F(ChUnitTestEmpty, tell_nullptr)
 {
-  position_t pos = ch_tell();
+  position_t pos = tell();
   EXPECT_EQ(pos, NULL_POSITION);
 }
 
 TEST_F(ChUnitTestEmpty, ch_nullptr_tests)
 {
-  ch_close();    
+  close();    
 
   int res = ch_get();      
   EXPECT_EQ(res, EOI);
 
-  res = ch_seek(1);
+  res = seek(1);
   EXPECT_EQ(res, 0);
 
-  res = ch_end_seek();
+  res = end_seek();
   EXPECT_EQ(res, 0);
 
-  res = ch_end_buffer_seek();    
+  res = end_buffer_seek();    
   EXPECT_EQ(res, 0);
   
-  position_t pos = ch_length();
+  position_t pos = length();
   EXPECT_EQ(pos, NULL_POSITION);
 
-  res = ch_forw_get();
+  res = forw_get();
   EXPECT_EQ(res, EOI);
 
-  res = ch_back_get();
+  res = back_get();
   EXPECT_EQ(res, EOI);
 
-  ch_flush();
+  flush();
     
 }
 
-TEST_F(ChUnitTestEmpty, ch_init1)
+TEST_F(ChUnitTestEmpty, init1)
 {
   const int test_file_id = 10;
   const int test_flags = 0;
@@ -143,7 +143,7 @@ TEST_F(ChUnitTestEmpty, ch_init1)
     Times(1).
     WillOnce(DoAll(Invoke(this, &ChUnitTestEmpty::captureFilestate), Return()));
 
-  ch_init(test_file_id, 
+  init(test_file_id, 
           test_flags);
 
   EXPECT_EQ(capturedFilestate->file,  test_file_id);
@@ -152,7 +152,7 @@ TEST_F(ChUnitTestEmpty, ch_init1)
   delete lclIfile;
 }
 
-TEST_F(ChUnitTestEmpty, ch_init2)
+TEST_F(ChUnitTestEmpty, init2)
 {
 
   const int test_file_id = 10;
@@ -179,7 +179,7 @@ TEST_F(ChUnitTestEmpty, ch_init2)
     WillOnce(DoAll(Invoke(this, &ChUnitTestEmpty::captureFilestate), Return()));
   
   // also covers seekable
-  ch_init(test_file_id,
+  init(test_file_id,
           test_flags); 
 
   EXPECT_EQ(capturedFilestate->file, test_file_id);
@@ -189,7 +189,7 @@ TEST_F(ChUnitTestEmpty, ch_init2)
   
 }
 
-TEST_F(ChUnitTestEmpty, ch_init3)
+TEST_F(ChUnitTestEmpty, init3)
 {
 
   const int test_file_id = 10;
@@ -211,13 +211,13 @@ TEST_F(ChUnitTestEmpty, ch_init3)
     Times(1).
     WillOnce(DoAll(Invoke(this, &ChUnitTestEmpty::captureFilestate), Return()));
 
-  ch_init(test_file_id, CH_KEEPOPEN); 
+  init(test_file_id, CH_KEEPOPEN); 
 
   EXPECT_EQ(capturedFilestate->file, test_file_id);
   EXPECT_EQ(capturedFilestate->flags, test_flags);
 
-  // Part 2 == ch_getflags
-  int getflags_res = ch_getflags();
+  // Part 2 == getflags
+  int getflags_res = getflags();
   EXPECT_EQ(getflags_res, test_flags);
 
   delete lclIfile;
@@ -228,19 +228,19 @@ TEST_F(ChUnitTestEmpty, ch_setbuffspace)
 
   EXPECT_EQ(maxbufs, -1);
 
-  ch_setbufspace(-100); 
+  setbufspace(-100); 
 
   EXPECT_EQ(maxbufs, -1);
 
-  ch_setbufspace(1); 
+  setbufspace(1); 
 
   EXPECT_EQ(maxbufs, 1);
 
-  ch_setbufspace(1000); 
+  setbufspace(1000); 
 
   EXPECT_EQ(maxbufs, 125);
 
-  ch_setbufspace(100000); 
+  setbufspace(100000); 
 
   EXPECT_EQ(maxbufs, 12500);
 }
@@ -298,7 +298,7 @@ public:
             Invoke(this, &ChUnitTest1Buff::captureFilestate), 
             Return()));
 
-        ch_init(default_file_id, 
+        init(default_file_id, 
                 default_flags); 
         
         thisfile->fsize = default_fsize;
@@ -323,7 +323,7 @@ public:
 };
 // --------------------------------------------------------------
 
-TEST_F(ChUnitTest1Buff, ch_init_and_ch_tell)
+TEST_F(ChUnitTest1Buff, init_and_tell)
 {
   using namespace ifile;
 
@@ -360,27 +360,27 @@ TEST_F(ChUnitTest1Buff, ch_init_and_ch_tell)
     WillOnce(Return(test_file_size));
 
   // part 1 - init
-  // also covers ch_init_hashtbl, seekable
-  ch_init(test_file_id,   
+  // also covers init_hashtbl, seekable
+  init(test_file_id,   
           test_flags);    
 
   EXPECT_EQ(capturedFilestate->file, test_file_id);
   EXPECT_EQ(capturedFilestate->flags, test_flags); 
   EXPECT_EQ(capturedFilestate->fsize, test_file_size);
 
-  // part 2 == ch_tell
-  position_t pos = ch_tell();
+  // part 2 == tell
+  position_t pos = tell();
 
   EXPECT_EQ(pos, (test_block * LBUFSIZE) + test_offset);
 
-  // Part 3 == ch_getflags
-  int getflags_res = ch_getflags();
+  // Part 3 == getflags
+  int getflags_res = getflags();
 
   EXPECT_EQ(getflags_res, test_flags);
 
 }
 
-TEST_F(ChUnitTest1Buff, ch_close)
+TEST_F(ChUnitTest1Buff, close)
 {
   using namespace ifile;
 
@@ -388,25 +388,25 @@ TEST_F(ChUnitTest1Buff, ch_close)
      Times(1).
      WillOnce(Return(-1)); 
 
-  ch_close();    
+  close();    
 
   EXPECT_NE(thisfile, nullptr);
   EXPECT_EQ(thisfile->file, -1);
 }
 
-TEST_F(ChUnitTest1Buff, ch_close_keepstate)
+TEST_F(ChUnitTest1Buff, close_keepstate)
 {
   using namespace ifile;
   const int test_flags      =  CH_CANSEEK | CH_KEEPOPEN; // keepopen wont call close
   capturedFilestate->flags = test_flags;
 
-  ch_close();    
+  close();    
 
   EXPECT_NE(thisfile, nullptr);
 
 }
 
-TEST_F(ChUnitTest1Buff, ch_close_notkeepfilestate)
+TEST_F(ChUnitTest1Buff, close_notkeepfilestate)
 {
   using namespace ifile;
 
@@ -426,21 +426,21 @@ TEST_F(ChUnitTest1Buff, ch_close_notkeepfilestate)
     Times(1).
     WillOnce(Return());
 
-  ch_close();
+  close();
   capturedFilestate = nullptr;    
 
   EXPECT_EQ(thisfile, nullptr);
 
 }
 
-TEST_F(ChUnitTest1Buff, ch_set_eof)
+TEST_F(ChUnitTest1Buff, set_eof)
 {
 
   EXPECT_EQ(thisfile->fsize, default_fsize);
   EXPECT_EQ(thisfile->fpos, default_fpos);
   EXPECT_NE(thisfile->fpos, thisfile->fsize);
 
-  ch_set_eof();
+  set_eof();
 
   EXPECT_EQ(thisfile->fsize, default_fpos);
 }
@@ -561,7 +561,7 @@ public:
             Invoke(this, &ChUnitTestBaseBuff::captureFilestate), 
             Return()));
 
-        ch_init(default_file_id, 
+        init(default_file_id, 
                 default_flags); 
         
         log("Setup end", false);
@@ -623,7 +623,7 @@ TEST_F(ChUnitTestBaseBuff, repeat_ch_forw_back_gets)
             Invoke(this, &ChUnitTestBaseBuff::captureAndUpdateBuffer), 
             Return(testReadSize)));
 
-  int res = ch_forw_get();
+  int res = forw_get();
 
   EXPECT_EQ(thisfile->nbufs, 1);
   EXPECT_EQ(res, int(data[0]));
@@ -633,7 +633,7 @@ TEST_F(ChUnitTestBaseBuff, repeat_ch_forw_back_gets)
   // Part 2 - get next char - no write expected
   // ================================================================
 
-  res = ch_forw_get();
+  res = forw_get();
 
   EXPECT_EQ(thisfile->nbufs, 1);
   EXPECT_EQ(res, int(data[1]));
@@ -646,7 +646,7 @@ TEST_F(ChUnitTestBaseBuff, repeat_ch_forw_back_gets)
   // read to the end of the "file"
   for (int i=3; i < testReadSize+1; i++){
 
-    res = ch_forw_get();
+    res = forw_get();
 
     EXPECT_EQ(thisfile->nbufs, 1);
     EXPECT_EQ(res, int(bufferDataForTest[i-1]));
@@ -657,45 +657,45 @@ TEST_F(ChUnitTestBaseBuff, repeat_ch_forw_back_gets)
   // Part 4 - attempt read after getting to end of file
   // ================================================================
 
-  res = ch_forw_get();
+  res = forw_get();
 
   EXPECT_EQ(thisfile->nbufs, 1);
   EXPECT_EQ(res, -1);
   EXPECT_EQ(thisfile->offset, testReadSize);
-  EXPECT_EQ(ch_tell(), testReadSize);
-  EXPECT_EQ(ch_length(), testReadSize);
+  EXPECT_EQ(tell(), testReadSize);
+  EXPECT_EQ(length(), testReadSize);
   
   // ================================================================
   // Part 5 - read back one char
   // ================================================================
 
   // Read back
-  res = ch_back_get();
+  res = back_get();
 
   EXPECT_EQ(thisfile->nbufs, 1);
   EXPECT_EQ(res, int(bufferDataForTest[testReadSize-1]));
   EXPECT_EQ(thisfile->offset, testReadSize-1);
-  EXPECT_EQ(ch_tell(), testReadSize-1);
-  EXPECT_EQ(ch_length(), testReadSize);
+  EXPECT_EQ(tell(), testReadSize-1);
+  EXPECT_EQ(length(), testReadSize);
 
   // ================================================================
   // Part 6 - read next back char
   // ================================================================
 
-  res = ch_back_get();
+  res = back_get();
 
   EXPECT_EQ(thisfile->nbufs, 1);
   EXPECT_EQ(res, int(bufferDataForTest[testReadSize-2]));
   EXPECT_EQ(thisfile->offset, testReadSize-2);
-  EXPECT_EQ(ch_tell(), testReadSize-2);
-  EXPECT_EQ(ch_length(), testReadSize);
+  EXPECT_EQ(tell(), testReadSize-2);
+  EXPECT_EQ(length(), testReadSize);
 
   // ================================================================
   // Part 7 = seek to near end of file
   // ================================================================
 
   // seek near end
-  res = ch_seek(testReadSize - 6);
+  res = seek(testReadSize - 6);
 
   EXPECT_EQ(res, 0);
 
@@ -703,36 +703,36 @@ TEST_F(ChUnitTestBaseBuff, repeat_ch_forw_back_gets)
   // Part 8 - read next char
   // ================================================================
 
-  res = ch_forw_get();
+  res = forw_get();
 
   EXPECT_EQ(thisfile->nbufs, 1);
   EXPECT_EQ(res, int(bufferDataForTest[testReadSize-6]));
   EXPECT_EQ(thisfile->offset, testReadSize-5);
-  EXPECT_EQ(ch_tell(), testReadSize-5);
-  EXPECT_EQ(ch_length(), testReadSize);
+  EXPECT_EQ(tell(), testReadSize-5);
+  EXPECT_EQ(length(), testReadSize);
 
   // ================================================================
   // Part 9 - see to start of file again
   // ================================================================
 
-  res = ch_beg_seek();
+  res = beg_seek();
 
   EXPECT_EQ(res, 0);
   EXPECT_EQ(thisfile->offset, 0);
-  EXPECT_EQ(ch_tell(), 0);
+  EXPECT_EQ(tell(), 0);
 
   // ================================================================
   // Part 10 - read 1st char again
   // ================================================================
 
   // get 1st char in file
-  res = ch_forw_get();
+  res = forw_get();
 
   EXPECT_EQ(thisfile->nbufs, 1);
   EXPECT_EQ(res, int(bufferDataForTest[0]));
   EXPECT_EQ(thisfile->offset, 1);
-  EXPECT_EQ(ch_tell(), 1);
-  EXPECT_EQ(ch_length(), testReadSize);
+  EXPECT_EQ(tell(), 1);
+  EXPECT_EQ(length(), testReadSize);
 
   // ================================================================
   // Part 11 - check if block is buffered - 1st char
@@ -771,7 +771,7 @@ TEST_F(ChUnitTestBaseBuff, repeat_ch_forw_back_gets)
   // Part 14 - cleanup
   // ================================================================
 
-  ch_flush();
+  flush();
   ch_delbufs();
 
   EXPECT_EQ(thisfile->nbufs, 0);
@@ -936,7 +936,7 @@ public:
           Invoke(this, &ChUnitTestBaseBigFile::captureFilestate), 
           Return()));
 
-      ch_init(default_file_id, 
+      init(default_file_id, 
               default_flags); 
       
       log("Setup end\n-------------------------------------------------------", false);
@@ -996,10 +996,10 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
 
   currentBlock = 0;
   
-  int res = ch_forw_get(); // part 1 
+  int res = forw_get(); // part 1 
   
   char c = 0 + res;
-  log ("ch_forw_get res was char '" + std::string(1,c) + "'");
+  log ("forw_get res was char '" + std::string(1,c) + "'");
 
   EXPECT_EQ(thisfile->nbufs, 1);
   // did we get 1st char from buffer
@@ -1018,7 +1018,7 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
 
   currentBlock = 9;
   
-  res = ch_seek(LBUFSIZE * 9); // part 2
+  res = seek(LBUFSIZE * 9); // part 2
   
   EXPECT_EQ(res, 0);
 
@@ -1033,17 +1033,17 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
   // Part 3 = read 1st char in block #9
   // ================================================================
   
-  res = ch_forw_get();
+  res = forw_get();
   
   c = 0 + res;
-  log ("ch_forw_get res was char '" + std::string(1,c) + "'");
+  log ("forw_get res was char '" + std::string(1,c) + "'");
 
   EXPECT_EQ(thisfile->nbufs, 2);
   
   EXPECT_EQ(res, int(block_9_buf->data[0]));
   EXPECT_EQ(thisfile->offset, 1);
-  EXPECT_EQ(ch_tell(), (LBUFSIZE * 9) + 1);
-  EXPECT_EQ(ch_length(), default_fsize);
+  EXPECT_EQ(tell(), (LBUFSIZE * 9) + 1);
+  EXPECT_EQ(length(), default_fsize);
 
   // ================================================================
   // Part 4 = seek back to start of file again
@@ -1051,7 +1051,7 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
 
   currentBlock = 0;
   
-  res = ch_beg_seek(); // part 4
+  res = beg_seek(); // part 4
   
   EXPECT_EQ(res, 0);
 
@@ -1059,15 +1059,15 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
   // Part 5 = read 1st char in file again
   // ================================================================ 
   
-  res = ch_forw_get(); // part 5
+  res = forw_get(); // part 5
   
   c = 0 + res;
-  log ("ch_forw_get res was char '" + std::string(1,c) + "'");
+  log ("forw_get res was char '" + std::string(1,c) + "'");
 
   EXPECT_EQ(thisfile->nbufs, 2);  
   EXPECT_EQ(res, int(block_0_buf->data[0]));
   EXPECT_EQ(thisfile->offset, 1);
-  EXPECT_EQ(ch_tell(), 1);
+  EXPECT_EQ(tell(), 1);
 
   // ================================================================
   // Part 6 - seek to the end of the file - block #99
@@ -1092,7 +1092,7 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
             Invoke(this, &ChUnitTestBaseBigFile::captureAndUpdateBuffer), 
             Return(LBUFSIZE))); 
   
-  res = ch_end_seek(); // part 6
+  res = end_seek(); // part 6
   
   EXPECT_EQ(res, 0);
 
@@ -1100,15 +1100,15 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
   // Part 7 - Read last char in file - backwards
   // ================================================================
     
-  res = ch_back_get();
+  res = back_get();
   
   c = 0 + res;
-  log ("ch_back_get res was char '" + std::string(1,c) + "'");
+  log ("back_get res was char '" + std::string(1,c) + "'");
 
   EXPECT_EQ(thisfile->nbufs, 3);
   EXPECT_EQ(res, int(block_99_buf->data[LBUFSIZE-1]));
   EXPECT_EQ(thisfile->offset, LBUFSIZE-1);
-  EXPECT_EQ(ch_tell(), default_fsize-1);
+  EXPECT_EQ(tell(), default_fsize-1);
 
   // ================================================================
   // Part 8 = seek back to start of file again
@@ -1116,7 +1116,7 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
 
   currentBlock = 0;
   
-  res = ch_beg_seek(); 
+  res = beg_seek(); 
   
   EXPECT_EQ(res, 0);
 
@@ -1124,15 +1124,15 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
   // Part 9 = read back from start of file
   // ================================================================ 
   
-  res = ch_back_get(); 
+  res = back_get(); 
   
   c = 0 + res;
-  log ("part 9 ch_back_get res was " + std::to_string(c) );
+  log ("part 9 back_get res was " + std::to_string(c) );
 
   EXPECT_EQ(thisfile->nbufs, 3);  
   EXPECT_EQ(res, -1);
   EXPECT_EQ(thisfile->offset, 0);
-  EXPECT_EQ(ch_tell(), 0);
+  EXPECT_EQ(tell(), 0);
 
 
 }
@@ -1149,7 +1149,7 @@ TEST_F(ChUnitTestBaseBigFile, get_partial_block)
   
   currentBlock = 1;
 
-  int res = ch_seek(LBUFSIZE); // part 1
+  int res = seek(LBUFSIZE); // part 1
   
   EXPECT_EQ(res, 0);
 
@@ -1178,15 +1178,15 @@ TEST_F(ChUnitTestBaseBigFile, get_partial_block)
             Return(10))); // report only 10 chars of the buffer read
 
 
-  res = ch_forw_get(); // part 2
+  res = forw_get(); // part 2
   
   char c = 0 + res;
-  log ("pt2 ch_forw_get res was char '" + std::string(1,c) + "'");
+  log ("pt2 forw_get res was char '" + std::string(1,c) + "'");
 
   EXPECT_EQ(thisfile->nbufs, 1);
   EXPECT_EQ(res, int(block_1_buf->data[0]));
   EXPECT_EQ(thisfile->offset, 1);
-  EXPECT_EQ(ch_tell(), LBUFSIZE+1);
+  EXPECT_EQ(tell(), LBUFSIZE+1);
   EXPECT_EQ(thisfile->fpos, LBUFSIZE+10);
 
 
@@ -1194,7 +1194,7 @@ TEST_F(ChUnitTestBaseBigFile, get_partial_block)
   // Part 3 - seek in to buffer part that did not get read in part9
   // ================================================================
    
-  res = ch_seek(LBUFSIZE+11); // part 3
+  res = seek(LBUFSIZE+11); // part 3
   EXPECT_EQ(res, 0);
 
 
@@ -1202,7 +1202,7 @@ TEST_F(ChUnitTestBaseBigFile, get_partial_block)
   // Part 4 - read char from missing part of buffer
   // ================================================================
  
-  res = ch_seek(LBUFSIZE+11); // repeat
+  res = seek(LBUFSIZE+11); // repeat
   EXPECT_EQ(res, 0);
 
   EXPECT_CALL(GetMock<ChMock>(), 
@@ -1215,29 +1215,29 @@ TEST_F(ChUnitTestBaseBigFile, get_partial_block)
      Times(1).
      WillOnce(Return(LBUFSIZE-10)); 
 
-  res = ch_forw_get(); // part 4
+  res = forw_get(); // part 4
   
   c = 0 + res;
-  log ("pt4 ch_forw_get res was char '" + std::string(1,c) + "'");
+  log ("pt4 forw_get res was char '" + std::string(1,c) + "'");
 
   EXPECT_EQ(thisfile->nbufs, 1);
   EXPECT_EQ(res, int(block_1_buf->data[11]));
   EXPECT_EQ(thisfile->offset, 11+1);
-  EXPECT_EQ(ch_tell(), LBUFSIZE+11+1);
+  EXPECT_EQ(tell(), LBUFSIZE+11+1);
   EXPECT_EQ(thisfile->fpos, 2*LBUFSIZE);
 
   // ================================================================
   // Part 5 - read last char in current buffer
   // ================================================================
   
-  res = ch_seek((LBUFSIZE*2) - 1);
+  res = seek((LBUFSIZE*2) - 1);
 
-  log ("pt5 ch_end_buffer_seek res was " + std::to_string(res));
+  log ("pt5 end_buffer_seek res was " + std::to_string(res));
 
-  res = ch_forw_get(); 
+  res = forw_get(); 
   
   c = 0 + res;
-  log ("pt5 ch_forw_get res was char '" + std::string(1,c) + "'");
+  log ("pt5 forw_get res was char '" + std::string(1,c) + "'");
 
   EXPECT_EQ(thisfile->nbufs, 1);
 
@@ -1249,7 +1249,7 @@ TEST_F(ChUnitTestBaseBigFile, get_partial_block)
 
   const int ungot_char = res;
 
-  ch_ungetchar(res);
+  ungetchar(res);
 
   EXPECT_EQ(ch_ungotchar, ungot_char);
 
@@ -1258,10 +1258,10 @@ TEST_F(ChUnitTestBaseBigFile, get_partial_block)
      Times(1).
      WillRepeatedly(Return(0));
 
-  res = ch_forw_get(); 
+  res = forw_get(); 
 
   c = 0 + res;
-  log ("pt6 ch_forw_get res was char '" + std::string(1,c) + "'");
+  log ("pt6 forw_get res was char '" + std::string(1,c) + "'");
 
   EXPECT_EQ(ch_ungotchar, -1);
   EXPECT_EQ(res, ungot_char);
@@ -1426,7 +1426,7 @@ public:
           Invoke(this, &ChUnitTestNonSeekableFile::captureFilestate), 
           Return()));
 
-      ch_init(default_file_id, 
+      init(default_file_id, 
               default_flags); 
       
       log("Setup end\n-------------------------------------------------------", false);
@@ -1484,15 +1484,15 @@ TEST_F(ChUnitTestNonSeekableFile, read_from_pipe_file)
      WillRepeatedly(Return(0));
 
 
-  int res = ch_forw_get();
+  int res = forw_get();
 
   char c = 0 + res;
-  log ("pt1 ch_forw_get res was char '" + std::string(1,c) + "'");
+  log ("pt1 forw_get res was char '" + std::string(1,c) + "'");
 
   // ================================================================
   // Part 2 - seek to end of buffer
   // ================================================================
-  res = ch_end_buffer_seek();
+  res = end_buffer_seek();
   
   EXPECT_EQ(res, 0); // success
   EXPECT_EQ(thisfile->block, 1);
@@ -1542,10 +1542,10 @@ TEST_F(ChUnitTestNonSeekableFile, read_from_pipe_file)
         Invoke(this, &ChUnitTestNonSeekableFile::setStat), 
         Return(0)));
 
-  res = ch_forw_get();
+  res = forw_get();
 
   c = 0 + res;
-  log ("pt3 ch_forw_get res was char '" + std::string(1,c) + "'");
+  log ("pt3 forw_get res was char '" + std::string(1,c) + "'");
 
   EXPECT_EQ(screen_trashed, TRASHED_AND_REOPEN_FILE);
   EXPECT_EQ(res, -1);
@@ -1585,10 +1585,10 @@ TEST_F(ChUnitTestNonSeekableFile, beg_seek)
 
 
   // log("start of test");
-  // int res = ch_seek(LBUFSIZE * 2); 
+  // int res = seek(LBUFSIZE * 2); 
 
   // log("seek res = " + std::to_string(res));
-  // //int res = ch_beg_seek();
+  // //int res = beg_seek();
   
   // EXPECT_EQ(res, 1);
 
@@ -1604,15 +1604,15 @@ TEST_F(ChUnitTestNonSeekableFile, beg_seek)
   //    WillRepeatedly(Return(0));
 
 
-  // res = ch_forw_get();
+  // res = forw_get();
 
-  // log ("pt1 ch_forw_get res was char " + std::to_string(res));
+  // log ("pt1 forw_get res was char " + std::to_string(res));
 
   // EXPECT_EQ(res, -1);
 
   thisfile->fpos = 1;
-  int res = ch_beg_seek();
-  log ("pt1 ch_beg_seek res was " + std::to_string(res));
+  int res = beg_seek();
+  log ("pt1 beg_seek res was " + std::to_string(res));
 
 
 
@@ -1639,8 +1639,8 @@ TEST_F(ChUnitTestNonSeekableFile, beg_seek)
 //     Times(1).
 //     WillOnce(Return(0)); 
     
-//   int res = ch_seek(LBUFSIZE * 2); 
-//   //int res = ch_beg_seek();
+//   int res = seek(LBUFSIZE * 2); 
+//   //int res = beg_seek();
   
 //   EXPECT_EQ(res, 1);
 
@@ -1656,49 +1656,49 @@ TEST_F(ChUnitTestNonSeekableFile, beg_seek)
 //      Times(1).
 //      WillRepeatedly(Return(0));
 
-//   res = ch_forw_get();
+//   res = forw_get();
 
 //   char c = 0 + res;
-//   log ("pt1 ch_forw_get res was char '" + std::string(1,c) + "'");
+//   log ("pt1 forw_get res was char '" + std::string(1,c) + "'");
 
 //   // ================================================================
-//   // Part 4 - ch_beg_seek, but seek issue 
+//   // Part 4 - beg_seek, but seek issue 
 //   // ================================================================   
 
 // }
 
 
 // tests done: Not testing all error conditions
-// position_t ch_tell(void);
-// void ch_init(int f, int flags);
+// position_t tell(void);
+// void init(int f, int flags);
 // int seekable(int f);
-// int ch_getflags(void);
-// void ch_close(void);
-// void ch_set_eof(void);
-// position_t ch_length(void);
+// int getflags(void);
+// void close(void);
+// void set_eof(void);
+// position_t length(void);
 // void end_logfile(void);
 // void sync_logfile(void);
 // buffered
-// int ch_end_seek(void);
-// ch_tell
-// ch_flush
+// int end_seek(void);
+// tell
+// flush
 // ch_addbuf
 // init_hashtbl
-// int ch_forw_get(void);
-// int ch_back_get(void);
-// void ch_setbufspace(int bufspace);
-// ch_length
-// void ch_ungetchar(int c);
-// int ch_seek(position_t pos);
-// void ch_flush(void);
-// int ch_end_buffer_seek(void);
+// int forw_get(void);
+// int back_get(void);
+// void setbufspace(int bufspace);
+// length
+// void ungetchar(int c);
+// int seek(position_t pos);
+// void flush(void);
+// int end_buffer_seek(void);
 
 
 // TODO:
 // Add test to work on the helpfile
 
 
-// int ch_beg_seek(void);
+// int beg_seek(void);
 
 
 

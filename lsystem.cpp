@@ -206,7 +206,7 @@ int pipe_data(char* cmd, position_t spos, position_t epos)
      * to perform the necessary deinitialization before running
      * the command, and reinitialization after it.
      */
-    if (ch::ch_seek(spos) != 0) {
+    if (ch::seek(spos) != 0) {
         error((char*)"Cannot seek to start position", NULL_PARG);
         return (-1);
     }
@@ -233,7 +233,7 @@ int pipe_data(char* cmd, position_t spos, position_t epos)
         /*
          * Read a character from the file and give it to the pipe.
          */
-        c = ch::ch_forw_get();
+        c = ch::forw_get();
         if (c == EOI)
             break;
         if (putc(c, f) == EOF)
@@ -244,7 +244,7 @@ int pipe_data(char* cmd, position_t spos, position_t epos)
      * Finish up the last line.
      */
     while (c != '\n' && c != EOI) {
-        c = ch::ch_forw_get();
+        c = ch::forw_get();
         if (c == EOI)
             break;
         if (putc(c, f) == EOF)

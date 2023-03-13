@@ -1121,13 +1121,13 @@ position_t forw_raw_line(position_t curr_pos, char** linep, int* line_lenp)
     int c;
     position_t new_pos;
 
-    if (curr_pos == NULL_POSITION || ch::ch_seek(curr_pos) || (c = ch::ch_forw_get()) == EOI)
+    if (curr_pos == NULL_POSITION || ch::seek(curr_pos) || (c = ch::forw_get()) == EOI)
         return (NULL_POSITION);
 
     n = 0;
     for (;;) {
         if (c == '\n' || c == EOI || is_abort_signal(less::Settings::sigs)) {
-            new_pos = ch::ch_tell();
+            new_pos = ch::tell();
             break;
         }
         if (n >= size_linebuf - 1) {
@@ -1136,12 +1136,12 @@ position_t forw_raw_line(position_t curr_pos, char** linep, int* line_lenp)
                  * Overflowed the input buffer.
                  * Pretend the line ended here.
                  */
-                new_pos = ch::ch_tell() - 1;
+                new_pos = ch::tell() - 1;
                 break;
             }
         }
         linebuf[n++] = c;
-        c = ch::ch_forw_get();
+        c = ch::forw_get();
     }
     linebuf[n] = '\0';
     if (linep != NULL)
@@ -1162,19 +1162,19 @@ position_t back_raw_line(position_t curr_pos, char** linep, int* line_lenp)
     int c;
     position_t new_pos;
 
-    if (curr_pos == NULL_POSITION || curr_pos <= ch_zero || ch::ch_seek(curr_pos - 1))
+    if (curr_pos == NULL_POSITION || curr_pos <= ch_zero || ch::seek(curr_pos - 1))
         return (NULL_POSITION);
 
     n = size_linebuf;
     linebuf[--n] = '\0';
     for (;;) {
-        c = ch::ch_back_get();
+        c = ch::back_get();
         if (c == '\n' || is_abort_signal(less::Settings::sigs)) {
             /*
              * This is the newline ending the previous line.
              * We have hit the beginning of the line.
              */
-            new_pos = ch::ch_tell() + 1;
+            new_pos = ch::tell() + 1;
             break;
         }
         if (c == EOI) {
@@ -1195,7 +1195,7 @@ position_t back_raw_line(position_t curr_pos, char** linep, int* line_lenp)
                  * Overflowed the input buffer.
                  * Pretend the line ended here.
                  */
-                new_pos = ch::ch_tell() + 1;
+                new_pos = ch::tell() + 1;
                 break;
             }
             /*

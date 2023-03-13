@@ -631,9 +631,9 @@ static int mca_char(int c)
  */
 static void clear_buffers(void)
 {
-    if (!(ch::ch_getflags() & CH_CANSEEK))
+    if (!(ch::getflags() & CH_CANSEEK))
         return;
-    ch::ch_flush();
+    ch::flush();
     clr_linenum();
 #if HILITE_SEARCH
     clr_hilite();
@@ -700,7 +700,7 @@ static void prompt(void)
     /*
      * If we've hit EOF on the last file and the -E flag is set, quit.
      */
-    if (get_quit_at_eof() == OPT_ONPLUS && eof_displayed() && !(ch::ch_getflags() & CH_HELPFILE) && 
+    if (get_quit_at_eof() == OPT_ONPLUS && eof_displayed() && !(ch::getflags() & CH_HELPFILE) && 
         ifile::nextIfile(ifile::getCurrentIfile()) == nullptr)
         utils::quit(QUIT_OK);
 
@@ -708,7 +708,7 @@ static void prompt(void)
      * If the entire file is displayed and the -F flag is set, quit.
      */
     if (quit_if_one_screen && entire_file_displayed() && 
-        !(ch::ch_getflags() & CH_HELPFILE) && ifile::nextIfile(ifile::getCurrentIfile()) == nullptr)
+        !(ch::getflags() & CH_HELPFILE) && ifile::nextIfile(ifile::getCurrentIfile()) == nullptr)
         utils::quit(QUIT_OK);
 
     /*
@@ -980,12 +980,12 @@ static int forw_loop(int until_hilite)
 {
     position_t curr_len;
 
-    if (ch::ch_getflags() & CH_HELPFILE)
+    if (ch::getflags() & CH_HELPFILE)
         return (A_NOACTION);
 
     cmd_exec();
     jump_forw_buffered();
-    curr_len = ch::ch_length();
+    curr_len = ch::length();
     highest_hilite = until_hilite ? curr_len : NULL_POSITION;
     less::Settings::ignore_eoi = 1;
     while (!less::Settings::sigs) {
@@ -997,7 +997,7 @@ static int forw_loop(int until_hilite)
         forward(1, 0, 0);
     }
     less::Settings::ignore_eoi = 0;
-    ch::ch_set_eof();
+    ch::set_eof();
 
     /*
      * This gets us back in "F mode" after processing
@@ -1391,7 +1391,7 @@ void commands(void)
             /*
              * Print file name, etc.
              */
-            if (ch::ch_getflags() & CH_HELPFILE)
+            if (ch::getflags() & CH_HELPFILE)
                 break;
             cmd_exec();
             parg.p_string = eq_message();
@@ -1410,7 +1410,7 @@ void commands(void)
             /*
              * Exit.
              */
-            if (ifile::getCurrentIfile() != nullptr && ch::ch_getflags() & CH_HELPFILE) {
+            if (ifile::getCurrentIfile() != nullptr && ch::getflags() & CH_HELPFILE) {
                 /*
                  * Quit while viewing the help file
                  * just means return to viewing the
@@ -1522,7 +1522,7 @@ void commands(void)
             /*
              * Help.
              */
-            if (ch::ch_getflags() & CH_HELPFILE)
+            if (ch::getflags() & CH_HELPFILE)
                 break;
             cmd_exec();
             save_hshift = hshift;
@@ -1551,7 +1551,7 @@ void commands(void)
              * Invoke an editor on the input file.
              */
 #if EDITOR
-            if (ch::ch_getflags() & CH_HELPFILE)
+            if (ch::getflags() & CH_HELPFILE)
                 break;
             if (strcmp(ifile::getCurrentIfile()->getFilename(), "-") == 0) {
                 error((char*)"Cannot edit standard input", NULL_PARG);
@@ -1589,7 +1589,7 @@ void commands(void)
             if (number <= 0)
                 number = 1;
             if (edit_next((int)number)) {
-                if (get_quit_at_eof() && eof_displayed() && !(ch::ch_getflags() & CH_HELPFILE))
+                if (get_quit_at_eof() && eof_displayed() && !(ch::getflags() & CH_HELPFILE))
                     utils::quit(QUIT_OK);
                 parg.p_string = (number > 1) ? (char*)"(N-th) " : (char*)"";
                 error((char*)"No %snext file", parg);
@@ -1674,7 +1674,7 @@ void commands(void)
             /*
              * Remove a file from the input file list.
              */
-            if (ch::ch_getflags() & CH_HELPFILE)
+            if (ch::getflags() & CH_HELPFILE)
                 break;
             old_ifile = ifile::getCurrentIfile();
             new_ifile = ifile::getOffIfile(ifile::getCurrentIfile());
@@ -1747,7 +1747,7 @@ void commands(void)
             /*
              * Set a mark.
              */
-            if (ch::ch_getflags() & CH_HELPFILE)
+            if (ch::getflags() & CH_HELPFILE)
                 break;
             start_mca(A_SETMARK, "set mark: ", (void*)nullptr, 0);
             c = getcc();

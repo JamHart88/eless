@@ -493,7 +493,7 @@ int is_filtered(position_t pos)
 {
     struct hilite_node* n;
 
-    if (ch::ch_getflags() & CH_HELPFILE)
+    if (ch::getflags() & CH_HELPFILE)
         return (0);
 
     n = hlist_find(&filter_anchor, pos);
@@ -508,7 +508,7 @@ position_t next_unfiltered(position_t pos)
 {
     struct hilite_node* n;
 
-    if (ch::ch_getflags() & CH_HELPFILE)
+    if (ch::getflags() & CH_HELPFILE)
         return (pos);
 
     n = hlist_find(&filter_anchor, pos);
@@ -527,7 +527,7 @@ position_t prev_unfiltered(position_t pos)
 {
     struct hilite_node* n;
 
-    if (ch::ch_getflags() & CH_HELPFILE)
+    if (ch::getflags() & CH_HELPFILE)
         return (pos);
 
     n = hlist_find(&filter_anchor, pos);
@@ -964,10 +964,10 @@ static position_t search_pos(int search_type)
         if (search_type & SRCH_FORW) {
             pos = ch_zero;
         } else {
-            pos = ch::ch_length();
+            pos = ch::length();
             if (pos == NULL_POSITION) {
-                (void)ch::ch_end_seek();
-                pos = ch::ch_length();
+                (void)ch::end_seek();
+                pos = ch::length();
             }
         }
         sindex = 0;
@@ -1534,7 +1534,7 @@ void set_filter_pattern(char* pattern, int search_type)
  */
 int is_filtering(void)
 {
-    if (ch::ch_getflags() & CH_HELPFILE)
+    if (ch::getflags() & CH_HELPFILE)
         return (0);
     return prev_pattern(&filter_info);
 }

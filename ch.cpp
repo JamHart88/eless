@@ -332,7 +332,7 @@ int ch_get()
 
 read_more:
     pos = (thisfile->block * LBUFSIZE) + bp->datasize; // NOLINT(clang-analyzer-core.NullDereference)
-    if ((len = ch_length()) != NULL_POSITION && pos >= len)
+    if ((len = length()) != NULL_POSITION && pos >= len)
         /*
          * At end of file.
          */
@@ -420,7 +420,7 @@ read_more:
                  * If so, force the file to be closed and
                  * reopened. */
                 struct stat st;
-                position_t curr_pos = ch_tell();
+                position_t curr_pos = tell();
                 int r = stat(ifile::getCurrentIfile()->getFilename(), &st);
                 if (r == 0 && (st.st_ino != curr_ino || st.st_dev != curr_dev || (curr_pos != NULL_POSITION && st.st_size < curr_pos))) {
                     /* remake_display and reopen the file. */
@@ -466,14 +466,14 @@ found:
 }
 
 /*
- * ch_ungetchar is a rather kludgy and limited way to push
+ * ungetchar is a rather kludgy and limited way to push
  * a single char onto an input file descriptor.
  */
 
-void ch_ungetchar(int c)
+void ungetchar(int c)
 {
     if (c != -1 && ch_ungotchar != -1)
-        error((char*)"ch_ungetchar overrun", NULL_PARG);
+        error((char*)"ungetchar overrun", NULL_PARG);
     ch_ungotchar = c;
 }
 
@@ -491,11 +491,11 @@ void end_logfile()
     if (!tried && thisfile->fsize == NULL_POSITION) {
         tried = true;
         ierror((char*)"Finishing logfile", NULL_PARG);
-        while (ch_forw_get() != EOI)
+        while (forw_get() != EOI)
             if (is_abort_signal(less::Settings::sigs))
                 break;
     }
-    close(less::Settings::logfile);
+    ::close(less::Settings::logfile);
     less::Settings::logfile = -1;
     free(less::Settings::namelogfile);
     less::Settings::namelogfile = nullptr;
@@ -559,7 +559,7 @@ static bool buffered(blocknum_t block)
  * Return 0 if successful, non-zero if can't seek there.
  */
 
-int ch_seek(position_t pos)
+int seek(position_t pos)
 {
     blocknum_t new_block;
     position_t len;
@@ -567,9 +567,9 @@ int ch_seek(position_t pos)
     if (thisfile == nullptr)
         return (0);
 
-    len = ch_length();
+    len = length();
 
-    //unit_test - log ("ch_seek len = " + std::to_string(len) + " pos = " + std::to_string(pos));
+    //unit_test - log ("seek len = " + std::to_string(len) + " pos = " + std::to_string(pos));
 
     if (pos < ch_zero || (len != NULL_POSITION && pos > len))
         return (1);
@@ -586,7 +586,7 @@ int ch_seek(position_t pos)
         if (thisfile->fpos > pos)
             return (1);
         while (thisfile->fpos < pos) {
-            if (ch_forw_get() == EOI)
+            if (forw_get() == EOI)
                 return (1);
             if (is_abort_signal(less::Settings::sigs))
                 return (1);
@@ -605,7 +605,7 @@ int ch_seek(position_t pos)
  * Seek to the end of the file.
  */
 
-int ch_end_seek()
+int end_seek()
 {
     position_t len;
 
@@ -615,14 +615,14 @@ int ch_end_seek()
     if (thisfile->flags & CH_CANSEEK)
         thisfile->fsize = filesize(thisfile->file);
 
-    len = ch_length();
+    len = length();
     if (len != NULL_POSITION)
-        return (ch_seek(len));
+        return (seek(len));
 
     /*
      * Do it the slow way: read till end of data.
      */
-    while (ch_forw_get() != EOI)
+    while (forw_get() != EOI)
         if (is_abort_signal(less::Settings::sigs))
             return (1);
     return (0);
@@ -632,7 +632,7 @@ int ch_end_seek()
  * Seek to the last position in the file that is currently buffered.
  */
 
-int ch_end_buffer_seek()
+int end_buffer_seek()
 {
     struct buf* bp;
     struct bufnode* bn;
@@ -640,7 +640,7 @@ int ch_end_buffer_seek()
     position_t end_pos;
 
     if (thisfile == nullptr || (thisfile->flags & CH_CANSEEK))
-        return (ch_end_seek());
+        return (end_seek());
 
     end_pos = 0;
     FOR_BUFS(bn)
@@ -651,7 +651,7 @@ int ch_end_buffer_seek()
             end_pos = buf_pos;
     }
 
-    return (ch_seek(end_pos));
+    return (seek(end_pos));
 }
 
 /*
@@ -660,15 +660,15 @@ int ch_end_buffer_seek()
  * beginning of the pipe is no longer buffered.
  */
 
-int ch_beg_seek()
+int beg_seek()
 {
     struct bufnode* bn;
     struct bufnode* firstbn;
 
     /*
-     * Try a plain ch_seek first.
+     * Try a plain seek first.
      */
-    if (ch_seek(ch_zero) == 0)
+    if (seek(ch_zero) == 0)
         return (0);
 
     /*
@@ -686,7 +686,7 @@ int ch_beg_seek()
     thisfile->block = bufnode_buf(firstbn)->block;
     thisfile->offset = 0;
 
-    chDebug("ch_beg_seek");
+    chDebug("beg_seek");
     chDebug(to_string(thisfile));
 
 
@@ -696,7 +696,7 @@ int ch_beg_seek()
 /*
  * Return the length of the file, if known.
  */
-position_t ch_length()
+position_t length()
 {
     if (thisfile == nullptr)
         return (NULL_POSITION);
@@ -712,7 +712,7 @@ position_t ch_length()
 /*
  * Return the current position in the file.
  */
-position_t ch_tell()
+position_t tell()
 {
     if (thisfile == nullptr)
         return (NULL_POSITION);
@@ -723,10 +723,10 @@ position_t ch_tell()
  * Get the current char and post-increment the read pointer.
  */
 
-int ch_forw_get()
+int forw_get()
 {
     int c;
-    chDebug("ch_forw_get");
+    chDebug("forw_get");
     if (thisfile == nullptr)
         return (EOI);
     c = ch_get();
@@ -745,9 +745,9 @@ int ch_forw_get()
  * Pre-decrement the read pointer and get the new current char.
  */
 
-int ch_back_get()
+int back_get()
 {
-    chDebug("ch_back_get");
+    chDebug("back_get");
     if (thisfile == nullptr)
         return (EOI);
     if (thisfile->offset > 0)
@@ -768,7 +768,7 @@ int ch_back_get()
  * bufspace is in units of 1024 bytes. -1 means no limit.
  */
 
-void ch_setbufspace(int bufspace)
+void setbufspace(int bufspace)
 {
     if (bufspace < 0)
         maxbufs = -1;
@@ -783,7 +783,7 @@ void ch_setbufspace(int bufspace)
  * Flush (discard) any saved file state, including buffer contents.
  */
 
-void ch_flush()
+void flush()
 {
     struct bufnode* bn;
 
@@ -839,7 +839,7 @@ void ch_flush()
         error((char*)"seek error to 0", NULL_PARG);
     }
 
-    chDebug("ch_flush");
+    chDebug("flush");
     chDebug(to_string(thisfile));
 
 }
@@ -928,7 +928,7 @@ int seekable(int f) {
  * This is used after an ignore_eof read, during which the EOF may change.
  */
 
-void ch_set_eof() { 
+void set_eof() { 
     thisfile->fsize = thisfile->fpos; 
 }
 
@@ -936,7 +936,7 @@ void ch_set_eof() {
  * Initialize file state for a new file.
  */
 
-void ch_init(int f, int flags)
+void init(int f, int flags)
 {
     /*
      * See if we already have a filestate for this file.
@@ -958,7 +958,7 @@ void ch_init(int f, int flags)
         thisfile->flags = flags;
         init_hashtbl();
 
-        chDebug("ch_init JJJ");
+        chDebug("init JJJ");
         chDebug(to_string(thisfile));
 
         /*
@@ -970,14 +970,14 @@ void ch_init(int f, int flags)
     }
     if (thisfile->file == -1)
         thisfile->file = f;
-    ch_flush();
+    flush();
 }
 
 /*
  * Close a filestate.
  */
 
-void ch_close()
+void close()
 {
     if (thisfile == nullptr)
         return;
@@ -999,7 +999,7 @@ void ch_close()
          * because pclose() wants to close it.
          */
         if (!(thisfile->flags & (CH_POPENED | CH_HELPFILE)))
-            close(thisfile->file);
+            ::close(thisfile->file);
         thisfile->file = -1;
     } else
         keepstate = true;
@@ -1017,7 +1017,7 @@ void ch_close()
  * Return thisfile->flags for the current file.
  */
 
-int ch_getflags()
+int getflags()
 {
     if (thisfile == nullptr)
         return (0);

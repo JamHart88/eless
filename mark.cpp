@@ -153,12 +153,12 @@ static struct mark* getmark(int c)
         /*
          * End of the current file.
          */
-        if (ch::ch_end_seek()) {
+        if (ch::end_seek()) {
             error((char*)"Cannot seek to end of file", NULL_PARG);
             return (NULL);
         }
         m = &sm;
-        cmark(m, ifile::getCurrentIfile(), ch::ch_tell(), sc_height);
+        cmark(m, ifile::getCurrentIfile(), ch::tell(), sc_height);
         break;
     case '.':
         /*
@@ -247,7 +247,7 @@ void lastmark(void)
 {
     struct scrpos scrpos;
 
-    if (ch::ch_getflags() & CH_HELPFILE)
+    if (ch::getflags() & CH_HELPFILE)
         return;
     get_scrpos(&scrpos, TOP);
     if (scrpos.pos == NULL_POSITION)

@@ -292,7 +292,7 @@ linenum_t find_linenum(position_t pos)
          * Go forward.
          */
         p = p->prev;
-        if (ch::ch_seek(p->pos))
+        if (ch::seek(p->pos))
             return (0);
         loopcount = 0;
         for (linenum = p->line, cpos = p->pos; cpos < pos; linenum++) {
@@ -322,7 +322,7 @@ linenum_t find_linenum(position_t pos)
         /*
          * Go backward.
          */
-        if (ch::ch_seek(p->pos))
+        if (ch::seek(p->pos))
             return (0);
         loopcount = 0;
         for (linenum = p->line, cpos = p->pos; cpos > pos; linenum--) {
@@ -377,7 +377,7 @@ position_t find_pos(linenum_t linenum)
          * Go forward.
          */
         p = p->prev;
-        if (ch::ch_seek(p->pos))
+        if (ch::seek(p->pos))
             return (NULL_POSITION);
         for (clinenum = p->line, cpos = p->pos; clinenum < linenum; clinenum++) {
             /*
@@ -393,7 +393,7 @@ position_t find_pos(linenum_t linenum)
         /*
          * Go backward.
          */
-        if (ch::ch_seek(p->pos))
+        if (ch::seek(p->pos))
             return (NULL_POSITION);
         for (clinenum = p->line, cpos = p->pos; clinenum > linenum; clinenum--) {
             /*
@@ -425,7 +425,7 @@ linenum_t currline(int where)
     linenum_t linenum;
 
     pos = position(where);
-    len = ch::ch_length();
+    len = ch::length();
     while (pos == NULL_POSITION && where >= 0 && where < sc_height)
         pos = position(++where);
     if (pos == NULL_POSITION)

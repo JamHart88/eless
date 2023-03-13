@@ -701,7 +701,7 @@ char* open_altfile(char* filename, int* pf, void** pfd)
 
     if (!use_lessopen)
         return (nullptr);
-    ch::ch_ungetchar(-1);
+    ch::ungetchar(-1);
     if ((lessopen = lgetenv((char*)"LESSOPEN")) == nullptr)
         return (nullptr);
     while (*lessopen == '|') {
@@ -772,7 +772,7 @@ char* open_altfile(char* filename, int* pf, void** pfd)
             }
             return (nullptr);
         }
-        ch::ch_ungetchar(c);
+        ch::ungetchar(c);
         *pfd = (void*)fd;
         *pf = f;
         return (utils::save("-"));
@@ -800,7 +800,7 @@ void close_altfile(char* altfilename, char* filename)
     char* cmd;
     int len;
 
-    ch::ch_ungetchar(-1);
+    ch::ungetchar(-1);
     if ((lessclose = lgetenv((char*)"LESSCLOSE")) == nullptr)
         return;
     if (num_pct_s(lessclose) > 2) {

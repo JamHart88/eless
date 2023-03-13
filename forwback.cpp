@@ -76,7 +76,7 @@ int eof_displayed(void)
     if (less::Settings::ignore_eoi)
         return (0);
 
-    if (ch::ch_length() == NULL_POSITION)
+    if (ch::length() == NULL_POSITION)
         /*
          * If the file length is not known,
          * we can't possibly be displaying EOF.
@@ -89,7 +89,7 @@ int eof_displayed(void)
      * we must be just at EOF.
      */
     pos = position(BOTTOM_PLUS_ONE);
-    return (pos == NULL_POSITION || pos == ch::ch_length());
+    return (pos == NULL_POSITION || pos == ch::length());
 }
 
 /*
@@ -165,7 +165,7 @@ void forw(int n, position_t pos,
 
     if (!do_repaint) {
         debug("not do_repaint");
-        if (top_scroll && n >= sc_height - 1 && pos != ch::ch_length()) {
+        if (top_scroll && n >= sc_height - 1 && pos != ch::length()) {
             debug("start new screen");
             /*
              * Start a new screen.
@@ -343,7 +343,7 @@ void forward(int n, int force, int only_last)
 {
     position_t pos;
 
-    if (get_quit_at_eof() && eof_displayed() && !(ch::ch_getflags() & CH_HELPFILE)) {
+    if (get_quit_at_eof() && eof_displayed() && !(ch::getflags() & CH_HELPFILE)) {
         /*
          * If the -e flag is set and we're trying to go
          * forward from end-of-file, go on to the next file.

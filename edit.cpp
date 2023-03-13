@@ -164,8 +164,8 @@ static void close_file(void)
     /*
      * Close the file descriptor, unless it is a pipe.
      */
-    chflags = ch::ch_getflags();
-    ch::ch_close();
+    chflags = ch::getflags();
+    ch::close();
     /*
      * If we opened a file using an alternate name,
      * do special stuff to close it.
@@ -235,7 +235,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
 
     was_curr_ifile = save_curr_ifile();
     if (curr_ifile != nullptr) {
-        chflags = ch::ch_getflags();
+        chflags = ch::getflags();
         close_file();
         if ((chflags & CH_HELPFILE) && was_curr_ifile->getHoldCount() <= 1) {
             /*
@@ -266,7 +266,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
     if (altpipe != nullptr) {
         /*
          * File is already open.
-         * chflags and f are not used by ch_init if requestedIfile has
+         * chflags and f are not used by init if requestedIfile has
          * filestate which should be the case if we're here.
          * Set them here to avoid uninitialized variable warnings.
          */
@@ -388,7 +388,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
     initial_scrpos = ifile::getCurrentIfile()->getPos();
 
     new_file = true;
-    ch::ch_init(f, chflags);
+    ch::init(f, chflags);
 
     if (!(chflags & CH_HELPFILE)) {
         if (less::Settings::namelogfile != nullptr && is_tty)
@@ -686,7 +686,7 @@ void cat_file(void)
 {
     int c;
 
-    while ((c = ch::ch_forw_get()) != EOI)
+    while ((c = ch::forw_get()) != EOI)
         putchr(c);
     flush();
 }
@@ -703,7 +703,7 @@ void use_logfile(char* filename)
     int answer;
     parg_t parg;
 
-    if (ch::ch_getflags() & CH_CANSEEK)
+    if (ch::getflags() & CH_CANSEEK)
         /*
          * Can't currently use a log file on a file that can seek.
          */

@@ -10,24 +10,24 @@
 
 namespace ch {
 
-void ch_ungetchar(int c);
+void ungetchar(int c);
 void end_logfile(void);
 void sync_logfile(void);
-int ch_seek(position_t pos);
-int ch_end_seek(void);
-int ch_end_buffer_seek(void);
-int ch_beg_seek(void);
-position_t ch_length(void);
-position_t ch_tell(void);
-int ch_forw_get(void);
-int ch_back_get(void);
-void ch_setbufspace(int bufspace);
-void ch_flush(void);
+int seek(position_t pos);
+int end_seek(void);
+int end_buffer_seek(void);
+int beg_seek(void);
+position_t length(void);
+position_t tell(void);
+int forw_get(void);
+int back_get(void);
+void setbufspace(int bufspace);
+void flush(void);
 int seekable(int f);
-void ch_set_eof(void);
-void ch_init(int f, int flags);
-void ch_close(void);
-int ch_getflags(void);
+void set_eof(void);
+void init(int f, int flags);
+void close(void);
+int getflags(void);
 
 }; // namespace ch
 

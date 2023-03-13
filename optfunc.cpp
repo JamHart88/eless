@@ -87,7 +87,7 @@ void opt_o(int type, char* s)
         less::Settings::namelogfile = utils::save(s);
         break;
     case TOGGLE:
-        if (ch::ch_getflags() & CH_CANSEEK) {
+        if (ch::getflags() & CH_CANSEEK) {
             error((char*)"Input is not a pipe", NULL_PARG);
             return;
         }
@@ -406,7 +406,7 @@ void opt_b(int type, char* s)
         /*
          * Set the new number of buffers.
          */
-        ch::ch_setbufspace(bufspace);
+        ch::setbufspace(bufspace);
         break;
     case QUERY:
         break;
