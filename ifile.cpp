@@ -293,16 +293,15 @@ int getIndex(const Ifile* ifile)
 /*
  * Ifile constructor
  */
-Ifile::Ifile(const char* filename)
-{
-    h_filename = utils::save(filename);
-    h_filestate = nullptr;
-    h_hold = 0;
-    h_opened = false;
-    h_scrpos.pos = NULL_POSITION;
-    h_scrpos.ln = 0;
-    h_altpipe = nullptr;
-    h_altfilename = nullptr;
+Ifile::Ifile(const char* filename) : 
+    h_filename{utils::save(filename)},
+    h_filestate{nullptr},
+    h_hold{0},
+    h_opened{false},
+    h_scrpos{NULL_POSITION, 0},
+    h_altpipe{nullptr},
+    h_altfilename{nullptr}
+{  
 };
 
 /*
