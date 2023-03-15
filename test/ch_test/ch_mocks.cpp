@@ -107,10 +107,10 @@ char* wait_message(void)
 // filename
 //************************************************************
 
-position_t filesize(int f)
+position_t filename::filesize(int f)
 {
-    //log(std::string("filesize:"));
-    position_t res = GetMock<ChMock>().filesize(f);
+    //log(std::string("filename::filesize:"));
+    position_t res = GetMock<ChMock>().filename::filesize(f);
     return res;
 }
 

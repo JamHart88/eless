@@ -49,8 +49,6 @@ extern int sc_width;
 extern int sc_height;
 extern int dohelp;
 extern bool any_display;
-extern char openquote;
-extern char closequote;
 extern char* prproto[];
 extern char* eqproto;
 extern char* hproto;
@@ -98,10 +96,10 @@ void opt_o(int type, char* s)
         s = utils::skipsp(s);
         if (less::Settings::namelogfile != NULL)
             free(less::Settings::namelogfile);
-        filename = lglob(s);
-        less::Settings::namelogfile = shell_unquote(filename);
+        filename = filename::lglob(s);
+        less::Settings::namelogfile = filename::shell_unquote(filename);
         free(filename);
-        use_logfile(less::Settings::namelogfile);
+        edit::use_logfile(less::Settings::namelogfile);
         ch::sync_logfile();
         break;
     case QUERY:
@@ -241,9 +239,9 @@ void opt_k(int type, char* s)
 
     switch (type) {
     case INIT:
-        if (lesskey(s, 0)) {
+        if (decode::lesskey(s, 0)) {
             parg.p_string = s;
-            error((char*)"Cannot use lesskey file \"%s\"", parg);
+            error((char*)"Cannot use decode::lesskey file \"%s\"", parg);
         }
         break;
     }
@@ -267,17 +265,17 @@ void opt_t(int type, char* s)
     case TOGGLE:
 
         findtag(utils::skipsp(s));
-        save_ifile = save_curr_ifile();
+        save_ifile = edit::save_curr_ifile();
         /*
          * Try to open the file containing the tag
          * and search for the tag in that file.
          */
         if (edit_tagfile() || (pos = tagsearch()) == NULL_POSITION) {
             /* Failed: reopen the old file. */
-            reedit_ifile(save_ifile);
+            edit::reedit_ifile(save_ifile);
             break;
         }
-        unsave_ifile(save_ifile);
+        edit::unsave_ifile(save_ifile);
         jump_loc(pos, jump_sline);
         break;
     }
@@ -299,8 +297,8 @@ void opt__T(int type, char* s)
         s = utils::skipsp(s);
         if (tags != NULL && tags != ztags)
             free(tags);
-        filename = lglob(s);
-        tags = shell_unquote(filename);
+        filename = filename::lglob(s);
+        tags = filename::shell_unquote(filename);
         free(filename);
         break;
     case QUERY:
@@ -329,13 +327,13 @@ void opt_p(int type, char* s)
             every_first_cmd = utils::save(s);
         } else {
             plusoption = true;
-            ungetcc(CHAR_END_COMMAND);
-            ungetsc(s);
+            command::ungetcc(CHAR_END_COMMAND);
+            command::ungetsc(s);
             /*
              * {{ This won't work if the "/" command is
-             *    changed or invalidated by a .lesskey file. }}
+             *    changed or invalidated by a .decode::lesskey file. }}
              */
-            ungetsc((char*)"/");
+            command::ungetsc((char*)"/");
         }
         break;
     }
@@ -438,7 +436,7 @@ void opt__V(int type, char* s)
     switch (type) {
     case TOGGLE:
     case QUERY:
-        dispversion();
+        command::dispversion();
         break;
     case INIT:
         /*
@@ -523,22 +521,22 @@ void opt_quote(int type, char* s)
     case INIT:
     case TOGGLE:
         if (s[0] == '\0') {
-            openquote = closequote = '\0';
+            less::Settings::openquote = less::Settings::closequote = '\0';
             break;
         }
         if (s[1] != '\0' && s[2] != '\0') {
             error((char*)"-\" must be followed by 1 or 2 chars", NULL_PARG);
             return;
         }
-        openquote = s[0];
+        less::Settings::openquote = s[0];
         if (s[1] == '\0')
-            closequote = openquote;
+            less::Settings::closequote = less::Settings::openquote;
         else
-            closequote = s[1];
+            less::Settings::closequote = s[1];
         break;
     case QUERY:
-        buf[0] = openquote;
-        buf[1] = closequote;
+        buf[0] = less::Settings::openquote;
+        buf[1] = less::Settings::closequote;
         buf[2] = '\0';
         parg.p_string = buf;
         error((char*)"quotes %s", parg);

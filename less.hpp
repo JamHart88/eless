@@ -29,6 +29,11 @@ static inline void ignore_result(long long int unused_result)
     (void)unused_result;
 }
 
+static inline void ignore_result(char * unused_result) 
+{
+    (void)unused_result;
+}
+
 /*
  * Language details.
  */
@@ -68,7 +73,6 @@ static inline void ignore_result(long long int unused_result)
 // New C++ includes
 #include <cstring>
 
-#include "funcs.hpp"
 #include "pattern.hpp"
 
 enum option_t {
@@ -319,7 +323,7 @@ const position_t ch_zero = 0;
 const char* const FAKE_HELPFILE = "@/\\less/\\help/\\file/\\@";
 const char* const FAKE_EMPTYFILE = "@/\\less/\\empty/\\file/\\@";
 
-/* Flags for cvt_text */
+/* Flags for cvt::cvt_text */
 enum cvt_t {
     CVT_TO_LC = 01, /* Convert upper-case to lower-case */
     CVT_BS = 02, /* Do backspace processing */
@@ -337,6 +341,20 @@ enum x11_mouse_t {
     X11MOUSE_WHEEL_DOWN = 0x41, /* Wheel scroll down */
     X11MOUSE_OFFSET = 0x20 /* Added to button & pos bytes to create a char */
 };
+
+/* screen_trashed:
+   Define when screen needs to be redrawn.
+   TRASHED_AND_REOPEN_FILE is a special case:
+       To re-open the input file and jump to the end
+       of the file. */
+enum screen_trashed_t {
+    NOT_TRASHED,
+    TRASHED,
+    TRASHED_AND_REOPEN_FILE
+};
+
+// TODO: Move to namespace and maybe in to Settings
+extern screen_trashed_t screen_trashed;
 
 struct mlist;
 struct loption;
@@ -365,6 +383,9 @@ struct Settings {
     static int utf_mode;
     static int binattr;
 
+    // From cmdbuf
+    static char openquote;
+    static char closequote;
 };
 
 inline int Settings::logfile = -1; 
@@ -380,6 +401,10 @@ inline int Settings::ignore_eoi = 0;
 inline int Settings::utf_mode = 0;
 inline int Settings::binattr = AT_STANDOUT;
 
-}
+inline char Settings::openquote = '"';   
+inline char Settings::closequote = '"';
+
+
+}; // namespace less
 
 #endif

@@ -4,6 +4,8 @@
 #include "ifile.hpp"
 #include "less.hpp"
 
+namespace edit {
+
 void init_textlist(struct textlist* tlist, char* str);
 char* forw_textlist(struct textlist* tlist, char* prev);
 char* back_textlist(struct textlist* tlist, char* prev);
@@ -19,8 +21,9 @@ ifile::Ifile* save_curr_ifile(void);
 void unsave_ifile(ifile::Ifile* save_ifile);
 void reedit_ifile(ifile::Ifile* save_ifile);
 void reopen_curr_ifile(void);
-int edit_stdin(void);
+int edit_stdin(void); // not used externally
 void cat_file(void);
 void use_logfile(char* filename);
 
+} // namespace edit
 #endif

@@ -149,8 +149,8 @@ void scan_option(char* s)
                     free(every_first_cmd);
                 every_first_cmd = utils::save(str + 1);
             } else {
-                ungetcc(CHAR_END_COMMAND);
-                ungetsc(str);
+                command::ungetcc(CHAR_END_COMMAND);
+                command::ungetsc(str);
             }
             free(str);
             continue;

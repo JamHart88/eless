@@ -92,7 +92,7 @@ TEST_F(IfileUnitTestEmpty, CreateAndDelete)
     Times(1).
     WillOnce(Return(filename1));
   
-  EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+  EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
     Times(1).
     WillOnce(Return(filename2));
 
@@ -173,7 +173,7 @@ public:
           Times(1).
           WillOnce(Return(filename1));
 
-        EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+        EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
           Times(1).
           WillOnce(Return(filename2));
 
@@ -207,7 +207,7 @@ TEST_F(IfileUnitTest, FindIfile_part1)
     // check valid at start
     EXPECT_EQ(numIfiles(), 1);
 
-    EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+    EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
       Times(1).
       WillOnce(Return(realsearchfilename));
 
@@ -287,7 +287,7 @@ TEST_F(IfileUnitTest, IfileCreate_add3MoreIfiles)
     Times(1).
     WillOnce(Return(file_1));
 
-  EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+  EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
     Times(1).
     WillOnce(Return(file_2));
 
@@ -313,7 +313,7 @@ TEST_F(IfileUnitTest, IfileCreate_add3MoreIfiles)
     Times(1).
     WillOnce(Return(file_1));
     
-  EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+  EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
     Times(1).
     WillOnce(Return(file_2));
 
@@ -341,7 +341,7 @@ TEST_F(IfileUnitTest, IfileCreate_add3MoreIfiles)
     Times(1).
     WillOnce(Return(file_1));
 
-  EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+  EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
     Times(1).
     WillOnce(Return(file_2));
 
@@ -377,7 +377,7 @@ TEST_F(IfileUnitTest, OpEqualsConstructor)
     Times(1).
     WillOnce(Return(initfilename(fname)));
   
-  //EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+  //EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
   //  Times(1).
   //  WillOnce(Return(initfilename(fname)));
 
@@ -493,7 +493,7 @@ public:
           Times(1).
           WillOnce(Return(initfilename(f1)));
 
-        EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+        EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
            Times(1).
            WillOnce(Return(initfilename(f1)));
 
@@ -507,7 +507,7 @@ public:
           Times(1).
           WillOnce(Return(initfilename(f2)));
 
-        EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+        EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
           Times(1).
           WillOnce(Return(initfilename(f2)));
 
@@ -524,7 +524,7 @@ public:
           Times(1).
           WillOnce(Return(initfilename(f3)));
 
-        EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+        EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
           Times(1).
           WillOnce(Return(initfilename(f3)));
 
@@ -541,7 +541,7 @@ public:
           Times(1).          
           WillOnce(Return(initfilename(f4)));
 
-        EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+        EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
           Times(1).
           WillOnce(Return(initfilename(f4)));
 
@@ -692,7 +692,7 @@ TEST_F(IfileUnitTest4Files, findIfile_changeOfFilename)
     Times(1).          
     WillOnce(Return(shorterFname));
 
-  EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+  EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
     Times(1).
     WillOnce(Return(initfilename(f1)));
 
@@ -712,13 +712,13 @@ TEST_F(IfileUnitTest4Files, findIfile_createIfile)
     Times(1).          
     WillOnce(Return(newfname1));
 
-  EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+  EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
     Times(1).
     WillOnce(Return(newfname2));
 
   createIfile(fname);
 
-  EXPECT_CALL(GetMock<UtilsMock>(), lrealpath(_)).
+  EXPECT_CALL(GetMock<UtilsMock>(), filename::lrealpath(_)).
     Times(1).
     WillOnce(Return(initfilename(fname)));
 

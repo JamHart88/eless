@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-
+namespace debug {
 // File for debugging. 
 
 #ifdef __cplusplus
@@ -108,3 +108,5 @@ void __attribute__((__no_instrument_function__)) debug(const char* str1, const i
         fprintf(fp_trace, "'%s'\n", str2);
     }
 }
+
+} // namespace debug

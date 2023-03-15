@@ -276,7 +276,7 @@ void repaint_hilite(int on)
         pos = position(sindex);
         if (pos == NULL_POSITION)
             continue;
-        (void)forw_line(pos);
+        (void)input::forw_line(pos);
         goto_line(sindex);
         put_line();
     }
@@ -315,7 +315,7 @@ void clear_attn(void)
             continue;
         epos = position(sindex + 1);
         if (pos <= old_end_attnpos && (epos == NULL_POSITION || epos > old_start_attnpos)) {
-            (void)forw_line(pos);
+            (void)input::forw_line(pos);
             goto_line(sindex);
             put_line();
             moved = 1;
@@ -1115,10 +1115,10 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
          * If we're doing backspace processing, delete backspaces.
          */
         cvt_ops = get_cvt_ops();
-        cvt_len = cvt_length(line_len, cvt_ops);
+        cvt_len = cvt::cvt_length(line_len, cvt_ops);
         cline = (char*)utils::ecalloc(1, cvt_len);
-        chpos = cvt_alloc_chpos(cvt_len);
-        cvt_text(cline, line, chpos, &line_len, cvt_ops);
+        chpos = cvt::cvt_alloc_chpos(cvt_len);
+        cvt::cvt_text(cline, line, chpos, &line_len, cvt_ops);
 
 #if HILITE_SEARCH
         /*
@@ -1197,8 +1197,8 @@ static int hist_pattern(int search_type)
 #if CMD_HISTORY
     char* pattern;
 
-    set_mlist(ml_search, 0);
-    pattern = cmd_lastpattern();
+    cmdbuf::set_mlist(ml_search, 0);
+    pattern = cmdbuf::cmd_lastpattern();
     if (pattern == NULL)
         return (0);
 

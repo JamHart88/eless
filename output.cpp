@@ -239,7 +239,7 @@ void get_return(void)
 #else
     c = getchr();
     if (c != '\n' && c != '\r' && c != ' ' && c != READ_INTR)
-        ungetcc(c);
+        command::ungetcc(c);
 #endif
 }
 
@@ -256,7 +256,7 @@ void error(char* fmt, parg_t parg)
 
     if (any_display && is_tty) {
         if (!oldbot)
-            squish_check();
+            forwback::squish_check();
         at_exit();
         clear_bot();
         at_enter(AT_STANDOUT);

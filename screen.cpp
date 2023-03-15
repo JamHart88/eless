@@ -511,7 +511,7 @@ static char* ltget_env(char* capname)
         return p->value;
     }
     snprintf(name, sizeof(name), "LESS_TERMCAP_%s", capname);
-    return (lgetenv(name));
+    return (decode::lgetenv(name));
 }
 
 static int ltgetflag(char* capname)
@@ -589,7 +589,7 @@ void scrsize(void)
 
     if (sys_height > 0)
         sc_height = sys_height;
-    else if ((s = lgetenv((char*)"LINES")) != NULL)
+    else if ((s = decode::lgetenv((char*)"LINES")) != NULL)
         sc_height = atoi(s);
     else if ((n = ltgetnum((char*)"li")) > 0)
         sc_height = n;
@@ -598,7 +598,7 @@ void scrsize(void)
 
     if (sys_width > 0)
         sc_width = sys_width;
-    else if ((s = lgetenv((char*)"COLUMNS")) != NULL)
+    else if ((s = decode::lgetenv((char*)"COLUMNS")) != NULL)
         sc_width = atoi(s);
     else if ((n = ltgetnum((char*)"co")) > 0)
         sc_width = n;
@@ -668,7 +668,7 @@ char* special_key_str(int key)
 
 void get_term(void)
 {
-    termcap_debug = !isnullenv(lgetenv((char*)"LESS_TERMCAP_DEBUG"));
+    termcap_debug = !decode::isnullenv(decode::lgetenv((char*)"LESS_TERMCAP_DEBUG"));
 
     {
         char* sp;
@@ -684,7 +684,7 @@ void get_term(void)
         /*
          * Find out what kind of terminal this is.
          */
-        if ((term = lgetenv((char*)"TERM")) == NULL)
+        if ((term = decode::lgetenv((char*)"TERM")) == NULL)
             term = (char*)DEFAULT_TERM;
         hardcopy = 0;
         /* {{ Should probably just pass NULL instead of termbuf. }} */

@@ -17,6 +17,7 @@
 #include "line.hpp"
 #include "utils.hpp"
 
+namespace cvt {
 
 /*
  * Get the length of a buffer needed to convert a string.
@@ -102,3 +103,5 @@ void cvt_text(char* odst,
         *lenp = (int)(edst - odst);
     /* FIXME: why was this here?  if (chpos != NULL) chpos[dst - odst] = src - osrc; */
 }
+
+}; // namespace cvt

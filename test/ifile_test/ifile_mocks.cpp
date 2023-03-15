@@ -11,13 +11,13 @@
 
 //------------------------------------------------
 // from filename.cpp
-char * lrealpath(const char *path) {
+char * filename::lrealpath(const char *path) {
 
-  //std::cout << "--> lrealpath got string " << path << "\n";
+  //std::cout << "--> filename::lrealpath got string " << path << "\n";
 
-  char * res = GetMock<UtilsMock>().lrealpath(path);
+  char * res = GetMock<UtilsMock>().filename::lrealpath(path);
 
-  //std::cout << "    lrealpath is returning string " << res << "\n";
+  //std::cout << "    filename::lrealpath is returning string " << res << "\n";
 
 	return res;
 }

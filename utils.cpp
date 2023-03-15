@@ -11,6 +11,8 @@
 #include "screen.hpp"
 #include "ttyin.hpp"
 
+#include "debug.hpp" // temporary
+
 bool any_display = false;
 int quitting = 0;
 
@@ -26,7 +28,7 @@ namespace utils {
 
 char* save(const char* s)
 {
-    D(s)
+    debug::D(s)
     int len = strlen(s) + 1;
     char * p = (char*)ecalloc(len, sizeof(char));
     memcpy(p, s, len - 1);
@@ -109,8 +111,8 @@ void quit(int status)
     else
         save_status = status;
     quitting = 1;
-    edit((char*)NULL);
-    save_cmdhist();
+    edit::edit((char*)NULL);
+    cmdbuf::save_cmdhist();
     if (any_display && is_tty)
         clear_bot();
     deinit();

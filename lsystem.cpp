@@ -58,8 +58,8 @@ void lsystem(char* cmd, char* donemsg)
     /*
      * Close the current input file.
      */
-    save_ifile = save_curr_ifile();
-    (void)edit_ifile(nullptr);
+    save_ifile = edit::save_curr_ifile();
+    (void)edit::edit_ifile(nullptr);
 
     /*
      * De-initialize the terminal and take out of raw mode.
@@ -89,15 +89,15 @@ void lsystem(char* cmd, char* donemsg)
      * If the command is empty, just invoke a shell.
      */
     p = NULL;
-    if ((shell = lgetenv((char*)"SHELL")) != NULL && *shell != '\0') {
+    if ((shell = decode::lgetenv((char*)"SHELL")) != NULL && *shell != '\0') {
         if (*cmd == '\0')
             p = utils::save(shell);
         else {
-            char* esccmd = shell_quote(cmd);
+            char* esccmd = filename::shell_quote(cmd);
             if (esccmd != NULL) {
                 int len = (int)(strlen(shell) + strlen(esccmd) + 5);
                 p = (char*)utils::ecalloc(len, sizeof(char));
-                snprintf(p, len, "%s %s %s", shell, shell_coption(), esccmd);
+                snprintf(p, len, "%s %s %s", shell, filename::shell_coption(), esccmd);
                 free(esccmd);
             }
         }
@@ -133,7 +133,7 @@ void lsystem(char* cmd, char* donemsg)
     /*
      * Reopen the current input file.
      */
-    reedit_ifile(save_ifile);
+    edit::reedit_ifile(save_ifile);
 
 #if defined(SIGWINCH) || defined(SIGWIND)
     /*

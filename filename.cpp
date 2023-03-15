@@ -34,12 +34,12 @@
 #endif
 #endif
 
+//TODO: Move to namespaces
 extern int force_open;
 extern int use_lessopen;
 extern int ctldisp;
 
-extern char openquote;
-extern char closequote;
+namespace filename {
 /*
  * Remove quotes around a filename.
  */
@@ -49,11 +49,11 @@ char* shell_unquote(char* str)
     char* p;
 
     name = p = (char*)utils::ecalloc(strlen(str) + 1, sizeof(char));
-    if (*str == openquote) {
+    if (*str == less::Settings::openquote) {
         str++;
         while (*str != '\0') {
-            if (*str == closequote) {
-                if (str[1] != closequote)
+            if (*str == less::Settings::closequote) {
+                if (str[1] != less::Settings::closequote)
                     break;
                 str++;
             }
@@ -79,7 +79,7 @@ char* get_meta_escape(void)
 {
     char* s;
 
-    s = lgetenv((char*)"LESSMETAESCAPE");
+    s = decode::lgetenv((char*)"LESSMETAESCAPE");
     if (s == nullptr)
         s = (char*)DEF_METAESCAPE;
     return (s);
@@ -93,7 +93,7 @@ static char* metachars(void)
     static char* mchars = nullptr;
 
     if (mchars == nullptr) {
-        mchars = lgetenv((char*)"LESSMETACHARS");
+        mchars = decode::lgetenv((char*)"LESSMETACHARS");
         if (mchars == nullptr)
             mchars = (char*)DEF_METACHARS;
     }
@@ -127,7 +127,7 @@ char* shell_quote(char* s)
     len = 1; /* Trailing null byte */
     for (p = s; *p != '\0'; p++) {
         len++;
-        if (*p == openquote || *p == closequote)
+        if (*p == less::Settings::openquote || *p == less::Settings::closequote)
             have_quotes = 1;
         if (metachar(*p)) {
             if (esclen == 0) {
@@ -157,7 +157,7 @@ char* shell_quote(char* s)
      */
     newstr = p = (char*)utils::ecalloc(len, sizeof(char));
     if (use_quotes) {
-        ignore_result(snprintf(newstr, len, "%c%s%c", openquote, s, closequote));
+        ignore_result(snprintf(newstr, len, "%c%s%c", less::Settings::openquote, s, less::Settings::closequote));
     } else {
         while (*s != '\0') {
             if (metachar(*s)) {
@@ -217,7 +217,7 @@ char* homefile(char* filename)
     /*
      * Try $HOME/filename.
      */
-    pathname = dirfile(lgetenv((char*)"HOME"), filename);
+    pathname = dirfile(decode::lgetenv((char*)"HOME"), filename);
     if (pathname != nullptr)
         return (pathname);
     return (nullptr);
@@ -400,7 +400,7 @@ static position_t seek_filesize(int f)
  */
 static char* readfd(FILE* fd)
 {
-    D("readfd");
+    debug::D("readfd");
     int len;
     int ch;
     char* buf;
@@ -416,7 +416,7 @@ static char* readfd(FILE* fd)
         if ((ch = getc(fd)) == '\n' || ch == EOF)
             break;
         if (p - buf >= len - 1) {
-            debug("TOOBIG");
+            debug::debug("TOOBIG");
             /*
              * The string is too big to fit in the buffer we have.
              * Allocate a new buffer, twice as big.
@@ -447,8 +447,8 @@ static FILE* shellcmd(char* cmd)
 
     char* shell;
 
-    shell = lgetenv((char*)"SHELL");
-    if (!isnullenv(shell)) {
+    shell = decode::lgetenv((char*)"SHELL");
+    if (!decode::isnullenv(shell)) {
         char* scmd;
         char* esccmd;
 
@@ -605,15 +605,15 @@ char* lglob(char* filename)
         if (esc == nullptr) {
             return (filename);
         }
-        lessecho = lgetenv((char*)"LESSECHO");
-        if (isnullenv(lessecho))
+        lessecho = decode::lgetenv((char*)"LESSECHO");
+        if (decode::isnullenv(lessecho))
             lessecho = (char*)"lessecho";
         /*
          * Invoke lessecho, and read its output (a globbed list of filenames).
          */
         len = (int)(strlen(lessecho) + strlen(filename) + (7 * strlen(metachars())) + 24);
         cmd = (char*)utils::ecalloc(len, sizeof(char));
-        ignore_result(snprintf(cmd, len, "%s -p0x%x -d0x%x -e%s ", lessecho, openquote, closequote, esc));
+        ignore_result(snprintf(cmd, len, "%s -p0x%x -d0x%x -e%s ", lessecho, less::Settings::openquote, less::Settings::closequote, esc));
         free(esc);
         for (s = metachars(); *s != '\0'; s++)
             ignore_result(sprintf(cmd + strlen(cmd), "-n0x%x ", *s));
@@ -702,7 +702,7 @@ char* open_altfile(char* filename, int* pf, void** pfd)
     if (!use_lessopen)
         return (nullptr);
     ch::ungetchar(-1);
-    if ((lessopen = lgetenv((char*)"LESSOPEN")) == nullptr)
+    if ((lessopen = decode::lgetenv((char*)"LESSOPEN")) == nullptr)
         return (nullptr);
     while (*lessopen == '|') {
         /*
@@ -801,7 +801,7 @@ void close_altfile(char* altfilename, char* filename)
     int len;
 
     ch::ungetchar(-1);
-    if ((lessclose = lgetenv((char*)"LESSCLOSE")) == nullptr)
+    if ((lessclose = decode::lgetenv((char*)"LESSCLOSE")) == nullptr)
         return;
     if (num_pct_s(lessclose) > 2) {
         error((char*)"LESSCLOSE ignored; must contain no more than 2 %%s", NULL_PARG);
@@ -911,3 +911,5 @@ char* last_component(char* name)
     }
     return (name);
 }
+
+} // namespace filename

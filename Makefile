@@ -63,7 +63,7 @@ eless$(EXEEXT): ${OBJ}
 
 charset.${O}: compose.uni ubin.uni wide.uni
 
-${OBJ}: ${srcdir}/less.hpp ${srcdir}/funcs.hpp defines.hpp 
+${OBJ}: ${srcdir}/less.hpp defines.hpp 
 
 install: all ${srcdir}/less.nro installdirs
 	${INSTALL_PROGRAM} eless$(EXEEXT) ${DESTDIR}${bindir}/${binprefix}less$(EXEEXT)

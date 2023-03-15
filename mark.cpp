@@ -119,7 +119,7 @@ static void mark_get_ifile(struct mark* m)
 static struct mark* getumark(int c)
 {
     char mc = static_cast<char>(c);
-    debug("getumark : ", mc);
+    debug::debug("getumark : ", mc);
 
     if (c >= 'a' && c <= 'z')
         return (&marks[c - 'a']);
@@ -285,7 +285,7 @@ void gomark(int c)
         /*
          * Not in the current file; edit the correct file.
          */
-        if (edit_ifile(m->m_ifile))
+        if (edit::edit_ifile(m->m_ifile))
             return;
     }
 
@@ -357,13 +357,13 @@ void unmark(ifile::Ifile * ifilePtr)
 void mark_check_ifile(ifile::Ifile * ifilePtr)
 {
     int i;
-    char* filename = lrealpath(ifilePtr->getFilename());
+    char* filename = filename::lrealpath(ifilePtr->getFilename());
 
     for (i = 0; i < NMARKS; i++) {
         struct mark* m = &marks[i];
         char* mark_filename = m->m_filename;
         if (mark_filename != NULL) {
-            mark_filename = lrealpath(mark_filename);
+            mark_filename = filename::lrealpath(mark_filename);
             if (strcmp(filename, mark_filename) == 0)
                 mark_set_ifile(m, ifilePtr);
             free(mark_filename);
@@ -382,21 +382,21 @@ void save_marks(FILE* fout, char* hdr)
 {
     int i;
 
-    debug("Save marks 1");
+    debug::debug("Save marks 1");
 
     if (!perma_marks)
         return;
 
-    debug("save marks 2");
+    debug::debug("save marks 2");
     ignore_result(fprintf(fout, "%s\n", hdr));
 
     for (i = 0; i < NUMARKS; i++) {
-        debug("Mark:", i);
+        debug::debug("Mark:", i);
         char* filename;
         struct mark* m = &marks[i];
 
-        debug("mark m_letter", m->m_letter);
-        debug("mark filename", m->m_filename);
+        debug::debug("mark m_letter", m->m_letter);
+        debug::debug("mark filename", m->m_filename);
 
 
         if (m->m_scrpos.pos == NULL_POSITION)
@@ -407,15 +407,15 @@ void save_marks(FILE* fout, char* hdr)
 
         utils::typeToStr<position_t>(m->m_scrpos.pos, posStrPtr, posStrLen);
 
-        debug("mark pos: ", posStrPtr);
+        debug::debug("mark pos: ", posStrPtr);
 
         filename = m->m_filename;
         if (filename == NULL)
             filename = m->m_ifile->getFilename();
-        filename = lrealpath(filename);
+        filename = filename::lrealpath(filename);
 
-        debug("filename:", filename);
-        debug("ln: ", m->m_scrpos.ln);
+        debug::debug("filename:", filename);
+        debug::debug("ln: ", m->m_scrpos.ln);
 
         if (strcmp(filename, "-") != 0)
             ignore_result(fprintf(fout, "m %c %d %s %s\n",

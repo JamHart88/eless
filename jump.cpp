@@ -56,7 +56,7 @@ void jump_forw(void)
      */
     pos_clear();
     end_pos = ch::tell();
-    pos = back_line(end_pos);
+    pos = input::back_line(end_pos);
     if (pos == NULL_POSITION)
         jump_loc(ch_zero, sc_height - 1);
     else {
@@ -101,7 +101,7 @@ void jump_back(linenum_t linenum)
     pos = find_pos(linenum);
     if (pos != NULL_POSITION && ch::seek(pos) == 0) {
         if (show_attn)
-            set_attnpos(pos);
+            input::set_attnpos(pos);
         jump_loc(pos, jump_sline);
     } else if (linenum <= 1 && ch::beg_seek() == 0) {
         jump_loc(ch::tell(), jump_sline);
@@ -125,7 +125,7 @@ void repaint(void)
      */
     get_scrpos(&scrpos, TOP);
     int it = static_cast<int>(scrpos.pos);
-    debug("position : ", it);
+    debug::debug("position : ", it);
     pos_clear();
     if (scrpos.pos == NULL_POSITION)
         /* Screen hasn't been drawn yet. */
@@ -189,7 +189,7 @@ void jump_line_loc(position_t pos, int sline)
         pos = ch::tell();
     }
     if (show_attn)
-        set_attnpos(pos);
+        input::set_attnpos(pos);
     jump_loc(pos, sline);
 }
 
@@ -218,9 +218,9 @@ void jump_loc(position_t pos, int sline)
          */
         nline -= sindex;
         if (nline > 0)
-            forw(nline, position(BOTTOM_PLUS_ONE), 1, 0, 0);
+            forwback::forw(nline, position(BOTTOM_PLUS_ONE), 1, 0, 0);
         else if (nline < 0)
-            back(-nline, position(TOP), 1, 0);
+            forwback::back(-nline, position(TOP), 1, 0);
 #if HILITE_SEARCH
         if (show_attn)
             repaint_hilite(1);
@@ -247,7 +247,7 @@ void jump_loc(position_t pos, int sline)
         /*
          * The desired line is after the current screen.
          * Move back in the file far enough so that we can
-         * call forw() and put the desired line at the
+         * call forwback::forw() and put the desired line at the
          * sline-th line on the screen.
          */
         for (nline = 0; nline < sindex; nline++) {
@@ -257,18 +257,18 @@ void jump_loc(position_t pos, int sline)
                  * close enough to the current screen
                  * that we can just scroll there after all.
                  */
-                forw(sc_height - sindex + nline - 1, bpos, 1, 0, 0);
+                forwback::forw(sc_height - sindex + nline - 1, bpos, 1, 0, 0);
 #if HILITE_SEARCH
                 if (show_attn)
                     repaint_hilite(1);
 #endif
                 return;
             }
-            pos = back_line(pos);
+            pos = input::back_line(pos);
             if (pos == NULL_POSITION) {
                 /*
                  * Oops.  Ran into the beginning of the file.
-                 * Exit the loop here and rely on forw()
+                 * Exit the loop here and rely on forwback::forw()
                  * below to draw the required number of
                  * blank lines at the top of the screen.
                  */
@@ -278,7 +278,7 @@ void jump_loc(position_t pos, int sline)
         lastmark();
         squished = 0;
         screen_trashed = NOT_TRASHED;
-        forw(sc_height - 1, pos, 1, 0, sindex - nline);
+        forwback::forw(sc_height - 1, pos, 1, 0, sindex - nline);
     } else {
         /*
          * The desired line is before the current screen.
@@ -287,7 +287,7 @@ void jump_loc(position_t pos, int sline)
          * sindex-th line on the screen.
          */
         for (nline = sindex; nline < sc_height - 1; nline++) {
-            pos = forw_line(pos);
+            pos = input::forw_line(pos);
             if (pos == NULL_POSITION) {
                 /*
                  * Ran into end of file.
@@ -305,7 +305,7 @@ void jump_loc(position_t pos, int sline)
                  * close enough to the current screen
                  * that we can just scroll there after all.
                  */
-                back(nline + 1, tpos, 1, 0);
+                forwback::back(nline + 1, tpos, 1, 0);
 #if HILITE_SEARCH
                 if (show_attn)
                     repaint_hilite(1);
@@ -320,6 +320,6 @@ void jump_loc(position_t pos, int sline)
             home();
         screen_trashed = NOT_TRASHED;
         add_back_pos(pos);
-        back(sc_height - 1, pos, 1, 0);
+        forwback::back(sc_height - 1, pos, 1, 0);
     }
 }

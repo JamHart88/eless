@@ -355,7 +355,7 @@ TEST_F(ChUnitTest1Buff, init_and_tell)
     WillOnce(Return(1)); // Not BADLSEEK
 
   EXPECT_CALL(GetMock<ChMock>(), 
-    filesize(9)).
+    filename::filesize(9)).
     Times(1).
     WillOnce(Return(test_file_size));
 
@@ -550,7 +550,7 @@ public:
           WillRepeatedly(Return(1)); // Not BADLSEEK
 
         EXPECT_CALL(GetMock<ChMock>(), 
-          filesize(default_file_id)).
+          filename::filesize(default_file_id)).
           Times(2).
           WillRepeatedly(Return(default_fsize));
 
@@ -925,7 +925,7 @@ public:
         WillOnce(Return(1)); // Not BADLSEEK
 
       EXPECT_CALL(GetMock<ChMock>(), 
-        filesize(default_file_id)).
+        filename::filesize(default_file_id)).
         Times(1).
         WillOnce(Return(default_fsize));
 
@@ -1079,7 +1079,7 @@ TEST_F(ChUnitTestBaseBigFile, multi_block_get)
     WillOnce(Return(0)); 
 
   EXPECT_CALL(GetMock<ChMock>(), 
-    filesize(default_file_id)).
+    filename::filesize(default_file_id)).
     Times(1).
     WillOnce(Return(default_fsize));
 

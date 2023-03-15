@@ -12,7 +12,7 @@ class UtilsMock : public ModuleMock
 {
 public:
     MOCK_METHOD1(save, char*(const char*));
-    MOCK_METHOD1(lrealpath, char *(const char *));
+    MOCK_METHOD1(filename::lrealpath, char *(const char *));
     MOCK_METHOD1(unmark, void (ifile::Ifile *));
     MOCK_METHOD1(mark_check_ifile, void (ifile::Ifile *));
 };

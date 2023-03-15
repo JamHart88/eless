@@ -46,7 +46,7 @@ public:
     MOCK_METHOD0(wait_message, char* (void));
     
     // filename
-    MOCK_METHOD1(filesize, position_t (int));
+    MOCK_METHOD1(filename::filesize, position_t (int));
 
     // ifile
     MOCK_METHOD0(getCurrentIfile, ifile::Ifile* (void));

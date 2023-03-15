@@ -54,6 +54,8 @@ extern char* tagoption;
 
 screen_trashed_t screen_trashed = TRASHED;
 
+namespace forwback {
+
 /*
  * Sound the bell to indicate user is trying to move past end of file.
  */
@@ -164,9 +166,9 @@ void forw(int n, position_t pos,
 #endif
 
     if (!do_repaint) {
-        debug("not do_repaint");
+        debug::debug("not do_repaint");
         if (top_scroll && n >= sc_height - 1 && pos != ch::length()) {
-            debug("start new screen");
+            debug::debug("start new screen");
             /*
              * Start a new screen.
              * {{ This is not really desirable if we happen
@@ -181,7 +183,7 @@ void forw(int n, position_t pos,
         }
 
         if (pos != position(BOTTOM_PLUS_ONE) || empty_screen()) {
-            debug("clear screen and start a new one");
+            debug::debug("clear screen and start a new one");
             /*
              * This is not contiguous with what is
              * currently displayed.  Clear the screen image
@@ -200,7 +202,7 @@ void forw(int n, position_t pos,
     }
 
     while (--n >= 0) {
-        debug("read next line of input");
+        debug::debug("read next line of input");
         /*
          * Read the next line of input.
          */
@@ -214,16 +216,16 @@ void forw(int n, position_t pos,
             if (--nblank == 0)
                 pos = ch_zero;
         } else {
-            debug("Get next line from the file");
+            debug::debug("Get next line from the file");
             /*
              * Get the next line from the file.
              */
-            pos = forw_line(pos);
+            pos = input::forw_line(pos);
 #if HILITE_SEARCH
             pos = next_unfiltered(pos);
 #endif
             if (pos == NULL_POSITION) {
-                debug("end of the file - stop");
+                debug::debug("end of the file - stop");
                 /*
                  * End of file: stop here unless the top line
                  * is still empty, or "force" is true.
@@ -240,11 +242,11 @@ void forw(int n, position_t pos,
          * Add the position of the next line to the position table.
          * Display the current line on the screen.
          */
-        debug("add the position of the next line to pos table");
+        debug::debug("add the position of the next line to pos table");
         add_forw_pos(pos);
         nlines++;
         if (do_repaint) {
-            debug("do-repaint - continue");
+            debug::debug("do-repaint - continue");
             continue;
         }
         /*
@@ -273,7 +275,7 @@ void forw(int n, position_t pos,
     if (nlines == 0 && !less::Settings::ignore_eoi && same_pos_bell)
         eof_bell();
     else if (do_repaint) {
-        debug("repaint from forw");
+        debug::debug("repaint from forw");
         repaint();
     }
     first_time = 0;
@@ -304,7 +306,7 @@ void back(int n, position_t pos, int force, int only_last)
         pos = prev_unfiltered(pos);
 #endif
 
-        pos = back_line(pos);
+        pos = input::back_line(pos);
         if (pos == NULL_POSITION) {
             /*
              * Beginning of file: stop here unless "force" is true.
@@ -348,7 +350,7 @@ void forward(int n, int force, int only_last)
          * If the -e flag is set and we're trying to go
          * forward from end-of-file, go on to the next file.
          */
-        if (edit_next(1))
+        if (edit::edit_next(1))
             utils::quit(QUIT_OK);
         return;
     }
@@ -422,9 +424,11 @@ int get_one_screen(void)
     position_t pos = ch_zero;
 
     for (nlines = 0; nlines < sc_height; nlines++) {
-        pos = forw_line(pos);
+        pos = input::forw_line(pos);
         if (pos == NULL_POSITION)
             break;
     }
     return (nlines < sc_height);
 }
+
+} // namespace forwback

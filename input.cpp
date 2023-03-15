@@ -23,6 +23,7 @@
 #include "line.hpp"
 #include "search.hpp"
 
+// TODO: Move to namespace
 extern int squeeze;
 extern int chopline;
 extern int hshift;
@@ -34,6 +35,8 @@ extern position_t end_attnpos;
 extern int hilite_search;
 extern int size_linebuf;
 #endif
+
+namespace input {
 
 /*
  * Get the next line.
@@ -57,7 +60,7 @@ get_forw_line:
     }
 #if HILITE_SEARCH
     if (hilite_search == OPT_ONPLUS || is_filtering() || status_col) {
-        debug("line 62 status_col val = ", static_cast<int>(status_col));
+        debug::debug("line 62 status_col val = ", static_cast<int>(status_col));
         /*
          * If we are ignoring EOI (command F), only prepare
          * one line ahead, to avoid getting stuck waiting for
@@ -80,7 +83,7 @@ get_forw_line:
      */
     base_pos = curr_pos;
     for (;;) {
-        debug("forw_get - step back to beg of line - base_pos = ", base_pos);
+        debug::debug("forw_get - step back to beg of line - base_pos = ", base_pos);
         if (is_abort_signal(less::Settings::sigs)) {
             null_line();
             return (NULL_POSITION);
@@ -95,7 +98,7 @@ get_forw_line:
         --base_pos;
     }
 
-    debug("forw_get - read_forward again");
+    debug::debug("forw_get - read_forward again");
     /*
      * Read forward again to the position we should start at.
      */
@@ -121,7 +124,7 @@ get_forw_line:
     (void)pflushmbc();
     pshift_all();
 
-    debug("read the 1st char to display");
+    debug::debug("read the 1st char to display");
     /*
      * Read the first character to display.
      */
@@ -132,7 +135,7 @@ get_forw_line:
     }
     blankline = (c == '\n' || c == '\r');
 
-    debug("Read each character in the line and append to the line buffer");
+    debug::debug("Read each character in the line and append to the line buffer");
     /*
      * Read each character in the line and append to the line buffer.
      */
@@ -146,7 +149,7 @@ get_forw_line:
             return (NULL_POSITION);
         }
         if (c == '\n' || c == EOI) {
-            debug("fowr_line, got EOI or NL");
+            debug::debug("fowr_line, got EOI or NL");
             /*
              * End of the line.
              */
@@ -167,7 +170,7 @@ get_forw_line:
          */
         backchars = pappend(c, ch::tell() - 1);
         if (backchars > 0) {
-            debug("forw_line - line too long - backchars = ", backchars);
+            debug::debug("forw_line - line too long - backchars = ", backchars);
             /*
              * The char won't fit in the line; the line
              * is too long to print in the screen width.
@@ -207,13 +210,13 @@ get_forw_line:
     }
 
     if (status_col && is_hilited(base_pos, ch::tell() - 1, 1, NULL)) {
-        debug("line 223 status_col val = ", static_cast<int>(status_col));
+        debug::debug("line 223 status_col val = ", static_cast<int>(status_col));
         set_status_col('*');
     }
 #endif
 
     if (squeeze && blankline) {
-        debug("squeeze and blankline");
+        debug::debug("squeeze and blankline");
         /*
          * This line is blank.
          * Skip down to the last contiguous blank line
@@ -229,7 +232,7 @@ get_forw_line:
         new_pos = ch::tell();
     }
 
-    debug("forw_line return new_pos = ", new_pos);
+    debug::debug("forw_line return new_pos = ", new_pos);
     return (new_pos);
 }
 
@@ -242,7 +245,7 @@ get_forw_line:
  */
 position_t back_line(position_t curr_pos)
 {
-    debug ("back_line called currpos", curr_pos);
+    debug::debug ("back_line called currpos", curr_pos);
     position_t new_pos, begin_new_pos, base_pos;
     int c;
 
@@ -255,7 +258,7 @@ get_back_line:
     }
 #if HILITE_SEARCH
     if (hilite_search == OPT_ONPLUS || is_filtering() || status_col) {
-        debug("line 269 status_col val = ", static_cast<int>(status_col));
+        debug::debug("line 269 status_col val = ", static_cast<int>(status_col));
         prep_hilite((curr_pos < 3 * size_linebuf) ? 0 : curr_pos - 3 * size_linebuf, curr_pos, -1);
     }
 #endif
@@ -394,7 +397,7 @@ loop:
     }
 
     if (status_col && curr_pos > 0 && is_hilited(base_pos, curr_pos - 1, 1, NULL)) {
-        debug("line 427 status_col val = ", static_cast<int>(status_col));
+        debug::debug("line 427 status_col val = ", static_cast<int>(status_col));
         set_status_col('*');
     }
 #endif
@@ -432,3 +435,5 @@ void set_attnpos(position_t pos)
     }
     start_attnpos = pos;
 }
+
+} // namespace input

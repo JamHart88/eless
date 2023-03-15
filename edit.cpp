@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #endif
 
+// TODO: Move to namespaces
 int fd0 = 0;
 
 extern bool new_file;
@@ -41,13 +42,12 @@ extern int is_tty;
 extern struct scrpos initial_scrpos;
 extern void* ml_examine;
 
-extern char openquote;
-extern char closequote;
-
 #if HAVE_STAT_INO
 dev_t curr_dev;
 ino_t curr_ino;
 #endif
+
+namespace edit {
 
 /*
  * Textlist functions deal with a list of words separated by spaces.
@@ -61,7 +61,7 @@ void init_textlist(struct textlist* tlist, char* str)
     char* s;
     int meta_quoted = 0;
     int delim_quoted = 0;
-    char* esc = get_meta_escape();
+    char* esc = filename::get_meta_escape();
     int esclen = (int)strlen(esc);
 
     tlist->string = utils::skipsp(str);
@@ -73,11 +73,11 @@ void init_textlist(struct textlist* tlist, char* str)
             meta_quoted = 1;
             s += esclen - 1;
         } else if (delim_quoted) {
-            if (*s == closequote)
+            if (*s == less::Settings::closequote)
                 delim_quoted = 0;
         } else /* (!delim_quoted) */
         {
-            if (*s == openquote)
+            if (*s == less::Settings::openquote)
                 delim_quoted = 1;
             else if (*s == ' ')
                 *s = '\0';
@@ -177,7 +177,7 @@ static void close_file(void)
             close_pipe(altpipe);
             ifile::getCurrentIfile()->setAltpipe(nullptr);
         }
-        close_altfile(altfilename, ifile::getCurrentIfile()->getFilename());
+        filename::close_altfile(altfilename, ifile::getCurrentIfile()->getFilename());
         ifile::getCurrentIfile()->setAltfilename(nullptr);
     }
     ifile::setCurrentIfile(nullptr);
@@ -226,7 +226,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
 
     /*
      * We must close the currently open file now.
-     * This is necessary to make the open_altfile/close_altfile pairs
+     * This is necessary to make the filename::open_altfile/filename::close_altfile pairs
      * nest properly (or rather to avoid nesting at all).
      * {{ Some stupid implementations of popen() mess up if you do:
      *    fA = popen("A"); fB = popen("B"); pclose(fA); pclose(fB); }}
@@ -280,7 +280,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
         if (strcmp(filename, FAKE_HELPFILE) == 0 || strcmp(filename, FAKE_EMPTYFILE) == 0)
             alt_filename = nullptr;
         else
-            alt_filename = open_altfile(filename, &f, &altpipe);
+            alt_filename = filename::open_altfile(filename, &f, &altpipe);
 
         open_filename = (alt_filename != nullptr) ? alt_filename : filename;
 
@@ -289,7 +289,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
             /*
              * The alternate "file" is actually a pipe.
              * f has already been set to the file descriptor of the pipe
-             * in the call to open_altfile above.
+             * in the call to filename::open_altfile above.
              * Keep the file descriptor open because it was opened
              * via popen(), and pclose() wants to close it.
              */
@@ -316,7 +316,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
             f = -1;
             chflags |= CH_HELPFILE;
 
-        } else if ((parg.p_string = bad_file(open_filename)) != nullptr) {
+        } else if ((parg.p_string = filename::bad_file(open_filename)) != nullptr) {
             /*
              * It looks like a bad file.  Don't try to open it.
              */
@@ -326,7 +326,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
         err1:
             if (alt_filename != nullptr) {
                 close_pipe((FILE*)altpipe);
-                close_altfile(alt_filename, filename);
+                filename::close_altfile(alt_filename, filename);
             }
             ifile::deleteIfile(requestedIfile);
             free(filename);
@@ -355,7 +355,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
         } else {
 
             chflags |= CH_CANSEEK;
-            if (!force_open && !requestedIfile->getOpened() && bin_file(f)) {
+            if (!force_open && !requestedIfile->getOpened() && filename::bin_file(f)) {
                 /*
                  * Looks like a binary file.
                  * Ask user if we should proceed.
@@ -406,8 +406,8 @@ int edit_ifile(ifile::Ifile* requestedIfile)
         }
 #endif
         if (every_first_cmd != nullptr) {
-            ungetcc(CHAR_END_COMMAND);
-            ungetsc(every_first_cmd);
+            command::ungetcc(CHAR_END_COMMAND);
+            command::ungetsc(every_first_cmd);
         }
     }
 
@@ -429,8 +429,8 @@ int edit_ifile(ifile::Ifile* requestedIfile)
         clr_hilite();
 #endif
         if (strcmp(filename, FAKE_HELPFILE) && strcmp(filename, FAKE_EMPTYFILE)) {
-            char* qfilename = shell_quote(filename);
-            cmd_addhist((struct mlist*)ml_examine, qfilename, 1);
+            char* qfilename = filename::shell_quote(filename);
+            cmdbuf::cmd_addhist((struct mlist*)ml_examine, qfilename, 1);
             free(qfilename);
         }
 
@@ -479,13 +479,13 @@ int edit_list(char* filelist)
 
     while ((filename = forw_textlist(&tl_files, filename)) != nullptr) {
 
-        gfilelist = lglob(filename);
+        gfilelist = filename::lglob(filename);
         init_textlist(&tl_gfiles, gfilelist);
         gfilename = nullptr;
 
         while ((gfilename = forw_textlist(&tl_gfiles, gfilename)) != nullptr) {
 
-            qfilename = shell_unquote(gfilename);
+            qfilename = filename::shell_unquote(gfilename);
 
             if (edit(qfilename) == 0 && good_filename == nullptr)
                 good_filename = ifile::getCurrentIfile()->getFilename();
@@ -782,3 +782,4 @@ loop:
     
 }
 
+} // namespace edit

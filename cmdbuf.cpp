@@ -35,6 +35,56 @@ extern int sc_width;
 extern int no_hist_dups;
 extern int marks_modified;
 
+#if CMD_HISTORY
+
+/*
+ * A mlist structure represents a command history.
+ */
+struct mlist
+{
+    struct mlist *next;
+    struct mlist *prev;
+    struct mlist *curr_mp;
+    char *string;
+    int modified;
+};
+// TODO: Migrate mlist to use <List> and fix how the variables below
+// are created/managed
+/*
+ * These are the various command histories that exist.
+ */
+struct mlist mlist_search =  
+    { &mlist_search,  &mlist_search,  &mlist_search,  NULL, 0 };
+ void *ml_search = (void *) &mlist_search;
+
+struct mlist mlist_examine = 
+    { &mlist_examine, &mlist_examine, &mlist_examine, NULL, 0 };
+ void *ml_examine = (void *) &mlist_examine;
+
+#if SHELL_ESCAPE || PIPEC
+struct mlist mlist_shell =   
+    { &mlist_shell,   &mlist_shell,   &mlist_shell,   NULL, 0 };
+ void *ml_shell = (void *) &mlist_shell;
+#endif
+
+#else /* CMD_HISTORY */
+
+/* If CMD_HISTORY is off, these are just flags. */
+ void *ml_search = (void *)1;
+ void *ml_examine = (void *)2;
+#if SHELL_ESCAPE || PIPEC
+ void *ml_shell = (void *)3;
+#endif
+
+#endif /* CMD_HISTORY */
+
+
+
+
+
+
+namespace cmdbuf {
+
 // TODO: Update clang format rules to auto align comments like this
 // clang-format off
 static char cmdbuf[CMDBUF_SIZE]; /* Buffer for holding a multi-char command */
@@ -62,8 +112,8 @@ static struct textlist tk_tlist;
 static int cmd_left();
 static int cmd_right();
 
-char openquote = '"';
-char closequote = '"';
+
+
 
 #if CMD_HISTORY
 
@@ -72,44 +122,6 @@ char closequote = '"';
 #define HISTFILE_SEARCH_SECTION  ".search"
 #define HISTFILE_SHELL_SECTION   ".shell"
 #define HISTFILE_MARK_SECTION    ".mark"
-
-/*
- * A mlist structure represents a command history.
- */
-struct mlist
-{
-    struct mlist *next;
-    struct mlist *prev;
-    struct mlist *curr_mp;
-    char *string;
-    int modified;
-};
-
-/*
- * These are the various command histories that exist.
- */
-struct mlist mlist_search =  
-    { &mlist_search,  &mlist_search,  &mlist_search,  NULL, 0 };
- void *ml_search = (void *) &mlist_search;
-
-struct mlist mlist_examine = 
-    { &mlist_examine, &mlist_examine, &mlist_examine, NULL, 0 };
- void *ml_examine = (void *) &mlist_examine;
-
-#if SHELL_ESCAPE || PIPEC
-struct mlist mlist_shell =   
-    { &mlist_shell,   &mlist_shell,   &mlist_shell,   NULL, 0 };
- void *ml_shell = (void *) &mlist_shell;
-#endif
-
-#else /* CMD_HISTORY */
-
-/* If CMD_HISTORY is off, these are just flags. */
- void *ml_search = (void *)1;
- void *ml_examine = (void *)2;
-#if SHELL_ESCAPE || PIPEC
- void *ml_shell = (void *)3;
-#endif
 
 #endif /* CMD_HISTORY */
 
@@ -836,7 +848,7 @@ static int cmd_edit(int c)
         flags |= EC_NOCOMPLETE;
 #endif
 
-    action = editchar(c, flags);
+    action = decode::editchar(c, flags);
 
     switch (action)
     {
@@ -952,7 +964,7 @@ static char * delimit_word(void)
     char *p;
     int delim_quoted = 0;
     int meta_quoted = 0;
-    const char *esc = get_meta_escape();
+    const char *esc = filename::get_meta_escape();
     int esclen = (int) strlen(esc);
     
     /*
@@ -1010,11 +1022,11 @@ static char * delimit_word(void)
             p += esclen - 1;
         } else if (delim_quoted)
         {
-            if (*p == closequote)
+            if (*p == less::Settings::closequote)
                 delim_quoted = 0;
         } else /* (!delim_quoted) */
         {
-            if (*p == openquote)
+            if (*p == less::Settings::openquote)
                 delim_quoted = 1;
             else if (*p == ' ')
                 word = p+1;
@@ -1066,17 +1078,17 @@ static void init_compl(void)
      */
     c = *cp;
     *cp = '\0';
-    if (*word != openquote)
+    if (*word != less::Settings::openquote)
     {
-        tk_text = fcomplete(word);
+        tk_text = filename::fcomplete(word);
     } else
     {
-        char *qword = shell_quote(word+1);
+        char *qword = filename::shell_quote(word+1);
         if (qword == NULL)
-            tk_text = fcomplete(word+1);
+            tk_text = filename::fcomplete(word+1);
         else
         {
-            tk_text = fcomplete(qword);
+            tk_text = filename::fcomplete(qword);
             free(qword);
         }
     }
@@ -1091,9 +1103,9 @@ static char * next_compl(int action, char *prev)
     switch (action)
     {
     case EC_F_COMPLETE:
-        return (forw_textlist(&tk_tlist, prev));
+        return (edit::forw_textlist(&tk_tlist, prev));
     case EC_B_COMPLETE:
-        return (back_textlist(&tk_tlist, prev));
+        return (edit::back_textlist(&tk_tlist, prev));
     }
     /* Cannot happen */
     return ((char *) "?");
@@ -1134,7 +1146,7 @@ static int cmd_complete(int action)
              * Use the first filename in the list.
              */
             in_completion = 1;
-            init_textlist(&tk_tlist, tk_text);
+            edit::init_textlist(&tk_tlist, tk_text);
             tk_trial = next_compl(action, (char*)NULL);
         }
     } else
@@ -1171,11 +1183,11 @@ static int cmd_complete(int action)
         /*
          * If it is a directory, append a slash.
          */
-        if (is_dir(tk_trial))
+        if (filename::is_dir(tk_trial))
         {
-            if (cp > cmdbuf && cp[-1] == closequote)
+            if (cp > cmdbuf && cp[-1] == less::Settings::closequote)
                 (void) cmd_erase();
-            s = lgetenv((char *)"LESSSEPARATOR");
+            s = decode::lgetenv((char *)"LESSSEPARATOR");
             if (s == NULL)
                 s = (char *)PATHNAME_SEP;
             if (cmd_istr(s) != CC_OK)
@@ -1267,7 +1279,7 @@ fail:
     /*
      * See if it is a line-editing character.
      */
-    if (in_mca() && len == 1)
+    if (command::in_mca() && len == 1)
     {
         action = cmd_edit(c);
         switch (action)
@@ -1347,8 +1359,8 @@ static char * histfile_name(void)
     int len;
     
     /* See if filename is explicitly specified by $LESSHISTFILE. */
-    name = lgetenv((char *)"LESSHISTFILE");
-    if (!isnullenv(name))
+    name = decode::lgetenv((char *)"LESSHISTFILE");
+    if (!decode::isnullenv(name))
     {
         if (strcmp(name, "-") == 0 || strcmp(name, "/dev/null") == 0)
             /* $LESSHISTFILE == "-" means don't use a history file. */
@@ -1361,14 +1373,14 @@ static char * histfile_name(void)
         return (NULL);
 
     /* Otherwise, file is in $HOME. */
-    home = lgetenv((char *)"HOME");
-    if (isnullenv(home))
+    home = decode::lgetenv((char *)"HOME");
+    if (decode::isnullenv(home))
     {
             return (NULL);
     }
     len = (int) (strlen(home) + strlen(LESSHISTFILE) + 2);
     name = (char *) utils::ecalloc(len, sizeof(char));
-    snprintf(name, len, "%s/%s", home, LESSHISTFILE);
+    ignore_result(snprintf(name, len, "%s/%s", home, LESSHISTFILE));
     return (name);
 }
 
@@ -1397,7 +1409,7 @@ static void read_cmdhist2(void (*action)(void*,struct mlist*,char*),
     if (fgets(line, sizeof(line), f) == NULL ||
         strncmp(line, HISTFILE_FIRST_LINE, strlen(HISTFILE_FIRST_LINE)) != 0)
     {
-        fclose(f);
+        ignore_result(fclose(f));
         return;
     }
     while (fgets(line, sizeof(line), f) != NULL)
@@ -1440,7 +1452,7 @@ static void read_cmdhist2(void (*action)(void*,struct mlist*,char*),
             (*action)(uparam, NULL, line);
         }
     }
-    fclose(f);
+    ignore_result(fclose(f));
 }
 
 static void read_cmdhist(void (*action)(void*,struct mlist*,char*),
@@ -1480,10 +1492,10 @@ static void addhist_init(void *unused, struct mlist *ml, char *string)
 static void write_mlist_header(struct mlist *ml, FILE *f)
 {
     if (ml == &mlist_search)
-        fprintf(f, "%s\n", HISTFILE_SEARCH_SECTION);
+        ignore_result(fprintf(f, "%s\n", HISTFILE_SEARCH_SECTION));
 #if SHELL_ESCAPE || PIPEC
     else if (ml == &mlist_shell)
-        fprintf(f, "%s\n", HISTFILE_SHELL_SECTION);
+        ignore_result(fprintf(f, "%s\n", HISTFILE_SHELL_SECTION));
 #endif
 }
 
@@ -1496,7 +1508,7 @@ static void write_mlist(struct mlist *ml, FILE *f)
     {
         if (!ml->modified)
             continue;
-        fprintf(f, "\"%s\n", ml->string);
+        ignore_result(fprintf(f, "\"%s\n", ml->string));
         ml->modified = 0;
     }
     ml->modified = 0; /* entire mlist is now unmodified */
@@ -1627,7 +1639,7 @@ static int histfile_modified(void)
     if (fout != NULL)
     {
         make_file_private(fout);
-        s = lgetenv((char *)"LESSHISTSIZE");
+        s = decode::lgetenv((char *)"LESSHISTSIZE");
         if (s != NULL)
             histsize = atoi(s);
         if (histsize <= 0)
@@ -1648,3 +1660,5 @@ static int histfile_modified(void)
     free(histname);
 #endif /* CMD_HISTORY */
 }
+
+} // namespace cmdbuf

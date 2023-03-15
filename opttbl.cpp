@@ -89,7 +89,7 @@ static struct optname i_optname      = {(char *) "ignore-case",          NULL };
 static struct optname j_optname      = {(char *) "jump-target",          NULL };
 static struct optname J__optname     = {(char *) "status-column",        NULL };
 #if USERFILE
-static struct optname k_optname      = {(char *) "lesskey-file",         NULL };
+static struct optname k_optname      = {(char *) "decode::lesskey-file",         NULL };
 #endif
 static struct optname K__optname     = {(char *) "quit-on-intr",         NULL };
 static struct optname L__optname     = {(char *) "no-lessopen",          NULL };
@@ -113,7 +113,7 @@ static struct optname V__optname     = {(char *) "version",              NULL };
 static struct optname w_optname      = {(char *) "hilite-unread",        NULL };
 static struct optname x_optname      = {(char *) "tabs",                 NULL };
 static struct optname X__optname     = {(char *) "no-init",              NULL };
-static struct optname y_optname      = {(char *) "max-forw-scroll",      NULL };
+static struct optname y_optname      = {(char *) "max-forwback::forw-scroll",      NULL };
 static struct optname z_optname      = {(char *) "window",               NULL };
 static struct optname quote_optname  = {(char *) "quotes",               NULL };
 static struct optname tilde_optname  = {(char *) "tilde",                NULL };
@@ -421,8 +421,8 @@ void init_option(void)
     struct loption* o;
     char* p;
 
-    p = lgetenv((char*)"LESS_IS_MORE");
-    if (!isnullenv(p))
+    p = decode::lgetenv((char*)"LESS_IS_MORE");
+    if (!decode::isnullenv(p))
         less_is_more = 1;
 
     for (o = option; o->oletter != '\0'; o++) {

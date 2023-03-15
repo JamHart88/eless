@@ -96,12 +96,12 @@ static position_t mbc_pos;
 
 void init_line(void)
 {
-    end_ansi_chars = lgetenv((char*)"LESSANSIENDCHARS");
-    if (isnullenv(end_ansi_chars))
+    end_ansi_chars = decode::lgetenv((char*)"LESSANSIENDCHARS");
+    if (decode::isnullenv(end_ansi_chars))
         end_ansi_chars = (char*)"m";
 
-    mid_ansi_chars = lgetenv((char*)"LESSANSIMIDCHARS");
-    if (isnullenv(mid_ansi_chars))
+    mid_ansi_chars = decode::lgetenv((char*)"LESSANSIMIDCHARS");
+    if (decode::isnullenv(mid_ansi_chars))
         mid_ansi_chars = (char*)"0123456789:;[?!\"'#%()*+ ";
 
     linebuf = (char*)utils::ecalloc(LINEBUF_SIZE, sizeof(char));
@@ -1023,7 +1023,7 @@ void pdone(bool endline, bool chopped, int forw)
         add_attr_normal();
     }
 
-    debug("add newline if necessary");
+    debug::debug("add newline if necessary");
     /*
      * Add a newline if necessary,
      * and append a '\0' to the end of the line.
@@ -1229,7 +1229,7 @@ int rrshift(void)
     hshift = 0;
     pos = position(TOP);
     for (line = 0; line < sc_height && pos != NULL_POSITION; line++) {
-        pos = forw_line(pos);
+        pos = input::forw_line(pos);
         if (column > longest)
             longest = column;
     }

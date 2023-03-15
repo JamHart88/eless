@@ -101,17 +101,17 @@
 #define    ONLY_RETURN    0
 
 /*
- * LESSKEYFILE is the filename of the default lesskey output file 
+ * LESSKEYFILE is the filename of the default decode::lesskey output file 
  * (in the HOME directory).
- * LESSKEYFILE_SYS is the filename of the system-wide lesskey output file.
- * DEF_LESSKEYINFILE is the filename of the default lesskey input 
+ * LESSKEYFILE_SYS is the filename of the system-wide decode::lesskey output file.
+ * DEF_LESSKEYINFILE is the filename of the default decode::lesskey input 
  * (in the HOME directory).
  * LESSHISTFILE is the filename of the history file
  * (in the HOME directory).
  */
 #define LESSKEYFILE        ".less"
 #define LESSKEYFILE_SYS    SYSDIR "/sysless"
-#define DEF_LESSKEYINFILE  ".lesskey"
+#define DEF_LESSKEYINFILE  ".decode::lesskey"
 #define LESSHISTFILE       ".lesshst"
 
 #define DEBUG 1

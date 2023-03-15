@@ -28,6 +28,7 @@
 
 #include <vector>
 
+// TODO: can we get rid of these
 /*
  * Convert an IFILE (external representation)
  * to a struct file (internal representation), and vice versa.
@@ -219,7 +220,7 @@ Ifile* findIfile(const char* searchFilename)
 {
     Ifile* ret = nullptr;
 
-    char* realSearchFilename = lrealpath(searchFilename);
+    char* realSearchFilename = filename::lrealpath(searchFilename);
 
     for (Ifile* current : fileList) {
 

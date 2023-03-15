@@ -8,19 +8,9 @@
 
 #include "less.hpp"
 
-// TODO: Consider moving this to screen - where is it mainly used
-/* screen_trashed:
-   Define when screen needs to be redrawn.
-   TRASHED_AND_REOPEN_FILE is a special case:
-       To re-open the input file and jump to the end
-       of the file. */
-enum screen_trashed_t {
-    NOT_TRASHED,
-    TRASHED,
-    TRASHED_AND_REOPEN_FILE
-};
+//extern screen_trashed_t screen_trashed;
 
-extern screen_trashed_t screen_trashed;
+namespace forwback {
 
 int eof_displayed(void);
 int entire_file_displayed(void);
@@ -31,5 +21,7 @@ void forward(int n, int force, int only_last);
 void backward(int n, int force, int only_last);
 int get_back_scroll(void);
 int get_one_screen(void);
+
+} // namespace forwback
 
 #endif

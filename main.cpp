@@ -90,11 +90,11 @@ int main(int argc, char* argv[])
      */
     is_tty = isatty(1);
     init_mark();
-    init_cmds();
+    decode::init_cmds();
     get_term();
     charset::init_charset();
     init_line();
-    init_cmdhist();
+    cmdbuf::init_cmdhist();
     init_option();
     init_search();
 
@@ -102,13 +102,13 @@ int main(int argc, char* argv[])
      * If the name of the executable program is "more",
      * act like LESS_IS_MORE is set.
      */
-    s = last_component(progname);
+    s = filename::last_component(progname);
     if (strcmp(s, "more") == 0)
         less_is_more = 1;
 
     init_prompt();
 
-    s = lgetenv(less_is_more ? (char*)"MORE" : (char*)"LESS");
+    s = decode::lgetenv(less_is_more ? (char*)"MORE" : (char*)"LESS");
     if (s != NULL)
         scan_option(utils::save(s));
 
@@ -132,17 +132,17 @@ int main(int argc, char* argv[])
         utils::quit(QUIT_OK);
     }
 
-    expand_cmd_tables();
+    decode::expand_cmd_tables();
 
 #if EDITOR
-    editor = lgetenv((char*)"VISUAL");
+    editor = decode::lgetenv((char*)"VISUAL");
     if (editor == NULL || *editor == '\0') {
-        editor = lgetenv((char*)"EDITOR");
-        if (isnullenv(editor))
+        editor = decode::lgetenv((char*)"EDITOR");
+        if (decode::isnullenv(editor))
             editor = (char*)EDIT_PGM;
     }
-    editproto = lgetenv((char*)"LESSEDIT");
-    if (isnullenv(editproto))
+    editproto = decode::lgetenv((char*)"LESSEDIT");
+    if (decode::isnullenv(editproto))
         editproto = (char*)"%E ?lm+%lm. %g";
 #endif
 
@@ -164,10 +164,10 @@ int main(int argc, char* argv[])
          * Just copy the input file(s) to output.
          */
         // SET_BINARY(1);// no longer needed?
-        if (edit_first() == 0) {
+        if (edit::edit_first() == 0) {
             do {
-                cat_file();
-            } while (edit_next(1) == 0);
+                edit::cat_file();
+            } while (edit::edit_next(1) == 0);
         }
         utils::quit(QUIT_OK);
     }
@@ -208,7 +208,7 @@ int main(int argc, char* argv[])
     } else
 #endif
     {
-        if (edit_first())
+        if (edit::edit_first())
             utils::quit(QUIT_ERROR);
         /*
          * See if file fits on one screen to decide whether
@@ -220,12 +220,12 @@ int main(int argc, char* argv[])
                 > 1) /* If more than one file, -F cannot be used */
                 quit_if_one_screen = false;
             else if (!no_init)
-                one_screen = get_one_screen();
+                one_screen = forwback::get_one_screen();
         }
     }
 
     init();
-    commands();
+    command::commands();
     utils::quit(QUIT_OK);
     /*NOTREACHED*/
     return (0);

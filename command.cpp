@@ -41,7 +41,9 @@
 #include "ttyin.hpp"
 #include "utils.hpp"
 
+#include "debug.hpp" // temporary
 
+// TODO: Move these externals to namespaces
 extern int erase_char, erase2_char, kill_char;
 extern int quit_if_one_screen;
 extern int squished;
@@ -79,6 +81,9 @@ extern char* editproto;
 extern int shift_count;
 extern int oldbot;
 extern int forw_prompt;
+
+
+namespace command {
 
 #if SHELL_ESCAPE
 static char* shellcmd = nullptr; /* For holding last shell command for "!!" */
@@ -133,7 +138,7 @@ static void set_mca(int action)
     mca = action;
     deinit_mouse(); /* we don't want mouse events while entering a cmd */
     clear_bot();
-    clear_cmd();
+    cmdbuf::clear_cmd();
 }
 
 /*
@@ -153,8 +158,8 @@ static void clear_mca(void)
 static void start_mca(int action, const char* prompt, void* mlist, int cmdflags)
 {
     set_mca(action);
-    cmd_putstr(prompt);
-    set_mlist(mlist, cmdflags);
+    cmdbuf::cmd_putstr(prompt);
+    cmdbuf::set_mlist(mlist, cmdflags);
 }
 
 int in_mca(void)
@@ -178,27 +183,27 @@ static void mca_search(void)
         set_mca(A_B_SEARCH);
 
     if (search_type & SRCH_NO_MATCH)
-        cmd_putstr("Non-match ");
+        cmdbuf::cmd_putstr("Non-match ");
     if (search_type & SRCH_FIRST_FILE)
-        cmd_putstr("First-file ");
+        cmdbuf::cmd_putstr("First-file ");
     if (search_type & SRCH_PAST_EOF)
-        cmd_putstr("EOF-ignore ");
+        cmdbuf::cmd_putstr("EOF-ignore ");
     if (search_type & SRCH_NO_MOVE)
-        cmd_putstr("Keep-pos ");
+        cmdbuf::cmd_putstr("Keep-pos ");
     if (search_type & SRCH_NO_REGEX)
-        cmd_putstr("Regex-off ");
+        cmdbuf::cmd_putstr("Regex-off ");
 
 #if HILITE_SEARCH
     if (search_type & SRCH_FILTER)
-        cmd_putstr("&/");
+        cmdbuf::cmd_putstr("&/");
     else
 #endif
         if (search_type & SRCH_FORW)
-        cmd_putstr("/");
+        cmdbuf::cmd_putstr("/");
     else
-        cmd_putstr("?");
+        cmdbuf::cmd_putstr("?");
     forw_prompt = 0;
-    set_mlist(ml_search, 0);
+    cmdbuf::set_mlist(ml_search, 0);
 }
 
 /*
@@ -215,21 +220,21 @@ static void mca_opt_toggle(void)
     dash = (flag == OPT_NO_TOGGLE) ? (char*)"_" : (char*)"-";
 
     set_mca(A_OPT_TOGGLE);
-    cmd_putstr(dash);
+    cmdbuf::cmd_putstr(dash);
     if (optgetname)
-        cmd_putstr(dash);
+        cmdbuf::cmd_putstr(dash);
     if (no_prompt)
-        cmd_putstr("(P)");
+        cmdbuf::cmd_putstr("(P)");
     switch (flag) {
     case OPT_UNSET:
-        cmd_putstr("+");
+        cmdbuf::cmd_putstr("+");
         break;
     case OPT_SET:
-        cmd_putstr("!");
+        cmdbuf::cmd_putstr("!");
         break;
     }
     forw_prompt = 0;
-    set_mlist(nullptr, 0);
+    cmdbuf::set_mlist(nullptr, 0);
 }
 
 /*
@@ -240,7 +245,7 @@ static void exec_mca(void)
     char* cbuf;
 
     cmd_exec();
-    cbuf = get_cmdbuf();
+    cbuf = cmdbuf::get_cmdbuf();
 
     switch (mca) {
     case A_F_SEARCH:
@@ -278,7 +283,7 @@ static void exec_mca(void)
         break;
 #if EXAMINE
     case A_EXAMINE:
-        edit_list(cbuf);
+        edit::edit_list(cbuf);
 #if TAGS
         /* If tag structure is loaded then clean it up. */
         cleantags();
@@ -295,7 +300,7 @@ static void exec_mca(void)
         if (*cbuf != '!') {
             if (shellcmd != nullptr)
                 free(shellcmd);
-            shellcmd = fexpand(cbuf);
+            shellcmd = filename::fexpand(cbuf);
         }
 
         if (shellcmd == nullptr)
@@ -396,9 +401,9 @@ static int mca_opt_nonfirst_char(int c)
      * Add char to cmd buffer and try to match
      * the option name.
      */
-    if (cmd_char(c) == CC_QUIT)
+    if (cmdbuf::cmd_char(c) == CC_QUIT)
         return (MCA_DONE);
-    p = get_cmdbuf();
+    p = cmdbuf::get_cmdbuf();
     opt_lower = islower(static_cast<int>(p[0]));
     err = 0;
     curropt = findopt_name(&p, &oname, &err);
@@ -408,13 +413,13 @@ static int mca_opt_nonfirst_char(int c)
          * Remember the option and
          * display the full option name.
          */
-        cmd_reset();
+        cmdbuf::cmd_reset();
         mca_opt_toggle();
         for (p = oname; *p != '\0'; p++) {
             c = static_cast<unsigned char>(*p);
             if (!opt_lower && islower(c))
                 c = isupper(c);
-            if (cmd_char(c) != CC_OK)
+            if (cmdbuf::cmd_char(c) != CC_OK)
                 return (MCA_DONE);
         }
     } else if (err != OPT_AMBIG) {
@@ -435,7 +440,7 @@ static int mca_opt_char(int c)
      * or one char of a long option name,
      * or one char of the option parameter.
      */
-    if (curropt == nullptr && len_cmdbuf() == 0) {
+    if (curropt == nullptr && cmdbuf::len_cmdbuf() == 0) {
         int ret = mca_opt_first_char(c);
         if (ret != NO_MCA)
             return (ret);
@@ -445,12 +450,12 @@ static int mca_opt_char(int c)
         if (!is_newline_char(c))
             return (mca_opt_nonfirst_char(c));
         if (curropt == nullptr) {
-            parg.p_string = get_cmdbuf();
+            parg.p_string = cmdbuf::get_cmdbuf();
             error((char*)"There is no --%s option", parg);
             return (MCA_DONE);
         }
         optgetname = false;
-        cmd_reset();
+        cmdbuf::cmd_reset();
     } else {
         if (is_erase_char(c))
             return (NO_MCA);
@@ -495,7 +500,7 @@ static int mca_search_char(int c)
      *    *  Toggle the PAST_EOF flag
      *    @  Toggle the FIRST_FILE flag
      */
-    if (len_cmdbuf() > 0)
+    if (cmdbuf::len_cmdbuf() > 0)
         return (NO_MCA);
 
     switch (c) {
@@ -558,15 +563,15 @@ static int mca_char(int c)
          * Entering digits of a number.
          * Terminated by a non-digit.
          */
-        if (!((c >= '0' && c <= '9') || c == '.') && editchar(c, EC_PEEK | EC_NOHISTORY | EC_NOCOMPLETE | EC_NORIGHTLEFT) == A_INVALID) {
+        if (!((c >= '0' && c <= '9') || c == '.') && decode::editchar(c, EC_PEEK | EC_NOHISTORY | EC_NOCOMPLETE | EC_NORIGHTLEFT) == A_INVALID) {
             /*
              * Not part of the number.
              * End the number and treat this char
              * as a normal command character.
              */
-            number = cmd_int(&fraction);
+            number = cmdbuf::cmd_int(&fraction);
             clear_mca();
-            cmd_accept();
+            cmdbuf::cmd_accept();
             return (NO_MCA);
         }
         break;
@@ -604,13 +609,13 @@ static int mca_char(int c)
     /*
      * Append the char to the command buffer.
      */
-    if (cmd_char(c) == CC_QUIT)
+    if (cmdbuf::cmd_char(c) == CC_QUIT)
         /*
          * Abort the multi-char command.
          */
         return (MCA_DONE);
 
-    if ((mca == A_F_BRACKET || mca == A_B_BRACKET) && len_cmdbuf() >= 2) {
+    if ((mca == A_F_BRACKET || mca == A_B_BRACKET) && cmdbuf::len_cmdbuf() >= 2) {
         /*
          * Special case for the bracket-matching commands.
          * Execute the command after getting exactly two
@@ -660,14 +665,13 @@ static void make_display(void)
         else
             jump_loc(initial_scrpos.pos, initial_scrpos.ln);
     } else if (screen_trashed != NOT_TRASHED) {
-        debug("Screen trashed");
         int save_top_scroll = top_scroll;
         int save_eoi = less::Settings::ignore_eoi;
         top_scroll = 1;
         less::Settings::ignore_eoi = 0;
         if (screen_trashed == TRASHED_AND_REOPEN_FILE) {
 
-            reopen_curr_ifile();
+            edit::reopen_curr_ifile();
             jump_forw();
         }
         repaint();
@@ -677,6 +681,7 @@ static void make_display(void)
 }
 
 /*
+
  * Display the appropriate prompt.
  */
 static void prompt(void)
@@ -700,14 +705,14 @@ static void prompt(void)
     /*
      * If we've hit EOF on the last file and the -E flag is set, quit.
      */
-    if (get_quit_at_eof() == OPT_ONPLUS && eof_displayed() && !(ch::getflags() & CH_HELPFILE) && 
+    if (get_quit_at_eof() == OPT_ONPLUS && forwback::eof_displayed() && !(ch::getflags() & CH_HELPFILE) && 
         ifile::nextIfile(ifile::getCurrentIfile()) == nullptr)
         utils::quit(QUIT_OK);
 
     /*
      * If the entire file is displayed and the -F flag is set, quit.
      */
-    if (quit_if_one_screen && entire_file_displayed() && 
+    if (quit_if_one_screen && forwback::entire_file_displayed() && 
         !(ch::getflags() & CH_HELPFILE) && ifile::nextIfile(ifile::getCurrentIfile()) == nullptr)
         utils::quit(QUIT_OK);
 
@@ -726,7 +731,7 @@ static void prompt(void)
      */
     if (!forw_prompt)
         clear_bot();
-    clear_cmd();
+    cmdbuf::clear_cmd();
     forw_prompt = 0;
     p = pr_string();
     if (is_filtering())
@@ -896,7 +901,7 @@ static void multi_search(char* pattern, int n, int silent)
     int changed_file;
 
     changed_file = 0;
-    save_ifile = save_curr_ifile();
+    save_ifile = edit::save_curr_ifile();
 
     if (search_type & SRCH_FIRST_FILE) {
         /*
@@ -904,11 +909,11 @@ static void multi_search(char* pattern, int n, int silent)
          * in the command line list.
          */
         if (search_type & SRCH_FORW)
-            nomore = edit_first();
+            nomore = edit::edit_first();
         else
-            nomore = edit_last();
+            nomore = edit::edit_last();
         if (nomore) {
-            unsave_ifile(save_ifile);
+            edit::unsave_ifile(save_ifile);
             return;
         }
         changed_file = 1;
@@ -927,7 +932,7 @@ static void multi_search(char* pattern, int n, int silent)
             /*
              * Found it.
              */
-            unsave_ifile(save_ifile);
+            edit::unsave_ifile(save_ifile);
             return;
         }
 
@@ -948,9 +953,9 @@ static void multi_search(char* pattern, int n, int silent)
          * Move on to the next file.
          */
         if (search_type & SRCH_FORW)
-            nomore = edit_next(1);
+            nomore = edit::edit_next(1);
         else
-            nomore = edit_prev(1);
+            nomore = edit::edit_prev(1);
         if (nomore)
             break;
         changed_file = 1;
@@ -967,9 +972,9 @@ static void multi_search(char* pattern, int n, int silent)
         /*
          * Restore the file we were originally viewing.
          */
-        reedit_ifile(save_ifile);
+        edit::reedit_ifile(save_ifile);
     } else {
-        unsave_ifile(save_ifile);
+        edit::unsave_ifile(save_ifile);
     }
 }
 
@@ -994,7 +999,7 @@ static int forw_loop(int until_hilite)
             break;
         }
         make_display();
-        forward(1, 0, 0);
+        forwback::forward(1, 0, 0);
     }
     less::Settings::ignore_eoi = 0;
     ch::set_eof();
@@ -1034,9 +1039,9 @@ void commands(void)
 
     for (;;) {
         c = '\0';
-        debug("Top of command for loop");
+        debug::debug("Top of command for loop");
         clear_mca();
-        cmd_accept();
+        cmdbuf::cmd_accept();
         number = 0;
         curropt = nullptr;
 
@@ -1058,19 +1063,19 @@ void commands(void)
         /*
          * Display prompt and accept a character.
          */
-        cmd_reset();
+        cmdbuf::cmd_reset();
         prompt();
         if (less::Settings::sigs)
             continue;
         if (newaction == A_NOACTION) {
             c = getcc();
-            debug((char*)"getcc called with:");
+            debug::debug((char*)"getcc called with:");
             char s = static_cast<char>(c);
-            debug(&s);
+            debug::debug(&s);
         }
 
     again:
-        debug("at again:");
+        debug::debug("at again:");
 
         if (less::Settings::sigs)
             continue;
@@ -1081,7 +1086,7 @@ void commands(void)
         } else {
             /*
              * If we are in a multicharacter command, call mca_char.
-             * Otherwise we call fcmd_decode to determine the
+             * Otherwise we call decode::fcmd_decode to determine the
              * action to be performed.
              */
             char s; // temp debug use
@@ -1092,9 +1097,9 @@ void commands(void)
                      * Need another character.
                      */
                     c = getcc();
-                    debug("need another char which is:");
+                    debug::debug("need another char which is:");
                     s = static_cast<char>(c);
-                    debug(&s);
+                    debug::debug(&s);
 
                     goto again;
 
@@ -1116,7 +1121,7 @@ void commands(void)
              * Decode the command character and decide what to do.
              */
             if (mca) {
-                debug("decode the command char");
+                debug::debug("decode the command char");
                 /*
                  * We're in a multichar command.
                  * Add the character to the command buffer
@@ -1124,16 +1129,16 @@ void commands(void)
                  * If the user backspaces past the start
                  * of the line, abort the command.
                  */
-                if (cmd_char(c) == CC_QUIT || len_cmdbuf() == 0)
+                if (cmdbuf::cmd_char(c) == CC_QUIT || cmdbuf::len_cmdbuf() == 0)
                     continue;
-                cbuf = get_cmdbuf();
+                cbuf = cmdbuf::get_cmdbuf();
 
-                debug("MCA command - cbuf is:");
-                debug(cbuf);
+                debug::debug("MCA command - cbuf is:");
+                debug::debug(cbuf);
             } else {
-                debug("dont use cmd_char");
+                debug::debug("dont use cmdbuf::cmd_char");
                 /*
-                 * Don't use cmd_char if we're starting fresh
+                 * Don't use cmdbuf::cmd_char if we're starting fresh
                  * at the beginning of a command, because we
                  * don't want to echo the command until we know
                  * it is a multichar command.  We also don't
@@ -1145,7 +1150,7 @@ void commands(void)
                 cbuf = tbuf;
             }
             extra = nullptr;
-            action = fcmd_decode(cbuf, &extra);
+            action = decode::fcmd_decode(cbuf, &extra);
             /*
              * If an "extra" string was returned,
              * process it as a string of command characters.
@@ -1159,7 +1164,7 @@ void commands(void)
          * because the partial command string is kept there.)
          */
         if (action != A_PREFIX)
-            cmd_reset();
+            cmdbuf::cmd_reset();
 
         switch (action) {
         case A_DIGIT:
@@ -1184,8 +1189,8 @@ void commands(void)
                 number = get_swindow();
             cmd_exec();
             if (show_attn)
-                set_attnpos(bottompos);
-            forward((int)number, 0, 1);
+                input::set_attnpos(bottompos);
+            forwback::forward((int)number, 0, 1);
             break;
 
         case A_B_WINDOW:
@@ -1202,7 +1207,7 @@ void commands(void)
             if (number <= 0)
                 number = get_swindow();
             cmd_exec();
-            backward((int)number, 0, 1);
+            forwback::backward((int)number, 0, 1);
             break;
 
         case A_F_LINE:
@@ -1213,8 +1218,8 @@ void commands(void)
                 number = 1;
             cmd_exec();
             if (show_attn == OPT_ONPLUS && number > 1)
-                set_attnpos(bottompos);
-            forward((int)number, 0, 0);
+                input::set_attnpos(bottompos);
+            forwback::forward((int)number, 0, 0);
             break;
 
         case A_B_LINE:
@@ -1224,7 +1229,7 @@ void commands(void)
             if (number <= 0)
                 number = 1;
             cmd_exec();
-            backward((int)number, 0, 0);
+            forwback::backward((int)number, 0, 0);
             break;
 
         case A_F_MOUSE:
@@ -1232,7 +1237,7 @@ void commands(void)
              * Forward wheel_lines lines.
              */
             cmd_exec();
-            forward(wheel_lines, 0, 0);
+            forwback::forward(wheel_lines, 0, 0);
             break;
 
         case A_B_MOUSE:
@@ -1240,7 +1245,7 @@ void commands(void)
              * Backward wheel_lines lines.
              */
             cmd_exec();
-            backward(wheel_lines, 0, 0);
+            forwback::backward(wheel_lines, 0, 0);
             break;
 
         case A_FF_LINE:
@@ -1251,8 +1256,8 @@ void commands(void)
                 number = 1;
             cmd_exec();
             if (show_attn == OPT_ONPLUS && number > 1)
-                set_attnpos(bottompos);
-            forward((int)number, 1, 0);
+                input::set_attnpos(bottompos);
+            forwback::forward((int)number, 1, 0);
             break;
 
         case A_BF_LINE:
@@ -1262,7 +1267,7 @@ void commands(void)
             if (number <= 0)
                 number = 1;
             cmd_exec();
-            backward((int)number, 1, 0);
+            forwback::backward((int)number, 1, 0);
             break;
 
         case A_FF_SCREEN:
@@ -1273,8 +1278,8 @@ void commands(void)
                 number = get_swindow();
             cmd_exec();
             if (show_attn == OPT_ONPLUS)
-                set_attnpos(bottompos);
-            forward((int)number, 1, 0);
+                input::set_attnpos(bottompos);
+            forwback::forward((int)number, 1, 0);
             break;
 
         case A_F_FOREVER:
@@ -1282,7 +1287,7 @@ void commands(void)
              * Forward forever, ignoring EOF.
              */
             if (show_attn)
-                set_attnpos(bottompos);
+                input::set_attnpos(bottompos);
             newaction = forw_loop(0);
             break;
 
@@ -1299,8 +1304,8 @@ void commands(void)
                 wscroll = (int)number;
             cmd_exec();
             if (show_attn == OPT_ONPLUS)
-                set_attnpos(bottompos);
-            forward(wscroll, 0, 0);
+                input::set_attnpos(bottompos);
+            forwback::forward(wscroll, 0, 0);
             break;
 
         case A_B_SCROLL:
@@ -1311,7 +1316,7 @@ void commands(void)
             if (number > 0)
                 wscroll = (int)number;
             cmd_exec();
-            backward(wscroll, 0, 0);
+            forwback::backward(wscroll, 0, 0);
             break;
 
         case A_FREPAINT:
@@ -1418,7 +1423,7 @@ void commands(void)
                  */
                 hshift = save_hshift;
                 bs_mode = save_bs_mode;
-                if (edit_prev(1) == 0)
+                if (edit::edit_prev(1) == 0)
                     break;
             }
             if (extra != nullptr)
@@ -1446,7 +1451,7 @@ void commands(void)
                 number = 1;
             mca_search();
             c = getcc();
-            debug("getcc 1477");
+            debug::debug("getcc 1477");
             goto again;
 
         case A_B_SEARCH:
@@ -1459,7 +1464,7 @@ void commands(void)
                 number = 1;
             mca_search();
             c = getcc();
-            debug("getcc 1489");
+            debug::debug("getcc 1489");
             goto again;
 
         case A_FILTER:
@@ -1467,7 +1472,7 @@ void commands(void)
             search_type = SRCH_FORW | SRCH_FILTER;
             mca_search();
             c = getcc();
-            debug("getcc 1496");
+            debug::debug("getcc 1496");
             goto again;
 #else
             error("Command not available", NULL_PARG);
@@ -1529,7 +1534,7 @@ void commands(void)
             hshift = 0;
             save_bs_mode = bs_mode;
             bs_mode = BS_SPECIAL;
-            (void)edit(FAKE_HELPFILE);
+            (void)edit::edit(FAKE_HELPFILE);
             break;
 
         case A_EXAMINE:
@@ -1539,7 +1544,7 @@ void commands(void)
 #if EXAMINE
             start_mca(A_EXAMINE, "Examine: ", ml_examine, 0);
             c = getcc();
-            debug("getcc 1567");
+            debug::debug("getcc 1567");
             goto again;
 
 #endif
@@ -1588,8 +1593,8 @@ void commands(void)
 #endif
             if (number <= 0)
                 number = 1;
-            if (edit_next((int)number)) {
-                if (get_quit_at_eof() && eof_displayed() && !(ch::getflags() & CH_HELPFILE))
+            if (edit::edit_next((int)number)) {
+                if (get_quit_at_eof() && forwback::eof_displayed() && !(ch::getflags() & CH_HELPFILE))
                     utils::quit(QUIT_OK);
                 parg.p_string = (number > 1) ? (char*)"(N-th) " : (char*)"";
                 error((char*)"No %snext file", parg);
@@ -1608,7 +1613,7 @@ void commands(void)
 #endif
             if (number <= 0)
                 number = 1;
-            if (edit_prev((int)number)) {
+            if (edit::edit_prev((int)number)) {
                 parg.p_string = (number > 1) ? (char*)"(N-th) " : (char*)"";
                 error((char*)"No %sprevious file", parg);
             }
@@ -1627,7 +1632,7 @@ void commands(void)
                 break;
             }
             cmd_exec();
-            if (edit(tagfile) == 0) {
+            if (edit::edit(tagfile) == 0) {
                 position_t pos = tagsearch();
                 if (pos != NULL_POSITION)
                     jump_loc(pos, jump_sline);
@@ -1650,7 +1655,7 @@ void commands(void)
                 break;
             }
             cmd_exec();
-            if (edit(tagfile) == 0) {
+            if (edit::edit(tagfile) == 0) {
                 position_t pos = tagsearch();
                 if (pos != NULL_POSITION)
                     jump_loc(pos, jump_sline);
@@ -1666,7 +1671,7 @@ void commands(void)
              */
             if (number <= 0)
                 number = 1;
-            if (edit_index((int)number))
+            if (edit::edit_index((int)number))
                 error((char*)"No such file", NULL_PARG);
             break;
 
@@ -1682,8 +1687,8 @@ void commands(void)
                 bell();
                 break;
             }
-            if (edit_ifile(new_ifile) != 0) {
-                reedit_ifile(old_ifile);
+            if (edit::edit_ifile(new_ifile) != 0) {
+                edit::reedit_ifile(old_ifile);
                 break;
             }
             ifile::deleteIfile(old_ifile);
@@ -1697,11 +1702,11 @@ void commands(void)
             optgetname = false;
             mca_opt_toggle();
             c = getcc();
-            debug("getcc 1736");
+            debug::debug("getcc 1736");
 
             cbuf = opt_toggle_disallowed(c);
             if (cbuf != nullptr) {
-                debug("cbuf is : ", cbuf);
+                debug::debug("cbuf is : ", cbuf);
                 error(cbuf, NULL_PARG);
                 break;
             }
@@ -1715,7 +1720,7 @@ void commands(void)
             optgetname = false;
             mca_opt_toggle();
             c = getcc();
-            debug("getcc 1754");
+            debug::debug("getcc 1754");
             goto again;
 
         case A_FIRSTCMD:
@@ -1724,7 +1729,7 @@ void commands(void)
              */
             start_mca(A_FIRSTCMD, "+", (void*)nullptr, 0);
             c = getcc();
-            debug("getcc 1762");
+            debug::debug("getcc 1762");
             goto again;
 
         case A_SHELL:
@@ -1735,7 +1740,7 @@ void commands(void)
 
             start_mca(A_SHELL, "!", ml_shell, 0);
             c = getcc();
-            debug("getcc 1772");
+            debug::debug("getcc 1772");
             goto again;
 
 #endif
@@ -1751,7 +1756,7 @@ void commands(void)
                 break;
             start_mca(A_SETMARK, "set mark: ", (void*)nullptr, 0);
             c = getcc();
-            debug("getcc 1787");
+            debug::debug("getcc 1787");
             if (is_erase_char(c) || is_newline_char(c))
                 break;
             setmark(c, action == A_SETMARKBOT ? BOTTOM : TOP);
@@ -1764,7 +1769,7 @@ void commands(void)
              */
             start_mca(A_CLRMARK, "clear mark: ", (void*)nullptr, 0);
             c = getcc();
-            debug("getcc 1799");
+            debug::debug("getcc 1799");
             if (is_erase_char(c) || is_newline_char(c))
                 break;
             clrmark(c);
@@ -1777,7 +1782,7 @@ void commands(void)
              */
             start_mca(A_GOMARK, "goto mark: ", (void*)nullptr, 0);
             c = getcc();
-            debug("getcc 1811");
+            debug::debug("getcc 1811");
             if (is_erase_char(c) || is_newline_char(c))
                 break;
             cmd_exec();
@@ -1800,7 +1805,7 @@ void commands(void)
             pipec = c;
             start_mca(A_PIPE, "!", ml_shell, 0);
             c = getcc();
-            debug("getcc 1833");
+            debug::debug("getcc 1833");
             goto again;
 #endif
             error((char*)"Command not available", NULL_PARG);
@@ -1810,7 +1815,7 @@ void commands(void)
         case A_F_BRACKET:
             start_mca(action, "Brackets: ", (void*)nullptr, 0);
             c = getcc();
-            debug("getcc 1842");
+            debug::debug("getcc 1842");
             goto again;
 
         case A_LSHIFT:
@@ -1862,12 +1867,12 @@ void commands(void)
              * what's going on, and get another character.
              */
             if (mca != A_PREFIX) {
-                cmd_reset();
+                cmdbuf::cmd_reset();
                 start_mca(A_PREFIX, " ", (void*)nullptr, CF_QUIT_ON_ERASE);
-                (void)cmd_char(c);
+                (void)cmdbuf::cmd_char(c);
             }
             c = getcc();
-            debug("getcc 1899");
+            debug::debug("getcc 1899");
             goto again;
 
         case A_NOACTION:
@@ -1879,3 +1884,4 @@ void commands(void)
         }
     }
 }
+} // namespace command

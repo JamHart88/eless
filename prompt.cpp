@@ -185,7 +185,7 @@ static int cond(char c, int where)
     case 'c':
         return (hshift != 0);
     case 'e': /* At end of file? */
-        return (eof_displayed());
+        return (forwback::eof_displayed());
     case 'f': /* Filename known? */
     case 'g':
         return (strcmp(ifile::getCurrentIfile()->getFilename(), "-") != 0);
@@ -289,10 +289,10 @@ static void protochar(int c, int where, int iseditproto)
         ap_str(ifile::getCurrentIfile()->getFilename());
         break;
     case 'F': /* Last component of file name */
-        ap_str(last_component(ifile::getCurrentIfile()->getFilename()));
+        ap_str(filename::last_component(ifile::getCurrentIfile()->getFilename()));
         break;
     case 'g': /* Shell-escaped file name */
-        s = shell_quote(ifile::getCurrentIfile()->getFilename());
+        s = filename::shell_quote(ifile::getCurrentIfile()->getFilename());
         ap_str(s);
         free(s);
         break;

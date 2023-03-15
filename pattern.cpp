@@ -140,8 +140,8 @@ int compile_pattern(char* pattern, int search_type, PATTERN_TYPE* comp_pattern)
     if (caseless != OPT_ONPLUS)
         cvt_pattern = pattern;
     else {
-        cvt_pattern = (char*)utils::ecalloc(1, cvt_length(strlen(pattern), CVT_TO_LC));
-        cvt_text(cvt_pattern, pattern, (int*)NULL, (int*)NULL, CVT_TO_LC);
+        cvt_pattern = (char*)utils::ecalloc(1, cvt::cvt_length(strlen(pattern), CVT_TO_LC));
+        cvt::cvt_text(cvt_pattern, pattern, (int*)NULL, (int*)NULL, CVT_TO_LC);
     }
     result = compile_pattern2(cvt_pattern, search_type, comp_pattern, 1);
     if (cvt_pattern != pattern)

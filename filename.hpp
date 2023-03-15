@@ -7,7 +7,8 @@
 //
 
 #include "less.hpp"
-
+namespace filename {
+    
 char* shell_unquote(char* str);
 char* get_meta_escape(void);
 char* shell_quote(char* s);
@@ -25,4 +26,5 @@ position_t filesize(int f);
 char* shell_coption(void);
 char* last_component(char* name);
 
+} // namespace filename
 #endif

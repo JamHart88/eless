@@ -322,7 +322,7 @@ static enum tag_result findctag(char* tag)
     char tline[TAGLINE_SIZE];
     struct tag* tp;
 
-    p = shell_unquote(tags);
+    p = filename::shell_unquote(tags);
     f = fopen(p, "r");
     free(p);
     if (f == NULL)
@@ -423,7 +423,7 @@ int edit_tagfile(void)
 {
     if (curtag == NULL)
         return (1);
-    return (edit(curtag->tag_file));
+    return (edit::edit(curtag->tag_file));
 }
 
 static int curtag_match(char const* line, position_t linepos)
@@ -505,10 +505,10 @@ static position_t ctagsearch(void)
                 found = 1;
         } else {
             int cvt_ops = CVT_ANSI;
-            int cvt_len = cvt_length(line_len, cvt_ops);
-            int* chpos = cvt_alloc_chpos(cvt_len);
+            int cvt_len = cvt::cvt_length(line_len, cvt_ops);
+            int* chpos = cvt::cvt_alloc_chpos(cvt_len);
             char* cline = (char*)utils::ecalloc(1, cvt_len);
-            cvt_text(cline, line, chpos, &line_len, cvt_ops);
+            cvt::cvt_text(cline, line, chpos, &line_len, cvt_ops);
             if (curtag_match(cline, linepos))
                 found = 1;
             free(chpos);
@@ -563,9 +563,9 @@ static enum tag_result findgtag(char* tag, /* tag to load */ int type)
         char* command;
         char* flag;
         char* qtag;
-        char* cmd = lgetenv((char*)"LESSGLOBALTAGS");
+        char* cmd = decode::lgetenv((char*)"LESSGLOBALTAGS");
 
-        if (isnullenv(cmd))
+        if (decode::isnullenv(cmd))
             return TAG_NOFILE;
         /* Get suitable flag value for global(1). */
         switch (type) {
@@ -586,7 +586,7 @@ static enum tag_result findgtag(char* tag, /* tag to load */ int type)
         }
 
         /* Get our data from global(1). */
-        qtag = shell_quote(tag);
+        qtag = filename::shell_quote(tag);
         if (qtag == NULL)
             qtag = tag;
         command = (char*)utils::ecalloc(strlen(cmd) + strlen(flag) + strlen(qtag) + 5, sizeof(char));

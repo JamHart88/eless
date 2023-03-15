@@ -139,7 +139,7 @@ namespace {
 
     void chDebug(std::string s){
         if (Debug)
-            debug (s.c_str());
+            debug::debug (s.c_str());
     }
 
 }
@@ -613,7 +613,7 @@ int end_seek()
         return (0);
 
     if (thisfile->flags & CH_CANSEEK)
-        thisfile->fsize = filesize(thisfile->file);
+        thisfile->fsize = filename::filesize(thisfile->file);
 
     len = length();
     if (len != NULL_POSITION)
@@ -807,7 +807,7 @@ void flush()
     /*
      * Figure out the size of the file, if we can.
      */
-    thisfile->fsize = filesize(thisfile->file);
+    thisfile->fsize = filename::filesize(thisfile->file);
 
     /*
      * Seek to a known position: the beginning of the file.

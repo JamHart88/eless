@@ -8,7 +8,7 @@
  *
  * For more information, see the README file.
  */
-
+namespace cmd {
 
 // clang-format off
 #define MAX_USERCMD            1000
@@ -147,5 +147,7 @@
 #define SK_CTL_BACKSPACE       16
 #define SK_CONTROL_K           40
 // clang-format on
+
+}; // namespace cmd
 
 #endif

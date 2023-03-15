@@ -308,15 +308,15 @@ static void set_charset(void)
     /*
      * See if environment variable LESSCHARSET is defined.
      */
-    s = lgetenv((char*)"LESSCHARSET");
+    s = decode::lgetenv((char*)"LESSCHARSET");
     if (icharset(s, 0))
         return;
 
     /*
      * LESSCHARSET is not defined: try LESSCHARDEF.
      */
-    s = lgetenv((char*)"LESSCHARDEF");
-    if (!isnullenv(s)) {
+    s = decode::lgetenv((char*)"LESSCHARDEF");
+    if (!decode::isnullenv(s)) {
         ichardef(s);
         return;
     }
@@ -335,7 +335,7 @@ static void set_charset(void)
     /*
      * Check whether LC_ALL, LC_CTYPE or LANG look like UTF-8 is used.
      */
-    if ((s = lgetenv((char*)"LC_ALL")) != NULL || (s = lgetenv((char*)"LC_CTYPE")) != NULL || (s = lgetenv((char*)"LANG")) != NULL) {
+    if ((s = decode::lgetenv((char*)"LC_ALL")) != NULL || (s = decode::lgetenv((char*)"LC_CTYPE")) != NULL || (s = decode::lgetenv((char*)"LANG")) != NULL) {
         if (strstr(s, "UTF-8") != NULL || strstr(s, "utf-8") != NULL
             || strstr(s, "UTF8") != NULL || strstr(s, "utf8") != NULL)
             if (icharset((char*)"utf-8", 1))
@@ -362,15 +362,15 @@ void init_charset(void)
     char* s;
 
 #if HAVE_LOCALE
-    setlocale(LC_ALL, "");
+    ignore_result(setlocale(LC_ALL, ""));
 #endif
 
     set_charset();
 
-    s = lgetenv((char*)"LESSBINFMT");
+    s = decode::lgetenv((char*)"LESSBINFMT");
     setfmt(s, &binfmt, &less::Settings::binattr, (char*)"*s<%02X>");
 
-    s = lgetenv((char*)"LESSUTFBINFMT");
+    s = decode::lgetenv((char*)"LESSUTFBINFMT");
     setfmt(s, &utfbinfmt, &less::Settings::binattr, (char*)"<U+%04lX>");
 }
 
@@ -408,15 +408,15 @@ char* prchar(lwchar_t c)
 
     c &= 0377;
     if ((c < 128 || !less::Settings::utf_mode) && !control_char(c))
-        snprintf(buf, sizeof(buf), "%c", (int)c);
+        ignore_result(snprintf(buf, sizeof(buf), "%c", (int)c));
     else if (c == esc)
         strcpy(buf, "ESC");
 
     else if (c < 128 && !control_char(c ^ 0100))
-        snprintf(buf, sizeof(buf), "^%c", (int)(c ^ 0100));
+        ignore_result(snprintf(buf, sizeof(buf), "^%c", (int)(c ^ 0100)));
 
     else
-        snprintf(buf, sizeof(buf), binfmt, c);
+        ignore_result(snprintf(buf, sizeof(buf), binfmt, c));
     return (buf);
 }
 
@@ -432,11 +432,11 @@ char* prutfchar(lwchar_t ch)
         strcpy(buf, "ESC");
     else if (ch < 128 && control_char(ch)) {
         if (!control_char(ch ^ 0100))
-            snprintf(buf, sizeof(buf), "^%c", ((char)ch) ^ 0100);
+            ignore_result(snprintf(buf, sizeof(buf), "^%c", ((char)ch) ^ 0100));
         else
-            snprintf(buf, sizeof(buf), binfmt, (char)ch);
+            ignore_result(snprintf(buf, sizeof(buf), binfmt, (char)ch));
     } else if (is_ubin_char(ch)) {
-        snprintf(buf, sizeof(buf), utfbinfmt, ch);
+        ignore_result(snprintf(buf, sizeof(buf), utfbinfmt, ch));
     } else {
         char* p = buf;
         if (ch >= 0x80000000)

@@ -40,9 +40,12 @@
 #include "screen.hpp"
 #include "utils.hpp"
 
+// TODO: move these to namespaces
 extern int erase_char, erase2_char, kill_char;
 extern int mousecap;
 extern int sc_height;
+
+namespace decode {
 
 #define SK(k) SK_SPECIAL_KEY, (k), 6, 1, 1, 1
 /*
@@ -438,7 +441,7 @@ static int getcc_int(char* pterm)
     int num = 0;
     int digits = 0;
     for (;;) {
-        char ch = getcc();
+        char ch = command::getcc();
         if (ch < '0' || ch > '9') {
             if (pterm != NULL)
                 *pterm = ch;
@@ -457,9 +460,9 @@ static int getcc_int(char* pterm)
  */
 static int x11mouse_action(void)
 {
-    int b = getcc() - X11MOUSE_OFFSET;
-    int x = getcc() - X11MOUSE_OFFSET - 1;
-    int y = getcc() - X11MOUSE_OFFSET - 1;
+    int b = command::getcc() - X11MOUSE_OFFSET;
+    int x = command::getcc() - X11MOUSE_OFFSET - 1;
+    int y = command::getcc() - X11MOUSE_OFFSET - 1;
     switch (b) {
     default:
         return (A_NOACTION);
@@ -759,7 +762,7 @@ int lesskey(char* filename, int sysvar)
      *    To avoid a large amount of error checking code here, we
      *    rely on the lesskey program to generate a good .less file. }}
      */
-    len = filesize(f);
+    len = filename::filesize(f);
     if (len == NULL_POSITION || len < 3) {
         /*
          * Bad file (valid file must have at least 3 chars).
@@ -806,7 +809,7 @@ void add_hometable(char* envname, char* def_filename, int sysvar)
     else if (sysvar)
         filename = utils::save(def_filename);
     else
-        filename = homefile(def_filename);
+        filename = filename::homefile(def_filename);
     if (filename == NULL)
         return;
     if (lesskey(filename, sysvar) < 0) {
@@ -848,7 +851,7 @@ int editchar(int c, int flags)
     nch = 0;
     do {
         if (nch > 0)
-            c = getcc();
+            c = command::getcc();
         usercmd[nch] = c;
         usercmd[nch + 1] = '\0';
         nch++;
@@ -900,11 +903,13 @@ int editchar(int c, int flags)
          * passed in as a parameter.
          */
         while (nch > 1) {
-            ungetcc(usercmd[--nch]);
+            command::ungetcc(usercmd[--nch]);
         }
     } else {
         if (s != NULL)
-            ungetsc(s);
+            command::ungetsc(s);
     }
     return action;
 }
+
+} // namespace decode
