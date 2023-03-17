@@ -17,7 +17,7 @@ namespace input {
 
 position_t forw_line(position_t curr_pos);
 position_t back_line(position_t curr_pos);
-void set_attnpos(position_t pos);
+void       set_attnpos(position_t pos);
 
 } // namespace input
 #endif

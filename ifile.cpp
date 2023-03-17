@@ -42,8 +42,8 @@ namespace ifile {
 std::vector<Ifile*> fileList;
 
 namespace {
-    Ifile* currentIfile = nullptr; // TODO: need to ensure this is updated in all cases
-    Ifile* previousIfile = nullptr; // TODO: need to ensure this is updated in all cases.
+  Ifile* currentIfile  = nullptr; // TODO: need to ensure this is updated in all cases
+  Ifile* previousIfile = nullptr; // TODO: need to ensure this is updated in all cases.
 }
 
 /*
@@ -51,12 +51,12 @@ namespace {
  */
 Ifile* getCurrentIfile()
 {
-    return currentIfile;
+  return currentIfile;
 }
 
 void setCurrentIfile(Ifile* newCurrentIfile)
 {
-    currentIfile = newCurrentIfile;
+  currentIfile = newCurrentIfile;
 }
 
 /*
@@ -64,12 +64,12 @@ void setCurrentIfile(Ifile* newCurrentIfile)
  */
 Ifile* getOldIfile()
 {
-    return previousIfile;
+  return previousIfile;
 }
 
 void setOldIfile(Ifile* newOldIfile)
 {
-    previousIfile = newOldIfile;
+  previousIfile = newOldIfile;
 }
 
 /*
@@ -77,7 +77,7 @@ void setOldIfile(Ifile* newOldIfile)
  */
 int numIfiles(void)
 {
-    return (fileList.size());
+  return (fileList.size());
 }
 
 /*
@@ -85,14 +85,14 @@ int numIfiles(void)
  */
 int find(Ifile* current)
 {
-    int idx = 0;
-    for (Ifile* f : fileList) {
-        idx++;
-        if (f == current) {
-            return idx;
-        }
+  int idx = 0;
+  for (Ifile* f : fileList) {
+    idx++;
+    if (f == current) {
+      return idx;
     }
-    return -1;
+  }
+  return -1;
 }
 
 /*
@@ -103,18 +103,18 @@ int find(Ifile* current)
  */
 Ifile* newIfile(const char* filename)
 {
-    Ifile* ret = new Ifile(filename);
+  Ifile* ret = new Ifile(filename);
 
-    fileList.push_back(ret);
-    currentIfile = fileList.back();
+  fileList.push_back(ret);
+  currentIfile = fileList.back();
 
-    /* {{ It's dodgy to call mark.c functions from here;
-     *    there is potentially dangerous recursion.
-     *    Probably need to revisit this design. }}
-     */
-    mark_check_ifile(currentIfile);
+  /* {{ It's dodgy to call mark.c functions from here;
+   *    there is potentially dangerous recursion.
+   *    Probably need to revisit this design. }}
+   */
+  mark_check_ifile(currentIfile);
 
-    return currentIfile;
+  return currentIfile;
 }
 
 /*
@@ -123,33 +123,33 @@ Ifile* newIfile(const char* filename)
 void deleteIfile(Ifile* ifilePtr)
 {
 
-    // std::cout << "deleteIfile 1\n";
-    if (ifilePtr != nullptr) {
+  // std::cout << "deleteIfile 1\n";
+  if (ifilePtr != nullptr) {
 
-        std::vector<Ifile*>::iterator it = fileList.begin();
+    std::vector<Ifile*>::iterator it = fileList.begin();
 
-        // find pos in list first
-        for (Ifile const* lclIfile : fileList) {
-            if (lclIfile == ifilePtr) {
-                // std::cout << "Found entry in list index \n";
-                break;
-            }
-            it++; // increment at the end - list starts at 1
-        }
-
-        /*
-         * If the ifile we're deleting is the currently open ifile,
-         * move off it.
-         */
-        unmark(ifilePtr);
-
-        if (ifilePtr == getCurrentIfile()) {
-
-            setCurrentIfile(getOffIfile(ifilePtr));
-        }
-        fileList.erase(it);
-        delete (ifilePtr);
+    // find pos in list first
+    for (Ifile const* lclIfile : fileList) {
+      if (lclIfile == ifilePtr) {
+        // std::cout << "Found entry in list index \n";
+        break;
+      }
+      it++; // increment at the end - list starts at 1
     }
+
+    /*
+     * If the ifile we're deleting is the currently open ifile,
+     * move off it.
+     */
+    unmark(ifilePtr);
+
+    if (ifilePtr == getCurrentIfile()) {
+
+      setCurrentIfile(getOffIfile(ifilePtr));
+    }
+    fileList.erase(it);
+    delete (ifilePtr);
+  }
 }
 
 /*
@@ -157,21 +157,21 @@ void deleteIfile(Ifile* ifilePtr)
  */
 Ifile* nextIfile(Ifile* current)
 {
-    Ifile* ret = nullptr;
+  Ifile* ret = nullptr;
 
-    if (fileList.size() == 0)
-        ret = nullptr;
-    else if (current == nullptr)
-        ret = fileList.front();
-    else {
-        int idx = find(current) - 1; // Turn index to 0 index
-        // std::cout << "nextifile idx = " << idx << " size = " << fileList.size() << "\n";
+  if (fileList.size() == 0)
+    ret = nullptr;
+  else if (current == nullptr)
+    ret = fileList.front();
+  else {
+    int idx = find(current) - 1; // Turn index to 0 index
+    // std::cout << "nextifile idx = " << idx << " size = " << fileList.size() << "\n";
 
-        if (idx > -1 && idx + 1 < static_cast<int>(fileList.size()))
-            ret = fileList.at(idx + 1);
-    }
+    if (idx > -1 && idx + 1 < static_cast<int>(fileList.size()))
+      ret = fileList.at(idx + 1);
+  }
 
-    return ret;
+  return ret;
 }
 
 /*
@@ -179,20 +179,20 @@ Ifile* nextIfile(Ifile* current)
  */
 Ifile* prevIfile(Ifile* current)
 {
-    Ifile* ret = nullptr;
+  Ifile* ret = nullptr;
 
-    if (fileList.size() == 0)
-        ret = nullptr;
-    else if (current == nullptr)
-        ret = fileList.back();
-    else {
-        int idx = find(current) - 1; // -1 to make index start at 0
+  if (fileList.size() == 0)
+    ret = nullptr;
+  else if (current == nullptr)
+    ret = fileList.back();
+  else {
+    int idx = find(current) - 1; // -1 to make index start at 0
 
-        // std::cout << "previfile idx = " << idx << " size = " << fileList.size() << "\n";
-        if (idx > -1 && idx > 0)
-            return fileList.at(idx - 1);
-    }
-    return ret;
+    // std::cout << "previfile idx = " << idx << " size = " << fileList.size() << "\n";
+    if (idx > -1 && idx > 0)
+      return fileList.at(idx - 1);
+  }
+  return ret;
 }
 
 /*
@@ -203,13 +203,13 @@ Ifile* prevIfile(Ifile* current)
 Ifile* getOffIfile(Ifile* thisIfile)
 {
 
-    Ifile* newIfile;
+  Ifile* newIfile;
 
-    if ((newIfile = prevIfile(thisIfile)) != nullptr)
-        return newIfile;
-    if ((newIfile = nextIfile(thisIfile)) != nullptr)
-        return newIfile;
-    return nullptr;
+  if ((newIfile = prevIfile(thisIfile)) != nullptr)
+    return newIfile;
+  if ((newIfile = nextIfile(thisIfile)) != nullptr)
+    return newIfile;
+  return nullptr;
 }
 
 /*
@@ -218,29 +218,29 @@ Ifile* getOffIfile(Ifile* thisIfile)
 
 Ifile* findIfile(const char* searchFilename)
 {
-    Ifile* ret = nullptr;
+  Ifile* ret = nullptr;
 
-    char* realSearchFilename = filename::lrealpath(searchFilename);
+  char* realSearchFilename = filename::lrealpath(searchFilename);
 
-    for (Ifile* current : fileList) {
+  for (Ifile* current : fileList) {
 
-        if (strcmp(searchFilename, current->getFilename()) == 0 || strcmp(realSearchFilename, current->getFilename()) == 0) {
+    if (strcmp(searchFilename, current->getFilename()) == 0 || strcmp(realSearchFilename, current->getFilename()) == 0) {
 
-            ret = current;
-            /*
-             * If given name is shorter than the name we were
-             * previously using for this file, adopt shorter name.
-             */
-            if (strlen(searchFilename) < strlen(current->getFilename())) {
-                current->setFilename(searchFilename);
-            }
-            break;
-        }
+      ret = current;
+      /*
+       * If given name is shorter than the name we were
+       * previously using for this file, adopt shorter name.
+       */
+      if (strlen(searchFilename) < strlen(current->getFilename())) {
+        current->setFilename(searchFilename);
+      }
+      break;
     }
+  }
 
-    free(realSearchFilename);
+  free(realSearchFilename);
 
-    return ret;
+  return ret;
 }
 
 /*
@@ -250,17 +250,17 @@ Ifile* findIfile(const char* searchFilename)
  */
 Ifile* getIfile(const char* filename)
 {
-    Ifile* ifile = findIfile(filename);
-    if (ifile == nullptr) {
-        ifile = newIfile(filename);
-        // std::cout << "getIfile ifile =" << ifile << "\n";
-    }
-    return ifile;
+  Ifile* ifile = findIfile(filename);
+  if (ifile == nullptr) {
+    ifile = newIfile(filename);
+    // std::cout << "getIfile ifile =" << ifile << "\n";
+  }
+  return ifile;
 }
 
 void createIfile(const char* filename)
 {
-    (void)getIfile(filename);
+  (void)getIfile(filename);
 }
 
 /*
@@ -270,21 +270,21 @@ void createIfile(const char* filename)
 int getIndex(const Ifile* ifile)
 {
 
-    int index = 1;
-    bool found = false;
+  int  index = 1;
+  bool found = false;
 
-    for (Ifile* current : fileList) {
+  for (Ifile* current : fileList) {
 
-        if (current == ifile) {
-            found = true;
-            break;
-        }
-        index++;
+    if (current == ifile) {
+      found = true;
+      break;
     }
-    if (!found)
-        index = -1;
+    index++;
+  }
+  if (!found)
+    index = -1;
 
-    return index;
+  return index;
 }
 
 //==========================================================
@@ -294,29 +294,27 @@ int getIndex(const Ifile* ifile)
 /*
  * Ifile constructor
  */
-Ifile::Ifile(const char* filename) : 
-    h_filename{utils::save(filename)},
-    h_filestate{nullptr},
-    h_hold{0},
-    h_opened{false},
-    h_scrpos{NULL_POSITION, 0},
-    h_altpipe{nullptr},
-    h_altfilename{nullptr}
-{  
-};
+Ifile::Ifile(const char* filename)
+    : h_filename { utils::save(filename) }
+    , h_filestate { nullptr }
+    , h_hold { 0 }
+    , h_opened { false }
+    , h_scrpos { NULL_POSITION, 0 }
+    , h_altpipe { nullptr }
+    , h_altfilename { nullptr } {};
 
 /*
  * Ifile copy constructor
  */
 Ifile::Ifile(const Ifile& src)
 {
-    this->h_filename = utils::save(src.h_filename);
-    this->h_filestate = src.h_filestate;
-    this->h_hold = src.h_hold;
-    this->h_opened = src.h_opened;
-    this->h_scrpos = src.h_scrpos;
-    this->h_altpipe = nullptr;
-    this->h_altfilename = src.h_altfilename;
+  this->h_filename    = utils::save(src.h_filename);
+  this->h_filestate   = src.h_filestate;
+  this->h_hold        = src.h_hold;
+  this->h_opened      = src.h_opened;
+  this->h_scrpos      = src.h_scrpos;
+  this->h_altpipe     = nullptr;
+  this->h_altfilename = src.h_altfilename;
 };
 
 /*
@@ -324,18 +322,18 @@ Ifile::Ifile(const Ifile& src)
  */
 Ifile& Ifile::operator=(const Ifile& src)
 {
-    if (this != &src) {
+  if (this != &src) {
 
-        free(this->h_filename);
-        this->h_filename = utils::save(src.h_filename);
-        this->h_filestate = src.h_filestate;
-        this->h_hold = src.h_hold;
-        this->h_opened = src.h_opened;
-        this->h_scrpos = src.h_scrpos;
-        this->h_altpipe = nullptr;
-        this->h_altfilename = src.h_altfilename;
-    }
-    return *this;
+    free(this->h_filename);
+    this->h_filename    = utils::save(src.h_filename);
+    this->h_filestate   = src.h_filestate;
+    this->h_hold        = src.h_hold;
+    this->h_opened      = src.h_opened;
+    this->h_scrpos      = src.h_scrpos;
+    this->h_altpipe     = nullptr;
+    this->h_altfilename = src.h_altfilename;
+  }
+  return *this;
 }
 /*
  * Destructor
@@ -343,12 +341,12 @@ Ifile& Ifile::operator=(const Ifile& src)
 Ifile::~Ifile()
 {
 
-    // free incase it was not done by caller
-    if (h_filestate != NULL)
-        free(this->h_filestate);
+  // free incase it was not done by caller
+  if (h_filestate != NULL)
+    free(this->h_filestate);
 
-    free(this->h_altfilename);
-    free(this->h_filename);
+  free(this->h_altfilename);
+  free(this->h_filename);
 }
 
 /*
@@ -356,8 +354,8 @@ Ifile::~Ifile()
  */
 void Ifile::setFilename(const char* newFilename)
 {
-    free(this->h_filename);
-    h_filename = utils::save(newFilename);
+  free(this->h_filename);
+  h_filename = utils::save(newFilename);
 }
 
 /*
@@ -365,8 +363,8 @@ void Ifile::setFilename(const char* newFilename)
  */
 void Ifile::setPos(scrpos pos)
 {
-    this->h_scrpos.pos = pos.pos;
-    this->h_scrpos.ln = pos.ln;
+  this->h_scrpos.pos = pos.pos;
+  this->h_scrpos.ln  = pos.ln;
 }
 
 /*
@@ -374,7 +372,7 @@ void Ifile::setPos(scrpos pos)
  */
 void Ifile::setOpened(bool opened)
 {
-    this->h_opened = opened;
+  this->h_opened = opened;
 }
 
 /*
@@ -382,7 +380,7 @@ void Ifile::setOpened(bool opened)
  */
 void Ifile::setHold(int incr)
 {
-    this->h_hold += incr;
+  this->h_hold += incr;
 }
 
 /*
@@ -391,8 +389,8 @@ void Ifile::setHold(int incr)
  */
 void Ifile::setFilestate(void* filestate)
 {
-    // No need to free filestate - assume caller does any free
-    this->h_filestate = filestate;
+  // No need to free filestate - assume caller does any free
+  this->h_filestate = filestate;
 }
 
 /*
@@ -402,7 +400,7 @@ void Ifile::setFilestate(void* filestate)
 
 void Ifile::setAltpipe(void* altpipePtr)
 {
-    this->h_altpipe = altpipePtr;
+  this->h_altpipe = altpipePtr;
 }
 
 /*
@@ -410,9 +408,9 @@ void Ifile::setAltpipe(void* altpipePtr)
  */
 void Ifile::setAltfilename(char* altfilename)
 {
-    if (this->h_altfilename != NULL)
-        free(this->h_altfilename);
-    this->h_altfilename = altfilename;
+  if (this->h_altfilename != NULL)
+    free(this->h_altfilename);
+  this->h_altfilename = altfilename;
 }
 
 /*
@@ -420,7 +418,7 @@ void Ifile::setAltfilename(char* altfilename)
  */
 bool operator==(const Ifile& lhs, const Ifile& rhs)
 {
-    return (strcmp(lhs.h_filename, rhs.h_filename) == 0);
+  return (strcmp(lhs.h_filename, rhs.h_filename) == 0);
 }
 
 } // ifile namespace

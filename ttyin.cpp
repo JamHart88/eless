@@ -26,15 +26,15 @@ extern int wheel_lines;
 void open_getchr(void)
 {
 
-    /*
-     * Try /dev/tty.
-     * If that doesn't work, use file descriptor 2,
-     * which in Unix is usually attached to the screen,
-     * but also usually lets you read from the keyboard.
-     */
-    tty = open("/dev/tty", OPEN_READ);
-    if (tty < 0)
-        tty = 2;
+  /*
+   * Try /dev/tty.
+   * If that doesn't work, use file descriptor 2,
+   * which in Unix is usually attached to the screen,
+   * but also usually lets you read from the keyboard.
+   */
+  tty = open("/dev/tty", OPEN_READ);
+  if (tty < 0)
+    tty = 2;
 }
 
 /*
@@ -49,8 +49,8 @@ void close_getchr(void)
  */
 int default_wheel_lines(void)
 {
-    int lines = 1;
-    return lines;
+  int lines = 1;
+  return lines;
 }
 
 /*
@@ -58,33 +58,33 @@ int default_wheel_lines(void)
  */
 int getchr(void)
 {
-    char c;
-    int result;
+  char c;
+  int  result;
 
-    do {
-        {
-            unsigned char uc;
-            result = iread(tty, &uc, sizeof(char));
-            c = (char)uc;
-        }
-        if (result == READ_INTR)
-            return (READ_INTR);
-        if (result < 0) {
-            /*
-             * Don't call error() here,
-             * because error calls getchr!
-             */
-            utils::quit(QUIT_ERROR);
-        }
+  do {
+    {
+      unsigned char uc;
+      result = iread(tty, &uc, sizeof(char));
+      c      = (char)uc;
+    }
+    if (result == READ_INTR)
+      return (READ_INTR);
+    if (result < 0) {
+      /*
+       * Don't call error() here,
+       * because error calls getchr!
+       */
+      utils::quit(QUIT_ERROR);
+    }
 
-        /*
-         * Various parts of the program cannot handle
-         * an input character of '\0'.
-         * If a '\0' was actually typed, convert it to '\340' here.
-         */
-        if (c == '\0')
-            c = '\340';
-    } while (result != 1);
+    /*
+     * Various parts of the program cannot handle
+     * an input character of '\0'.
+     * If a '\0' was actually typed, convert it to '\340' here.
+     */
+    if (c == '\0')
+      c = '\340';
+  } while (result != 1);
 
-    return (c & 0xFF);
+  return (c & 0xFF);
 }

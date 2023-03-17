@@ -1,6 +1,18 @@
 ---
 Language:      Cpp
 BasedOnStyle:  WebKit
-IndentWidth:     4
+IndentWidth:   2
 
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: false
+
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+AlignConsecutiveAssignments: true
+AlignOperands: true
+AlignTrailingComments: true
 

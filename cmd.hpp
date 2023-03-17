@@ -148,6 +148,6 @@ namespace cmd {
 #define SK_CONTROL_K           40
 // clang-format on
 
-}; // namespace cmd
+} // namespace cmd
 
 #endif

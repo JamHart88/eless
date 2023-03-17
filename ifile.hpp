@@ -22,64 +22,62 @@ namespace ifile {
 
 class Ifile {
 
-public:
+  public:
+  Ifile(const char* filename);
+  Ifile(const Ifile& src);
+  Ifile& operator=(const Ifile& src);
+  virtual ~Ifile();
+  friend bool operator==(const Ifile& lhs, const Ifile& rhs);
 
-    Ifile(const char* filename);
-    Ifile(const Ifile& src);
-    Ifile& operator=(const Ifile& src);
-    virtual ~Ifile();
-    friend bool operator==(const Ifile& lhs, const Ifile& rhs);
+  // const char* filename();
 
-    //const char* filename();
-  
+  /*
+   * Accessor functions
+   */
 
-    /* 
-     * Accessor functions
-     */
+  // Name of the file
+  char* getFilename() { return this->h_filename; };
+  void  setFilename(const char* newFilename);
 
-    // Name of the file
-    char* getFilename() { return this->h_filename; };
-    void setFilename(const char* newFilename);
+  // Saved Position within the file
+  scrpos getPos() { return this->h_scrpos; };
+  void   setPos(scrpos pos);
 
-    // Saved Position within the file
-    scrpos getPos() { return this->h_scrpos; };
-    void setPos(scrpos pos);
+  // Has the file been opened?
+  bool getOpened() { return this->h_opened; };
+  void setOpened(bool opened);
 
-    // Has the file been opened?
-    bool getOpened() { return this->h_opened; };
-    void setOpened(bool opened);
+  // Hold Count
+  int  getHoldCount() { return this->h_hold; };
+  void setHold(int incr);
 
-    // Hold Count
-    int getHoldCount() { return this->h_hold; };
-    void setHold(int incr);
+  // File state - used in ch.cpp
+  virtual void* getFilestate() { return this->h_filestate; };
+  virtual void  setFilestate(void* filestate);
 
-    // File state - used in ch.cpp
-    virtual void* getFilestate() { return this->h_filestate; };
-    virtual void setFilestate(void* filestate);
+  // Alt Pipe
+  void* getAltpipe() { return this->h_altpipe; };
+  void  setAltpipe(void* altpipePtr);
 
-    // Alt Pipe
-    void* getAltpipe() { return this->h_altpipe; };
-    void setAltpipe(void* altpipePtr);
+  // Alt filename
+  char* getAltfilename() { return this->h_altfilename; };
+  void  setAltfilename(char* altfilename);
 
-    // Alt filename
-    char* getAltfilename() { return this->h_altfilename; };
-    void setAltfilename(char* altfilename);
-
-private:
-    char* h_filename; /* Name of the file */
-    void* h_filestate; /* File state (used in ch.c) */ // TODO: Change this
-    int h_hold; /* Hold count */
-    bool h_opened; /* Has this ifile been opened? */
-    scrpos h_scrpos; /* Saved position within the file */
-    void* h_altpipe; /* Alt pipe */
-    char* h_altfilename; /* Alt filename */
+  private:
+  char*  h_filename;                                  /* Name of the file */
+  void*  h_filestate; /* File state (used in ch.c) */ // TODO: Change this
+  int    h_hold;                                      /* Hold count */
+  bool   h_opened;                                    /* Has this ifile been opened? */
+  scrpos h_scrpos;                                    /* Saved position within the file */
+  void*  h_altpipe;                                   /* Alt pipe */
+  char*  h_altfilename;                               /* Alt filename */
 };
 
 //
 Ifile* getCurrentIfile();
-void setCurrentIfile(Ifile* newCurrentIfile);
+void   setCurrentIfile(Ifile* newCurrentIfile);
 Ifile* getOldIfile();
-void setOldIfile(Ifile* newOldIfile);
+void   setOldIfile(Ifile* newOldIfile);
 
 // Get Ifile from a filename
 Ifile* getIfile(const char* filename);

@@ -8,33 +8,33 @@
 
 #include "less.hpp"
 
-void raw_mode(int on);
-void scrsize(void);
+void  raw_mode(int on);
+void  scrsize(void);
 char* special_key_str(int key);
-void get_term(void);
-void init_mouse(void);
-void deinit_mouse(void);
-void init(void);
-void deinit(void);
-void home(void);
-void add_line(void);
-void remove_top(int n);
-void win32_scroll_up(int n);
-void lower_left(void);
-void line_left(void);
-void check_winch(void);
-void goto_line(int sindex);
-void vbell(void);
-void bell(void);
-void clear(void);
-void clear_eol(void);
-void clear_bot(void);
-void at_enter(int attr);
-void at_exit(void);
-void at_switch(int attr);
-int is_at_equiv(int attr1, int attr2);
-int apply_at_specials(int attr);
-void backspace(void);
-void putbs(void);
+void  get_term(void);
+void  init_mouse(void);
+void  deinit_mouse(void);
+void  init(void);
+void  deinit(void);
+void  home(void);
+void  add_line(void);
+void  remove_top(int n);
+void  win32_scroll_up(int n);
+void  lower_left(void);
+void  line_left(void);
+void  check_winch(void);
+void  goto_line(int sindex);
+void  vbell(void);
+void  bell(void);
+void  clear(void);
+void  clear_eol(void);
+void  clear_bot(void);
+void  at_enter(int attr);
+void  at_exit(void);
+void  at_switch(int attr);
+int   is_at_equiv(int attr1, int attr2);
+int   apply_at_specials(int attr);
+void  backspace(void);
+void  putbs(void);
 
 #endif

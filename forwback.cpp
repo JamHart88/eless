@@ -35,9 +35,7 @@ int forw_prompt;
 int same_pos_bell = 1;
 
 extern int top_scroll;
-extern int quiet;
 extern int sc_width, sc_height;
-extern int plusoption;
 extern int forw_scroll;
 extern int back_scroll;
 extern int clear_bg;
@@ -61,10 +59,10 @@ namespace forwback {
  */
 static void eof_bell(void)
 {
-    if (quiet == NOT_QUIET)
-        bell();
-    else
-        vbell();
+  if (option::Option::quiet == option::NOT_QUIET)
+    bell();
+  else
+    vbell();
 }
 
 /*
@@ -73,25 +71,25 @@ static void eof_bell(void)
 
 int eof_displayed(void)
 {
-    position_t pos;
+  position_t pos;
 
-    if (less::Settings::ignore_eoi)
-        return (0);
+  if (less::Globals::ignore_eoi)
+    return (0);
 
-    if (ch::length() == NULL_POSITION)
-        /*
-         * If the file length is not known,
-         * we can't possibly be displaying EOF.
-         */
-        return (0);
-
+  if (ch::length() == NULL_POSITION)
     /*
-     * If the bottom line is empty, we are at EOF.
-     * If the bottom line ends at the file length,
-     * we must be just at EOF.
+     * If the file length is not known,
+     * we can't possibly be displaying EOF.
      */
-    pos = position(BOTTOM_PLUS_ONE);
-    return (pos == NULL_POSITION || pos == ch::length());
+    return (0);
+
+  /*
+   * If the bottom line is empty, we are at EOF.
+   * If the bottom line ends at the file length,
+   * we must be just at EOF.
+   */
+  pos = position(BOTTOM_PLUS_ONE);
+  return (pos == NULL_POSITION || pos == ch::length());
 }
 
 /*
@@ -100,19 +98,19 @@ int eof_displayed(void)
 
 int entire_file_displayed(void)
 {
-    position_t pos;
+  position_t pos;
 
-    /* Make sure last line of file is displayed. */
-    if (!eof_displayed())
-        return (0);
+  /* Make sure last line of file is displayed. */
+  if (!eof_displayed())
+    return (0);
 
-    /* Make sure first line of file is displayed. */
-    pos = position(0);
-    return (pos == NULL_POSITION || pos == 0);
+  /* Make sure first line of file is displayed. */
+  pos = position(0);
+  return (pos == NULL_POSITION || pos == 0);
 }
 
 /*
- * If the screen is "squished", repaint it.
+ * If the screen is "squished", jump::repaint it.
  * "Squished" means the first displayed line is not at the top
  * of the screen; this can happen when we display a short file
  * for the first time.
@@ -120,10 +118,10 @@ int entire_file_displayed(void)
 
 void squish_check(void)
 {
-    if (!squished)
-        return;
-    squished = 0;
-    repaint();
+  if (!squished)
+    return;
+  squished = 0;
+  jump::repaint();
 }
 
 /*
@@ -141,145 +139,145 @@ void forw(int n, position_t pos,
     int only_last,
     int nblank)
 {
-    int nlines = 0;
-    int do_repaint;
-    static int first_time = 1;
+  int        nlines = 0;
+  int        do_repaint;
+  static int first_time = 1;
 
-    squish_check();
+  squish_check();
 
+  /*
+   * do_repaint tells us not to display anything till the end,
+   * then just jump::repaint the entire screen.
+   * We jump::repaint if we are supposed to display only the last
+   * screenful and the request is for more than a screenful.
+   * Also if the request exceeds the forward scroll limit
+   * (but not if the request is for exactly a screenful, since
+   * repainting itself involves scrolling forward a screenful).
+   */
+  do_repaint = (only_last && n > sc_height - 1) || (forw_scroll >= 0 && n > forw_scroll && n != sc_height - 1);
+
+#if HILITE_SEARCH
+  if (hilite_search == option::OPT_ONPLUS || is_filtering() || status_col) {
+    prep_hilite(pos, pos + 4 * size_linebuf, less::Globals::ignore_eoi ? 1 : -1);
+    pos = next_unfiltered(pos);
+  }
+#endif
+
+  if (!do_repaint) {
+    debug::debug("not do_repaint");
+    if (top_scroll && n >= sc_height - 1 && pos != ch::length()) {
+      debug::debug("start new screen");
+      /*
+       * Start a new screen.
+       * {{ This is not really desirable if we happen
+       *    to hit eof in the middle of this screen,
+       *    but we don't yet know if that will happen. }}
+       */
+      pos_clear();
+      add_forw_pos(pos);
+      force = 1;
+      clear();
+      home();
+    }
+
+    if (pos != position(BOTTOM_PLUS_ONE) || empty_screen()) {
+      debug::debug("clear screen and start a new one");
+      /*
+       * This is not contiguous with what is
+       * currently displayed.  Clear the screen image
+       * (position table) and start a new screen.
+       */
+      pos_clear();
+      add_forw_pos(pos);
+      force = 1;
+      if (top_scroll) {
+        clear();
+        home();
+      } else if (!first_time) {
+        putstr("...skipping...\n");
+      }
+    }
+  }
+
+  while (--n >= 0) {
+    debug::debug("read next line of input");
     /*
-     * do_repaint tells us not to display anything till the end,
-     * then just repaint the entire screen.
-     * We repaint if we are supposed to display only the last
-     * screenful and the request is for more than a screenful.
-     * Also if the request exceeds the forward scroll limit
-     * (but not if the request is for exactly a screenful, since
-     * repainting itself involves scrolling forward a screenful).
+     * Read the next line of input.
      */
-    do_repaint = (only_last && n > sc_height - 1) || (forw_scroll >= 0 && n > forw_scroll && n != sc_height - 1);
-
+    if (nblank > 0) {
+      /*
+       * Still drawing blanks; don't get a line
+       * from the file yet.
+       * If this is the last blank line, get ready to
+       * read a line starting at ch_zero next time.
+       */
+      if (--nblank == 0)
+        pos = ch_zero;
+    } else {
+      debug::debug("Get next line from the file");
+      /*
+       * Get the next line from the file.
+       */
+      pos = input::forw_line(pos);
 #if HILITE_SEARCH
-    if (hilite_search == OPT_ONPLUS || is_filtering() || status_col) {
-        prep_hilite(pos, pos + 4 * size_linebuf, less::Settings::ignore_eoi ? 1 : -1);
-        pos = next_unfiltered(pos);
-    }
+      pos = next_unfiltered(pos);
 #endif
-
-    if (!do_repaint) {
-        debug::debug("not do_repaint");
-        if (top_scroll && n >= sc_height - 1 && pos != ch::length()) {
-            debug::debug("start new screen");
-            /*
-             * Start a new screen.
-             * {{ This is not really desirable if we happen
-             *    to hit eof in the middle of this screen,
-             *    but we don't yet know if that will happen. }}
-             */
-            pos_clear();
-            add_forw_pos(pos);
-            force = 1;
-            clear();
-            home();
-        }
-
-        if (pos != position(BOTTOM_PLUS_ONE) || empty_screen()) {
-            debug::debug("clear screen and start a new one");
-            /*
-             * This is not contiguous with what is
-             * currently displayed.  Clear the screen image
-             * (position table) and start a new screen.
-             */
-            pos_clear();
-            add_forw_pos(pos);
-            force = 1;
-            if (top_scroll) {
-                clear();
-                home();
-            } else if (!first_time) {
-                putstr("...skipping...\n");
-            }
-        }
+      if (pos == NULL_POSITION) {
+        debug::debug("end of the file - stop");
+        /*
+         * End of file: stop here unless the top line
+         * is still empty, or "force" is true.
+         * Even if force is true, stop when the last
+         * line in the file reaches the top of screen.
+         */
+        if (!force && position(TOP) != NULL_POSITION)
+          break;
+        if (!empty_lines(0, 0) && !empty_lines(1, 1) && empty_lines(2, sc_height - 1))
+          break;
+      }
     }
-
-    while (--n >= 0) {
-        debug::debug("read next line of input");
-        /*
-         * Read the next line of input.
-         */
-        if (nblank > 0) {
-            /*
-             * Still drawing blanks; don't get a line
-             * from the file yet.
-             * If this is the last blank line, get ready to
-             * read a line starting at ch_zero next time.
-             */
-            if (--nblank == 0)
-                pos = ch_zero;
-        } else {
-            debug::debug("Get next line from the file");
-            /*
-             * Get the next line from the file.
-             */
-            pos = input::forw_line(pos);
-#if HILITE_SEARCH
-            pos = next_unfiltered(pos);
-#endif
-            if (pos == NULL_POSITION) {
-                debug::debug("end of the file - stop");
-                /*
-                 * End of file: stop here unless the top line
-                 * is still empty, or "force" is true.
-                 * Even if force is true, stop when the last
-                 * line in the file reaches the top of screen.
-                 */
-                if (!force && position(TOP) != NULL_POSITION)
-                    break;
-                if (!empty_lines(0, 0) && !empty_lines(1, 1) && empty_lines(2, sc_height - 1))
-                    break;
-            }
-        }
-        /*
-         * Add the position of the next line to the position table.
-         * Display the current line on the screen.
-         */
-        debug::debug("add the position of the next line to pos table");
-        add_forw_pos(pos);
-        nlines++;
-        if (do_repaint) {
-            debug::debug("do-repaint - continue");
-            continue;
-        }
-        /*
-         * If this is the first screen displayed and
-         * we hit an early EOF (i.e. before the requested
-         * number of lines), we "squish" the display down
-         * at the bottom of the screen.
-         * But don't do this if a + option or a -t option
-         * was given.  These options can cause us to
-         * start the display after the beginning of the file,
-         * and it is not appropriate to squish in that case.
-         */
-        if (first_time && pos == NULL_POSITION && !top_scroll &&
+    /*
+     * Add the position of the next line to the position table.
+     * Display the current line on the screen.
+     */
+    debug::debug("add the position of the next line to pos table");
+    add_forw_pos(pos);
+    nlines++;
+    if (do_repaint) {
+      debug::debug("do-jump::repaint - continue");
+      continue;
+    }
+    /*
+     * If this is the first screen displayed and
+     * we hit an early EOF (i.e. before the requested
+     * number of lines), we "squish" the display down
+     * at the bottom of the screen.
+     * But don't do this if a + option or a -t option
+     * was given.  These options can cause us to
+     * start the display after the beginning of the file,
+     * and it is not appropriate to squish in that case.
+     */
+    if (first_time && pos == NULL_POSITION && !top_scroll &&
 #if TAGS
-            tagoption == NULL &&
+        tagoption == NULL &&
 #endif
-            !plusoption) {
-            squished = 1;
-            continue;
-        }
-        put_line();
-
-        forw_prompt = 1;
+        !option::Option::plusoption) {
+      squished = 1;
+      continue;
     }
+    put_line();
 
-    if (nlines == 0 && !less::Settings::ignore_eoi && same_pos_bell)
-        eof_bell();
-    else if (do_repaint) {
-        debug::debug("repaint from forw");
-        repaint();
-    }
-    first_time = 0;
-    (void)currline(BOTTOM);
+    forw_prompt = 1;
+  }
+
+  if (nlines == 0 && !less::Globals::ignore_eoi && same_pos_bell)
+    eof_bell();
+  else if (do_repaint) {
+    debug::debug("jump::repaint from forw");
+    jump::repaint();
+  }
+  first_time = 0;
+  (void)currline(BOTTOM);
 }
 
 /*
@@ -288,52 +286,52 @@ void forw(int n, position_t pos,
 
 void back(int n, position_t pos, int force, int only_last)
 {
-    int nlines = 0;
-    int do_repaint;
+  int nlines = 0;
+  int do_repaint;
 
-    squish_check();
-    do_repaint = (n > get_back_scroll() || (only_last && n > sc_height - 1));
+  squish_check();
+  do_repaint = (n > get_back_scroll() || (only_last && n > sc_height - 1));
 #if HILITE_SEARCH
-    if (hilite_search == OPT_ONPLUS || is_filtering() || status_col) {
-        prep_hilite((pos < 3 * size_linebuf) ? 0 : pos - 3 * size_linebuf, pos, -1);
-    }
+  if (hilite_search == option::OPT_ONPLUS || is_filtering() || status_col) {
+    prep_hilite((pos < 3 * size_linebuf) ? 0 : pos - 3 * size_linebuf, pos, -1);
+  }
 #endif
-    while (--n >= 0) {
-        /*
-         * Get the previous line of input.
-         */
+  while (--n >= 0) {
+    /*
+     * Get the previous line of input.
+     */
 #if HILITE_SEARCH
-        pos = prev_unfiltered(pos);
+    pos = prev_unfiltered(pos);
 #endif
 
-        pos = input::back_line(pos);
-        if (pos == NULL_POSITION) {
-            /*
-             * Beginning of file: stop here unless "force" is true.
-             */
-            if (!force)
-                break;
-        }
-        /*
-         * Add the position of the previous line to the position table.
-         * Display the line on the screen.
-         */
-        add_back_pos(pos);
-        nlines++;
-        if (!do_repaint) {
-            home();
-            add_line();
-            put_line();
-        }
+    pos = input::back_line(pos);
+    if (pos == NULL_POSITION) {
+      /*
+       * Beginning of file: stop here unless "force" is true.
+       */
+      if (!force)
+        break;
     }
+    /*
+     * Add the position of the previous line to the position table.
+     * Display the line on the screen.
+     */
+    add_back_pos(pos);
+    nlines++;
+    if (!do_repaint) {
+      home();
+      add_line();
+      put_line();
+    }
+  }
 
-    if (nlines == 0 && same_pos_bell)
-        eof_bell();
-    else if (do_repaint)
-        repaint();
-    else if (!oldbot)
-        lower_left();
-    (void)currline(BOTTOM);
+  if (nlines == 0 && same_pos_bell)
+    eof_bell();
+  else if (do_repaint)
+    jump::repaint();
+  else if (!oldbot)
+    lower_left();
+  (void)currline(BOTTOM);
 }
 
 /*
@@ -343,40 +341,40 @@ void back(int n, position_t pos, int force, int only_last)
 
 void forward(int n, int force, int only_last)
 {
-    position_t pos;
+  position_t pos;
 
-    if (get_quit_at_eof() && eof_displayed() && !(ch::getflags() & CH_HELPFILE)) {
-        /*
-         * If the -e flag is set and we're trying to go
-         * forward from end-of-file, go on to the next file.
-         */
-        if (edit::edit_next(1))
-            utils::quit(QUIT_OK);
-        return;
-    }
+  if (option::get_quit_at_eof() && eof_displayed() && !(ch::getflags() & CH_HELPFILE)) {
+    /*
+     * If the -e flag is set and we're trying to go
+     * forward from end-of-file, go on to the next file.
+     */
+    if (edit::edit_next(1))
+      utils::quit(QUIT_OK);
+    return;
+  }
 
-    pos = position(BOTTOM_PLUS_ONE);
-    if (pos == NULL_POSITION && (!force || empty_lines(2, sc_height - 1))) {
-        if (less::Settings::ignore_eoi) {
-            /*
-             * less::Settings::ignore_eoi is to support A_F_FOREVER.
-             * Back up until there is a line at the bottom
-             * of the screen.
-             */
-            if (empty_screen())
-                pos = ch_zero;
-            else {
-                do {
-                    back(1, position(TOP), 1, 0);
-                    pos = position(BOTTOM_PLUS_ONE);
-                } while (pos == NULL_POSITION);
-            }
-        } else {
-            eof_bell();
-            return;
-        }
+  pos = position(BOTTOM_PLUS_ONE);
+  if (pos == NULL_POSITION && (!force || empty_lines(2, sc_height - 1))) {
+    if (less::Globals::ignore_eoi) {
+      /*
+       * less::Globals::ignore_eoi is to support A_F_FOREVER.
+       * Back up until there is a line at the bottom
+       * of the screen.
+       */
+      if (empty_screen())
+        pos = ch_zero;
+      else {
+        do {
+          back(1, position(TOP), 1, 0);
+          pos = position(BOTTOM_PLUS_ONE);
+        } while (pos == NULL_POSITION);
+      }
+    } else {
+      eof_bell();
+      return;
     }
-    forw(n, pos, force, only_last, 0);
+  }
+  forw(n, pos, force, only_last, 0);
 }
 
 /*
@@ -386,14 +384,14 @@ void forward(int n, int force, int only_last)
 
 void backward(int n, int force, int only_last)
 {
-    position_t pos;
+  position_t pos;
 
-    pos = position(TOP);
-    if (pos == NULL_POSITION && (!force || position(BOTTOM) == 0)) {
-        eof_bell();
-        return;
-    }
-    back(n, pos, force, only_last);
+  pos = position(TOP);
+  if (pos == NULL_POSITION && (!force || position(BOTTOM) == 0)) {
+    eof_bell();
+    return;
+  }
+  back(n, pos, force, only_last);
 }
 
 /*
@@ -405,13 +403,13 @@ void backward(int n, int force, int only_last)
 
 int get_back_scroll(void)
 {
-    if (no_back_scroll)
-        return (0);
-    if (back_scroll >= 0)
-        return (back_scroll);
-    if (top_scroll)
-        return (sc_height - 2);
-    return (10000); /* infinity */
+  if (no_back_scroll)
+    return (0);
+  if (back_scroll >= 0)
+    return (back_scroll);
+  if (top_scroll)
+    return (sc_height - 2);
+  return (10000); /* infinity */
 }
 
 /*
@@ -420,15 +418,15 @@ int get_back_scroll(void)
 
 int get_one_screen(void)
 {
-    int nlines;
-    position_t pos = ch_zero;
+  int        nlines;
+  position_t pos = ch_zero;
 
-    for (nlines = 0; nlines < sc_height; nlines++) {
-        pos = input::forw_line(pos);
-        if (pos == NULL_POSITION)
-            break;
-    }
-    return (nlines < sc_height);
+  for (nlines = 0; nlines < sc_height; nlines++) {
+    pos = input::forw_line(pos);
+    if (pos == NULL_POSITION)
+      break;
+  }
+  return (nlines < sc_height);
 }
 
 } // namespace forwback

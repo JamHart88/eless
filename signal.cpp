@@ -30,12 +30,12 @@
 
 // TODO: Move to namespace
 
-extern int sc_width, sc_height;
-extern int lnloop;
-extern int linenums;
-extern int wscroll;
-extern int reading;
-extern int quit_on_intr;
+extern int  sc_width, sc_height;
+extern int  lnloop;
+extern int  linenums;
+extern int  wscroll;
+extern int  reading;
+extern int  quit_on_intr;
 extern long jump_sline_fraction;
 
 /*
@@ -49,11 +49,11 @@ extern long jump_sline_fraction;
 //     int type;
 static RETSIGTYPE u_interrupt(int type)
 {
-    bell();
-    signal(SIGINT, u_interrupt);
-    less::Settings::sigs |= S_INTERRUPT;
-    if (reading)
-        intread(); /* May longjmp */
+  bell();
+  signal(SIGINT, u_interrupt);
+  less::Globals::sigs |= S_INTERRUPT;
+  if (reading)
+    intread(); /* May longjmp */
 }
 
 #ifdef SIGTSTP
@@ -68,10 +68,10 @@ static RETSIGTYPE u_interrupt(int type)
 //     int type;
 static RETSIGTYPE stop(int type)
 {
-    signal(SIGTSTP, stop);
-    less::Settings::sigs |= S_STOP;
-    if (reading)
-        intread();
+  signal(SIGTSTP, stop);
+  less::Globals::sigs |= S_STOP;
+  if (reading)
+    intread();
 }
 #endif
 
@@ -97,10 +97,10 @@ static RETSIGTYPE stop(int type)
 
 RETSIGTYPE winch(int type)
 {
-    signal(SIG_LESSWINDOW, winch);
-    less::Settings::sigs |= S_WINCH;
-    if (reading)
-        intread();
+  signal(SIG_LESSWINDOW, winch);
+  less::Globals::sigs |= S_WINCH;
+  if (reading)
+    intread();
 }
 #endif
 
@@ -111,7 +111,7 @@ RETSIGTYPE winch(int type)
 //     int type;
 static RETSIGTYPE terminate(int type)
 {
-    utils::quit(15);
+  utils::quit(15);
 }
 
 /*
@@ -125,52 +125,52 @@ static RETSIGTYPE terminate(int type)
 
 void init_signals(int on)
 {
-    if (on) {
-        /*
-         * Set signal handlers.
-         */
-        (void)signal(SIGINT, u_interrupt);
+  if (on) {
+    /*
+     * Set signal handlers.
+     */
+    (void)signal(SIGINT, u_interrupt);
 #ifdef SIGTSTP
-        (void)signal(SIGTSTP, stop);
+    (void)signal(SIGTSTP, stop);
 #endif
 #ifdef SIGWINCH
-        (void)signal(SIGWINCH, winch);
+    (void)signal(SIGWINCH, winch);
 #endif
 #ifdef SIGWIND
-        (void)signal(SIGWIND, winch);
+    (void)signal(SIGWIND, winch);
 #endif
 #ifdef SIGQUIT
-        (void)signal(SIGQUIT, SIG_IGN);
+    (void)signal(SIGQUIT, SIG_IGN);
 #endif
 #ifdef SIGTERM
-        (void)signal(SIGTERM, terminate);
+    (void)signal(SIGTERM, terminate);
 #endif
-    } else {
-        /*
-         * Restore signals to defaults.
-         */
-        (void)signal(SIGINT, SIG_DFL);
+  } else {
+    /*
+     * Restore signals to defaults.
+     */
+    (void)signal(SIGINT, SIG_DFL);
 #ifdef SIGTSTP
-        (void)signal(SIGTSTP, SIG_DFL);
+    (void)signal(SIGTSTP, SIG_DFL);
 #endif
 #ifdef SIGWINCH
-        (void)signal(SIGWINCH, SIG_IGN);
+    (void)signal(SIGWINCH, SIG_IGN);
 #endif
 #ifdef SIGWIND
-        (void)signal(SIGWIND, SIG_IGN);
+    (void)signal(SIGWIND, SIG_IGN);
 #endif
 #ifdef SIGQUIT
-        (void)signal(SIGQUIT, SIG_DFL);
+    (void)signal(SIGQUIT, SIG_DFL);
 #endif
 #ifdef SIGTERM
-        (void)signal(SIGTERM, SIG_DFL);
+    (void)signal(SIGTERM, SIG_DFL);
 #endif
-    }
+  }
 }
 
 /*
  * Process any signals we have received.
- * A received signal cause a bit to be set in "less::Settings::sigs".
+ * A received signal cause a bit to be set in "less::Globals::sigs".
  */
 // -------------------------------------------
 // Converted from C to C++ - C below
@@ -179,61 +179,61 @@ void init_signals(int on)
 
 void psignals(void)
 {
-    int tsignals;
+  int tsignals;
 
-    if ((tsignals = less::Settings::sigs) == 0)
-        return;
-    less::Settings::sigs = 0;
+  if ((tsignals = less::Globals::sigs) == 0)
+    return;
+  less::Globals::sigs = 0;
 
 #ifdef SIGTSTP
-    if (tsignals & S_STOP) {
-        /*
-         * Clean up the terminal.
-         */
+  if (tsignals & S_STOP) {
+    /*
+     * Clean up the terminal.
+     */
 #ifdef SIGTTOU
-        signal(SIGTTOU, SIG_IGN);
+    signal(SIGTTOU, SIG_IGN);
 #endif
-        clear_bot();
-        deinit();
-        flush();
-        raw_mode(0);
+    clear_bot();
+    deinit();
+    flush();
+    raw_mode(0);
 #ifdef SIGTTOU
-        signal(SIGTTOU, SIG_DFL);
+    signal(SIGTTOU, SIG_DFL);
 #endif
-        signal(SIGTSTP, SIG_DFL);
-        kill(getpid(), SIGTSTP);
-        /*
-         * ... Bye bye. ...
-         * Hopefully we'll be back later and resume here...
-         * Reset the terminal and arrange to repaint the
-         * screen when we get back to the main command loop.
-         */
-        signal(SIGTSTP, stop);
-        raw_mode(1);
-        init();
-        screen_trashed = TRASHED;
-        tsignals |= S_WINCH;
-    }
+    signal(SIGTSTP, SIG_DFL);
+    kill(getpid(), SIGTSTP);
+    /*
+     * ... Bye bye. ...
+     * Hopefully we'll be back later and resume here...
+     * Reset the terminal and arrange to jump::repaint the
+     * screen when we get back to the main command loop.
+     */
+    signal(SIGTSTP, stop);
+    raw_mode(1);
+    init();
+    screen_trashed = TRASHED;
+    tsignals |= S_WINCH;
+  }
 #endif
 #ifdef S_WINCH
-    if (tsignals & S_WINCH) {
-        int old_width, old_height;
-        /*
-         * Re-execute scrsize() to read the new window size.
-         */
-        old_width = sc_width;
-        old_height = sc_height;
-        get_term();
-        if (sc_width != old_width || sc_height != old_height) {
-            wscroll = (sc_height + 1) / 2;
-            calc_jump_sline();
-            calc_shift_count();
-        }
-        screen_trashed = TRASHED;
+  if (tsignals & S_WINCH) {
+    int old_width, old_height;
+    /*
+     * Re-execute scrsize() to read the new window size.
+     */
+    old_width  = sc_width;
+    old_height = sc_height;
+    get_term();
+    if (sc_width != old_width || sc_height != old_height) {
+      wscroll = (sc_height + 1) / 2;
+      calc_jump_sline();
+      calc_shift_count();
     }
+    screen_trashed = TRASHED;
+  }
 #endif
-    if (tsignals & S_INTERRUPT) {
-        if (quit_on_intr)
-            utils::quit(QUIT_INTERRUPT);
-    }
+  if (tsignals & S_INTERRUPT) {
+    if (quit_on_intr)
+      utils::quit(QUIT_INTERRUPT);
+  }
 }

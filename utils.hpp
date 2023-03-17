@@ -15,17 +15,17 @@ namespace utils {
 char* save(const char* s);
 void* ecalloc(int count, unsigned int size);
 char* skipsp(char* s);
-int sprefix(char* ps, char* s, int uppercase);
-void quit(int status);
+int   sprefix(char* ps, char* s, int uppercase);
+void  quit(int status);
 
 // ---------------------------------------------------------
 // Template functions
 // ---------------------------------------------------------
-const int TEN = 10;
-const char CH_0 = '0';
-const char CH_9 = '9';
-const char CH_DASH = '-';
-const char CH_NULL = '\0';
+const int  TEN      = 10;
+const char CH_0     = '0';
+const char CH_9     = '9';
+const char CH_DASH  = '-';
+const char CH_NULL  = '\0';
 const char CH_SPACE = ' ';
 
 // ---------------------------------------------------------
@@ -38,15 +38,15 @@ const char CH_SPACE = ' ';
 template <typename T>
 T strToType(char* buf)
 {
-    T val = 0;
-    for (int i = 0;; i++) {
-        char c = buf[i];
-        if (c < CH_0 || c > CH_9)
-            break;
-        val = TEN * val + c - CH_0;
-    }
+  T val = 0;
+  for (int i = 0;; i++) {
+    char c = buf[i];
+    if (c < CH_0 || c > CH_9)
+      break;
+    val = TEN * val + c - CH_0;
+  }
 
-    return val;
+  return val;
 }
 
 // ---------------------------------------------------------
@@ -57,30 +57,30 @@ T strToType(char* buf)
 template <typename T>
 void typeToStr(const T num, char* buf, int bufLength)
 {
-    T tempNum = num;
-    int neg = (tempNum < 0);
+  T   tempNum = num;
+  int neg     = (tempNum < 0);
 
-    // Upper bound on the string length of an integer converted to string.
-    // 302 / 1000 is ceil (log10 (2.0)).  Subtract 1 for the sign bit;
-    // add 1 for integer division truncation; add 1 more for a minus sign.
+  // Upper bound on the string length of an integer converted to string.
+  // 302 / 1000 is ceil (log10 (2.0)).  Subtract 1 for the sign bit;
+  // add 1 for integer division truncation; add 1 more for a minus sign.
 
-    char tbuf[((sizeof(tempNum) * 8 - 1) * 302 / 1000 + 1 + 1) + 2];
-    char* currentCharPtr = tbuf + sizeof(tbuf);
-    if (neg)
-        tempNum = -tempNum;
+  char  tbuf[((sizeof(tempNum) * 8 - 1) * 302 / 1000 + 1 + 1) + 2];
+  char* currentCharPtr = tbuf + sizeof(tbuf);
+  if (neg)
+    tempNum = -tempNum;
 
-    *--currentCharPtr = CH_NULL;
-    int digits = 1;
+  *--currentCharPtr = CH_NULL;
+  int digits        = 1;
 
-    do {
-        *--currentCharPtr = (tempNum % 10) + CH_0;
-        digits++;
-    } while ((tempNum /= 10) != 0);
+  do {
+    *--currentCharPtr = (tempNum % 10) + CH_0;
+    digits++;
+  } while ((tempNum /= 10) != 0);
 
-    if (neg)
-        *--currentCharPtr = CH_DASH;
+  if (neg)
+    *--currentCharPtr = CH_DASH;
 
-    strncpy(buf, currentCharPtr, bufLength - 1);
+  strncpy(buf, currentCharPtr, bufLength - 1);
 }
 
 // ----------------------------------------------------------------
@@ -94,7 +94,7 @@ void typeToStr(const T num, char* buf, int bufLength)
 template <typename T>
 const int strlen_bound(void)
 {
-    return ((sizeof(T) * CHAR_BIT - 1) * 302 / 1000 + 1 + 2);
+  return ((sizeof(T) * CHAR_BIT - 1) * 302 / 1000 + 1 + 2);
 }
 
 }

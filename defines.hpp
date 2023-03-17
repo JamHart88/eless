@@ -5,8 +5,8 @@
  *
  * This file has 3 sections:
  * User preferences.
- * Settings always true on Unix.
- * Settings automatically determined by configure.
+ * Globals always true on Unix.
+ * Globals automatically determined by configure.
  *
  * * * * * *  WARNING  * * * * * *
  * If you edit defines.h by hand, do "touch stamp-h" before you run make
@@ -117,7 +117,7 @@
 #define DEBUG 1
 
 /* ---------------------------------------------------- 
- * Settings always true on Unix.  
+ * Globals always true on Unix.  
  * ----------------------------------------------------  */
 
 /*
@@ -157,7 +157,7 @@
 #define    TABSTOP_MAX     128     /* Max number of custom tab stops */
 
 /* ----------------------------------------------------
- * Settings automatically determined by configure.  
+ * Globals automatically determined by configure.  
  * ----------------------------------------------------*/
 
 

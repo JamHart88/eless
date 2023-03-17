@@ -21,8 +21,8 @@
 #include "less.hpp"
 #include "utils.hpp"
 
-static position_t* table = NULL; /* The position table */
-static int table_size = 0;
+static position_t* table      = NULL; /* The position table */
+static int         table_size = 0;
 
 extern int sc_width, sc_height;
 
@@ -37,18 +37,18 @@ extern int sc_width, sc_height;
  */
 position_t position(int sindex)
 {
-    switch (sindex) {
-    case BOTTOM:
-        sindex = sc_height - 2;
-        break;
-    case BOTTOM_PLUS_ONE:
-        sindex = sc_height - 1;
-        break;
-    case MIDDLE:
-        sindex = (sc_height - 1) / 2;
-        break;
-    }
-    return (table[sindex]);
+  switch (sindex) {
+  case BOTTOM:
+    sindex = sc_height - 2;
+    break;
+  case BOTTOM_PLUS_ONE:
+    sindex = sc_height - 1;
+    break;
+  case MIDDLE:
+    sindex = (sc_height - 1) / 2;
+    break;
+  }
+  return (table[sindex]);
 }
 
 /*
@@ -56,14 +56,14 @@ position_t position(int sindex)
  */
 void add_forw_pos(position_t pos)
 {
-    int i;
+  int i;
 
-    /*
-     * Scroll the position table up.
-     */
-    for (i = 1; i < sc_height; i++)
-        table[i - 1] = table[i];
-    table[sc_height - 1] = pos;
+  /*
+   * Scroll the position table up.
+   */
+  for (i = 1; i < sc_height; i++)
+    table[i - 1] = table[i];
+  table[sc_height - 1] = pos;
 }
 
 /*
@@ -71,14 +71,14 @@ void add_forw_pos(position_t pos)
  */
 void add_back_pos(position_t pos)
 {
-    int i;
+  int i;
 
-    /*
-     * Scroll the position table down.
-     */
-    for (i = sc_height - 1; i > 0; i--)
-        table[i] = table[i - 1];
-    table[0] = pos;
+  /*
+   * Scroll the position table down.
+   */
+  for (i = sc_height - 1; i > 0; i--)
+    table[i] = table[i - 1];
+  table[0] = pos;
 }
 
 /*
@@ -86,10 +86,10 @@ void add_back_pos(position_t pos)
  */
 void pos_clear(void)
 {
-    int i;
+  int i;
 
-    for (i = 0; i < sc_height; i++)
-        table[i] = NULL_POSITION;
+  for (i = 0; i < sc_height; i++)
+    table[i] = NULL_POSITION;
 }
 
 /*
@@ -97,24 +97,24 @@ void pos_clear(void)
  */
 void pos_init(void)
 {
-    struct scrpos scrpos;
+  struct scrpos scrpos;
 
-    if (sc_height <= table_size)
-        return;
-    /*
-     * If we already have a table, remember the first line in it
-     * before we free it, so we can copy that line to the new table.
-     */
-    if (table != NULL) {
-        get_scrpos(&scrpos, TOP);
-        free((char*)table);
-    } else
-        scrpos.pos = NULL_POSITION;
-    table = (position_t*)utils::ecalloc(sc_height, sizeof(position_t));
-    table_size = sc_height;
-    pos_clear();
-    if (scrpos.pos != NULL_POSITION)
-        table[scrpos.ln - 1] = scrpos.pos;
+  if (sc_height <= table_size)
+    return;
+  /*
+   * If we already have a table, remember the first line in it
+   * before we free it, so we can copy that line to the new table.
+   */
+  if (table != NULL) {
+    get_scrpos(&scrpos, TOP);
+    free((char*)table);
+  } else
+    scrpos.pos = NULL_POSITION;
+  table      = (position_t*)utils::ecalloc(sc_height, sizeof(position_t));
+  table_size = sc_height;
+  pos_clear();
+  if (scrpos.pos != NULL_POSITION)
+    table[scrpos.ln - 1] = scrpos.pos;
 }
 
 /*
@@ -124,14 +124,14 @@ void pos_init(void)
  */
 int onscreen(position_t pos)
 {
-    int i;
+  int i;
 
-    if (pos < table[0])
-        return (-1);
-    for (i = 1; i < sc_height; i++)
-        if (pos < table[i])
-            return (i - 1);
+  if (pos < table[0])
     return (-1);
+  for (i = 1; i < sc_height; i++)
+    if (pos < table[i])
+      return (i - 1);
+  return (-1);
 }
 
 /*
@@ -139,17 +139,17 @@ int onscreen(position_t pos)
  */
 int empty_screen(void)
 {
-    return (empty_lines(0, sc_height - 1));
+  return (empty_lines(0, sc_height - 1));
 }
 
 int empty_lines(int s, int e)
 {
-    int i;
+  int i;
 
-    for (i = s; i <= e; i++)
-        if (table[i] != NULL_POSITION && table[i] != 0)
-            return (0);
-    return (1);
+  for (i = s; i <= e; i++)
+    if (table[i] != NULL_POSITION && table[i] != 0)
+      return (0);
+  return (1);
 }
 
 /*
@@ -162,49 +162,49 @@ int empty_lines(int s, int e)
  */
 void get_scrpos(struct scrpos* scrpos, int where)
 {
-    int i;
-    int dir;
-    int last;
+  int i;
+  int dir;
+  int last;
 
-    switch (where) {
-    case TOP:
-        i = 0;
-        dir = +1;
-        last = sc_height - 2;
-        break;
-    case BOTTOM:
-    case BOTTOM_PLUS_ONE:
-        i = sc_height - 2;
-        dir = -1;
-        last = 0;
-        break;
-    default:
-        i = where;
-        if (table[i] == NULL_POSITION) {
-            scrpos->pos = NULL_POSITION;
-            return;
-        }
-        /* Values of dir and last don't matter after this. */
-        break;
+  switch (where) {
+  case TOP:
+    i    = 0;
+    dir  = +1;
+    last = sc_height - 2;
+    break;
+  case BOTTOM:
+  case BOTTOM_PLUS_ONE:
+    i    = sc_height - 2;
+    dir  = -1;
+    last = 0;
+    break;
+  default:
+    i = where;
+    if (table[i] == NULL_POSITION) {
+      scrpos->pos = NULL_POSITION;
+      return;
     }
+    /* Values of dir and last don't matter after this. */
+    break;
+  }
 
-    /*
-     * Find the first line on the screen which has something on it,
-     * and return the screen line number and the file position.
-     */
-    for (;; i += dir) {
-        if (table[i] != NULL_POSITION) {
-            scrpos->ln = i + 1;
-            scrpos->pos = table[i];
-            return;
-        }
-        if (i == last)
-            break;
+  /*
+   * Find the first line on the screen which has something on it,
+   * and return the screen line number and the file position.
+   */
+  for (;; i += dir) {
+    if (table[i] != NULL_POSITION) {
+      scrpos->ln  = i + 1;
+      scrpos->pos = table[i];
+      return;
     }
-    /*
-     * The screen is empty.
-     */
-    scrpos->pos = NULL_POSITION;
+    if (i == last)
+      break;
+  }
+  /*
+   * The screen is empty.
+   */
+  scrpos->pos = NULL_POSITION;
 }
 
 /*
@@ -218,21 +218,21 @@ void get_scrpos(struct scrpos* scrpos, int where)
  */
 int sindex_from_sline(int sline)
 {
-    /*
-     * Negative screen line number means
-     * relative to the bottom of the screen.
-     */
-    if (sline < 0)
-        sline += sc_height;
-    /*
-     * Can't be less than 1 or greater than sc_height.
-     */
-    if (sline <= 0)
-        sline = 1;
-    if (sline > sc_height)
-        sline = sc_height;
-    /*
-     * Return zero-based line number, not one-based.
-     */
-    return (sline - 1);
+  /*
+   * Negative screen line number means
+   * relative to the bottom of the screen.
+   */
+  if (sline < 0)
+    sline += sc_height;
+  /*
+   * Can't be less than 1 or greater than sc_height.
+   */
+  if (sline <= 0)
+    sline = 1;
+  if (sline > sc_height)
+    sline = sc_height;
+  /*
+   * Return zero-based line number, not one-based.
+   */
+  return (sline - 1);
 }

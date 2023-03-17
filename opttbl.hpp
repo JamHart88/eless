@@ -6,9 +6,14 @@
  */
 
 #include "less.hpp"
+#include "option.hpp"
 
-void init_option(void);
-struct loption* findopt(int c);
-struct loption* findopt_name(char** p_optname, char** p_oname, int* p_err);
+namespace opttbl {
+
+void                    init_option(void);
+struct option::loption* findopt(int c);
+struct option::loption* findopt_name(char** p_optname, char** p_oname, int* p_err);
+
+} // namespace opttbl
 
 #endif

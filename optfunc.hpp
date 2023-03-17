@@ -12,9 +12,9 @@
  * Each handling function is passed a "type" and, if it is a string
  * option, the string which should be "assigned" to the option.
  * The type may be one of:
- *    INIT      The option is being initialized from the command line.
- *    TOGGLE    The option is being changed from within the program.
- *    QUERY     The setting of the option is merely being queried.
+ *    option::INIT      The option is being initialized from the command line.
+ *    option::TOGGLE    The option is being changed from within the program.
+ *    option::QUERY     The setting of the option is merely being queried.
  */
 
 #include "less.hpp"
@@ -40,6 +40,6 @@ void opt_rscroll(int type, char* s);
 void opt_query(int type, char* s);
 void opt_mousecap(int type, char* s);
 void opt_wheel_lines(int type, char* s);
-int get_swindow(void);
+int  get_swindow(void);
 
 #endif

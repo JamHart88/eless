@@ -55,70 +55,70 @@ static jmp_buf read_label;
  */
 int iread(int fd, unsigned char* buf, unsigned int len)
 {
-    int n;
+  int n;
 
 start:
-    if (SET_JUMP(read_label)) {
-        /*
-         * We jumped here from intread.
-         */
-        reading = 0;
-        //#if HAVE_SIGPROCMASK
-        {
-            sigset_t mask;
-            sigemptyset(&mask);
-            sigprocmask(SIG_SETMASK, &mask, NULL);
-        }
-        //#else
-        //#if HAVE_SIGSETMASK
-        //        sigsetmask(0);
-        //#endif
-        //#endif
-        return (READ_INTR);
-    }
-
-    flush();
-    reading = 1;
-    n = read(fd, buf, len);
-#if 1
+  if (SET_JUMP(read_label)) {
     /*
-     * This is a kludge to workaround a problem on some systems
-     * where terminating a remote tty connection causes read() to
-     * start returning 0 forever, instead of -1.
+     * We jumped here from intread.
      */
-    {
-        if (!less::Settings::ignore_eoi) {
-            static int consecutive_nulls = 0;
-            if (n == 0)
-                consecutive_nulls++;
-            else
-                consecutive_nulls = 0;
-            if (consecutive_nulls > 20)
-                utils::quit(QUIT_ERROR);
-        }
-    }
-#endif
     reading = 0;
-    if (n < 0) {
+    // #if HAVE_SIGPROCMASK
+    {
+      sigset_t mask;
+      sigemptyset(&mask);
+      sigprocmask(SIG_SETMASK, &mask, NULL);
+    }
+    // #else
+    // #if HAVE_SIGSETMASK
+    //         sigsetmask(0);
+    // #endif
+    // #endif
+    return (READ_INTR);
+  }
+
+  flush();
+  reading = 1;
+  n       = read(fd, buf, len);
+#if 1
+  /*
+   * This is a kludge to workaround a problem on some systems
+   * where terminating a remote tty connection causes read() to
+   * start returning 0 forever, instead of -1.
+   */
+  {
+    if (!less::Globals::ignore_eoi) {
+      static int consecutive_nulls = 0;
+      if (n == 0)
+        consecutive_nulls++;
+      else
+        consecutive_nulls = 0;
+      if (consecutive_nulls > 20)
+        utils::quit(QUIT_ERROR);
+    }
+  }
+#endif
+  reading = 0;
+  if (n < 0) {
 #if HAVE_ERRNO
-        /*
-         * Certain values of errno indicate we should just retry the read.
-         */
+    /*
+     * Certain values of errno indicate we should just retry the read.
+     */
 #if MUST_DEFINE_ERRNO
-        extern int errno;
+    extern int errno;
 #endif
 #ifdef EINTR
-        if (errno == EINTR)
-            goto start;
+    if (errno == EINTR)
+      goto start;
 #endif
 #ifdef EAGAIN
-        if (errno == EAGAIN)
-            goto start;
+    if (errno == EAGAIN)
+      goto start;
 #endif
 #endif
-        return (-1);
-    }
-    return (n);
+    return (-1);
+  }
+  return (n);
 }
 
 /*
@@ -126,7 +126,7 @@ start:
  */
 void intread(void)
 {
-    LONG_JUMP(read_label, 1);
+  LONG_JUMP(read_label, 1);
 }
 
 /*
@@ -135,7 +135,7 @@ void intread(void)
 
 time_t get_time(void)
 {
-    return time(NULL);
+  return time(NULL);
 }
 
 /*
@@ -143,21 +143,21 @@ time_t get_time(void)
  */
 char* errno_message(char* filename)
 {
-    char* p;
-    char* m;
-    int len;
+  char* p;
+  char* m;
+  int   len;
 #if HAVE_ERRNO
 #if MUST_DEFINE_ERRNO
-    extern int errno;
+  extern int errno;
 #endif
-    p = strerror(errno);
+  p = strerror(errno);
 #else
-    p = "cannot open";
+  p            = "cannot open";
 #endif
-    len = (int)(strlen(filename) + strlen(p) + 3);
-    m = (char*)utils::ecalloc(len, sizeof(char));
-    ignore_result(snprintf(m, len, "%s: %s", filename, p));
-    return (m);
+  len = (int)(strlen(filename) + strlen(p) + 3);
+  m   = (char*)utils::ecalloc(len, sizeof(char));
+  ignore_result(snprintf(m, len, "%s: %s", filename, p));
+  return (m);
 }
 
 /* #define HAVE_FLOAT 0 */
@@ -165,18 +165,18 @@ char* errno_message(char* filename)
 static position_t muldiv(position_t val, position_t num, position_t den)
 {
 #if HAVE_FLOAT
-    double v = (((double)val) * num) / den;
-    return ((position_t)(v + 0.5));
+  double v = (((double)val) * num) / den;
+  return ((position_t)(v + 0.5));
 #else
-    position_t v = ((position_t)val) * num;
+  position_t v = ((position_t)val) * num;
 
-    if (v / num == val)
-        /* No overflow */
-        return (position_t)(v / den);
-    else
-        /* Above calculation overflows;
-         * use a method that is less precise but won't overflow. */
-        return (position_t)(val / (den / num));
+  if (v / num == val)
+    /* No overflow */
+    return (position_t)(v / den);
+  else
+    /* Above calculation overflows;
+     * use a method that is less precise but won't overflow. */
+    return (position_t)(val / (den / num));
 #endif
 }
 
@@ -186,7 +186,7 @@ static position_t muldiv(position_t val, position_t num, position_t den)
  */
 int percentage(position_t num, position_t den)
 {
-    return (int)muldiv(num, (position_t)100, den);
+  return (int)muldiv(num, (position_t)100, den);
 }
 
 /*
@@ -194,10 +194,10 @@ int percentage(position_t num, position_t den)
  */
 position_t percent_pos(position_t pos, int percent, long fraction)
 {
-    /* Change percent (parts per 100) to perden (parts per NUM_FRAC_DENOM). */
-    position_t perden = (percent * (NUM_FRAC_DENOM / 100)) + (fraction / 100);
+  /* Change percent (parts per 100) to perden (parts per NUM_FRAC_DENOM). */
+  position_t perden = (percent * (NUM_FRAC_DENOM / 100)) + (fraction / 100);
 
-    if (perden == 0)
-        return (0);
-    return (position_t)muldiv(pos, perden, (position_t)NUM_FRAC_DENOM);
+  if (perden == 0)
+    return (0);
+  return (position_t)muldiv(pos, perden, (position_t)NUM_FRAC_DENOM);
 }

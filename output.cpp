@@ -28,44 +28,44 @@ int final_attr;
 
 int at_prompt;
 
-extern int sc_width;
-extern int so_s_width, so_e_width;
+extern int  sc_width;
+extern int  so_s_width, so_e_width;
 extern bool any_display;
-extern int is_tty;
-extern int oldbot;
+extern int  is_tty;
+extern int  oldbot;
 
 /*
  * Display the line which is in the line buffer.
  */
 void put_line(void)
 {
-    int c;
-    int i;
-    int a;
+  int c;
+  int i;
+  int a;
 
-    if (is_abort_signal(less::Settings::sigs)) {
-        /*
-         * Don't output if a signal is pending.
-         */
-        screen_trashed = TRASHED;
-        return;
-    }
+  if (is_abort_signal(less::Globals::sigs)) {
+    /*
+     * Don't output if a signal is pending.
+     */
+    screen_trashed = TRASHED;
+    return;
+  }
 
-    final_attr = AT_NORMAL;
+  final_attr = AT_NORMAL;
 
-    for (i = 0; (c = gline(i, &a)) != '\0'; i++) {
-        at_switch(a);
-        final_attr = a;
-        if (c == '\b')
-            putbs();
-        else
-            putchr(c);
-    }
+  for (i = 0; (c = line::gline(i, &a)) != '\0'; i++) {
+    at_switch(a);
+    final_attr = a;
+    if (c == '\b')
+      putbs();
+    else
+      putchr(c);
+  }
 
-    at_exit();
+  at_exit();
 }
 
-static char obuf[OUTBUF_SIZE];
+static char  obuf[OUTBUF_SIZE];
 static char* ob = obuf;
 
 /*
@@ -86,17 +86,17 @@ static char* ob = obuf;
  */
 void flush(void)
 {
-    int n;
-    int fd;
+  int n;
+  int fd;
 
-    n = (int)(ob - obuf);
-    if (n == 0)
-        return;
+  n = (int)(ob - obuf);
+  if (n == 0)
+    return;
 
-    fd = (any_display) ? 1 : 2;
-    if (write(fd, obuf, n) != n)
-        screen_trashed = TRASHED;
-    ob = obuf;
+  fd = (any_display) ? 1 : 2;
+  if (write(fd, obuf, n) != n)
+    screen_trashed = TRASHED;
+  ob = obuf;
 }
 
 /*
@@ -104,19 +104,19 @@ void flush(void)
  */
 int putchr(int c)
 {
-    if (need_clr) {
-        need_clr = 0;
-        clear_bot();
-    }
-    /*
-     * Some versions of flush() write to *ob, so we must flush
-     * when we are still one char from the end of obuf.
-     */
-    if (ob >= &obuf[sizeof(obuf) - 1])
-        flush();
-    *ob++ = c;
-    at_prompt = 0;
-    return (c);
+  if (need_clr) {
+    need_clr = 0;
+    clear_bot();
+  }
+  /*
+   * Some versions of flush() write to *ob, so we must flush
+   * when we are still one char from the end of obuf.
+   */
+  if (ob >= &obuf[sizeof(obuf) - 1])
+    flush();
+  *ob++     = c;
+  at_prompt = 0;
+  return (c);
 }
 
 /*
@@ -124,28 +124,28 @@ int putchr(int c)
  */
 void putstr(const char* s)
 {
-    while (*s != '\0')
-        putchr(*s++);
+  while (*s != '\0')
+    putchr(*s++);
 }
 
 /*
  * Convert an string to an integral type.
  */
 // TODO: Convert to a template
-#define STR_TO_TYPE_FUNC(funcname, type)  \
-    type funcname(char* buf, char** ebuf) \
-    {                                     \
-        type val = 0;                     \
-        for (;;) {                        \
-            char c = *buf++;              \
-            if (c < '0' || c > '9')       \
-                break;                    \
-            val = 10 * val + c - '0';     \
-        }                                 \
-        if (ebuf != NULL)                 \
-            *ebuf = buf;                  \
-        return val;                       \
-    }
+#define STR_TO_TYPE_FUNC(funcname, type) \
+  type funcname(char* buf, char** ebuf)  \
+  {                                      \
+    type val = 0;                        \
+    for (;;) {                           \
+      char c = *buf++;                   \
+      if (c < '0' || c > '9')            \
+        break;                           \
+      val = 10 * val + c - '0';          \
+    }                                    \
+    if (ebuf != NULL)                    \
+      *ebuf = buf;                       \
+    return val;                          \
+  }
 
 STR_TO_TYPE_FUNC(lstrtopos, position_t)
 STR_TO_TYPE_FUNC(lstrtoi, int)
@@ -156,15 +156,15 @@ STR_TO_TYPE_FUNC(lstrtoi, int)
 static int iprint_int(int num)
 {
 
-    int bufLength = utils::strlen_bound<int>();
+  int bufLength = utils::strlen_bound<int>();
 
-    char* bufPtr = new char[bufLength];
+  char* bufPtr = new char[bufLength];
 
-    utils::typeToStr<int>(num, bufPtr, bufLength);
-    putstr(bufPtr);
-    int val = strlen(bufPtr);
-    delete[] bufPtr;
-    return (val);
+  utils::typeToStr<int>(num, bufPtr, bufLength);
+  putstr(bufPtr);
+  int val = strlen(bufPtr);
+  delete[] bufPtr;
+  return (val);
 }
 
 /*
@@ -172,14 +172,14 @@ static int iprint_int(int num)
  */
 static int iprint_linenum(linenum_t num)
 {
-    int bufLength = utils::strlen_bound<linenum_t>();
-    char* bufPtr = new char[bufLength];
+  int   bufLength = utils::strlen_bound<linenum_t>();
+  char* bufPtr    = new char[bufLength];
 
-    utils::typeToStr<linenum_t>(num, bufPtr, bufLength);
-    putstr(bufPtr);
-    int val = strlen(bufPtr);
-    delete[] bufPtr;
-    return val;
+  utils::typeToStr<linenum_t>(num, bufPtr, bufLength);
+  putstr(bufPtr);
+  int val = strlen(bufPtr);
+  delete[] bufPtr;
+  return val;
 }
 
 /*
@@ -188,40 +188,40 @@ static int iprint_linenum(linenum_t num)
  */
 static int less_printf(char* fmt, parg_t parg)
 {
-    char* s;
-    int col;
+  char* s;
+  int   col;
 
-    col = 0;
-    while (*fmt != '\0') {
-        if (*fmt != '%') {
-            putchr(*fmt++);
-            col++;
-        } else {
-            ++fmt;
-            switch (*fmt++) {
-            case 's':
-                s = parg.p_string;
-                // parg++; //JPH TODO: check this
-                while (*s != '\0') {
-                    putchr(*s++);
-                    col++;
-                }
-                break;
-            case 'd':
-                col += iprint_int(parg.p_int);
-                // parg++; //JPH TODO: check this
-                break;
-            case 'n':
-                col += iprint_linenum(parg.p_linenum);
-                // parg++; //JPH TODO: check this
-                break;
-            case '%':
-                putchr('%');
-                break;
-            }
+  col = 0;
+  while (*fmt != '\0') {
+    if (*fmt != '%') {
+      putchr(*fmt++);
+      col++;
+    } else {
+      ++fmt;
+      switch (*fmt++) {
+      case 's':
+        s = parg.p_string;
+        // parg++; //JPH TODO: check this
+        while (*s != '\0') {
+          putchr(*s++);
+          col++;
         }
+        break;
+      case 'd':
+        col += iprint_int(parg.p_int);
+        // parg++; //JPH TODO: check this
+        break;
+      case 'n':
+        col += iprint_linenum(parg.p_linenum);
+        // parg++; //JPH TODO: check this
+        break;
+      case '%':
+        putchr('%');
+        break;
+      }
     }
-    return (col);
+  }
+  return (col);
 }
 
 /*
@@ -231,15 +231,15 @@ static int less_printf(char* fmt, parg_t parg)
  */
 void get_return(void)
 {
-    int c;
+  int c;
 
 #if ONLY_RETURN
-    while ((c = getchr()) != '\n' && c != '\r')
-        bell();
+  while ((c = getchr()) != '\n' && c != '\r')
+    bell();
 #else
-    c = getchr();
-    if (c != '\n' && c != '\r' && c != ' ' && c != READ_INTR)
-        command::ungetcc(c);
+  c = getchr();
+  if (c != '\n' && c != '\r' && c != ' ' && c != READ_INTR)
+    command::ungetcc(c);
 #endif
 }
 
@@ -249,44 +249,44 @@ void get_return(void)
  */
 void error(char* fmt, parg_t parg)
 {
-    int col = 0;
-    static char return_to_continue[] = "  (press RETURN)";
+  int         col                  = 0;
+  static char return_to_continue[] = "  (press RETURN)";
 
-    errmsgs++;
+  errmsgs++;
 
-    if (any_display && is_tty) {
-        if (!oldbot)
-            forwback::squish_check();
-        at_exit();
-        clear_bot();
-        at_enter(AT_STANDOUT);
-        col += so_s_width;
-    }
-
-    col += less_printf(fmt, parg);
-
-    if (!(any_display && is_tty)) {
-        putchr('\n');
-        return;
-    }
-
-    putstr(return_to_continue);
+  if (any_display && is_tty) {
+    if (!oldbot)
+      forwback::squish_check();
     at_exit();
-    col += sizeof(return_to_continue) + so_e_width;
+    clear_bot();
+    at_enter(AT_STANDOUT);
+    col += so_s_width;
+  }
 
-    get_return();
-    lower_left();
-    clear_eol();
+  col += less_printf(fmt, parg);
 
-    if (col >= sc_width)
-        /*
-         * Printing the message has probably scrolled the screen.
-         * {{ Unless the terminal doesn't have auto margins,
-         *    in which case we just hammered on the right margin. }}
-         */
-        screen_trashed = TRASHED;
+  if (!(any_display && is_tty)) {
+    putchr('\n');
+    return;
+  }
 
-    flush();
+  putstr(return_to_continue);
+  at_exit();
+  col += sizeof(return_to_continue) + so_e_width;
+
+  get_return();
+  lower_left();
+  clear_eol();
+
+  if (col >= sc_width)
+    /*
+     * Printing the message has probably scrolled the screen.
+     * {{ Unless the terminal doesn't have auto margins,
+     *    in which case we just hammered on the right margin. }}
+     */
+    screen_trashed = TRASHED;
+
+  flush();
 }
 
 static char intr_to_abort[] = "... (interrupt to abort)";
@@ -299,14 +299,14 @@ static char intr_to_abort[] = "... (interrupt to abort)";
  */
 void ierror(char* fmt, parg_t parg)
 {
-    at_exit();
-    clear_bot();
-    at_enter(AT_STANDOUT);
-    (void)less_printf(fmt, parg);
-    putstr(intr_to_abort);
-    at_exit();
-    flush();
-    need_clr = 1;
+  at_exit();
+  clear_bot();
+  at_enter(AT_STANDOUT);
+  (void)less_printf(fmt, parg);
+  putstr(intr_to_abort);
+  at_exit();
+  flush();
+  need_clr = 1;
 }
 
 /*
@@ -315,24 +315,24 @@ void ierror(char* fmt, parg_t parg)
  */
 int query(char* fmt, parg_t parg)
 {
-    int c;
-    int col = 0;
+  int c;
+  int col = 0;
 
-    if (any_display && is_tty)
-        clear_bot();
+  if (any_display && is_tty)
+    clear_bot();
 
-    (void)less_printf(fmt, parg);
-    c = getchr();
+  (void)less_printf(fmt, parg);
+  c = getchr();
 
-    if (!(any_display && is_tty)) {
-        putchr('\n');
-        return (c);
-    }
-
-    lower_left();
-    if (col >= sc_width)
-        screen_trashed = TRASHED;
-    flush();
-
+  if (!(any_display && is_tty)) {
+    putchr('\n');
     return (c);
+  }
+
+  lower_left();
+  if (col >= sc_width)
+    screen_trashed = TRASHED;
+  flush();
+
+  return (c);
 }

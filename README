@@ -7,6 +7,9 @@
       Converted to C++
       Fixed memory issues and static analyis issues
       Removed macros
+      Converted #defines to const values
+      Migraged to use namespaces
+      
 
       Current progress:
          ifile - finished migrating to C++ and switched to using std 

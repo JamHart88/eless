@@ -55,14 +55,14 @@ class ChUnitTestEmpty : public TestFixture {
 public:
     ChUnitTestEmpty()
     {
-      less::Settings::autobuf = 0;
-      less::Settings::logfile = -1;
-      less::Settings::follow_mode = 0;   
+      less::Globals::autobuf = 0;
+      less::Globals::logfile = -1;
+      less::Globals::follow_mode = 0;   
       curr_ino = 0;
       curr_dev = 0;
       screen_trashed = TRASHED;
-      less::Settings::sigs = 0;
-      less::Settings::namelogfile = NULL;
+      less::Globals::sigs = 0;
+      less::Globals::namelogfile = NULL;
     }
 
     filestate *capturedFilestate = nullptr;
@@ -264,14 +264,14 @@ public:
     ChUnitTest1Buff()
     {
         log("Fixture constructor", false);
-        less::Settings::autobuf = 0;
-        less::Settings::logfile = -1;
-        less::Settings::follow_mode = 0;
+        less::Globals::autobuf = 0;
+        less::Globals::logfile = -1;
+        less::Globals::follow_mode = 0;
         curr_ino = 0;
         curr_dev = 0;
         screen_trashed = TRASHED;
-        less::Settings::sigs = 0;
-        less::Settings::namelogfile = nullptr;
+        less::Globals::sigs = 0;
+        less::Globals::namelogfile = nullptr;
         lclIfile = new ifile::Ifile(nullptr);
     }
 
@@ -509,14 +509,14 @@ public:
     ChUnitTestBaseBuff()
     {
         log("Fixture constructor", false);
-        less::Settings::autobuf = 0;
-        less::Settings::logfile = default_logfile_fileid;
-        less::Settings::follow_mode = 0;
+        less::Globals::autobuf = 0;
+        less::Globals::logfile = default_logfile_fileid;
+        less::Globals::follow_mode = 0;
         curr_ino = 0;
         curr_dev = 0;
         screen_trashed = TRASHED;
-        less::Settings::sigs = 0;
-        less::Settings::namelogfile = copyString(defailt_logfile_filename);
+        less::Globals::sigs = 0;
+        less::Globals::namelogfile = copyString(defailt_logfile_filename);
         lclIfile = new ifile::Ifile(nullptr);
         
         // Space fill all
@@ -574,7 +574,7 @@ public:
       if (thisfile->nbufs > 0) 
           ch_delbufs();
 
-      free(less::Settings::namelogfile);
+      free(less::Globals::namelogfile);
       
       if (! (capturedFilestate == nullptr))
           free(capturedFilestate);
@@ -752,7 +752,7 @@ TEST_F(ChUnitTestBaseBuff, repeat_ch_forw_back_gets)
   // Part 13 - sync logfile
   // ================================================================
 
-  EXPECT_STREQ(less::Settings::namelogfile, defailt_logfile_filename);
+  EXPECT_STREQ(less::Globals::namelogfile, defailt_logfile_filename);
   sync_logfile();  
 
   // ================================================================
@@ -765,7 +765,7 @@ TEST_F(ChUnitTestBaseBuff, repeat_ch_forw_back_gets)
      WillRepeatedly(Return(0)); // any return will do
 
   end_logfile();  
-  EXPECT_EQ(less::Settings::namelogfile, nullptr);
+  EXPECT_EQ(less::Globals::namelogfile, nullptr);
 
   // ================================================================
   // Part 14 - cleanup
@@ -888,14 +888,14 @@ public:
   ChUnitTestBaseBigFile()
   {
       log("Fixture constructor", false);
-      less::Settings::autobuf = 0;
-      less::Settings::logfile = default_logfile_fileid;
-      less::Settings::follow_mode = 0;
+      less::Globals::autobuf = 0;
+      less::Globals::logfile = default_logfile_fileid;
+      less::Globals::follow_mode = 0;
       curr_ino = 0;
       curr_dev = 0;
       screen_trashed = TRASHED;
-      less::Settings::sigs = 0;
-      less::Settings::namelogfile = copyString(default_logfile_filename);
+      less::Globals::sigs = 0;
+      less::Globals::namelogfile = copyString(default_logfile_filename);
       lclIfile = new ifile::Ifile(nullptr);
   }
 
@@ -954,7 +954,7 @@ public:
       if (thisfile->nbufs > 0) 
           ch_delbufs();
 
-      free(less::Settings::namelogfile);
+      free(less::Globals::namelogfile);
       
       if (! (capturedFilestate == nullptr))
           free(capturedFilestate);
@@ -1389,19 +1389,19 @@ public:
   ChUnitTestNonSeekableFile()
   {
     log("Fixture constructor", false);
-    less::Settings::autobuf = 0;
-    less::Settings::logfile = default_logfile_fileid;
-    less::Settings::follow_mode = 0;
+    less::Globals::autobuf = 0;
+    less::Globals::logfile = default_logfile_fileid;
+    less::Globals::follow_mode = 0;
     curr_ino = 0;
     curr_dev = 0;
     screen_trashed = TRASHED;
-    less::Settings::sigs = 0;
-    less::Settings::namelogfile = copyString(default_logfile_filename);
+    less::Globals::sigs = 0;
+    less::Globals::namelogfile = copyString(default_logfile_filename);
     lclIfile = new ifile::Ifile(nullptr);
     
-    less::Settings::ignore_eoi = 0;
+    less::Globals::ignore_eoi = 0;
     currentBlock = 0;
-    less::Settings::follow_mode = FOLLOW_DESC;
+    less::Globals::follow_mode = FOLLOW_DESC;
   }
 
   void SetUp()
@@ -1446,7 +1446,7 @@ public:
       if (thisfile->nbufs > 0) 
           ch_delbufs();
 
-      free(less::Settings::namelogfile);
+      free(less::Globals::namelogfile);
       
       if (! (capturedFilestate == nullptr))
           free(capturedFilestate);
@@ -1503,9 +1503,9 @@ TEST_F(ChUnitTestNonSeekableFile, read_from_pipe_file)
   //          do a ch_get 
   // ================================================================
 
-  less::Settings::ignore_eoi = 1;
+  less::Globals::ignore_eoi = 1;
   currentBlock = 1;
-  less::Settings::follow_mode = FOLLOW_NAME;
+  less::Globals::follow_mode = FOLLOW_NAME;
 
   EXPECT_CALL(GetMock<ChMock>(), 
      iread(default_file_id, _, LBUFSIZE)).

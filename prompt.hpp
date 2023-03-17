@@ -12,7 +12,7 @@
 
 #include "less.hpp"
 
-void init_prompt(void);
+void  init_prompt(void);
 char* pr_expand(const char* proto, int maxwidth);
 char* eq_message(void);
 char* pr_string(void);

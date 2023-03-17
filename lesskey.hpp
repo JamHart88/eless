@@ -9,6 +9,7 @@
  * For more information, see the README file.
  */
 
+namespace lesskey {
 /*
  * Format of a lesskey file:
  *
@@ -22,21 +23,23 @@
  *    section_length (2 bytes)
  *    key table (section_length bytes)
  */
-#define C0_LESSKEY_MAGIC '\0'
-#define C1_LESSKEY_MAGIC 'M'
-#define C2_LESSKEY_MAGIC '+'
-#define C3_LESSKEY_MAGIC 'G'
 
-#define CMD_SECTION 'c'
-#define EDIT_SECTION 'e'
-#define VAR_SECTION 'v'
-#define END_SECTION 'x'
+constexpr const char C0_LESSKEY_MAGIC = '\0';
+constexpr const char C1_LESSKEY_MAGIC = 'M';
+constexpr const char C2_LESSKEY_MAGIC = '+';
+constexpr const char C3_LESSKEY_MAGIC = 'G';
 
-#define C0_END_LESSKEY_MAGIC 'E'
-#define C1_END_LESSKEY_MAGIC 'n'
-#define C2_END_LESSKEY_MAGIC 'd'
+constexpr const char CMD_SECTION  = 'c';
+constexpr const char EDIT_SECTION = 'e';
+constexpr const char VAR_SECTION  = 'v';
+constexpr const char END_SECTION  = 'x';
 
-/* */
-#define KRADIX 64
+constexpr const char C0_END_LESSKEY_MAGIC = 'E';
+constexpr const char C1_END_LESSKEY_MAGIC = 'n';
+constexpr const char C2_END_LESSKEY_MAGIC = 'd';
+
+constexpr const int KRADIX = 64;
+
+} // namespace lesskey
 
 #endif

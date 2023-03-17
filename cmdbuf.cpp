@@ -40,48 +40,39 @@ extern int marks_modified;
 /*
  * A mlist structure represents a command history.
  */
-struct mlist
-{
-    struct mlist *next;
-    struct mlist *prev;
-    struct mlist *curr_mp;
-    char *string;
-    int modified;
+struct mlist {
+  struct mlist* next;
+  struct mlist* prev;
+  struct mlist* curr_mp;
+  char*         string;
+  int           modified;
 };
 // TODO: Migrate mlist to use <List> and fix how the variables below
 // are created/managed
 /*
  * These are the various command histories that exist.
  */
-struct mlist mlist_search =  
-    { &mlist_search,  &mlist_search,  &mlist_search,  NULL, 0 };
- void *ml_search = (void *) &mlist_search;
+struct mlist mlist_search = { &mlist_search, &mlist_search, &mlist_search, NULL, 0 };
+void*        ml_search    = (void*)&mlist_search;
 
-struct mlist mlist_examine = 
-    { &mlist_examine, &mlist_examine, &mlist_examine, NULL, 0 };
- void *ml_examine = (void *) &mlist_examine;
+struct mlist mlist_examine = { &mlist_examine, &mlist_examine, &mlist_examine, NULL, 0 };
+void*        ml_examine    = (void*)&mlist_examine;
 
 #if SHELL_ESCAPE || PIPEC
-struct mlist mlist_shell =   
-    { &mlist_shell,   &mlist_shell,   &mlist_shell,   NULL, 0 };
- void *ml_shell = (void *) &mlist_shell;
+struct mlist mlist_shell = { &mlist_shell, &mlist_shell, &mlist_shell, NULL, 0 };
+void*        ml_shell    = (void*)&mlist_shell;
 #endif
 
 #else /* CMD_HISTORY */
 
 /* If CMD_HISTORY is off, these are just flags. */
- void *ml_search = (void *)1;
- void *ml_examine = (void *)2;
+void* ml_search  = (void*)1;
+void* ml_examine = (void*)2;
 #if SHELL_ESCAPE || PIPEC
- void *ml_shell = (void *)3;
+void* ml_shell   = (void*)3;
 #endif
 
 #endif /* CMD_HISTORY */
-
-
-
-
-
 
 namespace cmdbuf {
 
@@ -175,7 +166,7 @@ static int cmd_mbc_buf_index;
         ch = charset::step_char(&ns, +1, endline);
         while (s < ns)
             putchr(*s++);
-        if (!less::Settings::utf_mode)
+        if (!less::Globals::utf_mode)
             width = 1;
         else if (charset::is_composing_char(ch) || charset::is_combining_char(prev_ch, ch))
             width = 0;
@@ -1022,11 +1013,11 @@ static char * delimit_word(void)
             p += esclen - 1;
         } else if (delim_quoted)
         {
-            if (*p == less::Settings::closequote)
+            if (*p == less::Globals::closequote)
                 delim_quoted = 0;
         } else /* (!delim_quoted) */
         {
-            if (*p == less::Settings::openquote)
+            if (*p == less::Globals::openquote)
                 delim_quoted = 1;
             else if (*p == ' ')
                 word = p+1;
@@ -1078,7 +1069,7 @@ static void init_compl(void)
      */
     c = *cp;
     *cp = '\0';
-    if (*word != less::Settings::openquote)
+    if (*word != less::Globals::openquote)
     {
         tk_text = filename::fcomplete(word);
     } else
@@ -1185,7 +1176,7 @@ static int cmd_complete(int action)
          */
         if (filename::is_dir(tk_trial))
         {
-            if (cp > cmdbuf && cp[-1] == less::Settings::closequote)
+            if (cp > cmdbuf && cp[-1] == less::Globals::closequote)
                 (void) cmd_erase();
             s = decode::lgetenv((char *)"LESSSEPARATOR");
             if (s == NULL)
@@ -1218,7 +1209,7 @@ fail:
     int action;
     int len;
 
-    if (!less::Settings::utf_mode)
+    if (!less::Globals::utf_mode)
     {
         cmd_mbc_buf[0] = c;
         len = 1;
@@ -1312,7 +1303,7 @@ fail:
     *frac = 0;
     if (*p++ == '.')
     {
-        *frac = getfraction(&p, NULL, &err);
+        *frac = option::getfraction(&p, NULL, &err);
         /* {{ do something if err is set? }} */
     }
     return (n);

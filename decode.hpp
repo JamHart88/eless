@@ -26,17 +26,17 @@
 
 namespace decode {
 
-void expand_cmd_tables(void);
-void init_cmds(void);
-void add_fcmd_table(char* buf, int len); // not used externally
-void add_ecmd_table(char* buf, int len); // not used externally
-int fcmd_decode(char* cmd, char** sp);
-int ecmd_decode(char* cmd, char** sp); // not used externally
+void  expand_cmd_tables(void);
+void  init_cmds(void);
+void  add_fcmd_table(char* buf, int len); // not used externally
+void  add_ecmd_table(char* buf, int len); // not used externally
+int   fcmd_decode(char* cmd, char** sp);
+int   ecmd_decode(char* cmd, char** sp); // not used externally
 char* lgetenv(char* var);
-int isnullenv(char* s);
-int lesskey(char* filename, int sysvar);
-void add_hometable(char* envname, char* def_filename, int sysvar); // not used externally
-int editchar(int c, int flags);
+int   isnullenv(char* s);
+int   lesskey(char* filename, int sysvar);
+void  add_hometable(char* envname, char* def_filename, int sysvar); // not used externally
+int   editchar(int c, int flags);
 
 } // namespace decode
 

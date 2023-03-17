@@ -44,14 +44,14 @@
 
 #if HAVE_RE_COMP
 char* re_comp(char*);
-int re_exec(char*);
+int   re_exec(char*);
 #define PATTERN_TYPE int
 #define CLEAR_PATTERN(name) name = 0
 #endif
 
 #if HAVE_REGCMP
-char* regcmp(char*);
-char* regex(char**, char*);
+char*        regcmp(char*);
+char*        regex(char**, char*);
 extern char* __loc1;
 #define PATTERN_TYPE char**
 #define CLEAR_PATTERN(name) name = NULL
@@ -69,12 +69,12 @@ extern int reg_show_error;
 #define CLEAR_PATTERN(name)
 #endif
 
-int compile_pattern(char* pattern, int search_type, PATTERN_TYPE* comp_pattern);
-void uncompile_pattern(PATTERN_TYPE* pattern);
-int valid_pattern(char* pattern);
-int is_null_pattern(PATTERN_TYPE pattern);
-int match_pattern(PATTERN_TYPE pattern, char* tpattern, char* line, int line_len, char** sp, char** ep, int notbol,
-    int search_type);
+int   compile_pattern(char* pattern, int search_type, PATTERN_TYPE* comp_pattern);
+void  uncompile_pattern(PATTERN_TYPE* pattern);
+int   valid_pattern(char* pattern);
+int   is_null_pattern(PATTERN_TYPE pattern);
+int   match_pattern(PATTERN_TYPE pattern, char* tpattern, char* line, int line_len, char** sp, char** ep, int notbol,
+      int search_type);
 char* pattern_lib_name(void);
 
 #endif
