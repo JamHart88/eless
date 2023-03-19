@@ -209,13 +209,13 @@ void findtag(char* tag)
   case TAG_INTR:
     break;
   case TAG_NOFILE:
-    error((char*)"No tags file", NULL_PARG);
+    output::error((char*)"No tags file", NULL_PARG);
     break;
   case TAG_NOTAG:
-    error((char*)"No such tag in tags file", NULL_PARG);
+    output::error((char*)"No such tag in tags file", NULL_PARG);
     break;
   case TAG_NOTYPE:
-    error((char*)"unknown tag type", NULL_PARG);
+    output::error((char*)"unknown tag type", NULL_PARG);
     break;
   }
 }
@@ -488,7 +488,7 @@ static position_t ctagsearch(void)
       /*
        * We hit EOF without a match.
        */
-      error((char*)"Tag not found", NULL_PARG);
+      output::error((char*)"Tag not found", NULL_PARG);
       return (NULL_POSITION);
     }
 
@@ -754,7 +754,7 @@ static position_t gtagsearch(void)
  *    o Exuberant Ctags with -x option
  *        See <http://ctags.sourceforge.net>
  *
- * Returns 0 on success, -1 on error.
+ * Returns 0 on success, -1 on output::error.
  * The tag, file, and line will each be NUL-terminated pointers
  * into buf.
  */

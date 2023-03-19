@@ -122,7 +122,7 @@ static void cmd_exec(void)
 {
   clear_attn();
   clear_bot();
-  flush();
+  output::flush();
 }
 
 /*
@@ -308,7 +308,7 @@ static void exec_mca(void)
   case A_PIPE:
 
     (void)pipe_mark(pipec, cbuf);
-    error((char*)"|done", NULL_PARG);
+    output::error((char*)"|done", NULL_PARG);
     break;
 #endif
   }
@@ -446,7 +446,7 @@ static int mca_opt_char(int c)
       return (mca_opt_nonfirst_char(c));
     if (curropt == nullptr) {
       parg.p_string = cmdbuf::get_cmdbuf();
-      error((char*)"There is no --%s option", parg);
+      output::error((char*)"There is no --%s option", parg);
       return (MCA_DONE);
     }
     optgetname = false;
@@ -460,7 +460,7 @@ static int mca_opt_char(int c)
     curropt = opttbl::findopt(c);
     if (curropt == nullptr) {
       parg.p_string = option::propt(c);
-      error((char*)"There is no %s option", parg);
+      output::error((char*)"There is no %s option", parg);
       return (MCA_DONE);
     }
     opt_lower = islower(c);
@@ -648,7 +648,7 @@ static void make_display(void)
   /*
    * If nothing is displayed yet, display starting from initial_scrpos.
    */
-  if (empty_screen()) {
+  if (position::empty_screen()) {
     if (initial_scrpos.pos == NULL_POSITION)
       /*
        * {{ Maybe this should be:
@@ -695,7 +695,7 @@ static void prompt(void)
    * Make sure the screen is displayed.
    */
   make_display();
-  bottompos = position(BOTTOM_PLUS_ONE);
+  bottompos = position::position(BOTTOM_PLUS_ONE);
 
   /*
    * If we've hit EOF on the last file and the -E flag is set, quit.
@@ -728,12 +728,12 @@ static void prompt(void)
   forw_prompt = 0;
   p           = pr_string();
   if (is_filtering())
-    putstr("& ");
+    output::putstr("& ");
   if (p == nullptr || *p == '\0')
-    putchr(':');
+    output::putchr(':');
   else {
     at_enter(AT_STANDOUT);
-    putstr(p);
+    output::putstr(p);
     at_exit();
   }
   clear_eol();
@@ -748,7 +748,7 @@ void dispversion(void)
   parg_t parg;
 
   parg.p_string = version;
-  error((char*)"less %s", parg);
+  output::error((char*)"less %s", parg);
 }
 
 /*
@@ -931,7 +931,7 @@ static void multi_search(char* pattern, int n, int silent)
 
     if (n < 0)
       /*
-       * Some kind of error in the search.
+       * Some kind of output::error in the search.
        * Error message has been printed by search().
        */
       break;
@@ -956,10 +956,10 @@ static void multi_search(char* pattern, int n, int silent)
 
   /*
    * Didn't find it.
-   * Print an error message if we haven't already.
+   * Print an output::error message if we haven't already.
    */
   if (n > 0 && !silent)
-    error((char*)"Pattern not found", NULL_PARG);
+    output::error((char*)"Pattern not found", NULL_PARG);
 
   if (changed_file) {
     /*
@@ -1315,7 +1315,7 @@ void commands(void)
     case A_FREPAINT:
       /*
        * Flush buffers, then jump::repaint screen.
-       * Don't flush the buffers on a pipe!
+       * Don't output::flush the buffers on a pipe!
        */
       clear_buffers();
       /* FALLTHRU */
@@ -1339,7 +1339,7 @@ void commands(void)
 
     case A_PERCENT:
       /*
-       * Go to a specified percentage into the file.
+       * Go to a specified os::percentage into the file.
        */
       if (number < 0) {
         number   = 0;
@@ -1393,7 +1393,7 @@ void commands(void)
         break;
       cmd_exec();
       parg.p_string = eq_message();
-      error((char*)"%s", parg);
+      output::error((char*)"%s", parg);
       break;
 
     case A_VERSION:
@@ -1468,7 +1468,7 @@ void commands(void)
       debug::debug("getcc 1496");
       goto again;
 #else
-      error("Command not available", NULL_PARG);
+      output::error("Command not available", NULL_PARG);
       break;
 #endif
 
@@ -1541,7 +1541,7 @@ void commands(void)
       goto again;
 
 #endif
-      error((char*)"Command not available", NULL_PARG);
+      output::error((char*)"Command not available", NULL_PARG);
       break;
 
     case A_VISUAL:
@@ -1552,11 +1552,11 @@ void commands(void)
       if (ch::getflags() & CH_HELPFILE)
         break;
       if (strcmp(ifile::getCurrentIfile()->getFilename(), "-") == 0) {
-        error((char*)"Cannot edit standard input", NULL_PARG);
+        output::error((char*)"Cannot edit standard input", NULL_PARG);
         break;
       }
       if (ifile::getCurrentIfile()->getAltfilename() != nullptr) {
-        error((char*)"WARNING: This file was viewed via LESSOPEN", NULL_PARG);
+        output::error((char*)"WARNING: This file was viewed via LESSOPEN", NULL_PARG);
       }
       start_mca(A_SHELL, "!", ml_shell, 0);
       /*
@@ -1571,7 +1571,7 @@ void commands(void)
       break;
 
 #endif
-      error((char*)"Command not available", NULL_PARG);
+      output::error((char*)"Command not available", NULL_PARG);
       break;
 
     case A_NEXT_FILE:
@@ -1580,7 +1580,7 @@ void commands(void)
        */
 #if TAGS
       if (ntags()) {
-        error((char*)"No next file", NULL_PARG);
+        output::error((char*)"No next file", NULL_PARG);
         break;
       }
 #endif
@@ -1590,7 +1590,7 @@ void commands(void)
         if (option::get_quit_at_eof() && forwback::eof_displayed() && !(ch::getflags() & CH_HELPFILE))
           utils::quit(QUIT_OK);
         parg.p_string = (number > 1) ? (char*)"(N-th) " : (char*)"";
-        error((char*)"No %snext file", parg);
+        output::error((char*)"No %snext file", parg);
       }
       break;
 
@@ -1600,7 +1600,7 @@ void commands(void)
        */
 #if TAGS
       if (ntags()) {
-        error((char*)"No previous file", NULL_PARG);
+        output::error((char*)"No previous file", NULL_PARG);
         break;
       }
 #endif
@@ -1608,7 +1608,7 @@ void commands(void)
         number = 1;
       if (edit::edit_prev((int)number)) {
         parg.p_string = (number > 1) ? (char*)"(N-th) " : (char*)"";
-        error((char*)"No %sprevious file", parg);
+        output::error((char*)"No %sprevious file", parg);
       }
       break;
 
@@ -1621,7 +1621,7 @@ void commands(void)
         number = 1;
       tagfile = nexttag((int)number);
       if (tagfile == nullptr) {
-        error((char*)"No next tag", NULL_PARG);
+        output::error((char*)"No next tag", NULL_PARG);
         break;
       }
       cmd_exec();
@@ -1631,7 +1631,7 @@ void commands(void)
           jump::jump_loc(pos, jump_sline);
       }
 #else
-      error((char*)"Command not available", NULL_PARG);
+      output::error((char*)"Command not available", NULL_PARG);
 #endif
       break;
 
@@ -1644,7 +1644,7 @@ void commands(void)
         number = 1;
       tagfile = prevtag((int)number);
       if (tagfile == nullptr) {
-        error((char*)"No previous tag", NULL_PARG);
+        output::error((char*)"No previous tag", NULL_PARG);
         break;
       }
       cmd_exec();
@@ -1654,7 +1654,7 @@ void commands(void)
           jump::jump_loc(pos, jump_sline);
       }
 #else
-      error((char*)"Command not available", NULL_PARG);
+      output::error((char*)"Command not available", NULL_PARG);
 #endif
       break;
 
@@ -1665,7 +1665,7 @@ void commands(void)
       if (number <= 0)
         number = 1;
       if (edit::edit_index((int)number))
-        error((char*)"No such file", NULL_PARG);
+        output::error((char*)"No such file", NULL_PARG);
       break;
 
     case A_REMOVE_FILE:
@@ -1700,7 +1700,7 @@ void commands(void)
       cbuf = option::opt_toggle_disallowed(c);
       if (cbuf != nullptr) {
         debug::debug("cbuf is : ", cbuf);
-        error(cbuf, NULL_PARG);
+        output::error(cbuf, NULL_PARG);
         break;
       }
       goto again;
@@ -1737,7 +1737,7 @@ void commands(void)
       goto again;
 
 #endif
-      error((char*)"Command not available", NULL_PARG);
+      output::error((char*)"Command not available", NULL_PARG);
       break;
 
     case A_SETMARK:
@@ -1801,7 +1801,7 @@ void commands(void)
       debug::debug("getcc 1833");
       goto again;
 #endif
-      error((char*)"Command not available", NULL_PARG);
+      output::error((char*)"Command not available", NULL_PARG);
       break;
 
     case A_B_BRACKET:

@@ -1231,7 +1231,7 @@ int rrshift(void)
   save_width = sc_width;
   sc_width   = INT_MAX;
   hshift     = 0;
-  pos        = position(TOP);
+  pos        = position::position(TOP);
   for (line = 0; line < sc_height && pos != NULL_POSITION; line++) {
     pos = input::forw_line(pos);
     if (column > longest)

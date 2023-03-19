@@ -201,7 +201,7 @@ void scan_option(char* s)
          */
         if (o != NULL && (o->otype & OTYPE) != STRING && (o->otype & OTYPE) != NUMBER) {
           parg.p_string = printopt;
-          error((char*)"The %s option should not be followed by =", parg);
+          output::error((char*)"The %s option should not be followed by =", parg);
           return;
         }
         s++;
@@ -216,11 +216,11 @@ void scan_option(char* s)
     if (o == NULL) {
       parg.p_string = printopt;
       if (err == OPT_AMBIG)
-        error(
+        output::error(
             (char*)"%s is an ambiguous abbreviation (\"less --help\" for help)",
             parg);
       else
-        error((char*)"There is no %s option (\"less --help\" for help)",
+        output::error((char*)"There is no %s option (\"less --help\" for help)",
             parg);
       return;
     }
@@ -298,19 +298,19 @@ void toggle_option(struct loption* o, int lower, char* s, int how_toggle)
   how_toggle &= ~OPT_NO_PROMPT;
 
   if (o == NULL) {
-    error((char*)"No such option", NULL_PARG);
+    output::error((char*)"No such option", NULL_PARG);
     return;
   }
 
   if (how_toggle == OPT_TOGGLE && (o->otype & NO_TOGGLE)) {
     parg.p_string = opt_desc(o);
-    error((char*)"Cannot change the %s option", parg);
+    output::error((char*)"Cannot change the %s option", parg);
     return;
   }
 
   if (how_toggle == OPT_NO_TOGGLE && (o->otype & NO_QUERY)) {
     parg.p_string = opt_desc(o);
-    error((char*)"Cannot query the %s option", parg);
+    output::error((char*)"Cannot output::query the %s option", parg);
     return;
   }
 
@@ -382,7 +382,7 @@ void toggle_option(struct loption* o, int lower, char* s, int how_toggle)
       switch (how_toggle) {
       case OPT_SET:
       case OPT_UNSET:
-        error((char*)"Cannot use \"-+\" or \"--\" for a string option",
+        output::error((char*)"Cannot use \"-+\" or \"--\" for a string option",
             NULL_PARG);
         return;
       }
@@ -401,7 +401,7 @@ void toggle_option(struct loption* o, int lower, char* s, int how_toggle)
         *(o->ovar) = o->odefault;
         break;
       case OPT_SET:
-        error((char*)"Can't use \"-!\" for a numeric option", NULL_PARG);
+        output::error((char*)"Can't use \"-!\" for a numeric option", NULL_PARG);
         return;
       }
       break;
@@ -430,7 +430,7 @@ void toggle_option(struct loption* o, int lower, char* s, int how_toggle)
       /*
        * Print the odesc message.
        */
-      error(o->odesc[*(o->ovar)], NULL_PARG);
+      output::error(o->odesc[*(o->ovar)], NULL_PARG);
       break;
     case NUMBER:
       /*
@@ -438,7 +438,7 @@ void toggle_option(struct loption* o, int lower, char* s, int how_toggle)
        * the value of the variable.
        */
       parg.p_int = *(o->ovar);
-      error(o->odesc[1], parg);
+      output::error(o->odesc[1], parg);
       break;
     case STRING:
       /*
@@ -488,7 +488,7 @@ char* opt_prompt(struct loption* o)
 
 /*
  * If the specified option can be toggled, return NULL.
- * Otherwise return an appropriate error message.
+ * Otherwise return an appropriate output::error message.
  */
 char* opt_toggle_disallowed(int c)
 {
@@ -511,17 +511,17 @@ char* opt_toggle_disallowed(int c)
 int isoptpending(void) { return (pendopt != NULL); }
 
 /*
- * Print error message about missing string.
+ * Print output::error message about missing string.
  */
 static void nostring(char* printopt)
 {
   parg_t parg;
   parg.p_string = printopt;
-  error((char*)"Value is required after %s", parg);
+  output::error((char*)"Value is required after %s", parg);
 }
 
 /*
- * Print error message if a STRING type option is not followed by a string.
+ * Print output::error message if a STRING type option is not followed by a string.
  */
 void nopendopt(void) { nostring(opt_desc(pendopt)); }
 
@@ -572,7 +572,7 @@ static int num_error(char* printopt, int* errp)
   }
   if (printopt != NULL) {
     parg.p_string = printopt;
-    error((char*)"Number is required after %s", parg);
+    output::error((char*)"Number is required after %s", parg);
   }
   return (-1);
 }

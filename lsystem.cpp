@@ -50,9 +50,9 @@ void lsystem(char* cmd, char* donemsg)
     cmd++;
   else {
     clear_bot();
-    putstr("!");
-    putstr(cmd);
-    putstr("\n");
+    output::putstr("!");
+    output::putstr(cmd);
+    output::putstr("\n");
   }
 
   /*
@@ -65,7 +65,7 @@ void lsystem(char* cmd, char* donemsg)
    * De-initialize the terminal and take out of raw mode.
    */
   deinit();
-  flush(); /* Make sure the deinit chars get out */
+  output::flush(); /* Make sure the deinit chars get out */
   raw_mode(0);
   /*
    * Restore signals to their defaults.
@@ -121,11 +121,11 @@ void lsystem(char* cmd, char* donemsg)
   init_signals(1);
   raw_mode(1);
   if (donemsg != NULL) {
-    putstr(donemsg);
-    putstr("  (press RETURN)");
-    get_return();
-    putchr('\n');
-    flush();
+    output::putstr(donemsg);
+    output::putstr("  (press RETURN)");
+    output::get_return();
+    output::putchr('\n');
+    output::flush();
   }
   init();
   screen_trashed = TRASHED;
@@ -175,10 +175,10 @@ int pipe_mark(int c, char* cmd)
   mpos = markpos(c);
   if (mpos == NULL_POSITION)
     return (-1);
-  tpos = position(TOP);
+  tpos = position::position(TOP);
   if (tpos == NULL_POSITION)
     tpos = ch_zero;
-  bpos = position(BOTTOM);
+  bpos = position::position(BOTTOM);
 
   if (c == '.')
     return (pipe_data(cmd, tpos, bpos));
@@ -207,21 +207,21 @@ int pipe_data(char* cmd, position_t spos, position_t epos)
    * the command, and reinitialization after it.
    */
   if (ch::seek(spos) != 0) {
-    error((char*)"Cannot seek to start position", NULL_PARG);
+    output::error((char*)"Cannot seek to start position", NULL_PARG);
     return (-1);
   }
 
   if ((f = popen(cmd, "w")) == NULL) {
-    error((char*)"Cannot create pipe", NULL_PARG);
+    output::error((char*)"Cannot create pipe", NULL_PARG);
     return (-1);
   }
   clear_bot();
-  putstr("!");
-  putstr(cmd);
-  putstr("\n");
+  output::putstr("!");
+  output::putstr(cmd);
+  output::putstr("\n");
 
   deinit();
-  flush();
+  output::flush();
   raw_mode(0);
   init_signals(0);
 #ifdef SIGPIPE

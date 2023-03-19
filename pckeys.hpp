@@ -14,6 +14,8 @@
  * Special (non-ASCII) keys on the PC send a two-byte sequence,
  * where the first byte is 0 and the second is as defined below.
  */
+namespace pckeys {
+
 #define PCK_SHIFT_TAB '\017'
 #define PCK_ALT_E '\022'
 #define PCK_CAPS_LOCK '\072'
@@ -33,4 +35,5 @@
 #define PCK_CTL_RIGHT '\164'
 #define PCK_CTL_DELETE '\223'
 
+} // namespace pckeys
 #endif

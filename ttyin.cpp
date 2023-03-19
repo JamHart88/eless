@@ -64,15 +64,15 @@ int getchr(void)
   do {
     {
       unsigned char uc;
-      result = iread(tty, &uc, sizeof(char));
+      result = os::iread(tty, &uc, sizeof(char));
       c      = (char)uc;
     }
     if (result == READ_INTR)
       return (READ_INTR);
     if (result < 0) {
       /*
-       * Don't call error() here,
-       * because error calls getchr!
+       * Don't call output::error() here,
+       * because output::error calls getchr!
        */
       utils::quit(QUIT_ERROR);
     }

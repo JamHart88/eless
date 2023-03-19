@@ -42,13 +42,13 @@ void jump_forw(void)
   position_t end_pos;
 
   if (ch::end_seek()) {
-    error((char*)"Cannot seek to end of file", NULL_PARG);
+    output::error((char*)"Cannot seek to end of file", NULL_PARG);
     return;
   }
   /*
    * Note; lastmark will be called later by jump_loc, but it fails
-   * because the position table has been cleared by pos_clear below.
-   * So call it here before calling pos_clear.
+   * because the position table has been cleared by position::pos_clear below.
+   * So call it here before calling position::pos_clear.
    */
   lastmark();
   /*
@@ -56,14 +56,14 @@ void jump_forw(void)
    * Go back one line from the end of the file
    * to get to the beginning of the last line.
    */
-  pos_clear();
+  position::pos_clear();
   end_pos = ch::tell();
   pos     = input::back_line(end_pos);
   if (pos == NULL_POSITION)
     jump_loc(ch_zero, sc_height - 1);
   else {
     jump_loc(pos, sc_height - 1);
-    if (position(sc_height - 1) != end_pos)
+    if (position::position(sc_height - 1) != end_pos)
       repaint();
   }
 }
@@ -77,7 +77,7 @@ void jump_forw_buffered(void)
   position_t end;
 
   if (ch::end_buffer_seek()) {
-    error((char*)"Cannot seek to end of buffers", NULL_PARG);
+    output::error((char*)"Cannot seek to end of buffers", NULL_PARG);
     return;
   }
   end = ch::tell();
@@ -107,10 +107,10 @@ void jump_back(linenum_t linenum)
     jump_loc(pos, jump_sline);
   } else if (linenum <= 1 && ch::beg_seek() == 0) {
     jump_loc(ch::tell(), jump_sline);
-    error((char*)"Cannot seek to beginning of file", NULL_PARG);
+    output::error((char*)"Cannot seek to beginning of file", NULL_PARG);
   } else {
     parg.p_linenum = linenum;
-    error((char*)"Cannot seek to line number %n", parg);
+    output::error((char*)"Cannot seek to line number %n", parg);
   }
 }
 
@@ -125,10 +125,10 @@ void repaint(void)
    * Start at the line currently at the top of the screen
    * and redisplay the screen.
    */
-  get_scrpos(&scrpos, TOP);
+  position::get_scrpos(&scrpos, TOP);
   int it = static_cast<int>(scrpos.pos);
   debug::debug("position : ", it);
-  pos_clear();
+  position::pos_clear();
   if (scrpos.pos == NULL_POSITION)
     /* Screen hasn't been drawn yet. */
     jump_loc(ch_zero, 1);
@@ -137,7 +137,7 @@ void repaint(void)
 }
 
 /*
- * Jump to a specified percentage into the file.
+ * Jump to a specified os::percentage into the file.
  */
 
 void jump_percent(int percent, long fraction)
@@ -146,23 +146,23 @@ void jump_percent(int percent, long fraction)
 
   /*
    * Determine the position in the file
-   * (the specified percentage of the file's length).
+   * (the specified os::percentage of the file's length).
    */
   len = ch::length();
 
   if (len == NULL_POSITION) {
-    ierror((char*)"Determining length of file", NULL_PARG);
+    output::ierror((char*)"Determining length of file", NULL_PARG);
     ch::end_seek();
   }
 
   len = ch::length();
 
   if (len == NULL_POSITION) {
-    error((char*)"Don't know length of file", NULL_PARG);
+    output::error((char*)"Don't know length of file", NULL_PARG);
     return;
   }
 
-  pos = percent_pos(len, percent, fraction);
+  pos = os::percent_pos(len, percent, fraction);
 
   if (pos >= len)
     pos = len - 1;
@@ -211,18 +211,18 @@ void jump_loc(position_t pos, int sline)
   /*
    * Normalize sline.
    */
-  sindex = sindex_from_sline(sline);
+  sindex = position::sindex_from_sline(sline);
 
-  if ((nline = onscreen(pos)) >= 0) {
+  if ((nline = position::onscreen(pos)) >= 0) {
     /*
      * The line is currently displayed.
      * Just scroll there.
      */
     nline -= sindex;
     if (nline > 0)
-      forwback::forw(nline, position(BOTTOM_PLUS_ONE), 1, 0, 0);
+      forwback::forw(nline, position::position(BOTTOM_PLUS_ONE), 1, 0, 0);
     else if (nline < 0)
-      forwback::back(-nline, position(TOP), 1, 0);
+      forwback::back(-nline, position::position(TOP), 1, 0);
 #if HILITE_SEARCH
     if (show_attn)
       repaint_hilite(1);
@@ -235,7 +235,7 @@ void jump_loc(position_t pos, int sline)
    * Seek to the desired location.
    */
   if (ch::seek(pos)) {
-    error((char*)"Cannot seek to that file position", NULL_PARG);
+    output::error((char*)"Cannot seek to that file position", NULL_PARG);
     return;
   }
 
@@ -243,8 +243,8 @@ void jump_loc(position_t pos, int sline)
    * See if the desired line is before or after
    * the currently displayed screen.
    */
-  tpos = position(TOP);
-  bpos = position(BOTTOM_PLUS_ONE);
+  tpos = position::position(TOP);
+  bpos = position::position(BOTTOM_PLUS_ONE);
   if (tpos == NULL_POSITION || pos >= tpos) {
     /*
      * The desired line is after the current screen.
@@ -294,7 +294,7 @@ void jump_loc(position_t pos, int sline)
         /*
          * Ran into end of file.
          * This shouldn't normally happen,
-         * but may if there is some kind of read error.
+         * but may if there is some kind of read output::error.
          */
         break;
       }
@@ -321,7 +321,7 @@ void jump_loc(position_t pos, int sline)
     else
       home();
     screen_trashed = NOT_TRASHED;
-    add_back_pos(pos);
+    position::add_back_pos(pos);
     forwback::back(sc_height - 1, pos, 1, 0);
   }
 }

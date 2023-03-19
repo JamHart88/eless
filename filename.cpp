@@ -710,7 +710,7 @@ char* open_altfile(char* filename, int* pf, void** pfd)
      * a "pipe preprocessor".
      */
 #if !HAVE_FILENO
-    error((char*)"LESSOPEN pipe is not supported", NULL_PARG);
+    output::error((char*)"LESSOPEN pipe is not supported", NULL_PARG);
     return (nullptr);
 #else
     lessopen++;
@@ -727,7 +727,7 @@ char* open_altfile(char* filename, int* pf, void** pfd)
       return (nullptr);
   }
   if (num_pct_s(lessopen) != 1) {
-    error((char*)"LESSOPEN ignored: must contain exactly one %%s", NULL_PARG);
+    output::error((char*)"LESSOPEN ignored: must contain exactly one %%s", NULL_PARG);
     return (nullptr);
   }
 
@@ -804,7 +804,7 @@ void close_altfile(char* altfilename, char* filename)
   if ((lessclose = decode::lgetenv((char*)"LESSCLOSE")) == nullptr)
     return;
   if (num_pct_s(lessclose) > 2) {
-    error((char*)"LESSCLOSE ignored; must contain no more than 2 %%s", NULL_PARG);
+    output::error((char*)"LESSCLOSE ignored; must contain no more than 2 %%s", NULL_PARG);
     return;
   }
   len = (int)(strlen(lessclose) + strlen(filename) + strlen(altfilename) + 2);
@@ -838,7 +838,7 @@ int is_dir(char* filename)
 
 /*
  * Returns nullptr if the file can be opened and
- * is an ordinary file, otherwise an error message
+ * is an ordinary file, otherwise an output::error message
  * (if it cannot be opened or is a directory, etc.)
  */
 char* bad_file(char* filename)
@@ -859,7 +859,7 @@ char* bad_file(char* filename)
 
     r = stat(filename, &statbuf);
     if (r < 0) {
-      m = errno_message(filename);
+      m = os::errno_message(filename);
     } else if (force_open) {
       m = nullptr;
     } else if (!S_ISREG(statbuf.st_mode)) {

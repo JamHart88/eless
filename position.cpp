@@ -26,6 +26,8 @@ static int         table_size = 0;
 
 extern int sc_width, sc_height;
 
+namespace position {
+
 /*
  * Return the starting file position of a line displayed on the screen.
  * The line may be specified as a line number relative to the top
@@ -236,3 +238,5 @@ int sindex_from_sline(int sline)
    */
   return (sline - 1);
 }
+
+} // namespace position

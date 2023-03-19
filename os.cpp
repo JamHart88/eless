@@ -48,6 +48,8 @@ int reading;
 
 static jmp_buf read_label;
 
+namespace os {
+
 /*
  * Like read() system call, but is deliberately interruptible.
  * A call to intread() from a signal handler will interrupt
@@ -77,7 +79,7 @@ start:
     return (READ_INTR);
   }
 
-  flush();
+  output::flush();
   reading = 1;
   n       = read(fd, buf, len);
 #if 1
@@ -139,7 +141,7 @@ time_t get_time(void)
 }
 
 /*
- * errno_message: Return an error message based on the value of "errno".
+ * errno_message: Return an output::error message based on the value of "errno".
  */
 char* errno_message(char* filename)
 {
@@ -201,3 +203,5 @@ position_t percent_pos(position_t pos, int percent, long fraction)
     return (0);
   return (position_t)muldiv(pos, perden, (position_t)NUM_FRAC_DENOM);
 }
+
+} // namespace os

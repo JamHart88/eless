@@ -7,6 +7,8 @@
 
 #include "less.hpp"
 
+namespace output {
+
 void put_line(void);
 void flush(void);
 int  putchr(int c);
@@ -16,4 +18,5 @@ void error(char* fmt, parg_t parg);
 void ierror(char* fmt, parg_t parg);
 int  query(char* fmt, parg_t parg);
 
+} // namespace output
 #endif

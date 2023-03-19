@@ -15,6 +15,8 @@
 
 #include "less.hpp"
 
+namespace position {
+
 position_t position(int sindex);
 void       add_forw_pos(position_t pos);
 void       add_back_pos(position_t pos);
@@ -31,5 +33,7 @@ int        sindex_from_sline(int sline);
 #define BOTTOM (-1)
 #define BOTTOM_PLUS_ONE (-2)
 #define MIDDLE (-3)
+
+} // namespace position
 
 #endif

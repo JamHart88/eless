@@ -127,7 +127,7 @@ static struct mark* getumark(int c)
     return (&marks[c - 'A' + 26]);
   if (c == '#')
     return (&marks[MOUSEMARK]);
-  error((char*)"Invalid mark letter", NULL_PARG);
+  output::error((char*)"Invalid mark letter", NULL_PARG);
   return (NULL);
 }
 
@@ -154,7 +154,7 @@ static struct mark* getmark(int c)
      * End of the current file.
      */
     if (ch::end_seek()) {
-      error((char*)"Cannot seek to end of file", NULL_PARG);
+      output::error((char*)"Cannot seek to end of file", NULL_PARG);
       return (NULL);
     }
     m = &sm;
@@ -165,7 +165,7 @@ static struct mark* getmark(int c)
      * Current position in the current file.
      */
     m = &sm;
-    get_scrpos(&m->m_scrpos, TOP);
+    position::get_scrpos(&m->m_scrpos, TOP);
     cmark(m, ifile::getCurrentIfile(), m->m_scrpos.pos, m->m_scrpos.ln);
     break;
   case '\'':
@@ -182,7 +182,7 @@ static struct mark* getmark(int c)
     if (m == NULL)
       break;
     if (m->m_scrpos.pos == NULL_POSITION) {
-      error((char*)"Mark not set", NULL_PARG);
+      output::error((char*)"Mark not set", NULL_PARG);
       return (NULL);
     }
     break;
@@ -211,7 +211,7 @@ void setmark(int c, int where)
   m = getumark(c);
   if (m == NULL)
     return;
-  get_scrpos(&scrpos, where);
+  position::get_scrpos(&scrpos, where);
   if (scrpos.pos == NULL_POSITION) {
     bell();
     return;
@@ -249,7 +249,7 @@ void lastmark(void)
 
   if (ch::getflags() & CH_HELPFILE)
     return;
-  get_scrpos(&scrpos, TOP);
+  position::get_scrpos(&scrpos, TOP);
   if (scrpos.pos == NULL_POSITION)
     return;
   cmark(&marks[LASTMARK], ifile::getCurrentIfile(), scrpos.pos, scrpos.ln);
@@ -309,7 +309,7 @@ position_t markpos(int c)
     return (NULL_POSITION);
 
   if (m->m_ifile != ifile::getCurrentIfile()) {
-    error((char*)"Mark not in current file", NULL_PARG);
+    output::error((char*)"Mark not in current file", NULL_PARG);
     return (NULL_POSITION);
   }
   return (m->m_scrpos.pos);

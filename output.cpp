@@ -34,6 +34,7 @@ extern bool any_display;
 extern int  is_tty;
 extern int  oldbot;
 
+namespace output {
 /*
  * Display the line which is in the line buffer.
  */
@@ -336,3 +337,5 @@ int query(char* fmt, parg_t parg)
 
   return (c);
 }
+
+} // namespace output

@@ -171,14 +171,14 @@ static void ichardef(char* s)
       continue;
 
     default:
-      error((char*)"invalid chardef", NULL_PARG);
+      output::error((char*)"invalid chardef", NULL_PARG);
       utils::quit(QUIT_ERROR);
       /*NOTREACHED*/
     }
 
     do {
       if (cp >= chardef + sizeof(chardef)) {
-        error((char*)"chardef longer than 256", NULL_PARG);
+        output::error((char*)"chardef longer than 256", NULL_PARG);
         utils::quit(QUIT_ERROR);
         /*NOTREACHED*/
       }
@@ -222,7 +222,7 @@ static int icharset(char* name, int no_error)
   }
 
   if (!no_error) {
-    error((char*)"invalid charset name", NULL_PARG);
+    output::error((char*)"invalid charset name", NULL_PARG);
     utils::quit(QUIT_ERROR);
   }
   return (0);

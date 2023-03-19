@@ -197,7 +197,7 @@ void add_lnum(linenum_t linenum, position_t pos)
       spare->next->prev = spare->prev;
       spare->prev->next = spare->next;
     } else {
-      error((char*)"Error spare null pointer", NULL_PARG);
+      output::error((char*)"Error spare null pointer", NULL_PARG);
       utils::quit(QUIT_ERROR);
     }
   }
@@ -209,7 +209,7 @@ void add_lnum(linenum_t linenum, position_t pos)
  */
 static void longloopmessage(void)
 {
-  ierror((char*)"Calculating line numbers", NULL_PARG);
+  output::ierror((char*)"Calculating line numbers", NULL_PARG);
 }
 
 static int    loopcount;
@@ -219,7 +219,7 @@ static void longish(void)
 {
   if (loopcount >= 0 && ++loopcount > 100) {
     loopcount = 0;
-    if (get_time() >= startime + LONGTIME) {
+    if (os::get_time() >= startime + LONGTIME) {
       longloopmessage();
       loopcount = -1;
     }
@@ -238,7 +238,7 @@ static void abort_long(void)
      */
     screen_trashed = TRASHED;
   linenums = 0;
-  error((char*)"Line numbers turned off", NULL_PARG);
+  output::error((char*)"Line numbers turned off", NULL_PARG);
 }
 
 /*
@@ -287,7 +287,7 @@ linenum_t find_linenum(position_t pos)
    * The decision is based on which way involves
    * traversing fewer bytes in the file.
    */
-  startime = get_time();
+  startime = os::get_time();
   if (p == &anchor || pos - p->prev->pos < p->pos - pos) {
     /*
      * Go forward.
@@ -425,10 +425,10 @@ linenum_t currline(int where)
   position_t len;
   linenum_t  linenum;
 
-  pos = position(where);
+  pos = position::position(where);
   len = ch::length();
   while (pos == NULL_POSITION && where >= 0 && where < sc_height)
-    pos = position(++where);
+    pos = position::position(++where);
   if (pos == NULL_POSITION)
     pos = len;
   linenum = find_linenum(pos);

@@ -43,12 +43,12 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
    * This is either the top or bottom line on the screen,
    * depending on the type of bracket.
    */
-  pos = position((forwdir) ? TOP : BOTTOM);
+  pos = position::position((forwdir) ? TOP : BOTTOM);
   if (pos == NULL_POSITION || ch::seek(pos)) {
     if (forwdir)
-      error((char*)"Nothing in top line", NULL_PARG);
+      output::error((char*)"Nothing in top line", NULL_PARG);
     else
-      error((char*)"Nothing in bottom line", NULL_PARG);
+      output::error((char*)"Nothing in bottom line", NULL_PARG);
     return;
   }
 
@@ -58,9 +58,9 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
   do {
     if ((c = ch::forw_get()) == '\n' || c == EOI) {
       if (forwdir)
-        error((char*)"No bracket in top line", NULL_PARG);
+        output::error((char*)"No bracket in top line", NULL_PARG);
       else
-        error((char*)"No bracket in bottom line", NULL_PARG);
+        output::error((char*)"No bracket in bottom line", NULL_PARG);
       return;
     }
   } while (c != obrac || --n > 0);
@@ -92,7 +92,7 @@ void match_brac(int obrac, int cbrac, int forwdir, int n)
       return;
     }
   }
-  error((char*)"No matching bracket", NULL_PARG);
+  output::error((char*)"No matching bracket", NULL_PARG);
 }
 
 }; // namespace bracket

@@ -88,7 +88,7 @@ int eof_displayed(void)
    * If the bottom line ends at the file length,
    * we must be just at EOF.
    */
-  pos = position(BOTTOM_PLUS_ONE);
+  pos = position::position(BOTTOM_PLUS_ONE);
   return (pos == NULL_POSITION || pos == ch::length());
 }
 
@@ -105,7 +105,7 @@ int entire_file_displayed(void)
     return (0);
 
   /* Make sure first line of file is displayed. */
-  pos = position(0);
+  pos = position::position(0);
   return (pos == NULL_POSITION || pos == 0);
 }
 
@@ -173,28 +173,28 @@ void forw(int n, position_t pos,
        *    to hit eof in the middle of this screen,
        *    but we don't yet know if that will happen. }}
        */
-      pos_clear();
-      add_forw_pos(pos);
+      position::pos_clear();
+      position::add_forw_pos(pos);
       force = 1;
       clear();
       home();
     }
 
-    if (pos != position(BOTTOM_PLUS_ONE) || empty_screen()) {
+    if (pos != position::position(BOTTOM_PLUS_ONE) || position::empty_screen()) {
       debug::debug("clear screen and start a new one");
       /*
        * This is not contiguous with what is
        * currently displayed.  Clear the screen image
        * (position table) and start a new screen.
        */
-      pos_clear();
-      add_forw_pos(pos);
+      position::pos_clear();
+      position::add_forw_pos(pos);
       force = 1;
       if (top_scroll) {
         clear();
         home();
       } else if (!first_time) {
-        putstr("...skipping...\n");
+        output::putstr("...skipping...\n");
       }
     }
   }
@@ -230,9 +230,9 @@ void forw(int n, position_t pos,
          * Even if force is true, stop when the last
          * line in the file reaches the top of screen.
          */
-        if (!force && position(TOP) != NULL_POSITION)
+        if (!force && position::position(TOP) != NULL_POSITION)
           break;
-        if (!empty_lines(0, 0) && !empty_lines(1, 1) && empty_lines(2, sc_height - 1))
+        if (!position::empty_lines(0, 0) && !position::empty_lines(1, 1) && position::empty_lines(2, sc_height - 1))
           break;
       }
     }
@@ -241,7 +241,7 @@ void forw(int n, position_t pos,
      * Display the current line on the screen.
      */
     debug::debug("add the position of the next line to pos table");
-    add_forw_pos(pos);
+    position::add_forw_pos(pos);
     nlines++;
     if (do_repaint) {
       debug::debug("do-jump::repaint - continue");
@@ -265,7 +265,7 @@ void forw(int n, position_t pos,
       squished = 1;
       continue;
     }
-    put_line();
+    output::put_line();
 
     forw_prompt = 1;
   }
@@ -316,12 +316,12 @@ void back(int n, position_t pos, int force, int only_last)
      * Add the position of the previous line to the position table.
      * Display the line on the screen.
      */
-    add_back_pos(pos);
+    position::add_back_pos(pos);
     nlines++;
     if (!do_repaint) {
       home();
       add_line();
-      put_line();
+      output::put_line();
     }
   }
 
@@ -353,20 +353,20 @@ void forward(int n, int force, int only_last)
     return;
   }
 
-  pos = position(BOTTOM_PLUS_ONE);
-  if (pos == NULL_POSITION && (!force || empty_lines(2, sc_height - 1))) {
+  pos = position::position(BOTTOM_PLUS_ONE);
+  if (pos == NULL_POSITION && (!force || position::empty_lines(2, sc_height - 1))) {
     if (less::Globals::ignore_eoi) {
       /*
        * less::Globals::ignore_eoi is to support A_F_FOREVER.
        * Back up until there is a line at the bottom
        * of the screen.
        */
-      if (empty_screen())
+      if (position::empty_screen())
         pos = ch_zero;
       else {
         do {
-          back(1, position(TOP), 1, 0);
-          pos = position(BOTTOM_PLUS_ONE);
+          back(1, position::position(TOP), 1, 0);
+          pos = position::position(BOTTOM_PLUS_ONE);
         } while (pos == NULL_POSITION);
       }
     } else {
@@ -386,8 +386,8 @@ void backward(int n, int force, int only_last)
 {
   position_t pos;
 
-  pos = position(TOP);
-  if (pos == NULL_POSITION && (!force || position(BOTTOM) == 0)) {
+  pos = position::position(TOP);
+  if (pos == NULL_POSITION && (!force || position::position(BOTTOM) == 0)) {
     eof_bell();
     return;
   }

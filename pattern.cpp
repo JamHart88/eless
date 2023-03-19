@@ -19,6 +19,8 @@
 
 extern int caseless;
 
+namespace pattern {
+
 /*
  * Compile a search pattern, for future use by match_pattern.
  */
@@ -34,7 +36,7 @@ static int compile_pattern2(char* pattern, int search_type, PATTERN_TYPE* comp_p
     if (re_compile_pattern(pattern, strlen(pattern), comp)) {
       free(comp);
       if (show_error)
-        error((char*)"Invalid pattern", NULL_PARG);
+        output::error((char*)"Invalid pattern", NULL_PARG);
       return (-1);
     }
     if (*comp_pattern != NULL) {
@@ -48,7 +50,7 @@ static int compile_pattern2(char* pattern, int search_type, PATTERN_TYPE* comp_p
     if (regcomp(comp, pattern, REGCOMP_FLAG)) {
       free(comp);
       if (show_error)
-        error((char*)"Invalid pattern", NULL_PARG);
+        output::error((char*)"Invalid pattern", NULL_PARG);
       return (-1);
     }
     if (*comp_pattern != NULL) {
@@ -67,7 +69,7 @@ static int compile_pattern2(char* pattern, int search_type, PATTERN_TYPE* comp_p
     if (comp == NULL) {
       parg.p_string = (char*)errstring;
       if (show_error)
-        error((char*)"%s", &parg);
+        output::error((char*)"%s", &parg);
       return (-1);
     }
     *comp_pattern = comp;
@@ -83,7 +85,7 @@ static int compile_pattern2(char* pattern, int search_type, PATTERN_TYPE* comp_p
         char msg[160];
         pcre2_get_error_message(errcode, (PCRE2_UCHAR*)msg, sizeof(msg));
         parg.p_string = msg;
-        error((char*)"%s", &parg);
+        output::error((char*)"%s", &parg);
       }
       return (-1);
     }
@@ -93,7 +95,7 @@ static int compile_pattern2(char* pattern, int search_type, PATTERN_TYPE* comp_p
     parg_t parg;
     if ((parg.p_string = re_comp(pattern)) != NULL) {
       if (show_error)
-        error((char*)"%s", &parg);
+        output::error((char*)"%s", &parg);
       return (-1);
     }
     *comp_pattern = 1;
@@ -102,7 +104,7 @@ static int compile_pattern2(char* pattern, int search_type, PATTERN_TYPE* comp_p
     char* comp;
     if ((comp = regcmp(pattern, 0)) == NULL) {
       if (show_error)
-        error((char*)"Invalid pattern", NULL_PARG);
+        output::error((char*)"Invalid pattern", NULL_PARG);
       return (-1);
     }
     if (comp_pattern != NULL)
@@ -116,7 +118,7 @@ static int compile_pattern2(char* pattern, int search_type, PATTERN_TYPE* comp_p
     reg_show_error = 1;
     if (comp == NULL) {
       /*
-       * regcomp has already printed an error message
+       * regcomp has already printed an output::error message
        * via regerror((char *)).
        */
       return (-1);
@@ -412,3 +414,5 @@ char* pattern_lib_name(void)
 #endif
 #endif
 }
+
+} // namespace pattern

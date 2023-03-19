@@ -155,7 +155,7 @@ static int set_pattern(struct pattern_info* info, char* pattern, int search_type
 #if !NO_REGEX
   if (pattern == NULL)
     CLEAR_PATTERN(info->compiled);
-  else if (compile_pattern(pattern, search_type, &info->compiled) < 0)
+  else if (pattern::compile_pattern(pattern, search_type, &info->compiled) < 0)
     return -1;
 #endif
   /* Pattern compiled successfully; save the text too. */
@@ -189,7 +189,7 @@ static void clear_pattern(struct pattern_info* info)
     free(info->text);
   info->text = NULL;
 #if !NO_REGEX
-  uncompile_pattern(&info->compiled);
+  pattern::uncompile_pattern(&info->compiled);
 #endif
 }
 
@@ -240,7 +240,7 @@ static int prev_pattern(struct pattern_info* info)
 {
 #if !NO_REGEX
   if ((info->search_type & SRCH_NO_REGEX) == 0)
-    return (!is_null_pattern(info->compiled));
+    return (!pattern::is_null_pattern(info->compiled));
 #endif
   return (info->text != NULL);
 }
@@ -274,12 +274,12 @@ void repaint_hilite(int on)
   }
 
   for (sindex = TOP; sindex < TOP + sc_height - 1; sindex++) {
-    pos = position(sindex);
+    pos = position::position(sindex);
     if (pos == NULL_POSITION)
       continue;
     (void)input::forw_line(pos);
     goto_line(sindex);
-    put_line();
+    output::put_line();
   }
   lower_left();
   hide_hilite = save_hide_hilite;
@@ -311,14 +311,14 @@ void clear_attn(void)
     jump::repaint();
 
   for (sindex = TOP; sindex < TOP + sc_height - 1; sindex++) {
-    pos = position(sindex);
+    pos = position::position(sindex);
     if (pos == NULL_POSITION)
       continue;
-    epos = position(sindex + 1);
+    epos = position::position(sindex + 1);
     if (pos <= old_end_attnpos && (epos == NULL_POSITION || epos > old_start_attnpos)) {
       (void)input::forw_line(pos);
       goto_line(sindex);
-      put_line();
+      output::put_line();
       moved = 1;
     }
   }
@@ -334,7 +334,7 @@ void undo_search(void)
 {
   if (!prev_pattern(&search_info)) {
     if (hilite_anchor.first == NULL) {
-      error((char*)"No previous regular expression", NULL_PARG);
+      output::error((char*)"No previous regular expression", NULL_PARG);
       return;
     }
     clr_hilite(); /* Next time, hilite_anchor.first will be NULL. */
@@ -885,7 +885,7 @@ static void hilite_line(position_t linepos, char* line, int line_len, int* chpos
    * sp and ep delimit the first match in the line.
    * Mark the corresponding file positions, then
    * look for further matches and mark them.
-   * {{ This technique, of calling match_pattern on subsequent
+   * {{ This technique, of calling pattern::match_pattern on subsequent
    *    substrings of the line, may mark more than is correct
    *    if the pattern starts with "^".  This bug is fixed
    *    for those regex functions that accept a notbol parameter
@@ -907,7 +907,7 @@ static void hilite_line(position_t linepos, char* line, int line_len, int* chpos
       searchp++;
     else /* end of line */
       break;
-  } while (match_pattern(info_compiled(&search_info), search_info.text,
+  } while (pattern::match_pattern(info_compiled(&search_info), search_info.text,
       searchp, line_end - searchp, &sp, &ep, 1, search_info.search_type));
 }
 #endif
@@ -920,10 +920,10 @@ static void hilite_screen(void)
 {
   struct scrpos scrpos;
 
-  get_scrpos(&scrpos, TOP);
+  position::get_scrpos(&scrpos, TOP);
   if (scrpos.pos == NULL_POSITION)
     return;
-  prep_hilite(scrpos.pos, position(BOTTOM_PLUS_ONE), -1);
+  prep_hilite(scrpos.pos, position::position(BOTTOM_PLUS_ONE), -1);
   repaint_hilite(1);
 }
 
@@ -954,10 +954,10 @@ static position_t search_pos(int search_type)
   position_t pos;
   int        sindex;
 
-  if (empty_screen()) {
+  if (position::empty_screen()) {
     /*
      * Start at the beginning (or end) of the file.
-     * The empty_screen() case is mainly for
+     * The position::empty_screen() case is mainly for
      * command line initiated searches;
      * for example, "+/xyz" on the command line.
      * Also for multi-file (SRCH_PAST_EOF) searches.
@@ -997,11 +997,11 @@ static position_t search_pos(int search_type)
        * It starts at the jump target (if searching backwards),
        * or at the jump target plus one (if forwards).
        */
-      sindex = sindex_from_sline(jump_sline);
+      sindex = position::sindex_from_sline(jump_sline);
       if (search_type & SRCH_FORW)
         add_one = 1;
     }
-    pos = position(sindex);
+    pos = position::position(sindex);
     if (add_one)
       pos = line::forw_raw_line(pos, (char**)NULL, (int*)NULL);
   }
@@ -1013,13 +1013,13 @@ static position_t search_pos(int search_type)
     while (pos == NULL_POSITION) {
       if (++sindex >= sc_height)
         break;
-      pos = position(sindex);
+      pos = position::position(sindex);
     }
   } else {
     while (pos == NULL_POSITION) {
       if (--sindex < 0)
         break;
-      pos = position(sindex);
+      pos = position::position(sindex);
     }
   }
   return (pos);
@@ -1127,7 +1127,7 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
      * If so, add an entry to the filter list.
      */
     if (((search_type & SRCH_FIND_ALL) || prep_startpos == NULL_POSITION || linepos < prep_startpos || linepos >= prep_endpos) && prev_pattern(&filter_info)) {
-      int line_filter = match_pattern(info_compiled(&filter_info), filter_info.text,
+      int line_filter = pattern::match_pattern(info_compiled(&filter_info), filter_info.text,
           cline, line_len, &sp, &ep, 0, filter_info.search_type);
       if (line_filter) {
         struct hilite hl;
@@ -1147,7 +1147,7 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
      * or if we want a non-match and got one.
      */
     if (prev_pattern(&search_info)) {
-      line_match = match_pattern(info_compiled(&search_info), search_info.text,
+      line_match = pattern::match_pattern(info_compiled(&search_info), search_info.text,
           cline, line_len, &sp, &ep, 0, search_type);
       if (line_match) {
         /*
@@ -1258,11 +1258,11 @@ int search(int search_type, char* pattern, int n)
      */
     search_type |= SRCH_AFTER_TARGET;
     if (!prev_pattern(&search_info) && !hist_pattern(search_type)) {
-      error((char*)"No previous regular expression", NULL_PARG);
+      output::error((char*)"No previous regular expression", NULL_PARG);
       return (-1);
     }
     if ((search_type & SRCH_NO_REGEX) != (search_info.search_type & SRCH_NO_REGEX)) {
-      error((char*)"Please re-enter search pattern", NULL_PARG);
+      output::error((char*)"Please re-enter search pattern", NULL_PARG);
       return -1;
     }
 #if HILITE_SEARCH
@@ -1321,7 +1321,7 @@ int search(int search_type, char* pattern, int n)
       return (n);
     if (hilite_search == option::OPT_ON || status_col)
       repaint_hilite(1);
-    error((char*)"Nothing to search", NULL_PARG);
+    output::error((char*)"Nothing to search", NULL_PARG);
     return (-1);
   }
 
@@ -1559,6 +1559,6 @@ int is_filtering(void)
   if (!reg_show_error)
     return;
   parg.p_string = s;
-  error((char*)"%s", &parg);
+  output::error((char*)"%s", &parg);
 }
 #endif

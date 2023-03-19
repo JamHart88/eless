@@ -347,7 +347,7 @@ read_more:
     if (!(thisfile->flags & CH_CANSEEK))
       return ('?');
     if (lseek(thisfile->file, (off_t)pos, SEEK_SET) == BAD_LSEEK) {
-      error((char*)"seek error", NULL_PARG);
+      output::error((char*)"seek output::error", NULL_PARG);
       clear_eol();
       return (EOI);
     }
@@ -367,9 +367,9 @@ read_more:
     bp->data[bp->datasize] = help::helpdata[thisfile->fpos];
     n                      = 1;
   } else {
-    n = iread(thisfile->file, &bp->data[bp->datasize],
+    n = os::iread(thisfile->file, &bp->data[bp->datasize],
         (unsigned int)(LBUFSIZE - bp->datasize));
-    chDebug("iread result");
+    chDebug("os::iread result");
     chDebug("n = " + std::to_string(n));
     chDebug(reinterpret_cast<char*>(bp->data));
   }
@@ -378,7 +378,7 @@ read_more:
     return (EOI);
   if (n < 0) {
     {
-      error((char*)"read error", NULL_PARG);
+      output::error((char*)"read output::error", NULL_PARG);
       clear_eol();
     }
     n = 0;
@@ -407,7 +407,7 @@ read_more:
       if (!slept) {
         parg_t parg;
         parg.p_string = wait_message();
-        ierror((char*)"%s", parg);
+        output::ierror((char*)"%s", parg);
       }
 
       sleep(1);
@@ -472,7 +472,7 @@ found:
 void ungetchar(int c)
 {
   if (c != -1 && ch_ungotchar != -1)
-    error((char*)"ungetchar overrun", NULL_PARG);
+    output::error((char*)"ungetchar overrun", NULL_PARG);
   ch_ungotchar = c;
 }
 
@@ -489,7 +489,7 @@ void end_logfile()
     return;
   if (!tried && thisfile->fsize == NULL_POSITION) {
     tried = true;
-    ierror((char*)"Finishing logfile", NULL_PARG);
+    output::ierror((char*)"Finishing logfile", NULL_PARG);
     while (forw_get() != EOI)
       if (is_abort_signal(less::Globals::sigs))
         break;
@@ -527,7 +527,7 @@ void sync_logfile()
       }
     }
     if (!wrote && !warned) {
-      error((char*)"Warning: log file is incomplete", NULL_PARG);
+      output::error((char*)"Warning: log file is incomplete", NULL_PARG);
       warned = true;
     }
   }
@@ -833,7 +833,7 @@ void flush()
      * there's a good chance we're at the beginning anyway.
      * {{ I think this is bogus reasoning. }}
      */
-    error((char*)"seek error to 0", NULL_PARG);
+    output::error((char*)"seek output::error to 0", NULL_PARG);
   }
 
   chDebug("flush");

@@ -95,8 +95,8 @@
 
 /*
  * ONLY_RETURN is 1 if you want RETURN to be the only input which
- * will continue past an error message.
- * Otherwise, any key will continue past an error message.
+ * will continue past an output::error message.
+ * Otherwise, any key will continue past an output::error message.
  */
 #define    ONLY_RETURN    0
 

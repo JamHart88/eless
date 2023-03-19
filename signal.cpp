@@ -13,8 +13,8 @@
  * A signal usually merely causes a bit to be set in the "signals" word.
  * At some convenient time, the mainline code checks to see if any
  * signals need processing by calling psignal().
- * If we happen to be reading from a file [in iread()] at the time
- * the signal is received, we call intread to interrupt the iread.
+ * If we happen to be reading from a file [in os::iread()] at the time
+ * the signal is received, we call os::intread to interrupt the os::iread.
  */
 
 #include "signal.hpp"
@@ -53,7 +53,7 @@ static RETSIGTYPE u_interrupt(int type)
   signal(SIGINT, u_interrupt);
   less::Globals::sigs |= S_INTERRUPT;
   if (reading)
-    intread(); /* May longjmp */
+    os::intread(); /* May longjmp */
 }
 
 #ifdef SIGTSTP
@@ -71,7 +71,7 @@ static RETSIGTYPE stop(int type)
   signal(SIGTSTP, stop);
   less::Globals::sigs |= S_STOP;
   if (reading)
-    intread();
+    os::intread();
 }
 #endif
 
@@ -100,7 +100,7 @@ RETSIGTYPE winch(int type)
   signal(SIG_LESSWINDOW, winch);
   less::Globals::sigs |= S_WINCH;
   if (reading)
-    intread();
+    os::intread();
 }
 #endif
 
@@ -195,7 +195,7 @@ void psignals(void)
 #endif
     clear_bot();
     deinit();
-    flush();
+    output::flush();
     raw_mode(0);
 #ifdef SIGTTOU
     signal(SIGTTOU, SIG_DFL);

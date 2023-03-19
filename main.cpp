@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
   }
 
   if (missing_cap && !know_dumb)
-    error((char*)"WARNING: terminal is not fully functional", NULL_PARG);
+    output::error((char*)"WARNING: terminal is not fully functional", NULL_PARG);
   open_getchr();
   raw_mode(1);
   init_signals(1);
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
      * and search for the proper line in the file.
      */
     if (ifile::numIfiles() > 0) {
-      error((char*)"No filenames allowed with -t option",
+      output::error((char*)"No filenames allowed with -t option",
           NULL_PARG);
       utils::quit(QUIT_ERROR);
     }

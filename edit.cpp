@@ -156,7 +156,7 @@ static void close_file(void)
    * Save the current position so that we can return to
    * the same position if we edit this file again.
    */
-  get_scrpos(&scrpos, TOP);
+  position::get_scrpos(&scrpos, TOP);
   if (scrpos.pos != NULL_POSITION) {
     ifile::getCurrentIfile()->setPos(scrpos);
     lastmark();
@@ -320,7 +320,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
       /*
        * It looks like a bad file.  Don't try to open it.
        */
-      error((char*)"%s", parg);
+      output::error((char*)"%s", parg);
       free(parg.p_string);
 
     err1:
@@ -345,10 +345,10 @@ int edit_ifile(ifile::Ifile* requestedIfile)
 
     } else if ((f = open(open_filename, OPEN_READ)) < 0) {
       /*
-       * Got an error trying to open it.
+       * Got an output::error trying to open it.
        */
-      parg.p_string = errno_message(filename);
-      error((char*)"%s", parg);
+      parg.p_string = os::errno_message(filename);
+      output::error((char*)"%s", parg);
       free(parg.p_string);
       goto err1;
 
@@ -361,7 +361,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
          * Ask user if we should proceed.
          */
         parg.p_string = filename;
-        answer        = query((char*)"\"%s\" may be a binary file.  See it anyway? ",
+        answer        = output::query((char*)"\"%s\" may be a binary file.  See it anyway? ",
                    parg);
         if (answer != 'y' && answer != 'Y') {
           close(f);
@@ -412,7 +412,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
   }
 
   no_display = !any_display;
-  flush();
+  output::flush();
   any_display = true;
 
   if (is_tty) {
@@ -423,7 +423,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
     /*
      * Indicate there is nothing displayed yet.
      */
-    pos_clear();
+    position::pos_clear();
     clr_linenum();
 #if HILITE_SEARCH
     clr_hilite();
@@ -436,13 +436,13 @@ int edit_ifile(ifile::Ifile* requestedIfile)
 
     if (no_display && errmsgs > 0) {
       /*
-       * We displayed some messages on error output
-       * (file descriptor 2; see error() function).
+       * We displayed some messages on output::error output
+       * (file descriptor 2; see output::error() function).
        * Before erasing the screen contents,
        * display the file name and wait for a keystroke.
        */
       parg.p_string = filename;
-      error((char*)"%s", parg);
+      output::error((char*)"%s", parg);
     }
   }
   free(filename);
@@ -672,7 +672,7 @@ void reopen_curr_ifile(void)
 int edit_stdin(void)
 {
   if (isatty(fd0)) {
-    error((char*)"Missing filename (\"less --help\" for help)", NULL_PARG);
+    output::error((char*)"Missing filename (\"less --help\" for help)", NULL_PARG);
     utils::quit(QUIT_OK);
   }
   return (edit((char*)"-"));
@@ -687,8 +687,8 @@ void cat_file(void)
   int c;
 
   while ((c = ch::forw_get()) != EOI)
-    putchr(c);
-  flush();
+    output::putchr(c);
+  output::flush();
 }
 
 /*
@@ -730,7 +730,7 @@ void use_logfile(char* filename)
      * Ask user what to do.
      */
     parg.p_string = filename;
-    answer        = query((char*)"Warning: \"%s\" exists; Overwrite, Append or Don't log? ", parg);
+    answer        = output::query((char*)"Warning: \"%s\" exists; Overwrite, Append or Don't log? ", parg);
   }
 
 loop:
@@ -766,7 +766,7 @@ loop:
     /*
      * Eh?
      */
-    answer = query((char*)"Overwrite, Append, or Don't log? (Type \"O\", \"A\", \"D\" or \"q\") ", NULL_PARG);
+    answer = output::query((char*)"Overwrite, Append, or Don't log? (Type \"O\", \"A\", \"D\" or \"q\") ", NULL_PARG);
     goto loop;
   }
 
@@ -775,7 +775,7 @@ loop:
      * Error in opening logfile.
      */
     parg.p_string = filename;
-    error((char*)"Cannot write to \"%s\"", parg);
+    output::error((char*)"Cannot write to \"%s\"", parg);
     return;
   }
 }

@@ -7,7 +7,7 @@
  * selected by the -m/-M options.
  * There is also the "equals message", printed by the = command.
  * A prompt is a message composed of various pieces, such as the
- * name of the file being viewed, the percentage into the file, etc.
+ * name of the file being viewed, the os::percentage into the file, etc.
  */
 
 #include "less.hpp"

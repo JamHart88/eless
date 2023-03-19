@@ -84,11 +84,11 @@ void opt_o(int type, char* s)
     break;
   case option::TOGGLE:
     if (ch::getflags() & CH_CANSEEK) {
-      error((char*)"Input is not a pipe", NULL_PARG);
+      output::error((char*)"Input is not a pipe", NULL_PARG);
       return;
     }
     if (less::Globals::logfile >= 0) {
-      error((char*)"Log file is already in use", NULL_PARG);
+      output::error((char*)"Log file is already in use", NULL_PARG);
       return;
     }
     s = utils::skipsp(s);
@@ -102,10 +102,10 @@ void opt_o(int type, char* s)
     break;
   case option::QUERY:
     if (less::Globals::logfile < 0)
-      error((char*)"No log file", NULL_PARG);
+      output::error((char*)"No log file", NULL_PARG);
     else {
       parg.p_string = less::Globals::namelogfile;
-      error((char*)"Log file \"%s\"", parg);
+      output::error((char*)"Log file \"%s\"", parg);
     }
     break;
   }
@@ -137,13 +137,13 @@ void opt_j(int type, char* s)
       s++;
       jump_sline_fraction = option::getfraction(&s, (char*)"j", &err);
       if (err)
-        error((char*)"Invalid line fraction", NULL_PARG);
+        output::error((char*)"Invalid line fraction", NULL_PARG);
       else
         calc_jump_sline();
     } else {
       int sline = option::getnum(&s, (char*)"j", &err);
       if (err)
-        error((char*)"Invalid line number", NULL_PARG);
+        output::error((char*)"Invalid line number", NULL_PARG);
       else {
         jump_sline          = sline;
         jump_sline_fraction = -1;
@@ -153,7 +153,7 @@ void opt_j(int type, char* s)
   case option::QUERY:
     if (jump_sline_fraction < 0) {
       parg.p_int = jump_sline;
-      error((char*)"Position target at screen line %d", parg);
+      output::error((char*)"Position target at screen line %d", parg);
     } else {
 
       sprintf(buf, ".%06ld", jump_sline_fraction);
@@ -162,7 +162,7 @@ void opt_j(int type, char* s)
         len--;
       buf[len]      = '\0';
       parg.p_string = buf;
-      error((char*)"Position target at screen position %s", parg);
+      output::error((char*)"Position target at screen position %s", parg);
     }
     break;
   }
@@ -192,13 +192,13 @@ void opt_shift(int type, char* s)
       s++;
       shift_count_fraction = option::getfraction(&s, (char*)"#", &err);
       if (err)
-        error((char*)"Invalid column fraction", NULL_PARG);
+        output::error((char*)"Invalid column fraction", NULL_PARG);
       else
         calc_shift_count();
     } else {
       int hs = option::getnum(&s, (char*)"#", &err);
       if (err)
-        error((char*)"Invalid column number", NULL_PARG);
+        output::error((char*)"Invalid column number", NULL_PARG);
       else {
         shift_count          = hs;
         shift_count_fraction = -1;
@@ -208,7 +208,7 @@ void opt_shift(int type, char* s)
   case option::QUERY:
     if (shift_count_fraction < 0) {
       parg.p_int = shift_count;
-      error((char*)"Horizontal shift %d columns", parg);
+      output::error((char*)"Horizontal shift %d columns", parg);
     } else {
 
       sprintf(buf, ".%06ld", shift_count_fraction);
@@ -217,7 +217,7 @@ void opt_shift(int type, char* s)
         len--;
       buf[len]      = '\0';
       parg.p_string = buf;
-      error((char*)"Horizontal shift %s of screen width", parg);
+      output::error((char*)"Horizontal shift %s of screen width", parg);
     }
     break;
   }
@@ -239,7 +239,7 @@ void opt_k(int type, char* s)
   case option::INIT:
     if (decode::lesskey(s, 0)) {
       parg.p_string = s;
-      error((char*)"Cannot use decode::lesskey file \"%s\"", parg);
+      output::error((char*)"Cannot use decode::lesskey file \"%s\"", parg);
     }
     break;
   }
@@ -301,7 +301,7 @@ void opt__T(int type, char* s)
     break;
   case option::QUERY:
     parg.p_string = tags;
-    error((char*)"Tags file \"%s\"", parg);
+    output::error((char*)"Tags file \"%s\"", parg);
     break;
   }
 }
@@ -385,7 +385,7 @@ void opt__P(int type, char* s)
     break;
   case option::QUERY:
     parg.p_string = prproto[pr_type];
-    error((char*)"%s", parg);
+    output::error((char*)"%s", parg);
     break;
   }
 }
@@ -441,16 +441,16 @@ void opt__V(int type, char* s)
      * Force output to stdout per GNU standard for --version output.
      */
     any_display = true;
-    putstr("less ");
-    putstr(version);
-    putstr(" (");
-    putstr(pattern_lib_name());
-    putstr(" regular expressions)\n");
-    putstr("Copyright (C) 1984-2020  Mark Nudelman\n\n");
-    putstr("less comes with NO WARRANTY, to the extent permitted by law.\n");
-    putstr("For information about the terms of redistribution,\n");
-    putstr("see the file named README in the less distribution.\n");
-    putstr("Home page: http://www.greenwoodsoftware.com/less\n");
+    output::putstr("less ");
+    output::putstr(version);
+    output::putstr(" (");
+    output::putstr(pattern::pattern_lib_name());
+    output::putstr(" regular expressions)\n");
+    output::putstr("Copyright (C) 1984-2020  Mark Nudelman\n\n");
+    output::putstr("less comes with NO WARRANTY, to the extent permitted by law.\n");
+    output::putstr("For information about the terms of redistribution,\n");
+    output::putstr("see the file named README in the less distribution.\n");
+    output::putstr("Home page: http://www.greenwoodsoftware.com/less\n");
     utils::quit(QUIT_OK);
     break;
   }
@@ -502,7 +502,7 @@ void opt_x(int type, char* s)
     ignore_result(sprintf(msg + strlen(msg), "every %d spaces",
         tabdefault));
     p.p_string = msg;
-    error((char*)"%s", p);
+    output::error((char*)"%s", p);
     break;
   }
 }
@@ -523,7 +523,7 @@ void opt_quote(int type, char* s)
       break;
     }
     if (s[1] != '\0' && s[2] != '\0') {
-      error((char*)"-\" must be followed by 1 or 2 chars", NULL_PARG);
+      output::error((char*)"-\" must be followed by 1 or 2 chars", NULL_PARG);
       return;
     }
     less::Globals::openquote = s[0];
@@ -537,7 +537,7 @@ void opt_quote(int type, char* s)
     buf[1]        = less::Globals::closequote;
     buf[2]        = '\0';
     parg.p_string = buf;
-    error((char*)"quotes %s", parg);
+    output::error((char*)"quotes %s", parg);
     break;
   }
 }
@@ -566,7 +566,7 @@ void opt_rscroll(int type, char* s)
   }
   case option::QUERY: {
     p.p_string = rscroll_char ? (char*)charset::prchar(rscroll_char) : (char*)"-";
-    error((char*)"rscroll char is %s", p);
+    output::error((char*)"rscroll char is %s", p);
     break;
   }
   }
@@ -582,7 +582,7 @@ void opt_query(int type, char* s)
   switch (type) {
   case option::QUERY:
   case option::TOGGLE:
-    error((char*)"Use \"h\" for help", NULL_PARG);
+    output::error((char*)"Use \"h\" for help", NULL_PARG);
     break;
   case option::INIT:
     dohelp = 1;

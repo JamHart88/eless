@@ -36,7 +36,7 @@ char* save(const char* s)
 
 // ------------------------------------------------
 // ecalloc: Allocate memory.
-// Like calloc(), but never returns an error (NULL).
+// Like calloc(), but never returns an output::error (NULL).
 //
 
 void* ecalloc(int count, unsigned int size)
@@ -46,7 +46,7 @@ void* ecalloc(int count, unsigned int size)
   p = (void*)calloc(count, size);
   if (p != NULL)
     return (p);
-  error((char*)"Cannot allocate memory", NULL_PARG);
+  output::error((char*)"Cannot allocate memory", NULL_PARG);
   quit(QUIT_ERROR);
   /*NOTREACHED*/
   return (NULL);
@@ -115,7 +115,7 @@ void quit(int status)
   if (any_display && is_tty)
     clear_bot();
   deinit();
-  flush();
+  output::flush();
   raw_mode(0);
   close_getchr();
   exit(status);

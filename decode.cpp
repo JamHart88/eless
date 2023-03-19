@@ -377,7 +377,7 @@ static int add_cmd_table(struct tablelist** tlist, char* buf, int len)
 void add_fcmd_table(char* buf, int len)
 {
   if (add_cmd_table(&list_fcmd_tables, buf, len) < 0)
-    error((char*)"Warning: some commands disabled", NULL_PARG);
+    output::error((char*)"Warning: some commands disabled", NULL_PARG);
 }
 
 /*
@@ -387,7 +387,7 @@ void add_fcmd_table(char* buf, int len)
 void add_ecmd_table(char* buf, int len)
 {
   if (add_cmd_table(&list_ecmd_tables, buf, len) < 0)
-    error((char*)"Warning: some edit commands disabled", NULL_PARG);
+    output::error((char*)"Warning: some edit commands disabled", NULL_PARG);
 }
 
 /*
@@ -396,7 +396,7 @@ void add_ecmd_table(char* buf, int len)
 static void add_var_table(struct tablelist** tlist, char* buf, int len)
 {
   if (add_cmd_table(tlist, buf, len) < 0)
-    error((char*)"Warning: environment variables from lesskey file "
+    output::error((char*)"Warning: environment variables from lesskey file "
                  "unavailable",
         NULL_PARG);
 }
@@ -758,9 +758,9 @@ int lesskey(char* filename, int sysvar)
   /*
    * Read the file into a buffer.
    * We first figure out the size of the file and allocate space for it.
-   * {{ Minimal error checking is done here.
+   * {{ Minimal output::error checking is done here.
    *    A garbage .less file will produce strange results.
-   *    To avoid a large amount of error checking code here, we
+   *    To avoid a large amount of output::error checking code here, we
    *    rely on the lesskey program to generate a good .less file. }}
    */
   len = filename::filesize(f);
@@ -815,7 +815,7 @@ void add_hometable(char* envname, char* def_filename, int sysvar)
     return;
   if (lesskey(filename, sysvar) < 0) {
     parg.p_string = filename;
-    error((char*)"Cannot use lesskey file \"%s\"", parg);
+    output::error((char*)"Cannot use lesskey file \"%s\"", parg);
   }
   free(filename);
 }

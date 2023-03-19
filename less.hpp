@@ -210,7 +210,7 @@ enum mca_t {
 /* cc_type:
     CC_OK    Char was accepted & processed
     CC_QUIT  Char was a request to abort current cmd
-    CC_ERROR Char could not be accepted due to error
+    CC_ERROR Char could not be accepted due to output::error
     CC_PASS  Char was rejected (internal)
 */
 
@@ -223,7 +223,7 @@ enum cc_type_t {
 
 const int CF_QUIT_ON_ERASE = 0001; /* Abort cmd if its entirely erased */
 
-/* Special char bit-flags used to tell put_line() to do something special
+/* Special char bit-flags used to tell output::put_line() to do something special
     AT_NORMAL
     AT_UNDERLINE
     AT_BOLD

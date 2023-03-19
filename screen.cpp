@@ -697,7 +697,7 @@ void get_term(void)
      * Get size of the screen.
      */
     scrsize();
-    pos_init();
+    position::pos_init();
 
     auto_wrap = ltgetflag((char*)"am");
     ignaw     = ltgetflag((char*)"xn");
@@ -792,7 +792,7 @@ void get_term(void)
     sc_move = ltgetstr((char*)"cm", &sp);
     if (sc_move == NULL || *sc_move == '\0') {
       /*
-       * This is not an error here, because we don't
+       * This is not an output::error here, because we don't
        * always need sc_move.
        * We need it only if we don't have home or lower-left.
        */
@@ -961,7 +961,7 @@ void init_mouse(void)
 {
   if (!mousecap)
     return;
-  tputs(sc_s_mousecap, sc_height, putchr);
+  tputs(sc_s_mousecap, sc_height, output::putchr);
 }
 
 /*
@@ -973,7 +973,7 @@ void deinit_mouse(void)
 {
   if (!mousecap)
     return;
-  tputs(sc_e_mousecap, sc_height, putchr);
+  tputs(sc_e_mousecap, sc_height, output::putchr);
 }
 
 /*
@@ -984,9 +984,9 @@ void init(void)
 {
   if (!(quit_if_one_screen && one_screen)) {
     if (!no_init)
-      tputs(sc_init, sc_height, putchr);
+      tputs(sc_init, sc_height, output::putchr);
     if (!no_keypad)
-      tputs(sc_s_keypad, sc_height, putchr);
+      tputs(sc_s_keypad, sc_height, output::putchr);
     init_mouse();
   }
   if (top_scroll) {
@@ -999,7 +999,7 @@ void init(void)
      * screen to ourself.
      */
     for (i = 1; i < sc_height; i++)
-      putchr('\n');
+      output::putchr('\n');
   } else
     line_left();
   init_done = 1;
@@ -1016,9 +1016,9 @@ void deinit(void)
   if (!(quit_if_one_screen && one_screen)) {
     deinit_mouse();
     if (!no_keypad)
-      tputs(sc_e_keypad, sc_height, putchr);
+      tputs(sc_e_keypad, sc_height, output::putchr);
     if (!no_init)
-      tputs(sc_deinit, sc_height, putchr);
+      tputs(sc_deinit, sc_height, output::putchr);
   }
   init_done = 0;
 }
@@ -1027,14 +1027,14 @@ void deinit(void)
  * Home cursor (move to upper left corner of screen).
  */
 
-void home(void) { tputs(sc_home, 1, putchr); }
+void home(void) { tputs(sc_home, 1, output::putchr); }
 
 /*
  * Add a blank line (called with cursor at home).
  * Should scroll the display down.
  */
 
-void add_line(void) { tputs(sc_addline, sc_height, putchr); }
+void add_line(void) { tputs(sc_addline, sc_height, output::putchr); }
 
 /*
  * Move cursor to lower left corner of screen.
@@ -1044,14 +1044,14 @@ void lower_left(void)
 {
   if (!init_done)
     return;
-  tputs(sc_lower_left, 1, putchr);
+  tputs(sc_lower_left, 1, output::putchr);
 }
 
 /*
  * Move cursor to left position of current line.
  */
 
-void line_left(void) { tputs(sc_return, 1, putchr); }
+void line_left(void) { tputs(sc_return, 1, output::putchr); }
 
 /*
  * Check if the console size has changed and reset internals
@@ -1064,7 +1064,7 @@ void check_winch(void) { }
  * Goto a specific line on the screen.
  */
 
-void goto_line(int sindex) { tputs(tgoto(sc_move, 0, sindex), 1, putchr); }
+void goto_line(int sindex) { tputs(tgoto(sc_move, 0, sindex), 1, output::putchr); }
 
 /*
  * Output the "visual bell", if there is one.
@@ -1074,13 +1074,13 @@ void vbell(void)
 {
   if (*sc_visual_bell == '\0')
     return;
-  tputs(sc_visual_bell, sc_height, putchr);
+  tputs(sc_visual_bell, sc_height, output::putchr);
 }
 
 /*
  * Make a noise.
  */
-static void beep(void) { putchr(control<int>('G')); }
+static void beep(void) { output::putchr(control<int>('G')); }
 
 /*
  * Ring the terminal bell.
@@ -1098,14 +1098,14 @@ void bell(void)
  * Clear the screen.
  */
 
-void clear(void) { tputs(sc_clear, sc_height, putchr); }
+void clear(void) { tputs(sc_clear, sc_height, output::putchr); }
 
 /*
  * Clear from the cursor to the end of the cursor's line.
  * {{ This must not move the cursor. }}
  */
 
-void clear_eol(void) { tputs(sc_eol_clear, 1, putchr); }
+void clear_eol(void) { tputs(sc_eol_clear, 1, output::putchr); }
 
 /*
  * Clear the current line.
@@ -1114,9 +1114,9 @@ void clear_eol(void) { tputs(sc_eol_clear, 1, putchr); }
 static void clear_eol_bot(void)
 {
   if (below_mem)
-    tputs(sc_eos_clear, 1, putchr);
+    tputs(sc_eos_clear, 1, output::putchr);
   else
-    tputs(sc_eol_clear, 1, putchr);
+    tputs(sc_eol_clear, 1, output::putchr);
 }
 
 /*
@@ -1153,13 +1153,13 @@ void at_enter(int attr)
 
   /* The one with the most priority is last.  */
   if (attr & AT_UNDERLINE)
-    tputs(sc_u_in, 1, putchr);
+    tputs(sc_u_in, 1, output::putchr);
   if (attr & AT_BOLD)
-    tputs(sc_b_in, 1, putchr);
+    tputs(sc_b_in, 1, output::putchr);
   if (attr & AT_BLINK)
-    tputs(sc_bl_in, 1, putchr);
+    tputs(sc_bl_in, 1, output::putchr);
   if (attr & AT_STANDOUT)
-    tputs(sc_s_in, 1, putchr);
+    tputs(sc_s_in, 1, output::putchr);
   attrmode = attr;
 }
 
@@ -1167,13 +1167,13 @@ void at_exit(void)
 {
   /* Undo things in the reverse order we did them.  */
   if (attrmode & AT_STANDOUT)
-    tputs(sc_s_out, 1, putchr);
+    tputs(sc_s_out, 1, output::putchr);
   if (attrmode & AT_BLINK)
-    tputs(sc_bl_out, 1, putchr);
+    tputs(sc_bl_out, 1, output::putchr);
   if (attrmode & AT_BOLD)
-    tputs(sc_b_out, 1, putchr);
+    tputs(sc_b_out, 1, output::putchr);
   if (attrmode & AT_UNDERLINE)
-    tputs(sc_u_out, 1, putchr);
+    tputs(sc_u_out, 1, output::putchr);
   attrmode = AT_NORMAL;
 }
 
@@ -1214,8 +1214,8 @@ int apply_at_specials(int attr)
 void putbs(void)
 {
   if (termcap_debug)
-    putstr((char*)"<bs>");
+    output::putstr((char*)"<bs>");
   else {
-    tputs(sc_backspace, 1, putchr);
+    tputs(sc_backspace, 1, output::putchr);
   }
 }

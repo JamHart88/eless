@@ -165,7 +165,7 @@ static int cmd_mbc_buf_index;
         int width;
         ch = charset::step_char(&ns, +1, endline);
         while (s < ns)
-            putchr(*s++);
+            output::putchr(*s++);
         if (!less::Globals::utf_mode)
             width = 1;
         else if (charset::is_composing_char(ch) || charset::is_combining_char(prev_ch, ch))
@@ -280,7 +280,7 @@ static void cmd_repaint(const char *old_cp)
         if (cmd_col + width >= sc_width)
             break;
         cp = np;
-        putstr(pr);
+        output::putstr(pr);
         cmd_col += width;
     }
     while (*cp != '\0')
@@ -291,7 +291,7 @@ static void cmd_repaint(const char *old_cp)
         if (width > 0)
             break;
         cp = np;
-        putstr(pr);
+        output::putstr(pr);
     }
 
     /*
@@ -409,13 +409,13 @@ cmd_right(void)
         cmd_lshift();
     cp = ncp;
     cmd_col += width;
-    putstr(pr);
+    output::putstr(pr);
     while (*cp != '\0')
     {
         pr = cmd_step_right(&ncp, &width, NULL);
         if (width > 0)
             break;
-        putstr(pr);
+        output::putstr(pr);
         cp = ncp;
     }
     return (CC_OK);
@@ -1202,7 +1202,7 @@ fail:
  * Returns:
  *    CC_OK        The char was accepted.
  *    CC_QUIT      The char requests the command to be aborted.
- *    CC_ERROR     The char could not be accepted due to an error.
+ *    CC_ERROR     The char could not be accepted due to an output::error.
  */
  int cmd_char(int c)
 {

@@ -13,7 +13,7 @@
  * selected by the -m/-M options.
  * There is also the "equals message", printed by the = command.
  * A prompt is a message composed of various pieces, such as the
- * name of the file being viewed, the percentage into the file, etc.
+ * name of the file being viewed, the os::percentage into the file, etc.
  */
 
 #include "prompt.hpp"
@@ -159,9 +159,9 @@ static position_t curr_byte(int where)
 {
   position_t pos;
 
-  pos = position(where);
+  pos = position::position(where);
   while (pos == NULL_POSITION && where >= 0 && where < sc_height - 1)
-    pos = position(++where);
+    pos = position::position(++where);
   if (pos == NULL_POSITION)
     pos = ch::length();
   return (pos);
@@ -331,7 +331,7 @@ static void protochar(int c, int where, int iseditproto)
     pos = curr_byte(where);
     len = ch::length();
     if (pos != NULL_POSITION && len > 0)
-      ap_int(percentage(pos, len));
+      ap_int(os::percentage(pos, len));
     else
       ap_quest();
     break;
@@ -340,7 +340,7 @@ static void protochar(int c, int where, int iseditproto)
     if (linenum == 0 || (len = ch::length()) == NULL_POSITION || len == ch_zero || (last_linenum = find_linenum(len)) <= 0)
       ap_quest();
     else
-      ap_int(percentage(linenum, last_linenum));
+      ap_int(os::percentage(linenum, last_linenum));
     break;
   case 's': /* Size of file */
   case 'B':
@@ -458,7 +458,7 @@ static const char* wherechar(char const* p, int* wp)
       *wp = BOTTOM_PLUS_ONE;
       break;
     case 'j':
-      *wp = sindex_from_sline(jump_sline);
+      *wp = position::sindex_from_sline(jump_sline);
       break;
     default:
       *wp = TOP;
