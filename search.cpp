@@ -27,6 +27,7 @@
 #include "position.hpp"
 #include "screen.hpp"
 #include "utils.hpp"
+#include "debug.hpp"
 
 #define MINPOS(a, b) (((a) < (b)) ? (a) : (b))
 #define MAXPOS(a, b) (((a) > (b)) ? (a) : (b))
@@ -1025,9 +1026,13 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
   int*       chpos;
   position_t linepos, oldpos;
 
+  debug::D("search_range");
   linenum = find_linenum(pos);
   oldpos  = pos;
+  
   for (;;) {
+  
+    debug::D("search_range - top of loop");
     /*
      * Get lines until we find a matching one or until
      * we hit end-of-file (or beginning-of-file if we're
@@ -1106,11 +1111,13 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
     cvt::cvt_text(cline, line, chpos, &line_len, cvt_ops);
 
 #if HILITE_SEARCH
+    debug::D("search_range - hilite search");
     /*
      * Check to see if the line matches the filter pattern.
      * If so, add an entry to the filter list.
      */
     if (((search_type & SRCH_FIND_ALL) || prep_startpos == NULL_POSITION || linepos < prep_startpos || linepos >= prep_endpos) && prev_pattern(&filter_info)) {
+      debug::D("search_range - hilite all");
       int line_filter = pattern::match_pattern(info_compiled(&filter_info), filter_info.text,
           cline, line_len, &sp, &ep, 0, filter_info.search_type);
       if (line_filter) {
@@ -1130,6 +1137,8 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
      * We are successful if we either want a match and got one,
      * or if we want a non-match and got one.
      */
+    debug::D("prev_pattern check");
+
     if (prev_pattern(&search_info)) {
       line_match = pattern::match_pattern(info_compiled(&search_info), search_info.text,
           cline, line_len, &sp, &ep, 0, search_type);

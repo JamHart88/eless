@@ -106,6 +106,7 @@ void __attribute__((__no_instrument_function__)) debug(const char* str1, const i
   if (fp_trace != NULL) {
     fprintf(fp_trace, "DBG: FILE: %s LINE: %d : ", str1, linenum);
     fprintf(fp_trace, "'%s'\n", str2);
+    fflush(fp_trace);
   }
 }
 
