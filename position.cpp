@@ -84,7 +84,7 @@ void add_back_pos(position_t pos)
 }
 
 /*
- * Initialize the position table, done whenever we clear the screen.
+ * Initialize the position table, done whenever we screen::clear the screen.
  */
 void pos_clear(void)
 {

@@ -93,7 +93,7 @@ void init_mark(void)
 }
 
 /*
- * Set m_ifile and clear m_filename.
+ * Set m_ifile and screen::clear m_filename.
  */
 static void mark_set_ifile(struct mark* m, ifile::Ifile* ifile)
 {
@@ -213,7 +213,7 @@ void setmark(int c, int where)
     return;
   position::get_scrpos(&scrpos, where);
   if (scrpos.pos == NULL_POSITION) {
-    bell();
+    screen::bell();
     return;
   }
   cmark(m, ifile::getCurrentIfile(), scrpos.pos, scrpos.ln);
@@ -232,7 +232,7 @@ void clrmark(int c)
   if (m == NULL)
     return;
   if (m->m_scrpos.pos == NULL_POSITION) {
-    bell();
+    screen::bell();
     return;
   }
   m->m_scrpos.pos = NULL_POSITION;

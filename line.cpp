@@ -354,11 +354,11 @@ static void pshift(int shift)
     /* Adjust width for magic cookies. */
     prev_attr = (to > 0) ? attr[to - 1] : AT_NORMAL;
     next_attr = (from + len < curr) ? attr[from + len] : prev_attr;
-    if (!is_at_equiv(attr[from], prev_attr) && !is_at_equiv(attr[from], next_attr)) {
+    if (!screen::is_at_equiv(attr[from], prev_attr) && !screen::is_at_equiv(attr[from], next_attr)) {
       width += attr_swidth(attr[from]);
       if (from + len < curr)
         width += attr_ewidth(attr[from]);
-      if (is_at_equiv(prev_attr, next_attr)) {
+      if (screen::is_at_equiv(prev_attr, next_attr)) {
         width += attr_ewidth(prev_attr);
         if (from + len < curr)
           width += attr_swidth(next_attr);
@@ -398,7 +398,7 @@ static int attr_swidth(int a)
 {
   int w = 0;
 
-  a = apply_at_specials(a);
+  a = screen::apply_at_specials(a);
 
   if (a & AT_UNDERLINE)
     w += ul_s_width;
@@ -420,7 +420,7 @@ static int attr_ewidth(int a)
 {
   int w = 0;
 
-  a = apply_at_specials(a);
+  a = screen::apply_at_specials(a);
 
   if (a & AT_UNDERLINE)
     w += ul_e_width;
@@ -484,9 +484,9 @@ static int pwidth(lwchar_t ch, int a, lwchar_t prev_ch)
   w = 1;
   if (charset::is_wide_char(ch))
     w++;
-  if (curr > 0 && !is_at_equiv(attr[curr - 1], a))
+  if (curr > 0 && !screen::is_at_equiv(attr[curr - 1], a))
     w += attr_ewidth(attr[curr - 1]);
-  if ((apply_at_specials(a) != AT_NORMAL) && (curr == 0 || !is_at_equiv(attr[curr - 1], a)))
+  if ((screen::apply_at_specials(a) != AT_NORMAL) && (curr == 0 || !screen::is_at_equiv(attr[curr - 1], a)))
     w += attr_swidth(a);
   return (w);
 }
@@ -597,7 +597,7 @@ static int store_char(lwchar_t ch, int a, char* rep, position_t pos)
 #if HILITE_SEARCH
   {
     int matches;
-    if (is_hilited(pos, pos + 1, 0, &matches)) {
+    if (search::is_hilited(pos, pos + 1, 0, &matches)) {
       /*
        * This character should be highlighted.
        * Override the attribute passed in.

@@ -20,6 +20,8 @@ int tty;
 
 extern int wheel_lines;
 
+namespace ttyin {
+
 /*
  * Open keyboard for input.
  */
@@ -88,3 +90,5 @@ int getchr(void)
 
   return (c & 0xFF);
 }
+
+} // namespace ttyin

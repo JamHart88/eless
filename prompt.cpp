@@ -42,6 +42,7 @@ extern char* editor;
 extern char* editproto;
 #endif
 
+// TODO: Move to namespaces
 /*
  * Prototypes for the three flavors of prompts.
  * These strings are expanded by pr_expand().
@@ -61,6 +62,8 @@ char const* wproto  = w_proto;
 
 static char  message[PROMPT_SIZE];
 static char* mp;
+
+namespace prompt {
 
 /*
  * Initialize the prompt prototype strings.
@@ -199,13 +202,13 @@ static int cond(char c, int where)
     return (linenums && ch::length() != NULL_POSITION);
   case 'm': /* More than one file? */
 #if TAGS
-    return (ntags() ? (ntags() > 1) : (ifile::numIfiles() > 1));
+    return (tags::ntags() ? (tags::ntags() > 1) : (ifile::numIfiles() > 1));
 #else
     return (nifile() > 1);
 #endif
   case 'n': /* First prompt in a new file? */
 #if TAGS
-    return (ntags() ? 1 : static_cast<int>(new_file));
+    return (tags::ntags() ? 1 : static_cast<int>(new_file));
 #else
     return (new_file);
 #endif
@@ -218,7 +221,7 @@ static int cond(char c, int where)
     return (ch::length() != NULL_POSITION);
   case 'x': /* Is there a "next" file? */
 #if TAGS
-    if (ntags())
+    if (tags::ntags())
       return (0);
 #endif
     return (ifile::nextIfile(ifile::getCurrentIfile()) != nullptr);
@@ -298,8 +301,8 @@ static void protochar(int c, int where, int iseditproto)
     break;
   case 'i': /* Index into list of files */
 #if TAGS
-    if (ntags())
-      ap_int(curr_tag());
+    if (tags::ntags())
+      ap_int(tags::curr_tag());
     else
 #endif
       ap_int(ifile::getIndex(ifile::getCurrentIfile()));
@@ -320,7 +323,7 @@ static void protochar(int c, int where, int iseditproto)
     break;
   case 'm': /* Number of files */
 #if TAGS
-    n = ntags();
+    n = tags::ntags();
     if (n)
       ap_int(n);
     else
@@ -357,7 +360,7 @@ static void protochar(int c, int where, int iseditproto)
     break;
   case 'T': /* Type of list */
 #if TAGS
-    if (ntags())
+    if (tags::ntags())
       ap_str((char*)"tag");
     else
 #endif
@@ -570,3 +573,5 @@ char* wait_message(void)
 {
   return (pr_expand(wproto, sc_width - so_s_width - so_e_width - 2));
 }
+
+} // namespace prompt

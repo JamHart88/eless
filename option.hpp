@@ -20,9 +20,9 @@ enum option_t {
 };
 
 /* How quiet should we be?
-   NOT_QUIET     : Ring bell at eof and for errors
-   LITTLE_QUIET  : Ring bell only for errors
-   VERY_QUIET    : Never ring bell
+   NOT_QUIET     : Ring screen::bell at eof and for errors
+   LITTLE_QUIET  : Ring screen::bell only for errors
+   VERY_QUIET    : Never ring screen::bell
 */
 enum quiet_t {
   NOT_QUIET    = 0,

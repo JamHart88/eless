@@ -60,8 +60,8 @@ get_forw_line:
     return (NULL_POSITION);
   }
 #if HILITE_SEARCH
-  if (hilite_search == option::OPT_ONPLUS || is_filtering() || status_col) {
-    debug::debug("line 62 status_col val = ", static_cast<int>(status_col));
+  if (hilite_search == option::OPT_ONPLUS || search::is_filtering() || status_col) {
+    debug::debug("line 62 status_col val = ", status_col);
     /*
      * If we are ignoring EOI (command F), only prepare
      * one line ahead, to avoid getting stuck waiting for
@@ -69,9 +69,9 @@ get_forw_line:
      * If we're not ignoring EOI, we *could* do the same, but
      * for efficiency we prepare several lines ahead at once.
      */
-    prep_hilite(curr_pos, curr_pos + 3 * size_linebuf,
+    search::prep_hilite(curr_pos, curr_pos + 3 * size_linebuf,
         less::Globals::ignore_eoi ? 1 : -1);
-    curr_pos = next_unfiltered(curr_pos);
+    curr_pos = search::next_unfiltered(curr_pos);
   }
 #endif
   if (ch::seek(curr_pos)) {
@@ -201,7 +201,7 @@ get_forw_line:
   line::pdone(endline, chopped, 1);
 
 #if HILITE_SEARCH
-  if (is_filtered(base_pos)) {
+  if (search::is_filtered(base_pos)) {
     /*
      * We don't want to display this line.
      * Get the next line.
@@ -210,8 +210,8 @@ get_forw_line:
     goto get_forw_line;
   }
 
-  if (status_col && is_hilited(base_pos, ch::tell() - 1, 1, NULL)) {
-    debug::debug("line 223 status_col val = ", static_cast<int>(status_col));
+  if (status_col && search::is_hilited(base_pos, ch::tell() - 1, 1, NULL)) {
+    debug::debug("line 223 status_col val = ", status_col);
     line::set_status_col('*');
   }
 #endif
@@ -258,9 +258,9 @@ get_back_line:
     return (NULL_POSITION);
   }
 #if HILITE_SEARCH
-  if (hilite_search == option::OPT_ONPLUS || is_filtering() || status_col) {
-    debug::debug("line 269 status_col val = ", static_cast<int>(status_col));
-    prep_hilite((curr_pos < 3 * size_linebuf) ? 0 : curr_pos - 3 * size_linebuf, curr_pos, -1);
+  if (hilite_search == option::OPT_ONPLUS || search::is_filtering() || status_col) {
+    debug::debug("line 269 status_col val = ", status_col);
+    search::prep_hilite((curr_pos < 3 * size_linebuf) ? 0 : curr_pos - 3 * size_linebuf, curr_pos, -1);
   }
 #endif
   if (ch::seek(curr_pos - 1)) {
@@ -388,7 +388,7 @@ loop:
   line::pdone(endline, chopped, 0);
 
 #if HILITE_SEARCH
-  if (is_filtered(base_pos)) {
+  if (search::is_filtered(base_pos)) {
     /*
      * We don't want to display this line.
      * Get the previous line.
@@ -397,8 +397,8 @@ loop:
     goto get_back_line;
   }
 
-  if (status_col && curr_pos > 0 && is_hilited(base_pos, curr_pos - 1, 1, NULL)) {
-    debug::debug("line 427 status_col val = ", static_cast<int>(status_col));
+  if (status_col && curr_pos > 0 && search::is_hilited(base_pos, curr_pos - 1, 1, NULL)) {
+    debug::debug("line 427 status_col val = ", status_col);
     line::set_status_col('*');
   }
 #endif

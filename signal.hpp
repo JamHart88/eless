@@ -13,8 +13,11 @@
 
 #include "less.hpp"
 
+namespace sig {
+
 RETSIGTYPE winch(int type);
 void       init_signals(int on);
 void       psignals(void);
 
+} // namespace sig
 #endif

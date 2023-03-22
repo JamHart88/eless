@@ -25,16 +25,21 @@
 
 #define WHITESP(c) ((c) == ' ' || (c) == '\t')
 
+// TODO: Look at how tags variblaes should be defined and used and move in to namespaces
+
 #if TAGS
 
 char  ztags[] = "tags";
-char* tags    = ztags;
+char* tags_ptr  = ztags;
 
 static int total;
 static int curseq;
 
 extern int linenums;
 extern int ctldisp;
+
+
+namespace tags {
 
 enum tag_result {
   TAG_FOUND,
@@ -55,6 +60,8 @@ enum {
   T_GSYMS,   /* 'GSYMS': other symbols (global) */
   T_GPATH    /* 'GPATH': path name (global) */
 };
+
+
 
 static enum tag_result findctag(char* tag);
 static enum tag_result findgtag(char* tag, int type);
@@ -97,6 +104,7 @@ static struct tag*    curtag;
 #define TAG_RM(tp)               \
   (tp)->next->prev = (tp)->prev; \
   (tp)->prev->next = (tp)->next;
+
 
 /*
  * Delete tag structures.
@@ -165,17 +173,17 @@ int gettagtype(void)
 {
   int f;
 
-  if (strcmp(tags, "GTAGS") == 0)
+  if (strcmp(tags_ptr, "GTAGS") == 0)
     return T_GTAGS;
-  if (strcmp(tags, "GRTAGS") == 0)
+  if (strcmp(tags_ptr, "GRTAGS") == 0)
     return T_GRTAGS;
-  if (strcmp(tags, "GSYMS") == 0)
+  if (strcmp(tags_ptr, "GSYMS") == 0)
     return T_GSYMS;
-  if (strcmp(tags, "GPATH") == 0)
+  if (strcmp(tags_ptr, "GPATH") == 0)
     return T_GPATH;
-  if (strcmp(tags, "-") == 0)
+  if (strcmp(tags_ptr, "-") == 0)
     return T_CTAGS_X;
-  f = open(tags, OPEN_READ);
+  f = open(tags_ptr, OPEN_READ);
   if (f >= 0) {
     close(f);
     return T_CTAGS;
@@ -295,6 +303,8 @@ int curr_tag(void)
   return curseq;
 }
 
+
+
 /*****************************************************************************
  * ctags
  */
@@ -322,7 +332,7 @@ static enum tag_result findctag(char* tag)
   char        tline[TAGLINE_SIZE];
   struct tag* tp;
 
-  p = filename::shell_unquote(tags);
+  p = filename::shell_unquote(tags_ptr);
   f = fopen(p, "r");
   free(p);
   if (f == NULL)
@@ -555,7 +565,7 @@ static enum tag_result findgtag(char* tag, /* tag to load */ int type)
   if (type == T_CTAGS_X) {
     fp = stdin;
     /* Set tag default because we cannot read stdin again. */
-    tags = ztags;
+    tags_ptr = ztags;
   } else {
 #if !HAVE_POPEN
     return TAG_NOFILE;
@@ -814,4 +824,7 @@ static int getentry(char* buf, /* standard or extended ctags -x format data */ c
   return (-1);
 }
 
+} // namespace tags
+
 #endif
+

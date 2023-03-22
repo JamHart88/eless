@@ -55,14 +55,14 @@ screen_trashed_t screen_trashed = TRASHED;
 namespace forwback {
 
 /*
- * Sound the bell to indicate user is trying to move past end of file.
+ * Sound the screen::bell to indicate user is trying to move past end of file.
  */
 static void eof_bell(void)
 {
   if (option::Option::quiet == option::NOT_QUIET)
-    bell();
+    screen::bell();
   else
-    vbell();
+    screen::vbell();
 }
 
 /*
@@ -157,9 +157,9 @@ void forw(int n, position_t pos,
   do_repaint = (only_last && n > sc_height - 1) || (forw_scroll >= 0 && n > forw_scroll && n != sc_height - 1);
 
 #if HILITE_SEARCH
-  if (hilite_search == option::OPT_ONPLUS || is_filtering() || status_col) {
-    prep_hilite(pos, pos + 4 * size_linebuf, less::Globals::ignore_eoi ? 1 : -1);
-    pos = next_unfiltered(pos);
+  if (hilite_search == option::OPT_ONPLUS || search::is_filtering() || status_col) {
+    search::prep_hilite(pos, pos + 4 * size_linebuf, less::Globals::ignore_eoi ? 1 : -1);
+    pos = search::next_unfiltered(pos);
   }
 #endif
 
@@ -176,12 +176,12 @@ void forw(int n, position_t pos,
       position::pos_clear();
       position::add_forw_pos(pos);
       force = 1;
-      clear();
-      home();
+      screen::clear();
+      screen::home();
     }
 
     if (pos != position::position(BOTTOM_PLUS_ONE) || position::empty_screen()) {
-      debug::debug("clear screen and start a new one");
+      debug::debug("screen::clear screen and start a new one");
       /*
        * This is not contiguous with what is
        * currently displayed.  Clear the screen image
@@ -191,8 +191,8 @@ void forw(int n, position_t pos,
       position::add_forw_pos(pos);
       force = 1;
       if (top_scroll) {
-        clear();
-        home();
+        screen::clear();
+        screen::home();
       } else if (!first_time) {
         output::putstr("...skipping...\n");
       }
@@ -220,7 +220,7 @@ void forw(int n, position_t pos,
        */
       pos = input::forw_line(pos);
 #if HILITE_SEARCH
-      pos = next_unfiltered(pos);
+      pos = search::next_unfiltered(pos);
 #endif
       if (pos == NULL_POSITION) {
         debug::debug("end of the file - stop");
@@ -292,8 +292,8 @@ void back(int n, position_t pos, int force, int only_last)
   squish_check();
   do_repaint = (n > get_back_scroll() || (only_last && n > sc_height - 1));
 #if HILITE_SEARCH
-  if (hilite_search == option::OPT_ONPLUS || is_filtering() || status_col) {
-    prep_hilite((pos < 3 * size_linebuf) ? 0 : pos - 3 * size_linebuf, pos, -1);
+  if (hilite_search == option::OPT_ONPLUS || search::is_filtering() || status_col) {
+    search::prep_hilite((pos < 3 * size_linebuf) ? 0 : pos - 3 * size_linebuf, pos, -1);
   }
 #endif
   while (--n >= 0) {
@@ -301,7 +301,7 @@ void back(int n, position_t pos, int force, int only_last)
      * Get the previous line of input.
      */
 #if HILITE_SEARCH
-    pos = prev_unfiltered(pos);
+    pos = search::prev_unfiltered(pos);
 #endif
 
     pos = input::back_line(pos);
@@ -319,8 +319,8 @@ void back(int n, position_t pos, int force, int only_last)
     position::add_back_pos(pos);
     nlines++;
     if (!do_repaint) {
-      home();
-      add_line();
+      screen::home();
+      screen::add_line();
       output::put_line();
     }
   }
@@ -330,7 +330,7 @@ void back(int n, position_t pos, int force, int only_last)
   else if (do_repaint)
     jump::repaint();
   else if (!oldbot)
-    lower_left();
+    screen::lower_left();
   (void)currline(BOTTOM);
 }
 

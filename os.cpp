@@ -24,11 +24,11 @@
 #include "output.hpp"
 #include "utils.hpp"
 
-#include <setjmp.h>
-#include <signal.h>
-#include <time.h>
+#include <csetjmp>
+#include <csignal>
+#include <ctime>
 #if HAVE_ERRNO_H
-#include <errno.h>
+#include <cerrno>
 #endif
 #if HAVE_VALUES_H
 #include <values.h>
@@ -36,7 +36,7 @@
 
 /*
  * BSD setjmp() saves (and longjmp() restores) the signal mask.
- * This costs a system call or two per setjmp(), so if possible we clear the
+ * This costs a system call or two per setjmp(), so if possible we screen::clear the
  * signal mask with sigsetmask(), and use _setjmp()/_longjmp() instead.
  * On other systems, setjmp() doesn't affect the signal mask and so
  * _setjmp() does not exist; we just use setjmp().
@@ -201,7 +201,7 @@ position_t percent_pos(position_t pos, int percent, long fraction)
 
   if (perden == 0)
     return (0);
-  return (position_t)muldiv(pos, perden, (position_t)NUM_FRAC_DENOM);
+  return muldiv(pos, perden, (position_t)NUM_FRAC_DENOM);
 }
 
 } // namespace os

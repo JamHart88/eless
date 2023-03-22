@@ -55,6 +55,7 @@ static position_t prep_endpos;
 static int        is_caseless;
 static int        is_ucase_pattern;
 
+namespace search {
 /*
  * Structures for maintaining a set of ranges for hilites and filtered-out
  * lines. Each range is stored as a node within a red-black tree, and we
@@ -67,7 +68,7 @@ static int        is_ucase_pattern;
  *
  * Each node is allocated from a series of pools, each pool double the size
  * of the previous (for amortised const time allocation). Since our only
- * tree operations are clear and node insertion, not node removal, we don't
+ * tree operations are screen::clear and node insertion, not node removal, we don't
  * need to maintain a usage bitmap or freelist and can just return nodes
  * from the pool in-order until capacity is reached.
  */
@@ -122,11 +123,7 @@ struct pattern_info {
   int          search_type;
 };
 
-#if NO_REGEX
-#define info_compiled(info) ((void*)0)
-#else
 #define info_compiled(info) ((info)->compiled)
-#endif
 
 static struct pattern_info search_info;
 static struct pattern_info filter_info;
@@ -152,12 +149,6 @@ static int is_ucase(char* str)
  */
 static int set_pattern(struct pattern_info* info, char* pattern, int search_type)
 {
-#if !NO_REGEX
-  if (pattern == NULL)
-    CLEAR_PATTERN(info->compiled);
-  else if (pattern::compile_pattern(pattern, search_type, &info->compiled) < 0)
-    return -1;
-#endif
   /* Pattern compiled successfully; save the text too. */
   if (info->text != NULL)
     free(info->text);
@@ -188,9 +179,6 @@ static void clear_pattern(struct pattern_info* info)
   if (info->text != NULL)
     free(info->text);
   info->text = NULL;
-#if !NO_REGEX
-  pattern::uncompile_pattern(&info->compiled);
-#endif
 }
 
 /*
@@ -238,10 +226,6 @@ static int get_cvt_ops(void)
  */
 static int prev_pattern(struct pattern_info* info)
 {
-#if !NO_REGEX
-  if ((info->search_type & SRCH_NO_REGEX) == 0)
-    return (!pattern::is_null_pattern(info->compiled));
-#endif
   return (info->text != NULL);
 }
 
@@ -278,10 +262,10 @@ void repaint_hilite(int on)
     if (pos == NULL_POSITION)
       continue;
     (void)input::forw_line(pos);
-    goto_line(sindex);
+    screen::goto_line(sindex);
     output::put_line();
   }
-  lower_left();
+  screen::lower_left();
   hide_hilite = save_hide_hilite;
 }
 
@@ -317,13 +301,13 @@ void clear_attn(void)
     epos = position::position(sindex + 1);
     if (pos <= old_end_attnpos && (epos == NULL_POSITION || epos > old_start_attnpos)) {
       (void)input::forw_line(pos);
-      goto_line(sindex);
+      screen::goto_line(sindex);
       output::put_line();
       moved = 1;
     }
   }
   if (moved)
-    lower_left();
+    screen::lower_left();
 }
 #endif
 
@@ -889,7 +873,7 @@ static void hilite_line(position_t linepos, char* line, int line_len, int* chpos
    *    substrings of the line, may mark more than is correct
    *    if the pattern starts with "^".  This bug is fixed
    *    for those regex functions that accept a notbol parameter
-   *    (currently POSIX, PCRE and V8-with-regexec2). }}
+   *    (currently POSIX, PCRE and V8-with-regexp::regexec2). }}
    */
   searchp = line;
   do {
@@ -1540,25 +1524,4 @@ int is_filtering(void)
   return prev_pattern(&filter_info);
 }
 #endif
-
-#if HAVE_V8_REGCOMP
-/*
- * This function is called by the V8 regcomp to report
- * errors in regular expressions.
- */
-
-int reg_show_error = 1;
-
-void
-    regerror((char*)s) char* s;
-
-int is_filtering(void)
-{
-  parg_t parg;
-
-  if (!reg_show_error)
-    return;
-  parg.p_string = s;
-  output::error((char*)"%s", &parg);
-}
-#endif
+} // namespace search

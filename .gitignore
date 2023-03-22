@@ -4,6 +4,7 @@ less
 a
 t
 eless
+tmp/**
 doxygen/*
 trace.out
 *.html

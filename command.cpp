@@ -120,8 +120,8 @@ static void multi_search(char* pattern, int n, int silent);
  */
 static void cmd_exec(void)
 {
-  clear_attn();
-  clear_bot();
+  search::clear_attn();
+  screen::clear_bot();
   output::flush();
 }
 
@@ -131,8 +131,8 @@ static void cmd_exec(void)
 static void set_mca(int action)
 {
   mca = action;
-  deinit_mouse(); /* we don't want mouse events while entering a cmd */
-  clear_bot();
+  screen::deinit_mouse(); /* we don't want mouse events while entering a cmd */
+  screen::clear_bot();
   cmdbuf::clear_cmd();
 }
 
@@ -144,7 +144,7 @@ static void clear_mca(void)
   if (mca == 0)
     return;
   mca = 0;
-  init_mouse();
+  screen::init_mouse();
 }
 
 /*
@@ -250,7 +250,7 @@ static void exec_mca(void)
 #if HILITE_SEARCH
   case A_FILTER:
     search_type ^= SRCH_NO_MATCH;
-    set_filter_pattern(cbuf, search_type);
+    search::set_filter_pattern(cbuf, search_type);
     break;
 #endif
   case A_FIRSTCMD:
@@ -281,7 +281,7 @@ static void exec_mca(void)
     edit::edit_list(cbuf);
 #if TAGS
     /* If tag structure is loaded then clean it up. */
-    cleantags();
+    tags::cleantags();
 #endif
     break;
 #endif
@@ -301,7 +301,7 @@ static void exec_mca(void)
     if (shellcmd == nullptr)
       lsystem((char*)"", (char*)"!done");
     else
-      lsystem((char*)shellcmd, (char*)"!done");
+      lsystem(shellcmd, (char*)"!done");
     break;
 #endif
 #if PIPEC
@@ -418,7 +418,7 @@ static int mca_opt_nonfirst_char(int c)
         return (MCA_DONE);
     }
   } else if (err != option::OPT_AMBIG) {
-    bell();
+    screen::bell();
   }
   return (MCA_MORE);
 }
@@ -636,7 +636,7 @@ static void clear_buffers(void)
   ch::flush();
   clr_linenum();
 #if HILITE_SEARCH
-  clr_hilite();
+  search::clr_hilite();
 #endif
 }
 
@@ -714,29 +714,29 @@ static void prompt(void)
    */
   /*
    * If the previous action was a forward movement,
-   * don't clear the bottom line of the display;
+   * don't screen::clear the bottom line of the display;
    * just print the prompt since the forward movement guarantees
    * that we're in the right position to display the prompt.
    * Clearing the line could cause a problem: for example, if the last
    * line displayed ended at the right screen edge without a newline,
-   * then clearing would clear the last displayed line rather than
+   * then clearing would screen::clear the last displayed line rather than
    * the prompt line.
    */
   if (!forw_prompt)
-    clear_bot();
+    screen::clear_bot();
   cmdbuf::clear_cmd();
   forw_prompt = 0;
-  p           = pr_string();
-  if (is_filtering())
+  p           = prompt::pr_string();
+  if (search::is_filtering())
     output::putstr("& ");
   if (p == nullptr || *p == '\0')
     output::putchr(':');
   else {
-    at_enter(AT_STANDOUT);
+    screen::at_enter(AT_STANDOUT);
     output::putstr(p);
-    at_exit();
+    screen::at_exit();
   }
-  clear_eol();
+  screen::clear_eol();
 }
 
 /*
@@ -766,7 +766,7 @@ static lwchar_t getcc_end_command(void)
     return ('\n');
   default:
     /* Some other incomplete command.  Let user complete it. */
-    return (getchr());
+    return (ttyin::getchr());
   }
 }
 
@@ -782,7 +782,7 @@ static lwchar_t getccu(void)
   if (ungot == nullptr) {
     /* Normal case: no ungotten chars.
      * Get char from the user. */
-    c = getchr();
+    c = ttyin::getchr();
   } else {
     /* Ungotten chars available:
      * Take the top of stack (most recent). */
@@ -914,7 +914,7 @@ static void multi_search(char* pattern, int n, int silent)
   }
 
   for (;;) {
-    n = search(search_type, pattern, n);
+    n = search::search(search_type, pattern, n);
     /*
      * The SRCH_NO_MOVE flag doesn't "stick": it gets cleared
      * after being used once.  This allows "n" to work after
@@ -988,7 +988,7 @@ static int forw_loop(int until_hilite)
   less::Globals::ignore_eoi = 1;
   while (!less::Globals::sigs) {
     if (until_hilite && highest_hilite > curr_len) {
-      bell();
+      screen::bell();
       break;
     }
     make_display();
@@ -1042,7 +1042,7 @@ void commands(void)
      * See if any signals need processing.
      */
     if (less::Globals::sigs) {
-      psignals();
+      sig::psignals();
       if (quitting)
         utils::quit(QUIT_SAVED_STATUS);
     }
@@ -1051,7 +1051,7 @@ void commands(void)
      * See if window size changed, for systems that don't
      * generate SIGWINCH.
      */
-    check_winch();
+    screen::check_winch();
 
     /*
      * Display prompt and accept a character.
@@ -1382,7 +1382,7 @@ void commands(void)
       cmd_exec();
       if (number < 0)
         number = 0;
-      jump::jump_line_loc((position_t)number, jump_sline);
+      jump::jump_line_loc(number, jump_sline);
       break;
 
     case A_STAT:
@@ -1392,7 +1392,7 @@ void commands(void)
       if (ch::getflags() & CH_HELPFILE)
         break;
       cmd_exec();
-      parg.p_string = eq_message();
+      parg.p_string = prompt::eq_message();
       output::error((char*)"%s", parg);
       break;
 
@@ -1513,7 +1513,7 @@ void commands(void)
       /*
        * Clear search string highlighting.
        */
-      undo_search();
+      search::undo_search();
       break;
 
     case A_HELP:
@@ -1567,7 +1567,7 @@ void commands(void)
        */
       make_display();
       cmd_exec();
-      lsystem(pr_expand(editproto, 0), (char*)nullptr);
+      lsystem(prompt::pr_expand(editproto, 0), (char*)nullptr);
       break;
 
 #endif
@@ -1579,7 +1579,7 @@ void commands(void)
        * Examine next file.
        */
 #if TAGS
-      if (ntags()) {
+      if (tags::ntags()) {
         output::error((char*)"No next file", NULL_PARG);
         break;
       }
@@ -1599,7 +1599,7 @@ void commands(void)
        * Examine previous file.
        */
 #if TAGS
-      if (ntags()) {
+      if (tags::ntags()) {
         output::error((char*)"No previous file", NULL_PARG);
         break;
       }
@@ -1619,14 +1619,14 @@ void commands(void)
 #if TAGS
       if (number <= 0)
         number = 1;
-      tagfile = nexttag((int)number);
+      tagfile = tags::nexttag((int)number);
       if (tagfile == nullptr) {
         output::error((char*)"No next tag", NULL_PARG);
         break;
       }
       cmd_exec();
       if (edit::edit(tagfile) == 0) {
-        position_t pos = tagsearch();
+        position_t pos = tags::tagsearch();
         if (pos != NULL_POSITION)
           jump::jump_loc(pos, jump_sline);
       }
@@ -1642,14 +1642,14 @@ void commands(void)
 #if TAGS
       if (number <= 0)
         number = 1;
-      tagfile = prevtag((int)number);
+      tagfile = tags::prevtag((int)number);
       if (tagfile == nullptr) {
         output::error((char*)"No previous tag", NULL_PARG);
         break;
       }
       cmd_exec();
       if (edit::edit(tagfile) == 0) {
-        position_t pos = tagsearch();
+        position_t pos = tags::tagsearch();
         if (pos != NULL_POSITION)
           jump::jump_loc(pos, jump_sline);
       }
@@ -1677,7 +1677,7 @@ void commands(void)
       old_ifile = ifile::getCurrentIfile();
       new_ifile = ifile::getOffIfile(ifile::getCurrentIfile());
       if (new_ifile == nullptr) {
-        bell();
+        screen::bell();
         break;
       }
       if (edit::edit_ifile(new_ifile) != 0) {
@@ -1760,7 +1760,7 @@ void commands(void)
       /*
        * Clear a mark.
        */
-      start_mca(A_CLRMARK, "clear mark: ", (void*)nullptr, 0);
+      start_mca(A_CLRMARK, "screen::clear mark: ", (void*)nullptr, 0);
       c = getcc();
       debug::debug("getcc 1799");
       if (is_erase_char(c) || is_newline_char(c))
@@ -1872,7 +1872,7 @@ void commands(void)
       break;
 
     default:
-      bell();
+      screen::bell();
       break;
     }
   }

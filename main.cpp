@@ -57,7 +57,7 @@ char* editproto;
 #endif
 
 #if TAGS
-extern char* tags;
+extern char* tags_ptr;
 extern char* tagoption;
 extern int   jump_sline;
 #endif
@@ -89,12 +89,12 @@ int main(int argc, char* argv[])
   is_tty = isatty(1);
   init_mark();
   decode::init_cmds();
-  get_term();
+  screen::get_term();
   charset::init_charset();
   line::init_line();
   cmdbuf::init_cmdhist();
   opttbl::init_option();
-  init_search();
+  search::init_search();
 
   /*
    * If the name of the executable program is "more",
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
   if (strcmp(s, "more") == 0)
     option::Option::less_is_more = 1;
 
-  init_prompt();
+  prompt::init_prompt();
 
   s = decode::lgetenv(option::Option::less_is_more ? (char*)"MORE" : (char*)"LESS");
   if (s != NULL)
@@ -172,19 +172,19 @@ int main(int argc, char* argv[])
 
   if (missing_cap && !know_dumb)
     output::error((char*)"WARNING: terminal is not fully functional", NULL_PARG);
-  open_getchr();
-  raw_mode(1);
-  init_signals(1);
+  ttyin::open_getchr();
+  screen::raw_mode(1);
+  sig::init_signals(1);
 
   /*
    * Select the first file to examine.
    */
 #if TAGS
-  if (tagoption != NULL || strcmp(tags, "-") == 0) {
+  if (tagoption != NULL || strcmp(tags_ptr, "-") == 0) {
     /*
      * A -t option was given.
      * Verify that no filenames were also given.
-     * Edit the file selected by the "tags" search,
+     * Edit the file selected by the "tags_ptr" search,
      * and search for the proper line in the file.
      */
     if (ifile::numIfiles() > 0) {
@@ -192,14 +192,14 @@ int main(int argc, char* argv[])
           NULL_PARG);
       utils::quit(QUIT_ERROR);
     }
-    findtag(tagoption);
-    if (edit_tagfile()) /* Edit file which contains the tag */
+    tags::findtag(tagoption);
+    if (tags::edit_tagfile()) /* Edit file which contains the tag */
       utils::quit(QUIT_ERROR);
     /*
      * Search for the line which contains the tag.
      * Set up initial_scrpos so we display that line.
      */
-    initial_scrpos.pos = tagsearch();
+    initial_scrpos.pos = tags::tagsearch();
     if (initial_scrpos.pos == NULL_POSITION)
       utils::quit(QUIT_ERROR);
     initial_scrpos.ln = jump_sline;
@@ -222,7 +222,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  init();
+  screen::init();
   command::commands();
   utils::quit(QUIT_OK);
   /*NOTREACHED*/

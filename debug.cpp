@@ -1,9 +1,9 @@
 
 #include <execinfo.h>
 #include <link.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
 
 namespace debug {
 // File for debugging.

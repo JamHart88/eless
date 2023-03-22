@@ -26,7 +26,7 @@
 #include "signal.hpp"
 #include "utils.hpp"
 
-#include <signal.h>
+#include <csignal>
 
 #if HAVE_SYSTEM
 
@@ -49,7 +49,7 @@ void lsystem(char* cmd, char* donemsg)
   if (cmd[0] == '-')
     cmd++;
   else {
-    clear_bot();
+    screen::clear_bot();
     output::putstr("!");
     output::putstr(cmd);
     output::putstr("\n");
@@ -64,13 +64,13 @@ void lsystem(char* cmd, char* donemsg)
   /*
    * De-initialize the terminal and take out of raw mode.
    */
-  deinit();
-  output::flush(); /* Make sure the deinit chars get out */
-  raw_mode(0);
+  screen::deinit();
+  output::flush(); /* Make sure the screen::deinit chars get out */
+  screen::raw_mode(0);
   /*
    * Restore signals to their defaults.
    */
-  init_signals(0);
+  sig::init_signals(0);
 
   /*
    * Force standard input to be the user's terminal
@@ -118,8 +118,8 @@ void lsystem(char* cmd, char* donemsg)
   ignore_result(dup(inp));
   close(inp);
 
-  init_signals(1);
-  raw_mode(1);
+  sig::init_signals(1);
+  screen::raw_mode(1);
   if (donemsg != NULL) {
     output::putstr(donemsg);
     output::putstr("  (press RETURN)");
@@ -127,7 +127,7 @@ void lsystem(char* cmd, char* donemsg)
     output::putchr('\n');
     output::flush();
   }
-  init();
+  screen::init();
   screen_trashed = TRASHED;
 
   /*
@@ -140,9 +140,9 @@ void lsystem(char* cmd, char* donemsg)
    * Since we were ignoring window change signals while we executed
    * the system command, we must assume the window changed.
    * Warning: this leaves a signal pending (in "sigs"),
-   * so psignals() should be called soon after lsystem().
+   * so sig::psignals() should be called soon after lsystem().
    */
-  winch(0);
+  sig::winch(0);
 #endif
 }
 
@@ -215,15 +215,15 @@ int pipe_data(char* cmd, position_t spos, position_t epos)
     output::error((char*)"Cannot create pipe", NULL_PARG);
     return (-1);
   }
-  clear_bot();
+  screen::clear_bot();
   output::putstr("!");
   output::putstr(cmd);
   output::putstr("\n");
 
-  deinit();
+  screen::deinit();
   output::flush();
-  raw_mode(0);
-  init_signals(0);
+  screen::raw_mode(0);
+  sig::init_signals(0);
 #ifdef SIGPIPE
   signal(SIGPIPE, SIG_IGN);
 #endif
@@ -256,13 +256,13 @@ int pipe_data(char* cmd, position_t spos, position_t epos)
 #ifdef SIGPIPE
   signal(SIGPIPE, SIG_DFL);
 #endif
-  init_signals(1);
-  raw_mode(1);
-  init();
+  sig::init_signals(1);
+  screen::raw_mode(1);
+  screen::init();
   screen_trashed = TRASHED;
 #if defined(SIGWINCH) || defined(SIGWIND)
   /* {{ Probably don't need this here. }} */
-  winch(0);
+  sig::winch(0);
 #endif
   return (0);
 }

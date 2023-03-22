@@ -26,7 +26,7 @@
 #include "screen.hpp"
 #include "utils.hpp"
 
-#include <signal.h>
+#include <csignal>
 
 // TODO: Move to namespace
 
@@ -37,6 +37,14 @@ extern int  wscroll;
 extern int  reading;
 extern int  quit_on_intr;
 extern long jump_sline_fraction;
+
+namespace sig {
+
+
+static inline void ignore_result(sighandler_t unused_result)
+{
+  (void)unused_result;
+}
 
 /*
  * Interrupt signal handler.
@@ -49,8 +57,8 @@ extern long jump_sline_fraction;
 //     int type;
 static RETSIGTYPE u_interrupt(int type)
 {
-  bell();
-  signal(SIGINT, u_interrupt);
+  screen::bell();
+  ignore_result(std::signal(SIGINT, u_interrupt));
   less::Globals::sigs |= S_INTERRUPT;
   if (reading)
     os::intread(); /* May longjmp */
@@ -68,7 +76,7 @@ static RETSIGTYPE u_interrupt(int type)
 //     int type;
 static RETSIGTYPE stop(int type)
 {
-  signal(SIGTSTP, stop);
+  ignore_result(std::signal(SIGTSTP, stop));
   less::Globals::sigs |= S_STOP;
   if (reading)
     os::intread();
@@ -97,7 +105,7 @@ static RETSIGTYPE stop(int type)
 
 RETSIGTYPE winch(int type)
 {
-  signal(SIG_LESSWINDOW, winch);
+  ignore_result(std::signal(SIG_LESSWINDOW, winch));
   less::Globals::sigs |= S_WINCH;
   if (reading)
     os::intread();
@@ -129,41 +137,41 @@ void init_signals(int on)
     /*
      * Set signal handlers.
      */
-    (void)signal(SIGINT, u_interrupt);
+    (void)std::signal(SIGINT, u_interrupt);
 #ifdef SIGTSTP
-    (void)signal(SIGTSTP, stop);
+    (void)std::signal(SIGTSTP, stop);
 #endif
 #ifdef SIGWINCH
-    (void)signal(SIGWINCH, winch);
+    (void)std::signal(SIGWINCH, winch);
 #endif
 #ifdef SIGWIND
-    (void)signal(SIGWIND, winch);
+    (void)std::signal(SIGWIND, winch);
 #endif
 #ifdef SIGQUIT
-    (void)signal(SIGQUIT, SIG_IGN);
+    (void)std::signal(SIGQUIT, SIG_IGN);
 #endif
 #ifdef SIGTERM
-    (void)signal(SIGTERM, terminate);
+    (void)std::signal(SIGTERM, terminate);
 #endif
   } else {
     /*
      * Restore signals to defaults.
      */
-    (void)signal(SIGINT, SIG_DFL);
+    (void)std::signal(SIGINT, SIG_DFL);
 #ifdef SIGTSTP
-    (void)signal(SIGTSTP, SIG_DFL);
+    (void)std::signal(SIGTSTP, SIG_DFL);
 #endif
 #ifdef SIGWINCH
-    (void)signal(SIGWINCH, SIG_IGN);
+    (void)std::signal(SIGWINCH, SIG_IGN);
 #endif
 #ifdef SIGWIND
-    (void)signal(SIGWIND, SIG_IGN);
+    (void)std::signal(SIGWIND, SIG_IGN);
 #endif
 #ifdef SIGQUIT
-    (void)signal(SIGQUIT, SIG_DFL);
+    (void)std::signal(SIGQUIT, SIG_DFL);
 #endif
 #ifdef SIGTERM
-    (void)signal(SIGTERM, SIG_DFL);
+    (void)std::signal(SIGTERM, SIG_DFL);
 #endif
   }
 }
@@ -191,16 +199,16 @@ void psignals(void)
      * Clean up the terminal.
      */
 #ifdef SIGTTOU
-    signal(SIGTTOU, SIG_IGN);
+    ignore_result(std::signal(SIGTTOU, SIG_IGN));
 #endif
-    clear_bot();
-    deinit();
+    screen::clear_bot();
+    screen::deinit();
     output::flush();
-    raw_mode(0);
+    screen::raw_mode(0);
 #ifdef SIGTTOU
-    signal(SIGTTOU, SIG_DFL);
+    ignore_result(std::signal(SIGTTOU, SIG_DFL));
 #endif
-    signal(SIGTSTP, SIG_DFL);
+    ignore_result(std::signal(SIGTSTP, SIG_DFL));
     kill(getpid(), SIGTSTP);
     /*
      * ... Bye bye. ...
@@ -208,9 +216,9 @@ void psignals(void)
      * Reset the terminal and arrange to jump::repaint the
      * screen when we get back to the main command loop.
      */
-    signal(SIGTSTP, stop);
-    raw_mode(1);
-    init();
+    ignore_result(std::signal(SIGTSTP, stop));
+    screen::raw_mode(1);
+    screen::init();
     screen_trashed = TRASHED;
     tsignals |= S_WINCH;
   }
@@ -219,11 +227,11 @@ void psignals(void)
   if (tsignals & S_WINCH) {
     int old_width, old_height;
     /*
-     * Re-execute scrsize() to read the new window size.
+     * Re-execute screen::scrsize() to read the new window size.
      */
     old_width  = sc_width;
     old_height = sc_height;
-    get_term();
+    screen::get_term();
     if (sc_width != old_width || sc_height != old_height) {
       wscroll = (sc_height + 1) / 2;
       calc_jump_sline();
@@ -237,3 +245,5 @@ void psignals(void)
       utils::quit(QUIT_INTERRUPT);
   }
 }
+
+} // namespace sig

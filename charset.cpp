@@ -17,9 +17,9 @@
 #include "output.hpp"
 #include "utils.hpp"
 
-#include <ctype.h>
+#include <cctype>
+#include <clocale>
 #include <langinfo.h>
-#include <locale.h>
 
 #include "decode.hpp"
 

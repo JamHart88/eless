@@ -270,7 +270,7 @@ static void expand_special_keys(char* table, int len)
        * Replace all N bytes with the actual bytes
        * output by the special key on this terminal.
        */
-      repl = special_key_str(fm[1]);
+      repl = screen::special_key_str(fm[1]);
       klen = fm[2] & 0377;
       fm += klen;
       if (repl == NULL || (int)strlen(repl) > klen)

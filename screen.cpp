@@ -115,12 +115,6 @@ char* kent        = NULL;     /* Keypad ENTER sequence */
 static int attrmode      = AT_NORMAL;
 static int termcap_debug = -1;
 extern int one_screen;
-
-static char* cheaper(char* t1, char* t2, char* def);
-static void  tmodes(char* incap, char* outcap, char** instr,
-     char** outstr, char* def_instr, char* def_outstr,
-     char** spp);
-
 /*
  * These two variables are sometimes defined in,
  * and needed by, the termcap library.
@@ -146,6 +140,14 @@ extern int tty;
 
 extern char* tgetstr();
 extern char* tgoto();
+
+namespace screen {
+
+
+static char* cheaper(char* t1, char* t2, char* def);
+static void  tmodes(char* incap, char* outcap, char** instr,
+     char** outstr, char* def_instr, char* def_outstr,
+     char** spp);
 
 /*
  * Change terminal to "raw mode", or restore to "normal" mode.
@@ -504,13 +506,13 @@ static char* ltget_env(char* capname)
         return p->value;
     p        = (struct env*)utils::ecalloc(1, sizeof(struct env));
     p->name  = utils::save(capname);
-    p->value = (char*)utils::ecalloc(strlen(capname) + 3, sizeof(char));
-    sprintf(p->value, "<%s>", capname);
+    p->value = (char*)utils::ecalloc(static_cast<int>(strlen(capname)) + 3, sizeof(char));
+    ignore_result(sprintf(p->value, "<%s>", capname));
     p->next = envs;
     envs    = p;
     return p->value;
   }
-  snprintf(name, sizeof(name), "LESS_TERMCAP_%s", capname);
+  ignore_result(snprintf(name, sizeof(name), "LESS_TERMCAP_%s", capname));
   return (decode::lgetenv(name));
 }
 
@@ -1219,3 +1221,5 @@ void putbs(void)
     tputs(sc_backspace, 1, output::putchr);
   }
 }
+
+} // namespace screen

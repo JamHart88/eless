@@ -7,9 +7,12 @@
 
 #include "less.hpp"
 
+namespace ttyin {
+
 void open_getchr(void);
 void close_getchr(void);
 int  default_wheel_lines(void);
 int  getchr(void);
 
+} // namespace ttyin
 #endif

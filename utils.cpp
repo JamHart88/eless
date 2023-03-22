@@ -43,13 +43,13 @@ void* ecalloc(int count, unsigned int size)
 {
   void* p;
 
-  p = (void*)calloc(count, size);
-  if (p != NULL)
+  p = calloc(count, size);
+  if (p != nullptr)
     return (p);
   output::error((char*)"Cannot allocate memory", NULL_PARG);
   quit(QUIT_ERROR);
-  /*NOTREACHED*/
-  return (NULL);
+  
+  return (nullptr);
 }
 
 /*
@@ -102,7 +102,7 @@ void quit(int status)
   static int save_status;
 
   /*
-   * Put cursor at bottom left corner, clear the line,
+   * Put cursor at bottom left corner, screen::clear the line,
    * reset the terminal modes, and exit.
    */
   if (status < 0)
@@ -110,14 +110,15 @@ void quit(int status)
   else
     save_status = status;
   quitting = 1;
-  edit::edit((char*)NULL);
+  edit::edit((char*)nullptr);
   cmdbuf::save_cmdhist();
   if (any_display && is_tty)
-    clear_bot();
-  deinit();
+    screen::clear_bot();
+  screen::deinit();
   output::flush();
-  raw_mode(0);
-  close_getchr();
+  screen::raw_mode(0);
+  ttyin::close_getchr();
   exit(status);
 }
+
 } // utils namespace

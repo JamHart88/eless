@@ -66,7 +66,7 @@ extern int   wheel_lines;
 
 #if TAGS
 char*        tagoption = NULL;
-extern char* tags;
+extern char* tags_ptr;
 extern char  ztags[];
 #endif
 
@@ -262,13 +262,13 @@ void opt_t(int type, char* s)
     break;
   case option::TOGGLE:
 
-    findtag(utils::skipsp(s));
+    tags::findtag(utils::skipsp(s));
     save_ifile = edit::save_curr_ifile();
     /*
      * Try to open the file containing the tag
      * and search for the tag in that file.
      */
-    if (edit_tagfile() || (pos = tagsearch()) == NULL_POSITION) {
+    if (tags::edit_tagfile() || (pos = tags::tagsearch()) == NULL_POSITION) {
       /* Failed: reopen the old file. */
       edit::reedit_ifile(save_ifile);
       break;
@@ -289,18 +289,18 @@ void opt__T(int type, char* s)
 
   switch (type) {
   case option::INIT:
-    tags = utils::save(s);
+    tags_ptr = utils::save(s);
     break;
   case option::TOGGLE:
     s = utils::skipsp(s);
-    if (tags != NULL && tags != ztags)
-      free(tags);
+    if (tags_ptr != NULL && tags_ptr != ztags)
+      free(tags_ptr);
     filename = filename::lglob(s);
-    tags     = filename::shell_unquote(filename);
+    tags_ptr     = filename::shell_unquote(filename);
     free(filename);
     break;
   case option::QUERY:
-    parg.p_string = tags;
+    parg.p_string = tags_ptr;
     output::error((char*)"Tags file \"%s\"", parg);
     break;
   }
@@ -417,7 +417,7 @@ void opt_i(int type, char* s)
 {
   switch (type) {
   case option::TOGGLE:
-    chg_caseless();
+    search::chg_caseless();
     break;
   case option::QUERY:
   case option::INIT:
@@ -565,7 +565,7 @@ void opt_rscroll(int type, char* s)
     break;
   }
   case option::QUERY: {
-    p.p_string = rscroll_char ? (char*)charset::prchar(rscroll_char) : (char*)"-";
+    p.p_string = rscroll_char ? charset::prchar(rscroll_char) : (char*)"-";
     output::error((char*)"rscroll char is %s", p);
     break;
   }
@@ -598,9 +598,9 @@ void opt_mousecap(int type, char* s)
   switch (type) {
   case option::TOGGLE:
     if (mousecap == option::OPT_OFF)
-      deinit_mouse();
+      screen::deinit_mouse();
     else
-      init_mouse();
+      screen::init_mouse();
     break;
   case option::INIT:
   case option::QUERY:
@@ -618,7 +618,7 @@ void opt_wheel_lines(int type, char* s)
   case option::INIT:
   case option::TOGGLE:
     if (wheel_lines <= 0)
-      wheel_lines = default_wheel_lines();
+      wheel_lines = ttyin::default_wheel_lines();
     break;
   case option::QUERY:
     break;

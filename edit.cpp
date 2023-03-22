@@ -426,7 +426,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
     position::pos_clear();
     clr_linenum();
 #if HILITE_SEARCH
-    clr_hilite();
+    search::clr_hilite();
 #endif
     if (strcmp(filename, FAKE_HELPFILE) && strcmp(filename, FAKE_EMPTYFILE)) {
       char* qfilename = filename::shell_quote(filename);
@@ -761,7 +761,7 @@ loop:
     return;
   case 'q':
     utils::quit(QUIT_OK);
-    /*NOTREACHED*/
+    return;  // Wont be reached - adding here avoids compiler warning
   default:
     /*
      * Eh?

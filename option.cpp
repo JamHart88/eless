@@ -330,7 +330,7 @@ void toggle_option(struct loption* o, int lower, char* s, int how_toggle)
 
 #if HILITE_SEARCH
   if (how_toggle != OPT_NO_TOGGLE && (o->otype & HL_REPAINT))
-    repaint_hilite(0);
+    search::repaint_hilite(0);
 #endif
 
   /*
@@ -417,7 +417,7 @@ void toggle_option(struct loption* o, int lower, char* s, int how_toggle)
 
 #if HILITE_SEARCH
   if (how_toggle != OPT_NO_TOGGLE && (o->otype & HL_REPAINT))
-    chg_hilite();
+    search::chg_hilite();
 #endif
 
   if (!no_prompt) {

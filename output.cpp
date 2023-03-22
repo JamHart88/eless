@@ -55,15 +55,15 @@ void put_line(void)
   final_attr = AT_NORMAL;
 
   for (i = 0; (c = line::gline(i, &a)) != '\0'; i++) {
-    at_switch(a);
+    screen::at_switch(a);
     final_attr = a;
     if (c == '\b')
-      putbs();
+      screen::putbs();
     else
       putchr(c);
   }
 
-  at_exit();
+  screen::at_exit();
 }
 
 static char  obuf[OUTBUF_SIZE];
@@ -107,7 +107,7 @@ int putchr(int c)
 {
   if (need_clr) {
     need_clr = 0;
-    clear_bot();
+    screen::clear_bot();
   }
   /*
    * Some versions of flush() write to *ob, so we must flush
@@ -235,10 +235,10 @@ void get_return(void)
   int c;
 
 #if ONLY_RETURN
-  while ((c = getchr()) != '\n' && c != '\r')
-    bell();
+  while ((c = ttyin::getchr()) != '\n' && c != '\r')
+    screen::bell();
 #else
-  c = getchr();
+  c = ttyin::getchr();
   if (c != '\n' && c != '\r' && c != ' ' && c != READ_INTR)
     command::ungetcc(c);
 #endif
@@ -258,9 +258,9 @@ void error(char* fmt, parg_t parg)
   if (any_display && is_tty) {
     if (!oldbot)
       forwback::squish_check();
-    at_exit();
-    clear_bot();
-    at_enter(AT_STANDOUT);
+    screen::at_exit();
+    screen::clear_bot();
+    screen::at_enter(AT_STANDOUT);
     col += so_s_width;
   }
 
@@ -272,12 +272,12 @@ void error(char* fmt, parg_t parg)
   }
 
   putstr(return_to_continue);
-  at_exit();
+  screen::at_exit();
   col += sizeof(return_to_continue) + so_e_width;
 
   get_return();
-  lower_left();
-  clear_eol();
+  screen::lower_left();
+  screen::clear_eol();
 
   if (col >= sc_width)
     /*
@@ -300,12 +300,12 @@ static char intr_to_abort[] = "... (interrupt to abort)";
  */
 void ierror(char* fmt, parg_t parg)
 {
-  at_exit();
-  clear_bot();
-  at_enter(AT_STANDOUT);
+  screen::at_exit();
+  screen::clear_bot();
+  screen::at_enter(AT_STANDOUT);
   (void)less_printf(fmt, parg);
   putstr(intr_to_abort);
-  at_exit();
+  screen::at_exit();
   flush();
   need_clr = 1;
 }
@@ -320,17 +320,17 @@ int query(char* fmt, parg_t parg)
   int col = 0;
 
   if (any_display && is_tty)
-    clear_bot();
+    screen::clear_bot();
 
   (void)less_printf(fmt, parg);
-  c = getchr();
+  c = ttyin::getchr();
 
   if (!(any_display && is_tty)) {
     putchr('\n');
     return (c);
   }
 
-  lower_left();
+  screen::lower_left();
   if (col >= sc_width)
     screen_trashed = TRASHED;
   flush();

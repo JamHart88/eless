@@ -20,7 +20,7 @@
 #include "defines.hpp"
 
 /*
- * Wrapping function call with ignore_result makes it more clear to
+ * Wrapping function call with ignore_result makes it more screen::clear to
  * readers, compilers and linters that you are, in fact, ignoring the
  * function's return value on purpose.
  */
@@ -51,7 +51,7 @@ static inline void ignore_result(char* unused_result)
 #endif
 
 #if HAVE_CTYPE_H
-#include <ctype.h>
+#include <cctype>
 #endif
 #if HAVE_WCTYPE_H
 #include <cwctype>

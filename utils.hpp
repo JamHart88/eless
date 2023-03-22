@@ -92,11 +92,11 @@ void typeToStr(const T num, char* buf, int bufLength)
  */
 // TODO: Move to utils. Follow C++ guidance - see clang-tidy
 template <typename T>
-const int strlen_bound(void)
+constexpr int strlen_bound(void)
 {
   return ((sizeof(T) * CHAR_BIT - 1) * 302 / 1000 + 1 + 2);
 }
 
-}
+} // namespace utils
 
 #endif

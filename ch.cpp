@@ -346,9 +346,9 @@ read_more:
      */
     if (!(thisfile->flags & CH_CANSEEK))
       return ('?');
-    if (lseek(thisfile->file, (off_t)pos, SEEK_SET) == BAD_LSEEK) {
+    if (lseek(thisfile->file, pos, SEEK_SET) == BAD_LSEEK) {
       output::error((char*)"seek output::error", NULL_PARG);
-      clear_eol();
+      screen::clear_eol();
       return (EOI);
     }
     thisfile->fpos = pos;
@@ -368,7 +368,7 @@ read_more:
     n                      = 1;
   } else {
     n = os::iread(thisfile->file, &bp->data[bp->datasize],
-        (unsigned int)(LBUFSIZE - bp->datasize));
+        (LBUFSIZE - bp->datasize));
     chDebug("os::iread result");
     chDebug("n = " + std::to_string(n));
     chDebug(reinterpret_cast<char*>(bp->data));
@@ -379,7 +379,7 @@ read_more:
   if (n < 0) {
     {
       output::error((char*)"read output::error", NULL_PARG);
-      clear_eol();
+      screen::clear_eol();
     }
     n = 0;
   }
@@ -406,7 +406,7 @@ read_more:
        */
       if (!slept) {
         parg_t parg;
-        parg.p_string = wait_message();
+        parg.p_string = prompt::wait_message();
         output::ierror((char*)"%s", parg);
       }
 

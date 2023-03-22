@@ -8,6 +8,8 @@
 
 #include "less.hpp"
 
+namespace screen {
+
 void  raw_mode(int on);
 void  scrsize(void);
 char* special_key_str(int key);
@@ -18,10 +20,10 @@ void  init(void);
 void  deinit(void);
 void  home(void);
 void  add_line(void);
-void  remove_top(int n);
-void  win32_scroll_up(int n);
+void  remove_top(int n); // not used
+void  win32_scroll_up(int n); // not used
 void  lower_left(void);
-void  line_left(void);
+void  line_left(void); // not used
 void  check_winch(void);
 void  goto_line(int sindex);
 void  vbell(void);
@@ -34,7 +36,9 @@ void  at_exit(void);
 void  at_switch(int attr);
 int   is_at_equiv(int attr1, int attr2);
 int   apply_at_specials(int attr);
-void  backspace(void);
+void  backspace(void); // not used
 void  putbs(void);
+
+} // namespace screen
 
 #endif

@@ -74,7 +74,7 @@ using namespace option;
 static struct optname a_optname  = { (char*)"search-skip-screen", NULL };
 static struct optname b_optname  = { (char*)"buffers", NULL };
 static struct optname B__optname = { (char*)"auto-buffers", NULL };
-static struct optname c_optname  = { (char*)"clear-screen", NULL };
+static struct optname c_optname  = { (char*)"screen::clear-screen", NULL };
 static struct optname d_optname  = { (char*)"dumb", NULL };
 static struct optname e_optname  = { (char*)"quit-at-eof", NULL };
 static struct optname f_optname  = { (char*)"force", NULL };
@@ -268,9 +268,9 @@ static struct option::loption option[] = {
       reinterpret_cast<int*>(&option::Option::quiet), // var ptr
       NULL,                                           // Pointer to special handling function
       {                                               // Description of each value
-          (char*)"Ring the bell for errors AND at eof/bof",
-          (char*)"Ring the bell for errors but not at eof/bof",
-          (char*)"Never ring the bell" } },
+          (char*)"Ring the screen::bell for errors AND at eof/bof",
+          (char*)"Ring the screen::bell for errors but not at eof/bof",
+          (char*)"Never ring the screen::bell" } },
   { 'r', &r_optname,
       TRIPLE | REPAINT, OPT_OFF, &ctldisp, NULL,
       { (char*)"Display control characters as ^X",
@@ -316,8 +316,8 @@ static struct option::loption option[] = {
           NULL } },
   { 'X', &X__optname,
       BOOL | NO_TOGGLE, OPT_OFF, &no_init, NULL,
-      { (char*)"Send init/deinit strings to terminal",
-          (char*)"Don't use init/deinit strings",
+      { (char*)"Send init/screen::deinit strings to terminal",
+          (char*)"Don't use init/screen::deinit strings",
           NULL } },
   { 'y', &y_optname,
       NUMBER, -1, &forw_scroll, NULL,
@@ -461,13 +461,13 @@ static int is_optchar(char c)
 
 /*
  * Find an option in the option table, given its option name.
- * p_optname is the (possibly partial) name to look for, and
+ * optname_ptr is the (possibly partial) name to look for, and
  * is updated to point after the matched name.
  * p_oname if non-NULL is set to point to the full option name.
  */
-struct option::loption* findopt_name(char** p_optname, char** p_oname, int* p_err)
+struct option::loption* findopt_name(char** optname_ptr, char** oname_ptr, int* err)
 {
-  char*                   optname = *p_optname;
+  char*                   optname = *optname_ptr;
   struct option::loption* o;
   struct option::optname* oname;
   int                     len;
@@ -526,13 +526,13 @@ struct option::loption* findopt_name(char** p_optname, char** p_oname, int* p_er
     /*
      * Name matched more than one option.
      */
-    if (p_err != NULL)
-      *p_err = option::OPT_AMBIG;
-    return (NULL);
+    if (err != nullptr)
+      *err = option::OPT_AMBIG;
+    return (nullptr);
   }
-  *p_optname = optname + maxlen;
-  if (p_oname != NULL)
-    *p_oname = maxoname == NULL ? NULL : maxoname->oname;
+  *optname_ptr = optname + maxlen;
+  if (oname_ptr != nullptr)
+    *oname_ptr = maxoname == nullptr ? nullptr : maxoname->oname;
   return (maxo);
 }
 

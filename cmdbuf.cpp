@@ -271,7 +271,7 @@ static void cmd_repaint(const char *old_cp)
     /*
      * Repaint the line from the current position.
      */
-    clear_eol();
+    screen::clear_eol();
     while (*cp != '\0')
     {
         char *np = cp;
@@ -313,7 +313,7 @@ static void cmd_home(void)
 
         cmd_step_left(&cp, &width, &bswidth);
         while (bswidth-- > 0)
-            putbs();
+            screen::putbs();
         cmd_col -= width;
     }
 
@@ -448,7 +448,7 @@ cmd_left(void)
     cp = ncp;
     cmd_col -= width;
     while (bswidth-- > 0)
-        putbs();
+        screen::putbs();
     return (CC_OK);
 }
 
@@ -462,7 +462,7 @@ static int cmd_ichar(char *cs, int clen)
     if (strlen(cmdbuf) + clen >= sizeof(cmdbuf)-1)
     {
         /* No room in the command buffer for another char. */
-        bell();
+        screen::bell();
         return (CC_ERROR);
     }
         
@@ -659,7 +659,7 @@ static int cmd_updown(int action)
         /*
          * The current command has no history list.
          */
-        bell();
+        screen::bell();
         return (CC_OK);
     }
 
@@ -693,7 +693,7 @@ static int cmd_updown(int action)
                 s = "";
             cmd_offset = 0;
             cmd_home();
-            clear_eol();
+            screen::clear_eol();
             strncpy(cmdbuf, s, sizeof(cmdbuf) - 1);
             for (cp = cmdbuf;  *cp != '\0';  )
                 cmd_right();
@@ -703,7 +703,7 @@ static int cmd_updown(int action)
     /*
      * We didn't find a history entry that matches.
      */
-    bell();
+    screen::bell();
     return (CC_OK);
 }
 #endif
@@ -936,7 +936,7 @@ static int cmd_istr(char *str)
         action = cmd_ichar(os, s - os);
         if (action != CC_OK)
         {
-            bell();
+            screen::bell();
             return (action);
         }
     }
@@ -1122,7 +1122,7 @@ static int cmd_complete(int action)
         init_compl();
         if (tk_text == NULL)
         {
-            bell();
+            screen::bell();
             return (CC_OK);
         }
         if (action == EC_EXPAND)
@@ -1190,7 +1190,7 @@ static int cmd_complete(int action)
     
 fail:
     in_completion = 0;
-    bell();
+    screen::bell();
     return (CC_OK);
 }
 
@@ -1230,7 +1230,7 @@ fail:
             } else
             {
                 /* UTF8_INVALID or stray UTF8_TRAIL */
-                bell();
+                screen::bell();
                 return (CC_ERROR);
             }
         } else if (IS_UTF8_TRAIL(c))
@@ -1242,14 +1242,14 @@ fail:
             {
                 /* complete, but not well formed (non-shortest form), sequence */
                 cmd_mbc_buf_len = 0;
-                bell();
+                screen::bell();
                 return (CC_ERROR);
             }
         } else
         {
             /* Flush incomplete (truncated) sequence.  */
             cmd_mbc_buf_len = 0;
-            bell();
+            screen::bell();
             /* Handle new char.  */
             goto retry;
         }

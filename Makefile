@@ -13,7 +13,33 @@ INSTALL_DATA = ${INSTALL} -m 644
 CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
-CPPFLAGS = -std=c++17 -g -O0 -Wall  -Wl,--demangle -Wunreachable-code -Wlogical-op -Wfloat-equal -Wpedantic 
+CPPFLAGS = -E -std=c++17 -g -ggdb -O0 -Wall -Wshadow -Wnon-virtual-dtor -pedantic -Wl,--demangle -Wunreachable-code -Wlogical-op \
+	-Wfloat-equal -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wnull-dereference -Wuseless-cast -Wdouble-promotion \
+	-Wimplicit-fallthrough -Wpedantic
+# -Wsign-conversion -Wextra -Wconversion 
+# TODO: Add these : -Wold-style-cast
+# -pedantic - Warn on language extensions
+# -Wall -Wextra reasonable and standard
+# -Wshadow warn the user if a variable declaration shadows one from a parent context
+# -Wnon-virtual-dtor warn the user if a class with virtual functions has a non-virtual destructor. This helps catch hard to track down memory errors
+# -Wold-style-cast warn for c-style casts
+# -Wcast-align warn for potential performance problem casts
+# -Wunused warn on anything being unused
+# -Woverloaded-virtual warn if you overload (not override) a virtual function
+# -Wpedantic (all versions of GCC, Clang >= 3.2) warn if non-standard C++ is used
+# -Wconversion warn on type conversions that may lose data
+# -Wsign-conversion (Clang all versions, GCC >= 4.3) warn on sign conversions
+# -Wmisleading-indentation (only in GCC >= 6.0) warn if indentation implies blocks where blocks do not exist
+# -Wduplicated-cond (only in GCC >= 6.0) warn if if / else chain has duplicated conditions
+# -Wduplicated-branches (only in GCC >= 7.0) warn if if / else branches have duplicated code
+# -Wlogical-op (only in GCC) warn about logical operations being used where bitwise were probably wanted
+# -Wnull-dereference (only in GCC >= 6.0) warn if a null dereference is detected
+# -Wuseless-cast (only in GCC >= 4.8) warn if you perform a cast to the same type
+# -Wdouble-promotion (GCC >= 4.6, Clang >= 3.8) warn if float is implicitly promoted to double
+# -Wformat=2 warn on security issues around functions that format output (i.e., printf)
+# -Wlifetime (only special branch of Clang currently) shows object lifetime issues
+# -Wimplicit-fallthrough Warns when case statements fall-through. (Included with -Wextra in GCC, not in clang)
+
 # Removed CPP flags
 # Make this -O2 for production
 # -std=c++11  - AIX XLC++ only has c++0x 
@@ -63,7 +89,14 @@ eless$(EXEEXT): ${OBJ}
 
 charset.${O}: compose.uni ubin.uni wide.uni
 
-${OBJ}: ${srcdir}/less.hpp defines.hpp 
+${OBJ}: ${srcdir}/less.hpp ${srcdir}/defines.hpp ${srcdir}/brac.hpp ${srcdir}/cvt.hpp ${srcdir}/forwback.hpp \
+	${srcdir}/lesskey.hpp ${srcdir}/option.hpp ${srcdir}/position.hpp ${srcdir}/tags.hpp ${srcdir}/charset.hpp \
+	${srcdir}/debug.hpp ${srcdir}/help.hpp ${srcdir}/line.hpp ${srcdir}/opttbl.hpp ${srcdir}/prompt.hpp ${srcdir}/ttyin.hpp \
+	${srcdir}/ch.hpp ${srcdir}/decode.hpp ${srcdir}/ifile.hpp ${srcdir}/linenum.hpp ${srcdir}/os.hpp \
+	${srcdir}/utils.hpp ${srcdir}/cmdbuf.hpp ${srcdir}/input.hpp ${srcdir}/lsystem.hpp ${srcdir}/output.hpp ${srcdir}/screen.hpp \
+	${srcdir}/cmd.hpp ${srcdir}/edit.hpp ${srcdir}/jump.hpp ${srcdir}/mark.hpp ${srcdir}/pattern.hpp ${srcdir}/search.hpp \
+	${srcdir}/command.hpp ${srcdir}/filename.hpp ${srcdir}/less.hpp ${srcdir}/optfunc.hpp ${srcdir}/pckeys.hpp ${srcdir}/signal.hpp
+
 
 install: all ${srcdir}/less.nro installdirs
 	${INSTALL_PROGRAM} eless$(EXEEXT) ${DESTDIR}${bindir}/${binprefix}less$(EXEEXT)

@@ -225,7 +225,7 @@ void jump_loc(position_t pos, int sline)
       forwback::back(-nline, position::position(TOP), 1, 0);
 #if HILITE_SEARCH
     if (show_attn)
-      repaint_hilite(1);
+      search::repaint_hilite(1);
 #endif
     return;
   }
@@ -262,7 +262,7 @@ void jump_loc(position_t pos, int sline)
         forwback::forw(sc_height - sindex + nline - 1, bpos, 1, 0, 0);
 #if HILITE_SEARCH
         if (show_attn)
-          repaint_hilite(1);
+          search::repaint_hilite(1);
 #endif
         return;
       }
@@ -299,7 +299,7 @@ void jump_loc(position_t pos, int sline)
         break;
       }
 #if HILITE_SEARCH
-      pos = next_unfiltered(pos);
+      pos = search::next_unfiltered(pos);
 #endif
       if (pos >= tpos) {
         /*
@@ -310,16 +310,16 @@ void jump_loc(position_t pos, int sline)
         forwback::back(nline + 1, tpos, 1, 0);
 #if HILITE_SEARCH
         if (show_attn)
-          repaint_hilite(1);
+          search::repaint_hilite(1);
 #endif
         return;
       }
     }
     lastmark();
     if (!top_scroll)
-      clear();
+      screen::clear();
     else
-      home();
+      screen::home();
     screen_trashed = NOT_TRASHED;
     position::add_back_pos(pos);
     forwback::back(sc_height - 1, pos, 1, 0);

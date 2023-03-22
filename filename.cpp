@@ -391,7 +391,7 @@ static position_t seek_filesize(int f)
   spos = lseek(f, (off_t)0, SEEK_END);
   if (spos == BAD_LSEEK)
     return (NULL_POSITION);
-  return ((position_t)spos);
+  return (spos);
 }
 
 /*
@@ -884,7 +884,7 @@ position_t filesize(int f)
   struct stat statbuf;
 
   if (fstat(f, &statbuf) >= 0)
-    return ((position_t)statbuf.st_size);
+    return (statbuf.st_size);
 #endif
   return (seek_filesize(f));
 }
