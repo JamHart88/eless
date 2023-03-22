@@ -13,7 +13,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 CFLAGS = 
 CFLAGS_COMPILE_ONLY = -c
 LDFLAGS = 
-CPPFLAGS = -E -std=c++17 -g -ggdb -O0 -Wall -Wshadow -Wnon-virtual-dtor -pedantic -Wl,--demangle -Wunreachable-code -Wlogical-op \
+CPPFLAGS = -std=c++17 -g -ggdb -O0 -Wall -Wshadow -Wnon-virtual-dtor -pedantic -Wl,--demangle -Wunreachable-code -Wlogical-op \
 	-Wfloat-equal -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wnull-dereference -Wuseless-cast -Wdouble-promotion \
 	-Wimplicit-fallthrough -Wpedantic
 # -Wsign-conversion -Wextra -Wconversion 
