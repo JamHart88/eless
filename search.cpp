@@ -27,7 +27,6 @@
 #include "position.hpp"
 #include "screen.hpp"
 #include "utils.hpp"
-#include "debug.hpp"
 
 #define MINPOS(a, b) (((a) < (b)) ? (a) : (b))
 #define MAXPOS(a, b) (((a) > (b)) ? (a) : (b))
@@ -150,6 +149,11 @@ static int is_ucase(char* str)
  */
 static int set_pattern(struct pattern_info* info, char* pattern, int search_type)
 {
+
+  if (pattern == NULL)
+    CLEAR_PATTERN(info->compiled);
+  else if (pattern::compile_pattern(pattern, search_type, &info->compiled) < 0)
+    return -1;
   /* Pattern compiled successfully; save the text too. */
   if (info->text != NULL)
     free(info->text);
@@ -180,6 +184,7 @@ static void clear_pattern(struct pattern_info* info)
   if (info->text != NULL)
     free(info->text);
   info->text = NULL;
+  pattern::uncompile_pattern(&info->compiled);
 }
 
 /*
@@ -227,6 +232,8 @@ static int get_cvt_ops(void)
  */
 static int prev_pattern(struct pattern_info* info)
 {
+  if ((info->search_type & SRCH_NO_REGEX) == 0)
+    return (!pattern::is_null_pattern(info->compiled));
   return (info->text != NULL);
 }
 
@@ -1026,13 +1033,11 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
   int*       chpos;
   position_t linepos, oldpos;
 
-  debug::D("search_range");
   linenum = find_linenum(pos);
   oldpos  = pos;
-  
+
   for (;;) {
-  
-    debug::D("search_range - top of loop");
+
     /*
      * Get lines until we find a matching one or until
      * we hit end-of-file (or beginning-of-file if we're
@@ -1111,13 +1116,13 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
     cvt::cvt_text(cline, line, chpos, &line_len, cvt_ops);
 
 #if HILITE_SEARCH
-    debug::D("search_range - hilite search");
+    
     /*
      * Check to see if the line matches the filter pattern.
      * If so, add an entry to the filter list.
      */
     if (((search_type & SRCH_FIND_ALL) || prep_startpos == NULL_POSITION || linepos < prep_startpos || linepos >= prep_endpos) && prev_pattern(&filter_info)) {
-      debug::D("search_range - hilite all");
+      
       int line_filter = pattern::match_pattern(info_compiled(&filter_info), filter_info.text,
           cline, line_len, &sp, &ep, 0, filter_info.search_type);
       if (line_filter) {
@@ -1137,8 +1142,7 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
      * We are successful if we either want a match and got one,
      * or if we want a non-match and got one.
      */
-    debug::D("prev_pattern check");
-
+    
     if (prev_pattern(&search_info)) {
       line_match = pattern::match_pattern(info_compiled(&search_info), search_info.text,
           cline, line_len, &sp, &ep, 0, search_type);
@@ -1366,10 +1370,10 @@ void prep_hilite(position_t spos, position_t epos, int maxlines)
 {
   position_t nprep_startpos = prep_startpos;
   position_t nprep_endpos   = prep_endpos;
-  position_t new_epos;
-  position_t max_epos;
-  int        result;
-  int        i;
+  position_t new_epos = 0;
+  position_t max_epos = 0;
+  int        result = 0;
+  int        i = 0;
 
 /*
  * Search beyond where we're asked to search, so the prep region covers
@@ -1531,6 +1535,30 @@ int is_filtering(void)
   if (ch::getflags() & CH_HELPFILE)
     return (0);
   return prev_pattern(&filter_info);
+}
+#endif
+
+#if HAVE_V8_REGCOMP
+/*
+ * This function is called by the V8 regcomp to report
+ * errors in regular expressions.
+ */
+public
+int reg_show_error = 1;
+
+void
+    regerror((char*)s) char* s;
+
+// -------------------------------------------
+public
+int is_filtering(VOID_PARAM)
+{
+  PARG parg;
+
+  if (!reg_show_error)
+    return;
+  parg.p_string = s;
+  error((char*)"%s", &parg);
 }
 #endif
 } // namespace search
