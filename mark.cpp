@@ -19,9 +19,14 @@
 #include "screen.hpp"
 #include "utils.hpp"
 
+// TODO: Move to namespaces
 extern int sc_height;
 extern int jump_sline;
 extern int perma_marks;
+
+int marks_modified = 0;
+
+namespace mark {
 
 /*
  * A mark is an ifile (input file) plus a position within the file.
@@ -33,13 +38,10 @@ struct mark {
    * because we don't want to create an ifile until the
    * user explicitly requests the file (by name or mark).
    */
-  char m_letter; /* Associated character */
-
-  ifile::Ifile* m_ifile; /* Input file being marked */
-
-  char* m_filename; /* Name of the input file */
-
-  struct scrpos m_scrpos; /* Position of the mark */
+  char          m_letter;   /* Associated character */
+  ifile::Ifile* m_ifile;    /* Input file being marked */
+  char*         m_filename; /* Name of the input file */
+  struct scrpos m_scrpos;   /* Position of the mark */
 };
 
 /*
@@ -53,7 +55,6 @@ struct mark {
 #define LASTMARK (NMARKS - 1)
 static struct mark marks[NMARKS];
 
-int marks_modified = 0;
 
 /*
  * Initialize a mark struct.
@@ -468,3 +469,5 @@ void restore_mark(char* line)
 }
 
 #endif /* CMD_HISTORY */
+
+} // namespace mark

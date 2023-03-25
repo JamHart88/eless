@@ -159,7 +159,7 @@ static void close_file(void)
   position::get_scrpos(&scrpos, TOP);
   if (scrpos.pos != NULL_POSITION) {
     ifile::getCurrentIfile()->setPos(scrpos);
-    lastmark();
+    mark::lastmark();
   }
   /*
    * Close the file descriptor, unless it is a pipe.
@@ -424,7 +424,7 @@ int edit_ifile(ifile::Ifile* requestedIfile)
      * Indicate there is nothing displayed yet.
      */
     position::pos_clear();
-    clr_linenum();
+    linenum::clr_linenum();
 #if HILITE_SEARCH
     search::clr_hilite();
 #endif

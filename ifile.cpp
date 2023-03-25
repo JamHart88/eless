@@ -112,7 +112,7 @@ Ifile* newIfile(const char* filename)
    *    there is potentially dangerous recursion.
    *    Probably need to revisit this design. }}
    */
-  mark_check_ifile(currentIfile);
+  mark::mark_check_ifile(currentIfile);
 
   return currentIfile;
 }
@@ -141,7 +141,7 @@ void deleteIfile(Ifile* ifilePtr)
      * If the ifile we're deleting is the currently open ifile,
      * move off it.
      */
-    unmark(ifilePtr);
+    mark::unmark(ifilePtr);
 
     if (ifilePtr == getCurrentIfile()) {
 

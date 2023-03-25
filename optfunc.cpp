@@ -63,12 +63,17 @@ extern char  rscroll_char;
 extern int   rscroll_attr;
 extern int   mousecap;
 extern int   wheel_lines;
+extern int   tabstops[];
+extern int   ntabstops;
+extern int   tabdefault;
 
 #if TAGS
 char*        tagoption = NULL;
 extern char* tags_ptr;
 extern char  ztags[];
 #endif
+
+namespace optfunc {
 
 /*
  * Handler for -o option.
@@ -461,9 +466,6 @@ void opt__V(int type, char* s)
  */
 void opt_x(int type, char* s)
 {
-  extern int          tabstops[];
-  extern int          ntabstops;
-  extern int          tabdefault;
   constexpr const int MSG_SIZE = 60 + (4 * TABSTOP_MAX);
   char                msg[MSG_SIZE];
   int                 i;
@@ -634,3 +636,5 @@ int get_swindow(void)
     return (swindow);
   return (sc_height + swindow);
 }
+
+} // namespace optfunc

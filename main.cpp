@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
    * Command line arguments override environment arguments.
    */
   is_tty = isatty(1);
-  init_mark();
+  mark::init_mark();
   decode::init_cmds();
   screen::get_term();
   charset::init_charset();

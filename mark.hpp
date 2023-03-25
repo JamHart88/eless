@@ -8,6 +8,8 @@
 #include "ifile.hpp"
 #include "less.hpp"
 
+namespace mark {
+
 void       init_mark(void);
 int        badmark(int c);
 void       setmark(int c, int where);
@@ -20,5 +22,7 @@ void       unmark(ifile::Ifile* ifilePtr);
 void       mark_check_ifile(ifile::Ifile* ifilePtr);
 void       save_marks(FILE* fout, char* hdr);
 void       restore_mark(char* line);
+
+} // namespace mark
 
 #endif

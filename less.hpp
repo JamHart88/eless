@@ -355,9 +355,7 @@ struct Globals {
   static int follow_mode; // F cmd Follows file desc or file name?
   static int autobuf;     // Automatically allocate buffers as needed
 
-  /*
-   * sigs contains bits indicating signals which need to be processed.
-   */
+  // sigs contains bits indicating signals which need to be processed.
   static int sigs;
 
   // From ch:
@@ -377,16 +375,12 @@ inline bool  Globals::force_logfile = false;
 inline char* Globals::namelogfile   = nullptr;
 inline int   Globals::follow_mode   = 0;
 inline int   Globals::autobuf       = 0;
-
-inline int Globals::sigs = 0;
-
-inline int Globals::ignore_eoi = 0;
-
-inline int Globals::utf_mode = 0;
-inline int Globals::binattr  = AT_STANDOUT;
-
-inline char Globals::openquote  = '"';
-inline char Globals::closequote = '"';
+inline int   Globals::sigs          = 0;
+inline int   Globals::ignore_eoi    = 0;
+inline int   Globals::utf_mode      = 0;
+inline int   Globals::binattr       = AT_STANDOUT;
+inline char  Globals::openquote     = '"';
+inline char  Globals::closequote    = '"';
 
 }; // namespace less
 

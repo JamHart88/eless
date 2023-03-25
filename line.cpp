@@ -28,39 +28,23 @@
 #include "utils.hpp"
 
 // TODO: move to namespaces
-static char* linebuf = NULL; /* Buffer which holds the current output line */
-
-static char* attr = NULL; /* Extension of linebuf to hold attributes */
-
-int size_linebuf = 0; /* Size of line buffer (and attr buffer) */
-
-static int cshift; /* Current left-shift of output line buffer */
-
-int hshift; /* Desired left-shift of output line buffer */
-
-int tabstops[TABSTOP_MAX] = { 0 }; /* Custom tabstops */
-
-int ntabstops = 1; /* Number of tabstops */
-
-int tabdefault = 8; /* Default repeated tabstops */
-
-position_t highest_hilite; /* Pos of last hilite in file found so far */
-
-static int curr; /* Index into linebuf */
-
-static int column; /* Printable length, accounting for
-                      backspaces, etc. */
-
-static int right_curr;
-static int right_column;
-
-static int overstrike; /* Next char should overstrike previous char */
-static int last_overstrike = AT_NORMAL;
-
-static int is_null_line; /* There is no current line */
-
-static int lmargin; /* Left margin */
-
+static char*      linebuf      = NULL;           /* Buffer which holds the current output line */
+static char*      attr         = NULL;           /* Extension of linebuf to hold attributes */
+int               size_linebuf = 0;              /* Size of line buffer (and attr buffer) */
+static int        cshift;                        /* Current left-shift of output line buffer */
+int               hshift;                        /* Desired left-shift of output line buffer */
+int               tabstops[TABSTOP_MAX] = { 0 }; /* Custom tabstops */
+int               ntabstops             = 1;     /* Number of tabstops */
+int               tabdefault            = 8;     /* Default repeated tabstops */
+position_t        highest_hilite;                /* Pos of last hilite in file found so far */
+static int        curr;                          /* Index into linebuf */
+static int        column;                        /* Printable length, accounting for backspaces, etc. */
+static int        right_curr;
+static int        right_column;
+static int        is_null_line; /* There is no current line */
+static int        lmargin;      /* Left margin */
+static int        overstrike;   /* Next char should overstrike previous char */
+static int        last_overstrike = AT_NORMAL;
 static lwchar_t   pendc;
 static position_t pendpos;
 static char*      end_ansi_chars;
@@ -211,13 +195,13 @@ void plinenum(position_t pos)
   if (linenums == option::OPT_ONPLUS) {
     /*
      * Get the line number and put it in the current line.
-     * {{ Note: since find_linenum calls forw_raw_line,
+     * {{ Note: since linenum::find_linenum calls forw_raw_line,
      *    it may seek in the input file, requiring the caller
      *    of plinenum to re-seek if necessary. }}
      * {{ Since forw_raw_line modifies linebuf, we must
      *    do this first, before storing anything in linebuf. }}
      */
-    linenum = find_linenum(pos);
+    linenum = linenum::find_linenum(pos);
   }
 
   /*
@@ -225,7 +209,7 @@ void plinenum(position_t pos)
    */
   if (status_col) {
     int  a = AT_NORMAL;
-    char c = posmark(pos);
+    char c = mark::posmark(pos);
     if (c != 0)
       a |= AT_HILITE;
     else {

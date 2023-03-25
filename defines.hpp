@@ -13,153 +13,150 @@
  * so config.status doesn't overwrite your changes.
  */
 
-/* ---------------------------------------------------- 
+/* ----------------------------------------------------
  * Configurational compilation options
  * ----------------------------------------------------*/
 #ifdef NOT_CXX11
 #define nullptr NULL
 #endif
 
-//TBD
+// TBD
 
-/* ---------------------------------------------------- 
+/* ----------------------------------------------------
  * Optional user options
  * ----------------------------------------------------*/
-
 
 /*
  * SHELL_ESCAPE is 1 if you wish to allow shell escapes.
  * (This is possible only if your system supplies the system() function.)
  */
-#define    SHELL_ESCAPE    1
+#define SHELL_ESCAPE 1
 
 /*
  * EXAMINE is 1 if you wish to allow examining files by name from within less.
  */
-#define    EXAMINE        1
+#define EXAMINE 1
 
 /*
  * TAB_COMPLETE_FILENAME is 1 if you wish to allow the TAB key
  * to complete filenames at prompts.
  */
-#define    TAB_COMPLETE_FILENAME    1
+#define TAB_COMPLETE_FILENAME 1
 
 /*
  * CMD_HISTORY is 1 if you wish to allow keys to cycle through
  * previous commands at prompts.
  */
-#define    CMD_HISTORY    1
+#define CMD_HISTORY 1
 
 /*
- * HILITE_SEARCH is 1 if you wish to have search targets to be 
+ * HILITE_SEARCH is 1 if you wish to have search targets to be
  * displayed in standout mode.
  */
-#define    HILITE_SEARCH    1
+#define HILITE_SEARCH 1
 
 /*
  * EDITOR is 1 if you wish to allow editor invocation (the "v" command).
  * (This is possible only if your system supplies the system() function.)
  * EDIT_PGM is the name of the (default) editor to be invoked.
  */
-#define    EDITOR        1
+#define EDITOR 1
 
 /*
  * TAGS is 1 if you wish to support tag files.
  */
-#define    TAGS        1
+#define TAGS 1
 
 /*
- * USERFILE is 1 if you wish to allow a .less file to specify 
+ * USERFILE is 1 if you wish to allow a .less file to specify
  * user-defined key bindings.
  */
-#define    USERFILE    1
+#define USERFILE 1
 
 /*
  * GLOB is 1 if you wish to have shell metacharacters expanded in filenames.
  * This will generally work if your system provides the "popen" function
  * and the "echo" shell command.
  */
-#define    GLOB        1
+#define GLOB 1
 
 /*
  * PIPEC is 1 if you wish to have the "|" command
  * which allows the user to pipe data into a shell command.
  */
-#define    PIPEC        1
+#define PIPEC 1
 
 /*
  * GNU_OPTIONS is 1 if you wish to support the GNU-style command
  * line options --help and --version.
  */
-#define    GNU_OPTIONS    1
+#define GNU_OPTIONS 1
 
 /*
  * ONLY_RETURN is 1 if you want RETURN to be the only input which
  * will continue past an output::error message.
  * Otherwise, any key will continue past an output::error message.
  */
-#define    ONLY_RETURN    0
+#define ONLY_RETURN 0
 
 /*
- * LESSKEYFILE is the filename of the default decode::lesskey output file 
+ * LESSKEYFILE is the filename of the default decode::lesskey output file
  * (in the HOME directory).
  * LESSKEYFILE_SYS is the filename of the system-wide decode::lesskey output file.
- * DEF_LESSKEYINFILE is the filename of the default decode::lesskey input 
+ * DEF_LESSKEYINFILE is the filename of the default decode::lesskey input
  * (in the HOME directory).
  * LESSHISTFILE is the filename of the history file
  * (in the HOME directory).
  */
-#define LESSKEYFILE        ".less"
-#define LESSKEYFILE_SYS    SYSDIR "/sysless"
-#define DEF_LESSKEYINFILE  ".decode::lesskey"
-#define LESSHISTFILE       ".lesshst"
+#define LESSKEYFILE ".less"
+#define LESSKEYFILE_SYS SYSDIR "/sysless"
+#define DEF_LESSKEYINFILE ".decode::lesskey"
+#define LESSHISTFILE ".lesshst"
 
 #define DEBUG 1
 
-/* ---------------------------------------------------- 
- * Globals always true on Unix.  
+/* ----------------------------------------------------
+ * Globals always true on Unix.
  * ----------------------------------------------------  */
 
 /*
  * Pathname separator character.
  */
-#define    PATHNAME_SEP    "/"
+#define PATHNAME_SEP "/"
 
 /*
  * The value returned from tgetent on success.
  * Some HP-UX systems return 0 on success.
  */
-#define TGETENT_OK  1
+#define TGETENT_OK 1
 
 /*
  * Define if you have the <sgstat.h> header file.
  */
 /* #undef HAVE_SGSTAT_H */
 
-
 /*
  * Default shell metacharacters and meta-escape character.
  */
-#define    DEF_METACHARS    "; *?\t\n'\"()<>[]|&^`#\\$%=~{},"
-#define    DEF_METAESCAPE    "\\"
+#define DEF_METACHARS "; *?\t\n'\"()<>[]|&^`#\\$%=~{},"
+#define DEF_METAESCAPE "\\"
 
 /*
  * Sizes of various buffers.
  */
-#define    CMDBUF_SIZE     2048    /* Buffer for multichar commands */
-#define    UNGOT_SIZE      200     /* Max chars to unget() */
-#define    LINEBUF_SIZE    1024    /* Initial max size of line in input file */
-#define    OUTBUF_SIZE     1024    /* Output buffer */
-#define    PROMPT_SIZE     2048    /* Max size of prompt string */
-#define    TERMBUF_SIZE    2048    /* Termcap buffer for tgetent */
-#define    TERMSBUF_SIZE   1024    /* Buffer to hold termcap strings */
-#define    TAGLINE_SIZE    1024    /* Max size of line in tags file */
-#define    TABSTOP_MAX     128     /* Max number of custom tab stops */
+constexpr const int CMDBUF_SIZE   = 2048; // Buffer for multichar commands
+constexpr const int UNGOT_SIZE    = 200;  // Max chars to unget()
+constexpr const int LINEBUF_SIZE  = 1024; // Initial max size of line in input file
+constexpr const int OUTBUF_SIZE   = 1024; // Output buffer
+constexpr const int PROMPT_SIZE   = 2048; // Max size of prompt string
+constexpr const int TERMBUF_SIZE  = 2048; // Termcap buffer for tgetent
+constexpr const int TERMSBUF_SIZE = 1024; // Buffer to hold termcap strings
+constexpr const int TAGLINE_SIZE  = 1024; // Max size of line in tags file
+constexpr const int TABSTOP_MAX   = 128;  // Max number of custom tab stops
 
 /* ----------------------------------------------------
- * Globals automatically determined by configure.  
+ * Globals automatically determined by configure.
  * ----------------------------------------------------*/
-
 
 /* Define EDIT_PGM to your editor. */
 #define EDIT_PGM "vi"
@@ -233,10 +230,8 @@
 /* BSD re_comp() */
 /* #undef HAVE_RE_COMP */
 
-
 /* Define to 1 if you have the `sigsetmask' function. */
 #define HAVE_SIGSETMASK 1
-
 
 /* Define to 1 if you have the `snprintf' function. */
 #define HAVE_snprintf1
@@ -304,9 +299,8 @@
 /* Define to 1 if you have the <wctype.h> header file. */
 #define HAVE_WCTYPE_H 1
 
-
 /* Define MUST_DEFINE_ERRNO if you have errno but it is not define in errno.h.
-   */
+ */
 /* #undef MUST_DEFINE_ERRNO */
 
 /* Define MUST_DEFINE_OSPEED if you have ospeed but it is not defined in
@@ -345,7 +339,6 @@
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
-
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 /* #undef _FILE_OFFSET_BITS */

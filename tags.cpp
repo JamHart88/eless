@@ -447,7 +447,7 @@ static int curtag_match(char const* line, position_t linepos)
    */
   int len = (int)strlen(curtag->tag_pattern);
   if (strncmp(curtag->tag_pattern, line, len) == 0 && (!curtag->tag_endline || line[len] == '\0' || line[len] == '\r')) {
-    curtag->tag_linenum = find_linenum(linepos);
+    curtag->tag_linenum = linenum::find_linenum(linepos);
     return 1;
   }
   return 0;
@@ -475,7 +475,7 @@ static position_t ctagsearch(void)
   int        found;
 
   pos     = ch_zero;
-  linenum = find_linenum(pos);
+  linenum = linenum::find_linenum(pos);
 
   for (found = 0; !found;) {
     /*
@@ -508,7 +508,7 @@ static position_t ctagsearch(void)
      * and line number of the current line).
      */
     if (linenums)
-      add_lnum(linenum, pos);
+      linenum::add_lnum(linenum, pos);
 
     if (ctldisp != option::OPT_ONPLUS) {
       if (curtag_match(line, linepos))
@@ -737,7 +737,7 @@ static position_t gtagsearch(void)
 {
   if (curtag == NULL)
     return (NULL_POSITION); /* No gtags loaded! */
-  return (find_pos(curtag->tag_linenum));
+  return (linenum::find_pos(curtag->tag_linenum));
 }
 
 /*

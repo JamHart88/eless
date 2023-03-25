@@ -28,6 +28,8 @@
 
 #include <csignal>
 
+namespace lsystem {
+
 #if HAVE_SYSTEM
 
 /*
@@ -172,7 +174,7 @@ int pipe_mark(int c, char* cmd)
    * tpos = top of screen.
    * bpos = bottom of screen.
    */
-  mpos = markpos(c);
+  mpos = mark::markpos(c);
   if (mpos == NULL_POSITION)
     return (-1);
   tpos = position::position(TOP);
@@ -268,3 +270,5 @@ int pipe_data(char* cmd, position_t spos, position_t epos)
 }
 
 #endif
+
+} // namespace lsystem

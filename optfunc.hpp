@@ -19,6 +19,8 @@
 
 #include "less.hpp"
 
+namespace optfunc {
+
 void opt_o(int type, char* s);
 void opt__O(int type, char* s);
 void opt_j(int type, char* s);
@@ -33,7 +35,7 @@ void opt__P(int type, char* s);
 void opt_b(int type, char* s);
 void opt_i(int type, char* s);
 void opt__V(int type, char* s);
-void opt_D(int type, char* s);
+void opt_D(int type, char* s); // not used
 void opt_x(int type, char* s);
 void opt_quote(int type, char* s);
 void opt_rscroll(int type, char* s);
@@ -42,4 +44,5 @@ void opt_mousecap(int type, char* s);
 void opt_wheel_lines(int type, char* s);
 int  get_swindow(void);
 
+} // namespace optfunc
 #endif

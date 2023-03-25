@@ -427,7 +427,7 @@ static int mouse_button_rel(int x, int y)
    *    in commands() but it's nontrivial to pass y to it. }}
    */
   if (y < sc_height - 1) {
-    setmark('#', y);
+    mark::setmark('#', y);
     screen_trashed = TRASHED;
   }
   return (A_NOACTION);

@@ -234,8 +234,8 @@ void psignals(void)
     screen::get_term();
     if (sc_width != old_width || sc_height != old_height) {
       wscroll = (sc_height + 1) / 2;
-      calc_jump_sline();
-      calc_shift_count();
+      optfunc::calc_jump_sline();
+      optfunc::calc_shift_count();
     }
     screen_trashed = TRASHED;
   }

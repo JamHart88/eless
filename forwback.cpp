@@ -277,7 +277,7 @@ void forw(int n, position_t pos,
     jump::repaint();
   }
   first_time = 0;
-  (void)currline(BOTTOM);
+  (void)linenum::currline(BOTTOM);
 }
 
 /*
@@ -331,7 +331,7 @@ void back(int n, position_t pos, int force, int only_last)
     jump::repaint();
   else if (!oldbot)
     screen::lower_left();
-  (void)currline(BOTTOM);
+  (void)linenum::currline(BOTTOM);
 }
 
 /*

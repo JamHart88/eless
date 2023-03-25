@@ -46,11 +46,11 @@ void jump_forw(void)
     return;
   }
   /*
-   * Note; lastmark will be called later by jump_loc, but it fails
+   * Note; mark::lastmark will be called later by jump_loc, but it fails
    * because the position table has been cleared by position::pos_clear below.
    * So call it here before calling position::pos_clear.
    */
-  lastmark();
+  mark::lastmark();
   /*
    * Position the last line in the file at the last screen line.
    * Go back one line from the end of the file
@@ -100,7 +100,7 @@ void jump_back(linenum_t linenum)
    * If we can't seek, but we're trying to go to line number 1,
    * use beg_seek() to get as close as we can.
    */
-  pos = find_pos(linenum);
+  pos = linenum::find_pos(linenum);
   if (pos != NULL_POSITION && ch::seek(pos) == 0) {
     if (show_attn)
       input::set_attnpos(pos);
@@ -277,7 +277,7 @@ void jump_loc(position_t pos, int sline)
         break;
       }
     }
-    lastmark();
+    mark::lastmark();
     squished       = 0;
     screen_trashed = NOT_TRASHED;
     forwback::forw(sc_height - 1, pos, 1, 0, sindex - nline);
@@ -315,7 +315,7 @@ void jump_loc(position_t pos, int sline)
         return;
       }
     }
-    lastmark();
+    mark::lastmark();
     if (!top_scroll)
       screen::clear();
     else

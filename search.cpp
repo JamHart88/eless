@@ -1033,7 +1033,7 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
   int*       chpos;
   position_t linepos, oldpos;
 
-  linenum = find_linenum(pos);
+  linenum = linenum::find_linenum(pos);
   oldpos  = pos;
 
   for (;;) {
@@ -1099,7 +1099,7 @@ static int search_range(position_t pos, position_t endpos, int search_type, int 
      * we're "far" from the last place we remembered it.
      */
     if (linenums && abs((int)(pos - oldpos)) > 2048)
-      add_lnum(linenum, pos);
+      linenum::add_lnum(linenum, pos);
     oldpos = pos;
 
     if (is_filtered(linepos))

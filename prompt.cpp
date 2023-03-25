@@ -196,7 +196,7 @@ static int cond(char c, int where)
   case 'd': /* Same as l */
     if (!linenums)
       return 0;
-    return (currline(where) != 0);
+    return (linenum::currline(where) != 0);
   case 'L': /* Final line number known? */
   case 'D': /* Final page number known? */
     return (linenums && ch::length() != NULL_POSITION);
@@ -215,7 +215,7 @@ static int cond(char c, int where)
   case 'p': /* Percent into file (bytes) known? */
     return (curr_byte(where) != NULL_POSITION && ch::length() > 0);
   case 'P': /* Percent into file (lines) known? */
-    return (currline(where) != 0 && (len = ch::length()) > 0 && find_linenum(len) != 0);
+    return (linenum::currline(where) != 0 && (len = ch::length()) > 0 && linenum::find_linenum(len) != 0);
   case 's': /* Size of file known? */
   case 'B':
     return (ch::length() != NULL_POSITION);
@@ -261,7 +261,7 @@ static void protochar(int c, int where, int iseditproto)
     ap_int(hshift);
     break;
   case 'd': /* Current page number */
-    linenum = currline(where);
+    linenum = linenum::currline(where);
     if (linenum > 0 && sc_height > 1)
       ap_linenum(PAGE_NUM(linenum));
     else
@@ -276,7 +276,7 @@ static void protochar(int c, int where, int iseditproto)
       /* An empty file has no pages. */
       ap_linenum(0);
     else {
-      linenum = find_linenum(len - 1);
+      linenum = linenum::find_linenum(len - 1);
       if (linenum <= 0)
         ap_quest();
       else
@@ -308,7 +308,7 @@ static void protochar(int c, int where, int iseditproto)
       ap_int(ifile::getIndex(ifile::getCurrentIfile()));
     break;
   case 'l': /* Current line number */
-    linenum = currline(where);
+    linenum = linenum::currline(where);
     if (linenum != 0)
       ap_linenum(linenum);
     else
@@ -316,7 +316,7 @@ static void protochar(int c, int where, int iseditproto)
     break;
   case 'L': /* Final line number */
     len = ch::length();
-    if (len == NULL_POSITION || len == ch_zero || (linenum = find_linenum(len)) <= 0)
+    if (len == NULL_POSITION || len == ch_zero || (linenum = linenum::find_linenum(len)) <= 0)
       ap_quest();
     else
       ap_linenum(linenum - 1);
@@ -339,8 +339,8 @@ static void protochar(int c, int where, int iseditproto)
       ap_quest();
     break;
   case 'P': /* Percent into file (lines) */
-    linenum = currline(where);
-    if (linenum == 0 || (len = ch::length()) == NULL_POSITION || len == ch_zero || (last_linenum = find_linenum(len)) <= 0)
+    linenum = linenum::currline(where);
+    if (linenum == 0 || (len = ch::length()) == NULL_POSITION || len == ch_zero || (last_linenum = linenum::find_linenum(len)) <= 0)
       ap_quest();
     else
       ap_int(os::percentage(linenum, last_linenum));

@@ -299,15 +299,15 @@ static void exec_mca(void)
     }
 
     if (shellcmd == nullptr)
-      lsystem((char*)"", (char*)"!done");
+      lsystem::lsystem((char*)"", (char*)"!done");
     else
-      lsystem(shellcmd, (char*)"!done");
+      lsystem::lsystem(shellcmd, (char*)"!done");
     break;
 #endif
 #if PIPEC
   case A_PIPE:
 
-    (void)pipe_mark(pipec, cbuf);
+    (void)lsystem::pipe_mark(pipec, cbuf);
     output::error((char*)"|done", NULL_PARG);
     break;
 #endif
@@ -634,7 +634,7 @@ static void clear_buffers(void)
   if (!(ch::getflags() & CH_CANSEEK))
     return;
   ch::flush();
-  clr_linenum();
+  linenum::clr_linenum();
 #if HILITE_SEARCH
   search::clr_hilite();
 #endif
@@ -1179,7 +1179,7 @@ void commands(void)
        * Forward one screen.
        */
       if (number <= 0)
-        number = get_swindow();
+        number = optfunc::get_swindow();
       cmd_exec();
       if (show_attn)
         input::set_attnpos(bottompos);
@@ -1198,7 +1198,7 @@ void commands(void)
        * Backward one screen.
        */
       if (number <= 0)
-        number = get_swindow();
+        number = optfunc::get_swindow();
       cmd_exec();
       forwback::backward((int)number, 0, 1);
       break;
@@ -1268,7 +1268,7 @@ void commands(void)
        * Force forward one screen.
        */
       if (number <= 0)
-        number = get_swindow();
+        number = optfunc::get_swindow();
       cmd_exec();
       if (show_attn == option::OPT_ONPLUS)
         input::set_attnpos(bottompos);
@@ -1567,7 +1567,7 @@ void commands(void)
        */
       make_display();
       cmd_exec();
-      lsystem(prompt::pr_expand(editproto, 0), (char*)nullptr);
+      lsystem::lsystem(prompt::pr_expand(editproto, 0), (char*)nullptr);
       break;
 
 #endif
@@ -1752,7 +1752,7 @@ void commands(void)
       debug::debug("getcc 1787");
       if (is_erase_char(c) || is_newline_char(c))
         break;
-      setmark(c, action == A_SETMARKBOT ? BOTTOM : TOP);
+      mark::setmark(c, action == A_SETMARKBOT ? BOTTOM : TOP);
       jump::repaint();
       break;
 
@@ -1765,7 +1765,7 @@ void commands(void)
       debug::debug("getcc 1799");
       if (is_erase_char(c) || is_newline_char(c))
         break;
-      clrmark(c);
+      mark::clrmark(c);
       jump::repaint();
       break;
 
@@ -1779,7 +1779,7 @@ void commands(void)
       if (is_erase_char(c) || is_newline_char(c))
         break;
       cmd_exec();
-      gomark(c);
+      mark::gomark(c);
       break;
 
     case A_PIPE:
@@ -1793,7 +1793,7 @@ void commands(void)
         break;
       if (is_newline_char(c))
         c = '.';
-      if (badmark(c))
+      if (mark::badmark(c))
         break;
       pipec = c;
       start_mca(A_PIPE, "!", ml_shell, 0);

@@ -1462,7 +1462,7 @@ static void addhist_init(void *unused, struct mlist *ml, char *string)
     if (ml != NULL)
         cmd_addhist(ml, string, 0);
     else if (string != NULL)
-        restore_mark(string);
+        mark::restore_mark(string);
 }
 #endif /* CMD_HISTORY */
 
@@ -1643,7 +1643,7 @@ static int histfile_modified(void)
         ctx.fout = fout;
         ctx.mlist = NULL;
         read_cmdhist(&copy_hist, &ctx, skip_search, skip_shell);
-        save_marks(fout, (char *)HISTFILE_MARK_SECTION);
+        mark::save_marks(fout, (char *)HISTFILE_MARK_SECTION);
         fclose(fout);
         rename(tempname, histname);
     }

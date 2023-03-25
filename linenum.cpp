@@ -42,6 +42,12 @@
 #include "position.hpp"
 #include "utils.hpp"
 
+// TODO: Move to namespaces
+extern int linenums;
+extern int sc_height;
+
+namespace linenum {
+
 /*
  * Structure to keep track of a line number and the associated file position.
  * A doubly-linked circular list of line numbers is kept ordered by line number.
@@ -70,9 +76,6 @@ static struct linenum_info  anchor;      // Anchor of the list
 static struct linenum_info* freelist;    // Anchor of the unused entries
 static struct linenum_info  pool[NPOOL]; // The pool itself
 static struct linenum_info* spare;       // We always keep one spare entry
-
-extern int linenums;
-extern int sc_height;
 
 /*
  * Initialize the line number structures.
@@ -436,3 +439,5 @@ linenum_t currline(int where)
     linenum--;
   return (linenum);
 }
+
+} // namespace linenum
