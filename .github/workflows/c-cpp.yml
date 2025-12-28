@@ -24,6 +24,9 @@ jobs:
         
     steps:
     - uses: actions/checkout@v4
+    - uses: Bacondish2023/setup-googletest@v1
+      with:
+        tag: v1.14.0
     - name: Setup LCOV
       uses: hrishikesh-kadam/setup-lcov@v1 # Use the setup action
     - name: setup
