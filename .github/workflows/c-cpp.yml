@@ -24,6 +24,8 @@ jobs:
         
     steps:
     - uses: actions/checkout@v4
+    - name: Setup LCOV
+      uses: hrishikesh-kadam/setup-lcov@v1 # Use the setup action
     - name: setup
       run: ./setup.sh
     - name: run
