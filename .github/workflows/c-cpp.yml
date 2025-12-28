@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./tests/ch_test
+        working-directory: ./test/ch_test
         
     steps:
     - uses: actions/checkout@v4
