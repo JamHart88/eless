@@ -18,11 +18,12 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
-  
+    defaults:
+      run:
+        working-directory: ./tests/ch_test
+        
     steps:
     - uses: actions/checkout@v4
-    - name: cd to ch_test
-      run: cd tests/ch_test
     - name: setup
       run: ./setup.sh
     - name: run
