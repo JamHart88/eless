@@ -25,5 +25,5 @@ jobs:
       run: cd tests/ch_test
     - name: setup
       run: ./setup.sh
-    -name: run
+    - name: run
       run: make run
